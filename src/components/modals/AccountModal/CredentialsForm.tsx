@@ -1,9 +1,11 @@
 import Info from 'lucide-react/icons/info';
+import AlertTriangle from 'lucide-react/icons/triangle-alert';
 import type { ReactNode, SubmitEvent } from 'react';
 import { ComposedInput } from '$components/ComposedInput';
 import { ConnectionNoticeBanner } from '$components/ConnectionNoticeBanner';
 import { IconEmojiPicker } from '$components/IconEmojiPicker';
 import { AdvancedSection } from '$components/modals/AccountModal/AdvancedSection';
+import { ServerTypeDescriptionBanner } from '$components/ServerTypeDescriptionBanner';
 import { Tooltip } from '$components/Tooltip';
 import { getPredefinedServerUrl } from '$constants/settings';
 import { useInitialFocusRef } from '$hooks/ui/useInitialFocusRef';
@@ -126,7 +128,7 @@ const SERVER_HINTS: Partial<Record<ServerType, { text: ReactNode; href: string }
   migadu: {
     text: (
       <>
-        For better isolation in Migadu, you can{' '}
+        For better isolation in Migadu,{' '}
         <a
           href="https://migadu.com/guides/identities/"
           target="_blank"
@@ -273,6 +275,8 @@ export const CredentialsForm = ({
 
   return (
     <form onSubmit={onSubmit} className="space-y-4 p-4">
+      <ServerTypeDescriptionBanner serverType={serverType} />
+
       <div>
         <label
           htmlFor="account-name"
@@ -372,8 +376,8 @@ export const CredentialsForm = ({
           className="w-full rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
         />
         {hint && (
-          <div className="mt-3 flex gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
-            <Info className="mt-px size-3.5 shrink-0 text-semantic-info" />
+          <div className="mt-3 flex gap-2 rounded-lg border border-semantic-warning/30 bg-semantic-warning/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
+            <AlertTriangle className="mt-px size-3.5 shrink-0 text-semantic-warning" />
             <span>{hint.text}</span>
           </div>
         )}

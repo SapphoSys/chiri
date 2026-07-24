@@ -95,6 +95,8 @@ export interface QuickTimePresets {
 export interface ServerTypeOption {
   value: ServerType;
   label: string;
+  description?: string;
+  homepageUrl?: string;
 }
 
 export interface ServerTypeGroup {

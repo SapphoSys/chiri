@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import Loader2 from 'lucide-react/icons/loader-2';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ConnectionNoticeBanner } from '$components/ConnectionNoticeBanner';
+import { ServerTypeDescriptionBanner } from '$components/ServerTypeDescriptionBanner';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAddCalendar, useCreateAccount } from '$hooks/queries/useAccounts';
 import { useSyncQuery } from '$hooks/queries/useSync';
@@ -201,8 +202,10 @@ export const FastmailOAuthStep = forwardRef<FastmailOAuthStepHandle, FastmailOAu
           : null;
 
     return (
-      <div className="space-y-4 p-6">
+      <div className="space-y-4 p-4">
         <div className="space-y-1">
+          <ServerTypeDescriptionBanner serverType="fastmail" />
+
           <p className="text-sm text-surface-600 dark:text-surface-400">
             Chiri will open your browser to authorize with Fastmail. Once you approve access, you'll
             be returned here automatically.

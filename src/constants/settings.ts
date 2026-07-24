@@ -59,6 +59,8 @@ export const SERVER_TYPE_GROUPS: ServerTypeGroup[] = [
       {
         value: 'generic',
         label: 'Generic (auto-detect)',
+        description:
+          "Chiri will try to auto-discover your server's CalDAV URLs. Use this if your server is not listed.",
       },
     ],
   },
@@ -68,30 +70,51 @@ export const SERVER_TYPE_GROUPS: ServerTypeGroup[] = [
       {
         value: 'fastmail',
         label: 'Fastmail',
+        description:
+          'Fastmail is an independent, employee-owned email and calendar service from Australia, focused on privacy, security, and open standards.',
+        homepageUrl: 'https://fastmail.com',
       },
       {
         value: 'fruux',
         label: 'fruux',
+        description:
+          'fruux is a cross-platform sync service for contacts, calendars and tasks, built on SabreDAV.',
+        homepageUrl: 'https://fruux.com/',
       },
       {
         value: 'mailbox',
         label: 'Mailbox.org',
+        description:
+          'mailbox.org is a secure, German-hosted email and office suite with CalDAV/CardDAV support.',
+        homepageUrl: 'https://mailbox.org/en/',
       },
       {
         value: 'migadu',
         label: 'Migadu',
+        description:
+          'Migadu is a simple, privacy-friendly email hosting service for custom domains at a flat price.',
+        homepageUrl: 'https://migadu.com/',
       },
       {
         value: 'purelymail',
         label: 'Purelymail',
+        description:
+          'Purelymail is a cheap, no-frills email hosting service that lets you bring your own domain.',
+        homepageUrl: 'https://purelymail.com/',
       },
       {
         value: 'runbox',
         label: 'Runbox',
+        description:
+          'Runbox is a privacy-focused, sustainable email service hosted in Norway, also offering calendars and contacts.',
+        homepageUrl: 'https://runbox.com/',
       },
       {
         value: 'disrootCloud',
         label: 'Disroot Cloud',
+        description:
+          'Disroot is a volunteer-run platform from the Netherlands, providing privacy-respecting, open, and federated online services, including email, cloud storage, chat, and more.',
+        homepageUrl: 'https://disroot.org',
       },
     ],
   },
@@ -101,30 +124,49 @@ export const SERVER_TYPE_GROUPS: ServerTypeGroup[] = [
       {
         value: 'baikal',
         label: 'Baikal',
+        description:
+          'Baïkal is a lightweight, open-source CalDAV and CardDAV server built on SabreDAV.',
+        homepageUrl: 'https://github.com/sabre-io/Baikal',
       },
       {
         value: 'nextcloud',
         label: 'Nextcloud',
+        description:
+          'Nextcloud is a self-hosted cloud platform for files, calendars, contacts and tasks.',
+        homepageUrl: 'https://github.com/nextcloud/server',
       },
       {
         value: 'radicale',
         label: 'Radicale',
+        description:
+          'Radicale is a small but powerful CalDAV (calendars) and CardDAV (contacts) server.',
+        homepageUrl: 'https://github.com/Kozea/Radicale',
       },
       {
         value: 'rustical',
         label: 'RustiCal',
+        description:
+          'RustiCal is a lightweight, Rust-based CalDAV/CardDAV server. It ships as a single binary and aims to be adequately fast.',
+        homepageUrl: 'https://github.com/lennart-k/rustical/',
       },
       {
         value: 'stalwart',
         label: 'Stalwart',
+        description:
+          'Stalwart is a secure, scalable, all-in-one mail and collaboration server with CalDAV/CardDAV support.',
+        homepageUrl: 'https://stalw.art/',
       },
       {
         value: 'vikunja',
         label: 'Vikunja',
+        description: 'Vikunja is an open-source, self-hostable task and project management tool.',
+        homepageUrl: 'https://vikunja.io/',
       },
       {
         value: 'xandikos',
         label: 'Xandikos',
+        description: 'Xandikos is a lightweight, Git-backed CalDAV/CardDAV server.',
+        homepageUrl: 'https://github.com/jelmer/xandikos',
       },
     ],
   },

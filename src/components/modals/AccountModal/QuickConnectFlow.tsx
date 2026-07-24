@@ -3,6 +3,7 @@ import Loader2 from 'lucide-react/icons/loader-2';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { ComposedInput } from '$components/ComposedInput';
 import { ConnectionNoticeBanner } from '$components/ConnectionNoticeBanner';
+import { ServerTypeDescriptionBanner } from '$components/ServerTypeDescriptionBanner';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAddCalendar, useCreateAccount } from '$hooks/queries/useAccounts';
 import { useSyncQuery } from '$hooks/queries/useSync';
@@ -277,6 +278,8 @@ export const QuickConnectFlow = forwardRef<QuickConnectFlowHandle, QuickConnectF
 
     return (
       <div className="space-y-4 p-4">
+        <ServerTypeDescriptionBanner serverType={serverType} />
+
         <div>
           <label
             htmlFor="quick-connect-url"
