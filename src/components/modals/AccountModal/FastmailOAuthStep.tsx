@@ -44,10 +44,12 @@ export const FastmailOAuthStep = forwardRef<FastmailOAuthStepHandle, FastmailOAu
     const { syncAll } = useSyncQuery();
     const { enforceVapid } = useSettingsStore();
     const activeFlowRef = useRef<{ cancel: () => void } | null>(null);
+    const cancelledRef = useRef(false);
 
     const handleConnect = async () => {
       setError(null);
       setPhase('browser');
+      cancelledRef.current = false;
 
       let tokens: FastmailTokens;
       try {
@@ -55,6 +57,13 @@ export const FastmailOAuthStep = forwardRef<FastmailOAuthStepHandle, FastmailOAu
         activeFlowRef.current = flow;
         tokens = await flow.promise;
       } catch (e) {
+        if (cancelledRef.current) {
+          log.info('[FastmailOAuth] OAuth flow cancelled by user');
+          setPhase('idle');
+          cancelledRef.current = false;
+          return;
+        }
+
         log.error('[FastmailOAuth] OAuth flow failed:', e);
         setError(
           toCalDAVSetupError(
@@ -184,6 +193,7 @@ export const FastmailOAuthStep = forwardRef<FastmailOAuthStepHandle, FastmailOAu
     useImperativeHandle(ref, () => ({
       connect: handleConnect,
       cancel: () => {
+        cancelledRef.current = true;
         activeFlowRef.current?.cancel();
         activeFlowRef.current = null;
         setPhase('idle');

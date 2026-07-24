@@ -99,6 +99,14 @@ export const initiateNextcloudLogin = async (serverUrl: string) => {
       activePollingController = null;
     }
 
+    if (
+      error instanceof Error &&
+      (error.message === 'Login flow cancelled' || error.name === 'AbortError')
+    ) {
+      log.info('Nextcloud login flow cancelled by user');
+      throw error;
+    }
+
     log.error('Login flow failed', {
       message: errorMessage,
       stack: errorStack,

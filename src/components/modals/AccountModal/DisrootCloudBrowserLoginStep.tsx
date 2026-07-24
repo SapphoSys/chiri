@@ -1,5 +1,5 @@
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ConnectionNoticeBanner } from '$components/ConnectionNoticeBanner';
 import { BrowserAuthStep } from '$components/modals/AccountModal/BrowserAuthStep';
 import { ServerTypeDescriptionBanner } from '$components/ServerTypeDescriptionBanner';
@@ -40,6 +40,7 @@ export const DisrootCloudBrowserLoginStep = forwardRef<
   const addCalendarMutation = useAddCalendar();
   const { syncAll } = useSyncQuery();
   const { enforceVapid } = useSettingsStore();
+  const cancelledRef = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -50,6 +51,7 @@ export const DisrootCloudBrowserLoginStep = forwardRef<
   const handleConnect = async () => {
     setError(null);
     setPhase('browser');
+    cancelledRef.current = false;
 
     try {
       log.info('[DisrootCloudBrowserLogin] Starting Nextcloud login flow', {
@@ -113,6 +115,13 @@ export const DisrootCloudBrowserLoginStep = forwardRef<
 
       onSuccess();
     } catch (e) {
+      if (cancelledRef.current) {
+        log.info('[DisrootCloudBrowserLogin] Login cancelled by user');
+        setPhase('idle');
+        cancelledRef.current = false;
+        return;
+      }
+
       log.error('[DisrootCloudBrowserLogin] Login failed', { error: e });
       setError(
         toCalDAVSetupError(
@@ -138,6 +147,7 @@ export const DisrootCloudBrowserLoginStep = forwardRef<
 
   useImperativeHandle(ref, () => ({
     cancel: () => {
+      cancelledRef.current = true;
       cancelNextcloudLogin();
       setPhase('idle');
       setError(null);
