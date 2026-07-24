@@ -1,7 +1,7 @@
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import Loader2 from 'lucide-react/icons/loader-2';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { ConnectionNoticeBanner } from '$components/ConnectionNoticeBanner';
+import { BrowserAuthStep } from '$components/modals/AccountModal/BrowserAuthStep';
 import { ServerTypeDescriptionBanner } from '$components/ServerTypeDescriptionBanner';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAddCalendar, useCreateAccount } from '$hooks/queries/useAccounts';
@@ -18,11 +18,14 @@ const DISROOT_CLOUD_URL = 'https://cloud.disroot.org';
 
 export interface DisrootCloudBrowserLoginStepHandle {
   cancel: () => void;
+  connect: () => void;
+  getPhase: () => Phase;
 }
 
 interface DisrootCloudBrowserLoginStepProps {
   onSuccess: () => void;
   onSetupInProgressChange: (inProgress: boolean) => void;
+  onConnectStateChange?: (state: { disabled: boolean; loading: boolean }) => void;
 }
 
 type Phase = 'idle' | 'browser' | 'connecting' | 'done';
@@ -30,21 +33,13 @@ type Phase = 'idle' | 'browser' | 'connecting' | 'done';
 export const DisrootCloudBrowserLoginStep = forwardRef<
   DisrootCloudBrowserLoginStepHandle,
   DisrootCloudBrowserLoginStepProps
->(({ onSuccess, onSetupInProgressChange }, ref) => {
+>(({ onSuccess, onSetupInProgressChange, onConnectStateChange }, ref) => {
   const [phase, setPhase] = useState<Phase>('idle');
   const [error, setError] = useState<CalDAVSetupError | null>(null);
   const createAccountMutation = useCreateAccount();
   const addCalendarMutation = useAddCalendar();
   const { syncAll } = useSyncQuery();
   const { enforceVapid } = useSettingsStore();
-
-  useImperativeHandle(ref, () => ({
-    cancel: () => {
-      cancelNextcloudLogin();
-      setPhase('idle');
-      setError(null);
-    },
-  }));
 
   useEffect(() => {
     return () => {
@@ -137,22 +132,25 @@ export const DisrootCloudBrowserLoginStep = forwardRef<
     onSetupInProgressChange(isSetupInProgress);
   }, [isSetupInProgress, onSetupInProgressChange]);
 
-  const statusText =
-    phase === 'browser'
-      ? 'Waiting for authorization in browser…'
-      : phase === 'connecting'
-        ? 'Setting up account…'
-        : null;
+  useEffect(() => {
+    onConnectStateChange?.({ disabled: isLoading, loading: isLoading });
+  }, [isLoading, onConnectStateChange]);
+
+  useImperativeHandle(ref, () => ({
+    cancel: () => {
+      cancelNextcloudLogin();
+      setPhase('idle');
+      setError(null);
+    },
+    connect: handleConnect,
+    getPhase: () => phase,
+  }));
 
   return (
     <div className="space-y-4 p-4">
-      {<ServerTypeDescriptionBanner serverType="disrootCloud" />}
-      <div className="space-y-1">
-        <p className="text-sm text-surface-600 dark:text-surface-400">
-          Chiri will open your browser to authorize with Disroot Cloud. Once you approve access,
-          you'll be returned here automatically.
-        </p>
-      </div>
+      {phase === 'idle' && <ServerTypeDescriptionBanner serverType="disrootCloud" />}
+
+      <BrowserAuthStep providerName="Disroot Cloud" phase={phase} />
 
       {error && (
         <ConnectionNoticeBanner
@@ -162,28 +160,6 @@ export const DisrootCloudBrowserLoginStep = forwardRef<
           calendarCount={0}
           onDismiss={() => setError(null)}
         />
-      )}
-
-      <button
-        type="button"
-        onClick={handleConnect}
-        disabled={isLoading}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-500 px-4 py-3 font-semibold text-primary-contrast text-sm outline-none transition-colors hover:bg-primary-600 focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        {isLoading ? (
-          <>
-            <Loader2 className="h-4 w-4 motion-safe:animate-spin" />
-            {statusText}
-          </>
-        ) : (
-          'Connect with Disroot Cloud'
-        )}
-      </button>
-
-      {phase === 'browser' && (
-        <p className="text-center text-surface-500 text-xs dark:text-surface-400">
-          Complete authorization in your browser, then return here.
-        </p>
       )}
     </div>
   );

@@ -1,5 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import ArrowLeft from 'lucide-react/icons/arrow-left';
+import ArrowRight from 'lucide-react/icons/arrow-right';
 import CheckCircle from 'lucide-react/icons/check-circle';
 import Cloud from 'lucide-react/icons/cloud';
 import KeyRound from 'lucide-react/icons/key-round';
@@ -147,6 +148,14 @@ export function AccountModal({
     disabled: true,
     loading: false,
   });
+  const [fastmailOAuthButtonState, setFastmailOAuthButtonState] = useState({
+    disabled: false,
+    loading: false,
+  });
+  const [disrootCloudButtonState, setDisrootCloudButtonState] = useState({
+    disabled: false,
+    loading: false,
+  });
   const quickConnectRef = useRef<QuickConnectFlowHandle>(null);
   const fastmailRef = useRef<FastmailOAuthStepHandle>(null);
   const stalwartOAuthRef = useRef<StalwartOAuthStepHandle>(null);
@@ -211,6 +220,13 @@ export function AccountModal({
 
   const handleBackFromOAuth = () => {
     if (step === 'fastmail-oauth') {
+      const phase = fastmailRef.current?.getPhase();
+      if (phase !== 'idle') {
+        fastmailRef.current?.cancel();
+        setFastmailOAuthSetupInProgress(false);
+        setNavDirection('back');
+        return;
+      }
       fastmailRef.current?.cancel();
       setFastmailOAuthSetupInProgress(false);
     } else {
@@ -222,6 +238,13 @@ export function AccountModal({
   };
 
   const handleBackFromDisrootCloudBrowser = () => {
+    const phase = disrootRef.current?.getPhase();
+    if (phase !== 'idle') {
+      disrootRef.current?.cancel();
+      setDisrootCloudBrowserSetupInProgress(false);
+      setNavDirection('back');
+      return;
+    }
     disrootRef.current?.cancel();
     setDisrootCloudBrowserSetupInProgress(false);
     setNavDirection('back');
@@ -724,6 +747,7 @@ export function AccountModal({
             loading={quickConnectButtonState.loading}
           >
             Connect
+            <ArrowRight className="size-4" />
           </ModalButton>
         ) : step === 'stalwart-oauth' && stalwartOAuthLoginStep === 'input' ? (
           <ModalButton
@@ -732,6 +756,25 @@ export function AccountModal({
             loading={stalwartOAuthButtonState.loading}
           >
             Connect
+            <ArrowRight className="size-4" />
+          </ModalButton>
+        ) : step === 'fastmail-oauth' && !fastmailOAuthButtonState.disabled ? (
+          <ModalButton
+            onClick={() => fastmailRef.current?.connect()}
+            disabled={fastmailOAuthButtonState.disabled}
+            loading={fastmailOAuthButtonState.loading}
+          >
+            Connect
+            <ArrowRight className="size-4" />
+          </ModalButton>
+        ) : step === 'disrootCloud-browser' && !disrootCloudButtonState.disabled ? (
+          <ModalButton
+            onClick={() => disrootRef.current?.connect()}
+            disabled={disrootCloudButtonState.disabled}
+            loading={disrootCloudButtonState.loading}
+          >
+            Connect
+            <ArrowRight className="size-4" />
           </ModalButton>
         ) : step === 'credentials' ? (
           <>
@@ -848,6 +891,7 @@ export function AccountModal({
             ref={fastmailRef}
             onSuccess={onClose}
             onSetupInProgressChange={setFastmailOAuthSetupInProgress}
+            onConnectStateChange={setFastmailOAuthButtonState}
           />
         )}
 
@@ -868,6 +912,7 @@ export function AccountModal({
             ref={disrootRef}
             onSuccess={onClose}
             onSetupInProgressChange={setDisrootCloudBrowserSetupInProgress}
+            onConnectStateChange={setDisrootCloudButtonState}
           />
         )}
 

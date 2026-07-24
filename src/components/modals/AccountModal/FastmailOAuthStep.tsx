@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
-import Loader2 from 'lucide-react/icons/loader-2';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ConnectionNoticeBanner } from '$components/ConnectionNoticeBanner';
+import { BrowserAuthStep } from '$components/modals/AccountModal/BrowserAuthStep';
 import { ServerTypeDescriptionBanner } from '$components/ServerTypeDescriptionBanner';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAddCalendar, useCreateAccount } from '$hooks/queries/useAccounts';
@@ -23,17 +23,19 @@ const log = loggers.account;
 export interface FastmailOAuthStepHandle {
   connect: () => void;
   cancel: () => void;
+  getPhase: () => Phase;
 }
 
 interface FastmailOAuthStepProps {
   onSuccess: () => void;
   onSetupInProgressChange: (inProgress: boolean) => void;
+  onConnectStateChange?: (state: { disabled: boolean; loading: boolean }) => void;
 }
 
 type Phase = 'idle' | 'browser' | 'connecting' | 'done';
 
 export const FastmailOAuthStep = forwardRef<FastmailOAuthStepHandle, FastmailOAuthStepProps>(
-  ({ onSuccess, onSetupInProgressChange }, ref) => {
+  ({ onSuccess, onSetupInProgressChange, onConnectStateChange }, ref) => {
     const [phase, setPhase] = useState<Phase>('idle');
     const [error, setError] = useState<CalDAVSetupError | null>(null);
     const queryClient = useQueryClient();
@@ -184,7 +186,9 @@ export const FastmailOAuthStep = forwardRef<FastmailOAuthStepHandle, FastmailOAu
       cancel: () => {
         activeFlowRef.current?.cancel();
         activeFlowRef.current = null;
+        setPhase('idle');
       },
+      getPhase: () => phase,
     }));
 
     const isLoading = phase === 'browser' || phase === 'connecting';
@@ -194,23 +198,15 @@ export const FastmailOAuthStep = forwardRef<FastmailOAuthStepHandle, FastmailOAu
       onSetupInProgressChange(isSetupInProgress);
     }, [isSetupInProgress, onSetupInProgressChange]);
 
-    const statusText =
-      phase === 'browser'
-        ? 'Waiting for authorization in browser…'
-        : phase === 'connecting'
-          ? 'Setting up account…'
-          : null;
+    useEffect(() => {
+      onConnectStateChange?.({ disabled: isLoading, loading: isLoading });
+    }, [isLoading, onConnectStateChange]);
 
     return (
       <div className="space-y-4 p-4">
-        <div className="space-y-1">
-          <ServerTypeDescriptionBanner serverType="fastmail" />
+        {phase === 'idle' && <ServerTypeDescriptionBanner serverType="fastmail" />}
 
-          <p className="text-sm text-surface-600 dark:text-surface-400">
-            Chiri will open your browser to authorize with Fastmail. Once you approve access, you'll
-            be returned here automatically.
-          </p>
-        </div>
+        <BrowserAuthStep providerName="Fastmail" phase={phase} />
 
         {error && (
           <ConnectionNoticeBanner
@@ -220,28 +216,6 @@ export const FastmailOAuthStep = forwardRef<FastmailOAuthStepHandle, FastmailOAu
             calendarCount={0}
             onDismiss={() => setError(null)}
           />
-        )}
-
-        <button
-          type="button"
-          onClick={handleConnect}
-          disabled={isLoading}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-500 px-4 py-3 font-semibold text-primary-contrast text-sm outline-none transition-colors hover:bg-primary-600 focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="h-4 w-4 motion-safe:animate-spin" />
-              {statusText}
-            </>
-          ) : (
-            'Connect with Fastmail'
-          )}
-        </button>
-
-        {phase === 'browser' && (
-          <p className="text-center text-surface-500 text-xs dark:text-surface-400">
-            Complete authorization in your browser, then return here.
-          </p>
         )}
       </div>
     );
