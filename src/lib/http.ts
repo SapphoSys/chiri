@@ -1,5 +1,4 @@
 import { invoke } from '@tauri-apps/api/core';
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
 import {
   DEFAULT_HTTP_PROXY_PORT,
   DEFAULT_PROXY_HOST,
@@ -98,16 +97,6 @@ export const getNetworkProxyConfig = (): HttpProxyConfig => {
   return { mode: networkProxyMode };
 };
 
-const shouldUseRustHttp = (credentials: CalDAVCredentials, proxyConfig: HttpProxyConfig) => {
-  return (
-    credentials.acceptInvalidCerts ||
-    credentials.bearerToken ||
-    proxyConfig.mode === 'none' ||
-    proxyConfig.mode === 'http' ||
-    proxyConfig.mode === 'socks'
-  );
-};
-
 const getRequestHeaders = (
   credentials: CalDAVCredentials,
   headers: Record<string, string> | undefined,
@@ -136,34 +125,22 @@ const sendHttpRequest = async (
   requestHeaders: Record<string, string>,
   body?: string,
 ) => {
+  // route all CalDAV requests through the Rust command. the Tauri HTTP plugin
+  // uses a persistent cookie jar: Nextcloud's login flow stores session cookies,
+  // and sending them on subsequent DAV requests triggers SabreDAV's CSRF check
+  // ("CSRF check not passed"). using our own reqwest client per request avoids
+  // the cookie jar entirely.
   const proxyConfig = getNetworkProxyConfig();
 
-  if (shouldUseRustHttp(credentials, proxyConfig)) {
-    return invoke<HttpResponse>('http_request', {
-      url,
-      method,
-      headers: requestHeaders,
-      body: body ?? null,
-      acceptInvalidCerts: credentials.acceptInvalidCerts ?? false,
-      proxyConfig,
-      timeoutMs: REQUEST_TIMEOUT_MS,
-    });
-  }
-
-  const rawResponse = await tauriFetch(url, {
-    method: method,
+  return invoke<HttpResponse>('http_request', {
+    url,
+    method,
     headers: requestHeaders,
-    body: body,
-    maxRedirections: 0,
-    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    body: body ?? null,
+    acceptInvalidCerts: credentials.acceptInvalidCerts ?? false,
+    proxyConfig,
+    timeoutMs: REQUEST_TIMEOUT_MS,
   });
-  const responseBody = await rawResponse.text();
-  const headersObj: Record<string, string> = {};
-  rawResponse.headers.forEach((value, key) => {
-    headersObj[key] = value;
-  });
-
-  return { status: rawResponse.status, headers: headersObj, body: responseBody };
 };
 
 const getRedirectUrl = (response: HttpResponse, url: string) => {
@@ -284,10 +261,10 @@ export const tauriRequest = async (
 
   const requestHeaders = getRequestHeaders(credentials, headers, skipBasic, _allowAuth);
 
-  // route through the Rust command when:
-  //  - cert validation bypass is needed (self-signed / private CA), or
-  //  - bearer token auth is in use (WebView injects an Origin header that
-  //    some servers, including Fastmail, reject)
+  // CalDAV requests always go through the Rust command, which builds a fresh
+  // reqwest client per request and does not use a cookie jar. this prevents
+  // servers like Nextcloud from rejecting requests with "CSRF check not passed"
+  // because of stale session cookies left over from the login flow.
   const response = await sendHttpRequest(url, method, credentials, requestHeaders, body);
 
   if (!silent) log.debug(`Response: ${response.status}`);
