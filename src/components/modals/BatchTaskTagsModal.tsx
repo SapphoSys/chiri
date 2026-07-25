@@ -51,7 +51,9 @@ export const BatchTaskTagsModal = ({
   tasks,
   selectedTagIds = [],
   onSelectedTagIdsChange,
-  title = 'Edit Tags',
+  title = tasks && tasks.length > 0 && tasks.every((task) => (task.tags ?? []).length === 0)
+    ? 'Add Tags'
+    : 'Edit Tags',
   description,
 }: BatchTaskTagsModalProps) => {
   const [searchQuery, setSearchQuery] = useState('');
