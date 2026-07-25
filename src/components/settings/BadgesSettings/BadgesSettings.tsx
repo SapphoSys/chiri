@@ -70,7 +70,7 @@ const BADGES: BadgeConfig[] = [
   {
     key: 'repeat',
     label: 'Repeat',
-    description: 'Shown when a task has a recurrence rule',
+    description: 'Shown when a task has a repeat rule',
     icon: <RefreshCw className="h-4 w-4" />,
   },
   {

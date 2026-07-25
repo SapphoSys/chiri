@@ -28,7 +28,7 @@ export const TaskItemRepeatBadge = ({
 
   if (!onClick) {
     return (
-      <span title={`Repeats: ${fullSummary}`} className={className}>
+      <span title={`Repeat: ${fullSummary}`} className={className}>
         {content}
       </span>
     );
@@ -41,8 +41,8 @@ export const TaskItemRepeatBadge = ({
         event.stopPropagation();
         onClick(event);
       }}
-      title={`Repeats: ${fullSummary}`}
-      aria-label={`Edit repeat: ${fullSummary}`}
+      title={`Repeat: ${fullSummary}`}
+      aria-label={`Edit repeat rule: ${fullSummary}`}
       className={`${className} outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-700`}
     >
       {content}

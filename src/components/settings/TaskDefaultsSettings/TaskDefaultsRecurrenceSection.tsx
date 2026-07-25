@@ -23,7 +23,7 @@ export const TaskDefaultsRecurrenceSection = () => {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <h4 className="font-semibold text-sm text-surface-700 dark:text-surface-300">Recurrence</h4>
+        <h4 className="font-semibold text-sm text-surface-700 dark:text-surface-300">Repeat</h4>
         {hasChanged && (
           <button
             type="button"

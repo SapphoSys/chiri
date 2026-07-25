@@ -50,7 +50,7 @@ describe('TaskEditorRepeat', () => {
     });
 
     const addButton = Array.from(container.querySelectorAll('button')).find(
-      (button) => button.textContent?.trim() === 'Add repeat',
+      (button) => button.textContent?.trim() === 'Add repeat rule',
     );
     await act(async () => addButton?.click());
 
@@ -79,7 +79,7 @@ describe('TaskEditorRepeat', () => {
     });
 
     const addButton = Array.from(container.querySelectorAll('button')).find(
-      (button) => button.textContent?.trim() === 'Add repeat',
+      (button) => button.textContent?.trim() === 'Add repeat rule',
     );
     await act(async () => addButton?.click());
     const customButton = Array.from(container.querySelectorAll('[role="menuitem"]')).find(
@@ -111,7 +111,9 @@ describe('TaskEditorRepeat', () => {
     });
 
     expect(container.textContent).toContain('Then: Jan 29, 2025');
-    const removeButton = container.querySelector<HTMLButtonElement>('[aria-label="Remove repeat"]');
+    const removeButton = container.querySelector<HTMLButtonElement>(
+      '[aria-label="Remove repeat rule"]',
+    );
     await act(async () => removeButton?.click());
     expect(onClear).toHaveBeenCalledOnce();
   });

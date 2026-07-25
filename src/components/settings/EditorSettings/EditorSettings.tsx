@@ -52,7 +52,7 @@ const FIELDS: FieldConfig[] = [
   {
     key: 'repeat',
     label: 'Repeat',
-    description: 'Recurrence options for the task',
+    description: 'Repeat options for the task',
     icon: <RefreshCw className="h-4 w-4" />,
   },
   {

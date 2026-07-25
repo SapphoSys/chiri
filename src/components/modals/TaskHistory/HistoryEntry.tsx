@@ -38,7 +38,7 @@ const FIELD_LABELS: Record<string, string> = {
   parentUid: 'Parent task',
   url: 'URL',
   calendarId: 'Calendar',
-  rrule: 'Recurrence',
+  rrule: 'Repeat',
   repeatFrom: 'Repeat from',
   accountId: 'Account',
   subtask: 'Subtask',

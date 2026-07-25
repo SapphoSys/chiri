@@ -64,7 +64,7 @@ export const TaskEditorRepeat = ({
             onClick={onOpen}
             disabled={readOnly}
             aria-labelledby="repeat-label"
-            title={fullSummary ? `Repeats: ${fullSummary}` : undefined}
+            title={fullSummary ? `Repeat: ${fullSummary}` : undefined}
             className={`flex min-w-0 flex-1 items-center gap-3 px-3 py-2.5 text-left outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${readOnly ? 'cursor-not-allowed' : ''}`}
           >
             <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-200 text-surface-500 dark:bg-surface-700 dark:text-surface-300">
@@ -101,8 +101,8 @@ export const TaskEditorRepeat = ({
             <button
               type="button"
               onClick={onClear}
-              aria-label="Remove repeat"
-              title="Remove repeat"
+              aria-label="Remove repeat rule"
+              title="Remove repeat rule"
               className="flex w-9 shrink-0 items-center justify-center border-surface-200 border-l text-surface-400 opacity-0 outline-hidden transition-colors hover:bg-semantic-error/10 hover:text-semantic-error focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset group-hover:opacity-100 dark:border-surface-700"
             >
               <X className="h-4 w-4" />
@@ -111,7 +111,7 @@ export const TaskEditorRepeat = ({
         </div>
       ) : readOnly ? (
         <TaskEditorEmptyState icon={<RefreshCwOff className="h-4 w-4 shrink-0" />}>
-          No repeat
+          No repeat rule
         </TaskEditorEmptyState>
       ) : (
         <>
@@ -124,7 +124,7 @@ export const TaskEditorRepeat = ({
             className="inline-flex items-center gap-1 rounded-sm border border-surface-200 bg-surface-50 px-2 py-1 text-surface-500 text-xs outline-hidden transition-colors hover:border-surface-400 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400 dark:hover:border-surface-500"
           >
             <Plus className="h-3 w-3" />
-            Add repeat
+            Add repeat rule
           </button>
           {showPresets && (
             <RepeatPresetMenu

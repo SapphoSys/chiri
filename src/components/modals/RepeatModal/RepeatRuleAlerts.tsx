@@ -16,7 +16,7 @@ export const RepeatRuleAlerts = ({
       <div className="flex items-start gap-2 rounded-lg border border-semantic-warning/30 bg-semantic-warning/10 px-3 py-2 text-sm text-surface-700 dark:text-surface-300">
         <AlertTriangle className="mt-0.5 size-4 shrink-0 text-semantic-warning" />
         <div className="min-w-0 space-y-1">
-          <p className="font-medium text-semantic-warning">Preserved recurrence options</p>
+          <p className="font-medium text-semantic-warning">Preserved repeat options</p>
           <p className="text-xs">
             Chiri will keep {preservedKeys.join(', ')} unchanged. Interval and ending options can
             still be edited safely.
@@ -28,7 +28,7 @@ export const RepeatRuleAlerts = ({
       <div className="flex items-start gap-2 rounded-lg border border-semantic-error/30 bg-semantic-error/10 px-3 py-2 text-sm text-surface-700 dark:text-surface-300">
         <AlertTriangle className="mt-0.5 size-4 shrink-0 text-semantic-error" />
         <div className="min-w-0 space-y-1">
-          <p className="font-medium text-semantic-error">Unsafe imported recurrence</p>
+          <p className="font-medium text-semantic-error">Unsafe imported repeat rule</p>
           <p className="text-xs">
             Chiri cannot safely edit {invalidParts.join(', ')}. The original rule will remain
             unchanged unless it is cleared.
