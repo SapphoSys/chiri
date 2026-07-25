@@ -29,10 +29,16 @@ interface BatchTaskTagsModalProps {
   description?: ReactNode;
 }
 
-const getTagSelectionState = (tasks: Task[], tagId: string): TagSelectionState => {
+const getTagSelectionState = (
+  tasks: Task[],
+  pendingTaskTags: Map<string, string[]>,
+  tagId: string,
+): TagSelectionState => {
   if (tasks.length === 0) return 'none';
 
-  const taggedCount = tasks.filter((task) => (task.tags ?? []).includes(tagId)).length;
+  const taggedCount = tasks.filter((task) =>
+    (pendingTaskTags.get(task.id) ?? []).includes(tagId),
+  ).length;
   if (taggedCount === tasks.length) return 'all';
   if (taggedCount > 0) return 'some';
   return 'none';
@@ -50,6 +56,10 @@ export const BatchTaskTagsModal = ({
 }: BatchTaskTagsModalProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [createTagName, setCreateTagName] = useState<string | null>(null);
+  const [pendingSelectedTagIds, setPendingSelectedTagIds] = useState(selectedTagIds);
+  const [pendingTaskTags, setPendingTaskTags] = useState<Map<string, string[]>>(
+    () => new Map(tasks?.map((task) => [task.id, task.tags ?? []])),
+  );
   const batchUpdateTasksMutation = useBatchUpdateTasks();
   const resolveAccent = useAccentColorResolver();
   const resolvedAccentColor = useResolvedAccentColor();
@@ -72,56 +82,39 @@ export const BatchTaskTagsModal = ({
 
   const getSelectionState = (tagId: string): TagSelectionState => {
     if (tasks) {
-      return getTagSelectionState(tasks, tagId);
+      return getTagSelectionState(tasks, pendingTaskTags, tagId);
     }
 
-    return selectedTagIds.includes(tagId) ? 'all' : 'none';
+    return pendingSelectedTagIds.includes(tagId) ? 'all' : 'none';
   };
 
-  const updateTasksForTag = (tagId: string, shouldAddTag: boolean) => {
-    if (!tasks) return;
-
-    const updates = tasks.flatMap((task) => {
-      const currentTags = task.tags ?? [];
-      const nextTags = shouldAddTag
-        ? [...currentTags.filter((id) => id !== tagId), tagId]
-        : currentTags.filter((id) => id !== tagId);
-
-      if (
-        nextTags.length === currentTags.length &&
-        nextTags.every((id) => currentTags.includes(id))
-      ) {
-        return [];
+  const updatePendingTaskTags = (tagId: string, shouldAddTag: boolean) => {
+    setPendingTaskTags((current) => {
+      const next = new Map(current);
+      for (const task of tasks ?? []) {
+        const currentTags = next.get(task.id) ?? [];
+        const nextTags = shouldAddTag
+          ? [...currentTags.filter((id) => id !== tagId), tagId]
+          : currentTags.filter((id) => id !== tagId);
+        next.set(task.id, nextTags);
       }
-
-      return [{ id: task.id, updates: { tags: nextTags } }];
+      return next;
     });
-
-    if (updates.length > 0) {
-      batchUpdateTasksMutation.mutate(updates);
-    }
   };
 
-  const updateSelectedTagIds = (tagId: string, shouldAddTag: boolean) => {
-    const nextTagIds = shouldAddTag
-      ? [...selectedTagIds.filter((id) => id !== tagId), tagId]
-      : selectedTagIds.filter((id) => id !== tagId);
-
-    if (
-      nextTagIds.length === selectedTagIds.length &&
-      nextTagIds.every((id) => selectedTagIds.includes(id))
-    ) {
-      return;
-    }
-
-    onSelectedTagIdsChange?.(nextTagIds);
+  const updatePendingSelectedTagIds = (tagId: string, shouldAddTag: boolean) => {
+    setPendingSelectedTagIds((current) =>
+      shouldAddTag
+        ? [...current.filter((id) => id !== tagId), tagId]
+        : current.filter((id) => id !== tagId),
+    );
   };
 
   const updateTagSelection = (tagId: string, shouldAddTag: boolean) => {
     if (onSelectedTagIdsChange) {
-      updateSelectedTagIds(tagId, shouldAddTag);
+      updatePendingSelectedTagIds(tagId, shouldAddTag);
     } else {
-      updateTasksForTag(tagId, shouldAddTag);
+      updatePendingTaskTags(tagId, shouldAddTag);
     }
   };
 
@@ -139,20 +132,62 @@ export const BatchTaskTagsModal = ({
     setSearchQuery('');
   };
 
+  const handleDone = () => {
+    if (tasks) {
+      const updates = tasks.flatMap((task) => {
+        const originalTags = task.tags ?? [];
+        const nextTags = pendingTaskTags.get(task.id) ?? [];
+
+        if (
+          nextTags.length === originalTags.length &&
+          nextTags.every((id) => originalTags.includes(id))
+        ) {
+          return [];
+        }
+
+        return [{ id: task.id, updates: { tags: nextTags } }];
+      });
+
+      if (updates.length > 0) {
+        batchUpdateTasksMutation.mutate(updates);
+      }
+    } else {
+      const hasChanges =
+        pendingSelectedTagIds.length !== selectedTagIds.length ||
+        !pendingSelectedTagIds.every((id) => selectedTagIds.includes(id));
+      if (hasChanges) {
+        onSelectedTagIdsChange?.(pendingSelectedTagIds);
+      }
+    }
+
+    onClose();
+  };
+
+  const handleCancel = () => {
+    setPendingSelectedTagIds(selectedTagIds);
+    setPendingTaskTags(new Map(tasks?.map((task) => [task.id, task.tags ?? []])));
+    onClose();
+  };
+
   return (
     <>
       <ModalWrapper
         isOpen={isOpen && createTagName === null}
-        onClose={onClose}
+        onClose={handleCancel}
         title={title}
         description={modalDescription}
         zIndex="z-60"
         className="max-w-sm"
         contentPadding={false}
         footer={
-          <ModalButton variant="primary" onClick={onClose}>
-            Done
-          </ModalButton>
+          <>
+            <ModalButton variant="secondary" onClick={handleCancel}>
+              Cancel
+            </ModalButton>
+            <ModalButton variant="primary" onClick={handleDone}>
+              Done
+            </ModalButton>
+          </>
         }
       >
         <div className="p-4 pb-3">
