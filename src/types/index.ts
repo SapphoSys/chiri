@@ -123,6 +123,10 @@ export type ServerType =
   | 'vikunja'
   | 'xandikos';
 
+export type ServerValidationResult =
+  | { ok: true }
+  | { ok: false; reason: 'timeout' | 'unreachable' };
+
 export interface CalDAVConfig {
   serverUrl: string;
   username: string;

@@ -3,10 +3,24 @@ import Loader2 from 'lucide-react/icons/loader-2';
 
 interface BrowserAuthStepProps {
   providerName: string;
-  phase: 'idle' | 'browser' | 'connecting' | 'done';
+  phase: 'idle' | 'validating' | 'browser' | 'connecting' | 'done';
 }
 
 export const BrowserAuthStep = ({ providerName, phase }: BrowserAuthStepProps) => {
+  if (phase === 'validating') {
+    return (
+      <div className="py-8 text-center">
+        <Loader2 className="mx-auto mb-3 h-10 w-10 text-primary-500 motion-safe:animate-spin" />
+        <h3 className="mb-1 font-medium text-base text-surface-800 dark:text-surface-200">
+          Validating server...
+        </h3>
+        <p className="text-sm text-surface-500 dark:text-surface-400">
+          Checking that {providerName} is reachable
+        </p>
+      </div>
+    );
+  }
+
   if (phase === 'browser') {
     return (
       <div className="py-8 text-center">

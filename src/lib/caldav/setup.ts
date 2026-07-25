@@ -15,6 +15,18 @@ export interface CalDAVSetupNotice {
   message: string;
 }
 
+const HTML_TAG_RE = /<[^>]+>/g;
+const WHITESPACE_RE = /\s+/g;
+
+const stripHtmlTags = (value: string): string =>
+  value.replace(HTML_TAG_RE, ' ').replace(WHITESPACE_RE, ' ').trim();
+
+const isErrorLike = (value: unknown): value is { message: string } =>
+  value !== null &&
+  typeof value === 'object' &&
+  'message' in value &&
+  typeof value.message === 'string';
+
 const HTTP_STATUS_RE = /HTTP\s+(\d{3})/i;
 const VTODO_CREATION_UNSUPPORTED_PREFIX =
   'VTODO calendar creation is not supported. Chiri connected to the account, but could not create a task calendar.';
@@ -249,11 +261,26 @@ export const toCalDAVSetupError = (
   title: string,
   error: unknown,
   hint?: string,
-): CalDAVSetupError => ({
-  title,
-  message:
+): CalDAVSetupError => {
+  if (isErrorLike(error)) {
+    return {
+      title,
+      message: stripHtmlTags(error.message),
+      hint: hint ?? ('hint' in error && typeof error.hint === 'string' ? error.hint : undefined),
+      detail: 'detail' in error && typeof error.detail === 'string' ? error.detail : undefined,
+    };
+  }
+
+  const raw =
     error instanceof Error
       ? error.message
-      : String(error) || 'An unexpected error occurred. Please try again.',
-  hint,
-});
+      : typeof error === 'string'
+        ? error
+        : String(error) || 'An unexpected error occurred. Please try again.';
+  const cleaned = stripHtmlTags(raw);
+  return {
+    title,
+    message: cleaned || 'An unexpected error occurred. Please try again.',
+    hint,
+  };
+};

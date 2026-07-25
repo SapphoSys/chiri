@@ -229,7 +229,14 @@ export function AccountModal({
       }
       fastmailRef.current?.cancel();
       setFastmailOAuthSetupInProgress(false);
-    } else {
+    } else if (step === 'stalwart-oauth') {
+      const phase = stalwartOAuthRef.current?.getPhase();
+      if (phase !== 'idle') {
+        stalwartOAuthRef.current?.cancel();
+        setStalwartOAuthLoginStep('input');
+        setNavDirection('back');
+        return;
+      }
       stalwartOAuthRef.current?.cancel();
       setStalwartOAuthLoginStep('input');
     }
@@ -259,6 +266,12 @@ export function AccountModal({
   };
 
   const handleBackFromQuickConnect = () => {
+    if (quickConnectLoginStep !== 'input') {
+      quickConnectRef.current?.cancel();
+      setQuickConnectLoginStep('input');
+      setNavDirection('back');
+      return;
+    }
     quickConnectRef.current?.cancel();
     setQuickConnectLoginStep('input');
     setNavDirection('back');
@@ -887,14 +900,12 @@ export function AccountModal({
               </div>
               <div className="min-w-0">
                 <div className="font-semibold text-sm text-surface-800 dark:text-surface-200">
-                  {serverType === 'stalwart'
-                    ? 'Login via server URL'
-                    : OAUTH_SERVER_TYPES[serverType] || BROWSER_LOGIN_SERVER_TYPES[serverType]
-                      ? 'Log in with OAuth'
-                      : 'Login via server URL'}
+                  Log in with your browser
                 </div>
                 <div className="mt-0.5 text-surface-500 text-xs dark:text-surface-400">
-                  Authenticate through your browser
+                  {serverType === 'stalwart' || QUICK_CONNECT_SERVER_TYPES[serverType]
+                    ? 'Enter your server URL and authenticate through your browser'
+                    : 'Authenticate through your browser'}
                 </div>
               </div>
             </button>

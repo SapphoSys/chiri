@@ -1,13 +1,12 @@
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import Loader2 from 'lucide-react/icons/loader-2';
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { ComposedInput } from '$components/ComposedInput';
-import { ConnectionNoticeBanner } from '$components/ConnectionNoticeBanner';
-import { ServerTypeDescriptionBanner } from '$components/ServerTypeDescriptionBanner';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import {
+  BrowserAuthFlow,
+  type BrowserAuthFlowHandle,
+} from '$components/modals/AccountModal/BrowserAuthFlow';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAddCalendar, useCreateAccount } from '$hooks/queries/useAccounts';
 import { useSyncQuery } from '$hooks/queries/useSync';
-import { useInitialFocusRef } from '$hooks/ui/useInitialFocusRef';
 import {
   cancelNextcloudLogin,
   initiateNextcloudLogin,
@@ -16,8 +15,7 @@ import {
 } from '$lib/auth/nextcloud';
 import { normalizeRusticalUrl, validateRusticalServer } from '$lib/auth/rustical';
 import { CalDAVClient } from '$lib/caldav';
-import { type CalDAVSetupError, toCalDAVSetupError } from '$lib/caldav/setup';
-import { hasHttpUrlScheme } from '$lib/caldav/utils';
+import { toCalDAVSetupError } from '$lib/caldav/setup';
 import { loggers } from '$lib/logger';
 import { generateUUID } from '$utils/misc';
 
@@ -42,7 +40,6 @@ const CONFIG = {
     label: 'Nextcloud',
     urlLabel: 'Nextcloud Server URL',
     urlPlaceholder: 'https://cloud.example.com',
-    spinnerColor: 'text-primary-500',
     normalize: normalizeNextcloudUrl,
     validate: validateNextcloudServer,
     syncSource: 'account-setup-nextcloud' as const,
@@ -53,7 +50,6 @@ const CONFIG = {
     label: 'RustiCal',
     urlLabel: 'RustiCal Server URL',
     urlPlaceholder: 'https://rust.example.com',
-    spinnerColor: 'text-primary-500',
     normalize: normalizeRusticalUrl,
     validate: validateRusticalServer,
     syncSource: 'account-setup-rustical' as const,
@@ -65,29 +61,12 @@ const CONFIG = {
 export const QuickConnectFlow = forwardRef<QuickConnectFlowHandle, QuickConnectFlowProps>(
   ({ serverType, onSuccess, onStepChange, onConnectStateChange }, ref) => {
     const [serverUrl, setServerUrl] = useState('');
-    const [isValidating, setIsValidating] = useState(false);
-    const [isLoggingIn, setIsLoggingIn] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [error, setError] = useState<CalDAVSetupError | null>(null);
-    const [loginStep, setLoginStep] = useState<QuickConnectLoginStep>('input');
-
+    const flowRef = useRef<BrowserAuthFlowHandle>(null);
     const createAccountMutation = useCreateAccount();
     const addCalendarMutation = useAddCalendar();
     const { syncAll } = useSyncQuery();
     const { enforceVapid } = useSettingsStore();
-
     const config = CONFIG[serverType];
-    const isLoading = isValidating || isLoggingIn || isProcessing;
-    const serverUrlInputRef = useInitialFocusRef<HTMLInputElement>();
-
-    const updateStep = (s: QuickConnectLoginStep) => {
-      setLoginStep(s);
-      onStepChange(s);
-    };
-
-    useEffect(() => {
-      onConnectStateChange({ disabled: isLoading || !serverUrl.trim(), loading: isLoading });
-    }, [isLoading, onConnectStateChange, serverUrl]);
 
     useEffect(() => {
       return () => {
@@ -95,86 +74,60 @@ export const QuickConnectFlow = forwardRef<QuickConnectFlowHandle, QuickConnectF
       };
     }, []);
 
-    const showLoginError = (err: unknown) => {
-      if (!(err instanceof Error)) {
-        setError(
-          toCalDAVSetupError('Login failed', 'An unexpected error occurred. Please try again.'),
+    const validateServerUrl = async (rawUrl: string, signal: AbortSignal) => {
+      const normalizedUrl = config.normalize(rawUrl);
+      log.info(`Validating ${config.label} server`, { url: normalizedUrl });
+
+      const result = await config.validate(normalizedUrl, signal);
+      if (signal.aborted) {
+        return;
+      }
+
+      if (!result.ok) {
+        if (result.reason === 'timeout') {
+          throw toCalDAVSetupError(
+            `Could not connect to ${config.label}`,
+            `The connection to ${config.label} timed out.`,
+          );
+        }
+
+        throw toCalDAVSetupError(
+          `Could not connect to ${config.label}`,
+          `Chiri could not reach the ${config.label} server.`,
         );
-        return;
       }
-
-      if (err.message.includes('timed out')) {
-        setError(
-          toCalDAVSetupError(
-            'Login timed out',
-            'Please try again and complete the authentication within 20 minutes.',
-          ),
-        );
-        return;
-      }
-
-      if (err.message.includes('cancelled')) {
-        setError(toCalDAVSetupError('Login cancelled', 'The login was cancelled.'));
-        return;
-      }
-
-      setError(
-        toCalDAVSetupError(
-          'Login failed',
-          err,
-          'Verify the server URL and that the server is reachable.',
-        ),
-      );
     };
 
-    const handleConnect = async () => {
-      if (!serverUrl.trim()) {
-        setError(
-          toCalDAVSetupError(
-            'Server URL required',
-            `Please enter your ${config.label} server URL.`,
-          ),
-        );
-        return;
-      }
+    const startFlow = async ({
+      serverUrl: rawUrl,
+      signal,
+      setPhase,
+    }: {
+      serverUrl: string;
+      signal: AbortSignal;
+      setPhase: (phase: 'browser' | 'connecting') => void;
+    }) => {
+      const normalizedUrl = config.normalize(rawUrl);
+      const loginUrl =
+        serverType === 'rustical' ? normalizeNextcloudUrl(normalizedUrl) : normalizedUrl;
 
-      if (!hasHttpUrlScheme(serverUrl)) {
-        setError(
-          toCalDAVSetupError(
-            'Invalid server URL',
-            'Server URL must start with http:// or https://.',
-          ),
-        );
-        return;
-      }
-
-      setError(null);
-      setIsValidating(true);
+      const onAbort = () => {
+        cancelNextcloudLogin();
+      };
+      signal.addEventListener('abort', onAbort);
 
       try {
-        const normalizedUrl = config.normalize(serverUrl);
-        log.info(`Validating ${config.label} server`, { url: normalizedUrl });
-
-        const isValid = await config.validate(normalizedUrl);
-        if (!isValid) {
-          setError(
-            toCalDAVSetupError(
-              `Could not connect to ${config.label}`,
-              `Chiri could not reach the ${config.label} server. Please check the URL and try again.`,
-            ),
-          );
-          setIsValidating(false);
-          return;
+        if (signal.aborted) {
+          throw new DOMException('Login flow cancelled', 'AbortError');
         }
 
         log.info('Server validated, starting login flow');
-        setIsValidating(false);
-        setIsLoggingIn(true);
-        updateStep('authenticating');
-
-        const loginUrl =
-          serverType === 'rustical' ? normalizeNextcloudUrl(normalizedUrl) : normalizedUrl;
+        setPhase('browser');
         const credentials = await initiateNextcloudLogin(loginUrl);
+
+        if (signal.aborted) {
+          throw new DOMException('Login flow cancelled', 'AbortError');
+        }
 
         log.info('Login credentials received, setting up account');
 
@@ -184,9 +137,7 @@ export const QuickConnectFlow = forwardRef<QuickConnectFlowHandle, QuickConnectF
           log.warn('Failed to focus window after authentication', { error: err });
         }
 
-        setIsLoggingIn(false);
-        setIsProcessing(true);
-        updateStep('processing');
+        setPhase('connecting');
 
         const accountId = generateUUID();
         await CalDAVClient.connect(
@@ -223,99 +174,50 @@ export const QuickConnectFlow = forwardRef<QuickConnectFlowHandle, QuickConnectF
           reason: config.syncReason,
           where: config.syncWhere,
         });
-
-        onSuccess();
-      } catch (err) {
-        log.error(`${config.label} login failed`, { error: err });
-        setIsValidating(false);
-        setIsLoggingIn(false);
-        setIsProcessing(false);
-        updateStep('input');
-        showLoginError(err);
+      } catch (e) {
+        if (
+          signal.aborted ||
+          (e instanceof Error && e.message.toLowerCase().includes('cancelled'))
+        ) {
+          throw new DOMException('Login flow cancelled', 'AbortError');
+        }
+        throw e;
+      } finally {
+        signal.removeEventListener('abort', onAbort);
       }
     };
 
     useImperativeHandle(ref, () => ({
-      connect: handleConnect,
-      cancel: () => {
-        cancelNextcloudLogin();
-        setIsValidating(false);
-        setIsLoggingIn(false);
-        setIsProcessing(false);
-        updateStep('input');
-      },
+      connect: () => flowRef.current?.connect(),
+      cancel: () => flowRef.current?.cancel(),
     }));
 
-    if (loginStep === 'authenticating') {
-      return (
-        <div className="py-8 text-center">
-          <Loader2
-            className={`mx-auto mb-3 h-10 w-10 motion-safe:animate-spin ${config.spinnerColor}`}
-          />
-          <h3 className="mb-1 font-medium text-base text-surface-800 dark:text-surface-200">
-            Waiting for authentication...
-          </h3>
-          <p className="text-sm text-surface-500 dark:text-surface-400">
-            Complete the login in your browser
-          </p>
-        </div>
-      );
-    }
-
-    if (loginStep === 'processing') {
-      return (
-        <div className="py-8 text-center">
-          <Loader2
-            className={`mx-auto mb-3 h-10 w-10 motion-safe:animate-spin ${config.spinnerColor}`}
-          />
-          <h3 className="mb-1 font-medium text-base text-surface-800 dark:text-surface-200">
-            Setting up your account...
-          </h3>
-          <p className="text-sm text-surface-500 dark:text-surface-400">Importing calendars</p>
-        </div>
-      );
-    }
-
     return (
-      <div className="space-y-4 p-4">
-        <ServerTypeDescriptionBanner serverType={serverType} />
-
-        <div>
-          <label
-            htmlFor="quick-connect-url"
-            className="mb-1 block font-medium text-sm text-surface-700 dark:text-surface-300"
-          >
-            {config.urlLabel}
-          </label>
-          <ComposedInput
-            id="quick-connect-url"
-            ref={serverUrlInputRef}
-            type="text"
-            placeholder={config.urlPlaceholder}
-            value={serverUrl}
-            onChange={setServerUrl}
-            disabled={isLoading}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !isLoading && serverUrl.trim()) handleConnect();
-            }}
-            className="w-full rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
-          />
-          <p className="mt-1.5 text-surface-500 text-xs dark:text-surface-400">
-            Your browser will open for authentication
-          </p>
-        </div>
-
-        {error && (
-          <ConnectionNoticeBanner
-            success={false}
-            error={error}
-            notice={null}
-            calendarCount={0}
-            onDismiss={() => setError(null)}
-          />
-        )}
-      </div>
+      <BrowserAuthFlow
+        ref={flowRef}
+        providerName={config.label}
+        serverType={serverType}
+        requiresServerUrl
+        urlLabel={config.urlLabel}
+        urlPlaceholder={config.urlPlaceholder}
+        urlValue={serverUrl}
+        onUrlChange={setServerUrl}
+        validateServerUrl={validateServerUrl}
+        startFlow={startFlow}
+        onSuccess={onSuccess}
+        onPhaseChange={(phase) => {
+          onStepChange(
+            phase === 'idle'
+              ? 'input'
+              : phase === 'connecting' || phase === 'done'
+                ? 'processing'
+                : 'authenticating',
+          );
+        }}
+        onConnectStateChange={onConnectStateChange}
+      />
     );
   },
 );
+
 QuickConnectFlow.displayName = 'QuickConnectFlow';

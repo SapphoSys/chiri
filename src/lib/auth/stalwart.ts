@@ -23,8 +23,11 @@ import {
 import { registerDeepLinkHandler, unregisterDeepLinkHandler } from '$lib/deepLink';
 import type { HttpResponse } from '$lib/http';
 import { loggers } from '$lib/logger';
+import type { ServerValidationResult } from '$types';
 
 const log = loggers.account;
+const STALWART_VALIDATION_TIMEOUT_MS = 10_000;
+const STALWART_REQUEST_TIMEOUT_MS = 15_000;
 
 export const STALWART_REDIRECT_URI = 'garden.chiri:/oauth/stalwart';
 export const STALWART_SCOPE = 'openid offline_access urn:ietf:params:oauth:scope:calendars';
@@ -54,31 +57,170 @@ interface ClientRegistrationResponse {
 
 const normalizeServerUrl = (serverUrl: string): string => serverUrl.trim().replace(/\/$/, '');
 
+const MAX_REDIRECTS = 5;
+const REDIRECT_STATUS_CODES = new Set([301, 302, 303, 307, 308]);
+
+const HTTP_STATUS_TEXT: Record<number, string> = {
+  301: 'Moved Permanently',
+  302: 'Found',
+  303: 'See Other',
+  307: 'Temporary Redirect',
+  308: 'Permanent Redirect',
+  400: 'Bad Request',
+  401: 'Unauthorized',
+  403: 'Forbidden',
+  404: 'Not Found',
+  500: 'Internal Server Error',
+  502: 'Bad Gateway',
+  503: 'Service Unavailable',
+  504: 'Gateway Timeout',
+};
+
+const isHtmlResponse = (body: string): boolean =>
+  body.trim().length > 0 && body.trimStart().startsWith('<');
+
+const formatStalwartHttpError = (context: string, response: HttpResponse): string => {
+  const statusText = HTTP_STATUS_TEXT[response.status] ?? '';
+  const status = `${response.status}${statusText ? ` (${statusText})` : ''}`;
+
+  if (response.status === 404) {
+    return `${context}: the server responded with ${status}. Make sure you selected the correct server type and URL.`;
+  }
+
+  if (isHtmlResponse(response.body)) {
+    return `${context}: the server responded with ${status} and returned an HTML page instead of the expected JSON metadata.`;
+  }
+
+  const body = response.body.trim();
+  if (!body) {
+    return `${context}: the server responded with ${status}.`;
+  }
+
+  const snippet = body.length > 200 ? `${body.slice(0, 200)}…` : body;
+  return `${context}: the server responded with ${status}: ${snippet}`;
+};
+
+const getStalwartRedirectUrl = (response: HttpResponse, url: string): string => {
+  const location = response.headers.location ?? response.headers.Location;
+  if (!location) {
+    throw new Error(
+      formatStalwartHttpError('Failed to discover Stalwart OAuth endpoints', response),
+    );
+  }
+
+  const originalUrl = new URL(url);
+  const redirectUrl = new URL(location, url);
+  if (!['http:', 'https:'].includes(redirectUrl.protocol)) {
+    throw new Error(`Refusing redirect to unsupported protocol ${redirectUrl.protocol}.`);
+  }
+
+  if (
+    originalUrl.protocol === 'https:' &&
+    redirectUrl.protocol === 'http:' &&
+    redirectUrl.hostname === originalUrl.hostname
+  ) {
+    redirectUrl.protocol = 'https:';
+  }
+
+  return redirectUrl.toString();
+};
+
 export const discoverStalwartOAuthEndpoints = async (
   serverUrl: string,
   acceptInvalidCerts = false,
+  signal?: AbortSignal,
 ): Promise<OAuthMetadata> => {
   const base = normalizeServerUrl(serverUrl);
-  const metadataUrl = `${base}/.well-known/openid-configuration`;
+  let requestUrl = `${base}/.well-known/openid-configuration`;
 
-  const res = await invoke<HttpResponse>('http_request', {
-    url: metadataUrl,
-    method: 'GET',
-    headers: { Accept: 'application/json' },
-    body: undefined,
-    acceptInvalidCerts,
+  for (let attempt = 0; attempt <= MAX_REDIRECTS; attempt++) {
+    if (signal?.aborted) {
+      throw new DOMException('Stalwart OAuth discovery was aborted', 'AbortError');
+    }
+
+    const res = await invoke<HttpResponse>('http_request', {
+      url: requestUrl,
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      body: undefined,
+      acceptInvalidCerts,
+      timeoutMs: STALWART_REQUEST_TIMEOUT_MS,
+    });
+
+    if (signal?.aborted) {
+      throw new DOMException('Stalwart OAuth discovery was aborted', 'AbortError');
+    }
+
+    if (REDIRECT_STATUS_CODES.has(res.status)) {
+      if (attempt === MAX_REDIRECTS) {
+        throw new Error('Failed to discover Stalwart OAuth endpoints: too many redirects.');
+      }
+      requestUrl = getStalwartRedirectUrl(res, requestUrl);
+      continue;
+    }
+
+    if (res.status < 200 || res.status >= 300) {
+      throw new Error(formatStalwartHttpError('Failed to discover Stalwart OAuth endpoints', res));
+    }
+
+    const metadata = JSON.parse(res.body) as OAuthMetadata;
+    if (!metadata.authorization_endpoint || !metadata.token_endpoint) {
+      throw new Error(
+        'Stalwart OAuth metadata is missing authorization_endpoint or token_endpoint',
+      );
+    }
+
+    return metadata;
+  }
+
+  throw new Error('Failed to discover Stalwart OAuth endpoints: too many redirects.');
+};
+
+/**
+ * validates that the provided URL is a Stalwart server by attempting to
+ * discover its OIDC/OAuth endpoints.
+ */
+export const validateStalwartServer = async (
+  serverUrl: string,
+  signal?: AbortSignal,
+  acceptInvalidCerts = false,
+): Promise<ServerValidationResult> => {
+  const timeout = new Promise<never>((_, reject) => {
+    const id = setTimeout(
+      () => reject(new DOMException('Stalwart validation timed out', 'TimeoutError')),
+      STALWART_VALIDATION_TIMEOUT_MS,
+    );
+    signal?.addEventListener('abort', () => {
+      clearTimeout(id);
+      reject(new DOMException('Stalwart validation was aborted', 'AbortError'));
+    });
   });
 
-  if (res.status < 200 || res.status >= 300) {
-    throw new Error(`Failed to discover Stalwart OAuth endpoints (${res.status}): ${res.body}`);
-  }
+  try {
+    await Promise.race([
+      discoverStalwartOAuthEndpoints(serverUrl, acceptInvalidCerts, signal),
+      timeout,
+    ]);
+    return { ok: true };
+  } catch (error) {
+    if (signal?.aborted) {
+      return { ok: false, reason: 'unreachable' };
+    }
 
-  const metadata = JSON.parse(res.body) as OAuthMetadata;
-  if (!metadata.authorization_endpoint || !metadata.token_endpoint) {
-    throw new Error('Stalwart OAuth metadata is missing authorization_endpoint or token_endpoint');
-  }
+    if (
+      error instanceof DOMException &&
+      (error.name === 'TimeoutError' || error.name === 'AbortError')
+    ) {
+      return { ok: false, reason: 'timeout' };
+    }
 
-  return metadata;
+    if (error instanceof Error && error.message.toLowerCase().includes('timeout')) {
+      return { ok: false, reason: 'timeout' };
+    }
+
+    log.debug('Stalwart server validation failed', { error, url: serverUrl });
+    return { ok: false, reason: 'unreachable' };
+  }
 };
 
 export const registerStalwartOAuthClient = async (
@@ -98,6 +240,7 @@ export const registerStalwartOAuthClient = async (
       scope: STALWART_SCOPE,
     }),
     acceptInvalidCerts,
+    timeoutMs: STALWART_REQUEST_TIMEOUT_MS,
   });
 
   if (res.status < 200 || res.status >= 300) {
@@ -226,6 +369,7 @@ const exchangeStalwartCode = async (
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: body.toString(),
     acceptInvalidCerts,
+    timeoutMs: STALWART_REQUEST_TIMEOUT_MS,
   });
 
   assertTokenResponseOk(res, 'Token exchange');
@@ -257,6 +401,7 @@ export const refreshStalwartToken = async (
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: body.toString(),
     acceptInvalidCerts,
+    timeoutMs: STALWART_REQUEST_TIMEOUT_MS,
   });
 
   assertTokenResponseOk(res, 'Token refresh');

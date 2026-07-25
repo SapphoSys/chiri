@@ -1,6 +1,7 @@
 import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
 import { hasHttpUrlScheme } from '$lib/caldav/utils';
 import { loggers } from '$lib/logger';
+import type { ServerValidationResult } from '$types';
 
 const log = loggers.http;
 
@@ -22,19 +23,32 @@ export const normalizeRusticalUrl = (url: string) => {
  * @param serverUrl The RustiCal server URL
  * @returns Promise that resolves to true if it's a valid RustiCal server
  */
-export const validateRusticalServer = async (serverUrl: string) => {
+export const validateRusticalServer = async (
+  serverUrl: string,
+  signal?: AbortSignal,
+  timeoutMs = 15_000,
+): Promise<ServerValidationResult> => {
   const normalizedUrl = normalizeRusticalUrl(serverUrl);
+  const controller = new AbortController();
+  let timedOut = false;
+  const timeoutId = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeoutMs);
+  const onParentAbort = () => controller.abort();
+  signal?.addEventListener('abort', onParentAbort);
 
   try {
     log.debug('Validating RustiCal server', { url: normalizedUrl });
 
     const response = await tauriFetch(`${normalizedUrl}/ping`, {
       method: 'GET',
+      signal: controller.signal,
     });
 
     if (!response.ok) {
       log.debug('Ping endpoint returned non-200 status', { status: response.status });
-      return false;
+      return { ok: false, reason: 'unreachable' };
     }
 
     const text = await response.text();
@@ -48,9 +62,20 @@ export const validateRusticalServer = async (serverUrl: string) => {
       log.debug('Server responded but not with expected Pong message', { response: text });
     }
 
-    return isRustical;
+    return isRustical ? { ok: true } : { ok: false, reason: 'unreachable' };
   } catch (error) {
+    if (signal?.aborted) {
+      return { ok: false, reason: 'unreachable' };
+    }
+
+    if (timedOut || (error instanceof Error && error.name === 'AbortError')) {
+      return { ok: false, reason: 'timeout' };
+    }
+
     log.debug('RustiCal server validation failed', { error, url: normalizedUrl });
-    return false;
+    return { ok: false, reason: 'unreachable' };
+  } finally {
+    clearTimeout(timeoutId);
+    signal?.removeEventListener('abort', onParentAbort);
   }
 };

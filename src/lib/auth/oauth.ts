@@ -41,8 +41,15 @@ export const parseTokenResponse = (
   return { accessToken, refreshToken, tokenExpiry };
 };
 
+const HTML_TAG_RE = /<[^>]+>/g;
+const WHITESPACE_RE = /\s+/g;
+
+const stripHtmlTags = (value: string): string =>
+  value.replace(HTML_TAG_RE, ' ').replace(WHITESPACE_RE, ' ').trim();
+
 export const assertTokenResponseOk = (res: HttpResponse, context: string): void => {
   if (res.status < 200 || res.status >= 300) {
-    throw new Error(`${context} failed (${res.status}): ${res.body}`);
+    const body = stripHtmlTags(res.body).slice(0, 200);
+    throw new Error(`${context} failed (${res.status})${body ? `: ${body}` : '.'}`);
   }
 };
