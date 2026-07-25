@@ -266,6 +266,51 @@ describe('fetchCalendars', () => {
     expect(result[0].displayName).toBe('Calendar');
   });
 
+  it('maps Apple DEFAULT_TASK_CALENDAR_NAME to "Reminders" for VTODO calendars', async () => {
+    vi.mocked(http.propfind).mockResolvedValueOnce(httpOk(207));
+    vi.mocked(http.parseMultiStatus).mockReturnValueOnce(
+      multi([
+        {
+          href: '/calendars/alice/reminders/',
+          props: {
+            resourcetype: 'collection,calendar',
+            displayname: 'DEFAULT_TASK_CALENDAR_NAME',
+            'supported-calendar-component-set': '<comp name="VTODO"/>',
+          },
+        },
+      ]),
+    );
+
+    const result = await fetchCalendars(conn, 'acct');
+
+    expect(result).toHaveLength(1);
+    expect(result[0].displayName).toBe('Reminders');
+  });
+
+  it('maps Apple DEFAULT_TASK_CALENDAR_NAME to "Reminders" in skipped-calendar diagnostics', async () => {
+    vi.mocked(http.propfind).mockResolvedValueOnce(httpOk(207));
+    vi.mocked(http.parseMultiStatus).mockReturnValueOnce(
+      multi([
+        {
+          href: '/calendars/alice/reminders/',
+          props: {
+            resourcetype: 'collection,calendar',
+            displayname: 'DEFAULT_TASK_CALENDAR_NAME',
+            'supported-calendar-component-set': '<comp name="VEVENT"/>',
+          },
+        },
+      ]),
+    );
+
+    const result = await discoverCalendars(conn, 'acct');
+
+    expect(result.calendars).toEqual([]);
+    expect(result.diagnostics).toMatchObject({
+      nonVtodoCalendarCount: 1,
+      nonVtodoCalendarNames: ['Reminders'],
+    });
+  });
+
   it('parses calendar-order as integer (default 0)', async () => {
     vi.mocked(http.propfind).mockResolvedValueOnce(httpOk(207));
     vi.mocked(http.parseMultiStatus).mockReturnValueOnce(

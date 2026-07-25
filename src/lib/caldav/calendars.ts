@@ -1,3 +1,7 @@
+import {
+  APPLE_DEFAULT_TASK_CALENDAR_DISPLAY_NAME,
+  APPLE_DEFAULT_TASK_CALENDAR_NAME,
+} from '$constants';
 import type { Connection } from '$lib/caldav/connection';
 import { NS_WEBDAV_PUSH } from '$lib/caldav/push';
 import { log, makeAbsoluteUrl } from '$lib/caldav/utils';
@@ -62,6 +66,13 @@ const slugifyCalendarName = (displayName: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '') || 'calendar';
+
+const normalizeCalendarDisplayName = (displayName: string | null | undefined): string => {
+  if (displayName === APPLE_DEFAULT_TASK_CALENDAR_NAME) {
+    return APPLE_DEFAULT_TASK_CALENDAR_DISPLAY_NAME;
+  }
+  return displayName ?? 'Calendar';
+};
 
 export interface CalendarDiscoveryDiagnostics {
   calendarCollectionCount: number;
@@ -139,7 +150,9 @@ export const discoverCalendars = async (
 
     if (supportedComponents.length > 0 && !supportedComponents.includes('VTODO')) {
       diagnostics.nonVtodoCalendarCount++;
-      diagnostics.nonVtodoCalendarNames.push(result.props.displayname ?? 'Calendar');
+      diagnostics.nonVtodoCalendarNames.push(
+        normalizeCalendarDisplayName(result.props.displayname),
+      );
       continue;
     }
 
@@ -161,7 +174,7 @@ export const discoverCalendars = async (
 
     calendars.push({
       id: calendarUrl,
-      displayName: result.props.displayname ?? 'Calendar',
+      displayName: normalizeCalendarDisplayName(result.props.displayname),
       url: calendarUrl,
       ctag: result.props.getctag ?? undefined,
       syncToken: result.props['sync-token'] ?? undefined,

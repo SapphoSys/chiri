@@ -11,6 +11,9 @@ export const DEFAULT_DAY_OF_WEEK = 'monday';
 
 export const DEFAULT_CALENDAR_NAME = 'Default calendar';
 
+export const APPLE_DEFAULT_TASK_CALENDAR_NAME = 'DEFAULT_TASK_CALENDAR_NAME';
+export const APPLE_DEFAULT_TASK_CALENDAR_DISPLAY_NAME = 'Reminders';
+
 export const RECENTLY_DELETED_RETENTION_DAYS = 30;
 export const RECENTLY_DELETED_CLEANUP_INTERVAL_MS = 60 * 60 * 1000;
 
