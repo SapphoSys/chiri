@@ -213,15 +213,15 @@ const USERNAME_PLACEHOLDERS: Partial<Record<ServerType, string>> = {
   mailbox: 'email@example.com',
   migadu: 'email@example.com',
   purelymail: 'email@example.com',
-  runbox: 'username or email@example.com',
+  runbox: 'Username or email@example.com',
   fruux: 'email@example.com or b1234567890',
-  disrootCloud: 'username or email@example.com',
-  nextcloud: 'username or email@example.com',
-  stalwart: 'username or email@example.com',
+  disrootCloud: 'Username or email@example.com',
+  nextcloud: 'Username or email@example.com',
+  stalwart: 'Username or email@example.com',
 };
 
 const PASSWORD_LABELS: Partial<Record<ServerType, string>> = {
-  fastmail: 'App Password',
+  fastmail: 'App password',
   mailbox: 'Password or app password',
   disrootCloud: 'Password or app password',
   fruux: 'Password or app password',
@@ -351,7 +351,7 @@ export const CredentialsForm = ({
           type="text"
           value={username}
           onChange={onUsernameChange}
-          placeholder={USERNAME_PLACEHOLDERS[serverType] ?? 'username'}
+          placeholder={USERNAME_PLACEHOLDERS[serverType] ?? 'Enter username'}
           required
           className="w-full rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
         />
