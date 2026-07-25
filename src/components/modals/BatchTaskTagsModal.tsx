@@ -82,6 +82,20 @@ export const BatchTaskTagsModal = ({
     description ??
     (tasks ? `${tasks.length} selected ${tasks.length === 1 ? 'task' : 'tasks'}` : undefined);
 
+  const hasChanges = useMemo(() => {
+    if (tasks) {
+      return tasks.some((task) => {
+        const originalTags = task.tags ?? [];
+        const pendingTags = pendingTaskTags.get(task.id) ?? [];
+        if (pendingTags.length !== originalTags.length) return true;
+        return pendingTags.some((id) => !originalTags.includes(id));
+      });
+    }
+
+    if (pendingSelectedTagIds.length !== selectedTagIds.length) return true;
+    return pendingSelectedTagIds.some((id) => !selectedTagIds.includes(id));
+  }, [tasks, pendingTaskTags, pendingSelectedTagIds, selectedTagIds]);
+
   const getSelectionState = (tagId: string): TagSelectionState => {
     if (tasks) {
       return getTagSelectionState(tasks, pendingTaskTags, tagId);
@@ -186,7 +200,7 @@ export const BatchTaskTagsModal = ({
             <ModalButton variant="secondary" onClick={handleCancel}>
               Cancel
             </ModalButton>
-            <ModalButton variant="primary" onClick={handleDone}>
+            <ModalButton variant="primary" onClick={handleDone} disabled={!hasChanges}>
               Done
             </ModalButton>
           </>

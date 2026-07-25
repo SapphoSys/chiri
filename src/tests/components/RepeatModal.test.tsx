@@ -102,7 +102,7 @@ describe('RepeatModal', () => {
       weekdaySelect.value = 'MO';
       weekdaySelect.dispatchEvent(new Event('change', { bubbles: true }));
     });
-    await act(async () => button('Done')?.click());
+    await act(async () => button('Add')?.click());
 
     expect(onSave).toHaveBeenCalledWith('FREQ=MONTHLY;BYDAY=3MO', 0);
   });
@@ -123,17 +123,16 @@ describe('RepeatModal', () => {
     });
 
     expect(container.textContent).toContain('BYSETPOS');
-    const done = Array.from(container.querySelectorAll('button')).find(
-      (button) => button.textContent?.trim() === 'Done',
+    const edit = Array.from(container.querySelectorAll('button')).find(
+      (button) => button.textContent?.trim() === 'Edit',
     );
-    await act(async () => done?.click());
-    expect(onSave).toHaveBeenCalledWith(importedRule, 0);
+    expect(edit?.hasAttribute('disabled')).toBe(true);
 
     const daily = Array.from(container.querySelectorAll('button')).find(
       (button) => button.textContent?.trim() === 'Daily',
     );
     await act(async () => daily?.click());
-    expect(done?.hasAttribute('disabled')).toBe(true);
+    expect(edit?.hasAttribute('disabled')).toBe(true);
     expect(container.querySelector('[role="alert"]')?.textContent).toContain(
       'cannot be safely changed',
     );
@@ -160,7 +159,7 @@ describe('RepeatModal', () => {
       );
     await act(async () => button('After')?.click());
 
-    const done = button('Done');
+    const done = button('Edit');
     expect(done?.hasAttribute('disabled')).toBe(false);
     await act(async () => done?.click());
     expect(onSave).toHaveBeenCalledWith(`${importedRule};COUNT=5`, 0);

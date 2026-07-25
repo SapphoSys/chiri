@@ -1,5 +1,5 @@
 import AlertTriangle from 'lucide-react/icons/triangle-alert';
-import { type SubmitEvent, useState } from 'react';
+import { type SubmitEvent, useMemo, useState } from 'react';
 import { ColorSwatchPicker } from '$components/ColorSwatchPicker';
 import { ComposedInput } from '$components/ComposedInput';
 import { IconEmojiPicker } from '$components/IconEmojiPicker';
@@ -61,6 +61,16 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
   const [error, setError] = useState('');
   const [warning, setWarning] = useState('');
   const displayNameInputRef = useInitialFocusRef<HTMLInputElement>();
+
+  const hasChanges = useMemo(() => {
+    if (!calendar) return true;
+    return (
+      displayName !== (calendar.displayName ?? '') ||
+      color !== initialColor ||
+      icon !== (calendar.icon || 'calendar') ||
+      emoji !== (calendar.emoji || '')
+    );
+  }, [calendar, displayName, color, icon, emoji, initialColor]);
 
   const account = accounts.find((a) => a.id === accountId);
   const isVikunja =
@@ -218,7 +228,7 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
           <ModalButton
             type="submit"
             form="calendar-form"
-            disabled={isLoading || !displayName.trim() || isVikunja}
+            disabled={isLoading || !displayName.trim() || isVikunja || !hasChanges}
             loading={isLoading}
           >
             {calendar ? 'Save' : 'Create Calendar'}

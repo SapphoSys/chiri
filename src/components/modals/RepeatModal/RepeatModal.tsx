@@ -332,6 +332,8 @@ export const RepeatModal = ({
     ui.freq === 'monthly' || (ui.freq === 'custom' && ui.customPeriod === 'MONTHLY');
   const initialState = parseToUIState(rrule, dueDate, initialCustom);
   const ruleChanged = JSON.stringify(ui) !== JSON.stringify(initialState);
+  const hasChanges = ruleChanged || localRepeatFrom !== repeatFrom;
+  const isViewChanged = ui.freq !== initialState.freq;
   const draftRrule = !ruleChanged && rrule ? rrule : buildFromUIState(ui, rrule, initialState);
   const capability = classifyRRule(rrule);
   const frequencyChanged =
@@ -355,7 +357,11 @@ export const RepeatModal = ({
     : hasUnsafeImportedEdit
       ? 'This imported rule cannot be safely changed in the visual editor.'
       : null;
-  const isDoneDisabled = (ui.endMode === 'until' && !ui.until) || validationError !== null;
+  const isActionDisabled =
+    (ui.endMode === 'until' && !ui.until) ||
+    validationError !== null ||
+    (Boolean(rrule) && !hasChanges && !isViewChanged);
+  const actionLabel = rrule ? 'Edit' : 'Add';
 
   // reorder weekdays to respect the user's week start preference
   // WEEKDAY_OPTIONS is MO-first (index 0=MO, ..., 6=SU)
@@ -403,8 +409,8 @@ export const RepeatModal = ({
             <ModalButton variant="ghost" onClick={onClose}>
               Cancel
             </ModalButton>
-            <ModalButton onClick={handleDone} disabled={isDoneDisabled}>
-              Done
+            <ModalButton onClick={handleDone} disabled={isActionDisabled}>
+              {actionLabel}
             </ModalButton>
           </>
         }

@@ -1,4 +1,4 @@
-import { type SubmitEvent, useState } from 'react';
+import { type SubmitEvent, useMemo, useState } from 'react';
 import { ColorSwatchPicker } from '$components/ColorSwatchPicker';
 import { ComposedInput } from '$components/ComposedInput';
 import { IconEmojiPicker } from '$components/IconEmojiPicker';
@@ -38,6 +38,16 @@ export const TagModal = ({ tagId, initialName, onClose, onSave }: TagModalProps)
   const [emoji, setEmoji] = useState(existingTag?.emoji || '');
   const nameInputRef = useInitialFocusRef<HTMLInputElement>();
 
+  const hasChanges = useMemo(() => {
+    if (!existingTag) return true;
+    return (
+      name !== (existingTag.name || '') ||
+      color !== initialColor ||
+      icon !== (existingTag.icon || 'tag') ||
+      emoji !== (existingTag.emoji || '')
+    );
+  }, [name, color, icon, emoji, existingTag, initialColor]);
+
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -71,7 +81,7 @@ export const TagModal = ({ tagId, initialName, onClose, onSave }: TagModalProps)
           <ModalButton variant="ghost" onClick={onClose}>
             Cancel
           </ModalButton>
-          <ModalButton type="submit" form="tag-form" disabled={!name.trim()}>
+          <ModalButton type="submit" form="tag-form" disabled={!name.trim() || !hasChanges}>
             {existingTag ? 'Save' : 'Create'}
           </ModalButton>
         </>

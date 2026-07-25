@@ -4,7 +4,7 @@ import ArrowRight from 'lucide-react/icons/arrow-right';
 import CheckCircle from 'lucide-react/icons/check-circle';
 import Cloud from 'lucide-react/icons/cloud';
 import KeyRound from 'lucide-react/icons/key-round';
-import { type SyntheticEvent, useRef, useState } from 'react';
+import { type SyntheticEvent, useMemo, useRef, useState } from 'react';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { CredentialsForm } from '$components/modals/AccountModal/CredentialsForm';
@@ -697,6 +697,54 @@ export function AccountModal({
         ? 'motion-safe:animate-step-back'
         : '';
 
+  const hasChanges = useMemo(() => {
+    if (!account) return true;
+
+    return (
+      name !== (account.name || '') ||
+      icon !== (account.icon || 'user') ||
+      emoji !== (account.emoji || '') ||
+      serverType !== (account.caldav?.serverType || 'generic') ||
+      serverUrl !== (account.caldav?.serverUrl || '') ||
+      username !== (account.caldav?.username || '') ||
+      password.trim().length > 0 ||
+      calendarHomeUrl !== (account.caldav?.calendarHomeUrl || '') ||
+      principalUrl !== (account.caldav?.principalUrl || '') ||
+      acceptInvalidCerts !== (account.caldav?.acceptInvalidCerts ?? false)
+    );
+  }, [
+    account,
+    name,
+    icon,
+    emoji,
+    serverType,
+    serverUrl,
+    username,
+    password,
+    calendarHomeUrl,
+    principalUrl,
+    acceptInvalidCerts,
+  ]);
+
+  const testConnectionButton = (
+    <ModalButton
+      variant="secondary"
+      onClick={handleTestConnection}
+      disabled={
+        isTesting ||
+        isLoading ||
+        testSuccess ||
+        !serverUrl.trim() ||
+        !username.trim() ||
+        (!password.trim() && !account?.caldav?.password)
+      }
+      loading={isTesting}
+    >
+      {testSuccess && <CheckCircle className="h-4 w-4 text-semantic-success" />}
+      {testSuccess ? 'Success' : isTesting ? 'Testing...' : 'Test connection'}
+    </ModalButton>
+  );
+
   const handleClose = () => {
     quickConnectRef.current?.cancel();
     fastmailRef.current?.cancel();
@@ -738,7 +786,7 @@ export function AccountModal({
       contentPadding={false}
       contentOverflow="auto"
       preventClose={false}
-      footerLeft={backButton}
+      footerLeft={account && step === 'credentials' ? testConnectionButton : backButton}
       footer={
         step === 'quick-connect' && quickConnectLoginStep === 'input' ? (
           <ModalButton
@@ -777,37 +825,39 @@ export function AccountModal({
             <ArrowRight className="size-4" />
           </ModalButton>
         ) : step === 'credentials' ? (
-          <>
-            <ModalButton
-              variant="secondary"
-              onClick={handleTestConnection}
-              disabled={
-                isTesting ||
-                isLoading ||
-                testSuccess ||
-                !serverUrl.trim() ||
-                !username.trim() ||
-                (!password.trim() && !account?.caldav?.password)
-              }
-              loading={isTesting}
-            >
-              {testSuccess && <CheckCircle className="h-4 w-4 text-semantic-success" />}
-              {testSuccess ? 'Success' : isTesting ? 'Testing...' : 'Test connection'}
-            </ModalButton>
-            <ModalButton
-              onClick={handleSubmit}
-              disabled={
-                isLoading ||
-                !name.trim() ||
-                !serverUrl.trim() ||
-                !username.trim() ||
-                (!account && !password.trim())
-              }
-              loading={isLoading}
-            >
-              {account ? 'Save' : 'Add Account'}
-            </ModalButton>
-          </>
+          account ? (
+            <>
+              <ModalButton variant="secondary" onClick={handleClose}>
+                Cancel
+              </ModalButton>
+              <ModalButton
+                onClick={handleSubmit}
+                disabled={
+                  isLoading || !hasChanges || !name.trim() || !serverUrl.trim() || !username.trim()
+                }
+                loading={isLoading}
+              >
+                Save
+              </ModalButton>
+            </>
+          ) : (
+            <>
+              {testConnectionButton}
+              <ModalButton
+                onClick={handleSubmit}
+                disabled={
+                  isLoading ||
+                  !name.trim() ||
+                  !serverUrl.trim() ||
+                  !username.trim() ||
+                  !password.trim()
+                }
+                loading={isLoading}
+              >
+                Add Account
+              </ModalButton>
+            </>
+          )
         ) : undefined
       }
     >

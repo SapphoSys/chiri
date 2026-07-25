@@ -21,7 +21,7 @@ import Moon from 'lucide-react/icons/moon';
 import Sun from 'lucide-react/icons/sun';
 import Sunrise from 'lucide-react/icons/sunrise';
 import Sunset from 'lucide-react/icons/sunset';
-import { type ComponentType, type PointerEvent, useRef, useState } from 'react';
+import { type ComponentType, type PointerEvent, useMemo, useRef, useState } from 'react';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { TimePickerModal } from '$components/modals/TimePickerModal';
@@ -118,6 +118,12 @@ export const ReminderPickerModal = ({
     onNextMonth: () => setCurrentMonth((month) => addMonths(month, 1)),
     onCalendarMonthChange: setCurrentMonth,
   });
+
+  const hasChanges = useMemo(() => {
+    if (localValue === undefined && initialValue === undefined) return false;
+    if (localValue === undefined || initialValue === undefined) return true;
+    return localValue.getTime() !== initialValue.getTime();
+  }, [localValue, initialValue]);
 
   if (!isOpen) return null;
 
@@ -249,7 +255,10 @@ export const ReminderPickerModal = ({
             <ModalButton variant="ghost" onClick={onClose}>
               Cancel
             </ModalButton>
-            <ModalButton onClick={handleSave} disabled={!localValue && !initialValue}>
+            <ModalButton
+              onClick={handleSave}
+              disabled={(!localValue && !initialValue) || !hasChanges}
+            >
               {value ? 'Save' : 'Add Reminder'}
             </ModalButton>
           </>

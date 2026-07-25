@@ -1,4 +1,4 @@
-import { type SubmitEvent, useState } from 'react';
+import { type SubmitEvent, useMemo, useState } from 'react';
 import { ColorSwatchPicker } from '$components/ColorSwatchPicker';
 import { ComposedInput } from '$components/ComposedInput';
 import { IconEmojiPicker } from '$components/IconEmojiPicker';
@@ -30,6 +30,15 @@ export const FilterModal = ({ filterId, onClose }: FilterModalProps) => {
   const [emoji, setEmoji] = useState(existingFilter?.emoji ?? '');
   const nameInputRef = useInitialFocusRef<HTMLInputElement>();
 
+  const hasChanges = useMemo(
+    () =>
+      name !== (existingFilter?.name ?? '') ||
+      color !== initialColor ||
+      icon !== (existingFilter?.icon ?? 'list-todo') ||
+      emoji !== (existingFilter?.emoji ?? ''),
+    [name, color, icon, emoji, existingFilter, initialColor],
+  );
+
   if (!existingFilter) return null;
 
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
@@ -55,7 +64,7 @@ export const FilterModal = ({ filterId, onClose }: FilterModalProps) => {
           <ModalButton variant="ghost" onClick={onClose}>
             Cancel
           </ModalButton>
-          <ModalButton type="submit" form="filter-form" disabled={!name.trim()}>
+          <ModalButton type="submit" form="filter-form" disabled={!name.trim() || !hasChanges}>
             Save
           </ModalButton>
         </>
