@@ -29,7 +29,7 @@ import { DataSettings } from '$components/settings/DataSettings';
 import { EditorSettings } from '$components/settings/EditorSettings/EditorSettings';
 import { NavigationSettings } from '$components/settings/NavigationSettings/NavigationSettings';
 import { NetworkSettings } from '$components/settings/NetworkSettings';
-import { NotificationSettings } from '$components/settings/NotificationSettings';
+import { NotificationSettings } from '$components/settings/NotificationSettings/NotificationSettings';
 import { PushSettings } from '$components/settings/PushSettings/PushSettings';
 import { RegionAndTimeSettings } from '$components/settings/RegionAndTimeSettings';
 import { SafetySettings } from '$components/settings/SafetySettings';
