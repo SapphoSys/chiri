@@ -2,16 +2,18 @@ import type { LucideIcon } from 'lucide-react';
 import Check from 'lucide-react/icons/check';
 import CircleX from 'lucide-react/icons/circle-x';
 import Info from 'lucide-react/icons/info';
+import Loader2 from 'lucide-react/icons/loader-2';
 import TriangleAlert from 'lucide-react/icons/triangle-alert';
 import type { ReactNode } from 'react';
 
-export type ToastType = 'error' | 'warning' | 'info' | 'success';
+export type ToastType = 'error' | 'warning' | 'info' | 'success' | 'loading';
 
 const TYPE_ICONS: Record<ToastType, { icon: LucideIcon; colorClass: string }> = {
   error: { icon: CircleX, colorClass: 'text-semantic-error' },
   warning: { icon: TriangleAlert, colorClass: 'text-semantic-warning' },
   info: { icon: Info, colorClass: 'text-primary-500' },
   success: { icon: Check, colorClass: 'text-primary-500' },
+  loading: { icon: Loader2, colorClass: 'text-primary-500' },
 };
 
 interface ToastTitleProps {
@@ -28,7 +30,10 @@ export const ToastTitle = ({ type, children }: ToastTitleProps) => {
 
   return (
     <span className="inline-flex items-center gap-2">
-      <Icon className={`h-4 w-4 shrink-0 ${colorClass}`} aria-hidden={true} />
+      <Icon
+        className={`h-4 w-4 shrink-0 ${colorClass} ${type === 'loading' ? 'motion-safe:animate-spin' : ''}`}
+        aria-hidden={true}
+      />
       {children}
     </span>
   );

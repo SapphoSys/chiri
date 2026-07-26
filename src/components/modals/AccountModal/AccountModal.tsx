@@ -30,6 +30,7 @@ import {
 import { MobileConfigSignatureWarning } from '$components/modals/MobileConfigSignatureWarning';
 import { getPredefinedServerUrl, SERVER_TYPE_OPTIONS } from '$constants/settings';
 import { useConfirmDialog } from '$context/confirmDialogContext';
+import { useConnectionStore } from '$context/connectionContext';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAddCalendar, useCreateAccount, useUpdateAccount } from '$hooks/queries/useAccounts';
 import { CalDAVClient } from '$lib/caldav';
@@ -42,7 +43,7 @@ import {
 } from '$lib/caldav/setup';
 import { hasHttpUrlScheme, isValidPrincipalUrlOverride } from '$lib/caldav/utils';
 import { getServerWarning, getUrlWarning, toConfirmOptions } from '$lib/caldav/warnings';
-import { isCertError, tauriRequest } from '$lib/http';
+import { type HttpRequestContext, isCertError, tauriRequest } from '$lib/http';
 import { loggers } from '$lib/logger';
 import { ensureTagExists } from '$lib/store/sync';
 import { createTask } from '$lib/store/tasks';
@@ -72,6 +73,13 @@ const OAUTH_SERVER_TYPES: Partial<Record<ServerType, true>> = {
 const BROWSER_LOGIN_SERVER_TYPES: Partial<Record<ServerType, true>> = {
   disrootCloud: true,
 };
+
+class ConnectionTestCancelledError extends Error {
+  constructor() {
+    super('Connection test cancelled');
+    this.name = 'ConnectionTestCancelledError';
+  }
+}
 /** all server types that go through the connect-method chooser step */
 const CONNECT_METHOD_SERVER_TYPES: Partial<Record<ServerType, true>> = {
   ...QUICK_CONNECT_SERVER_TYPES,
@@ -127,7 +135,7 @@ export function AccountModal({
   const [isLoading, setIsLoading] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [testSuccess, setTestSuccess] = useState(false);
-  const [testedConnectionId, setTestedConnectionId] = useState<string | null>(null);
+  const [testConnectionId, setTestConnectionId] = useState<string | null>(null);
   const [testedCalendars, setTestedCalendars] = useState<Calendar[]>([]);
   const [setupError, setSetupError] = useState<CalDAVSetupError | null>(null);
   const [setupNotice, setSetupNotice] = useState<CalDAVSetupNotice | null>(null);
@@ -140,6 +148,7 @@ export function AccountModal({
     useState(false);
   const [navDirection, setNavDirection] = useState<'forward' | 'back' | null>(null);
   const { enforceVapid } = useSettingsStore();
+  const { testingAccountIds, beginTesting, endTesting } = useConnectionStore();
   const [quickConnectButtonState, setQuickConnectButtonState] = useState({
     disabled: true,
     loading: false,
@@ -160,6 +169,37 @@ export function AccountModal({
   const fastmailRef = useRef<FastmailOAuthStepHandle>(null);
   const stalwartOAuthRef = useRef<StalwartOAuthStepHandle>(null);
   const disrootRef = useRef<DisrootCloudBrowserLoginStepHandle>(null);
+  const activeTestConnectionIdRef = useRef<string | null>(null);
+  const activeTestStateIdRef = useRef<string | null>(null);
+  const activeTestAbortControllerRef = useRef<AbortController | null>(null);
+  const testRunIdRef = useRef(0);
+
+  const clearTestConnection = () => {
+    const connectionId = activeTestConnectionIdRef.current ?? testConnectionId;
+    if (connectionId) {
+      CalDAVClient.disconnect(connectionId);
+    }
+    activeTestConnectionIdRef.current = null;
+    setTestConnectionId(null);
+    setTestSuccess(false);
+    setTestedCalendars([]);
+    setSetupNotice(null);
+  };
+
+  const cancelTestConnection = () => {
+    testRunIdRef.current += 1;
+    activeTestAbortControllerRef.current?.abort();
+    activeTestAbortControllerRef.current = null;
+    const testStateId = activeTestStateIdRef.current;
+    if (testStateId) {
+      log.debug(`Cancelling connection test for ${testStateId}...`);
+    }
+    if (testStateId) {
+      activeTestStateIdRef.current = null;
+      endTesting(testStateId);
+    }
+    clearTestConnection();
+  };
 
   const [acceptInvalidCerts, setAcceptInvalidCerts] = useState(
     () => account?.caldav?.acceptInvalidCerts ?? false,
@@ -181,10 +221,7 @@ export function AccountModal({
     principalUrl !== prevCredentials.principalUrl
   ) {
     setPrevCredentials({ serverUrl, username, password, calendarHomeUrl, principalUrl });
-    setTestSuccess(false);
-    setTestedConnectionId(null);
-    setTestedCalendars([]);
-    setSetupNotice(null);
+    cancelTestConnection();
   }
 
   const handleSelectServerType = (type: ServerType) => {
@@ -198,10 +235,7 @@ export function AccountModal({
     setCalendarHomeUrl('');
     setPrincipalUrl('');
     setSetupError(null);
-    setSetupNotice(null);
-    setTestSuccess(false);
-    setTestedConnectionId(null);
-    setTestedCalendars([]);
+    cancelTestConnection();
     setAcceptInvalidCerts(false);
     setNavDirection('forward');
     setStep(CONNECT_METHOD_SERVER_TYPES[type] ? 'connect-method' : 'credentials');
@@ -209,10 +243,7 @@ export function AccountModal({
 
   const handleBack = () => {
     setSetupError(null);
-    setSetupNotice(null);
-    setTestSuccess(false);
-    setTestedConnectionId(null);
-    setTestedCalendars([]);
+    cancelTestConnection();
     setNavDirection('back');
     // credentials back-destination: connect-method for types that go through it, otherwise pick-type
     setStep(CONNECT_METHOD_SERVER_TYPES[serverType] ? 'connect-method' : 'pick-type');
@@ -260,7 +291,7 @@ export function AccountModal({
 
   const handleBackToTypePicker = () => {
     setSetupError(null);
-    setSetupNotice(null);
+    cancelTestConnection();
     setNavDirection('back');
     setStep('pick-type');
   };
@@ -373,6 +404,7 @@ export function AccountModal({
     accountId: string,
     effectivePassword: string,
     trimmedServerUrl: string,
+    context?: HttpRequestContext,
   ) => {
     const isOAuth = account?.caldav?.authType === 'oauth';
     const tryConnect = (withInvalidCerts?: boolean) =>
@@ -386,6 +418,7 @@ export function AccountModal({
         principalUrl.trim() || undefined,
         withInvalidCerts,
         isOAuth ? effectivePassword : undefined,
+        context,
       );
 
     try {
@@ -395,17 +428,26 @@ export function AccountModal({
         isCertError(err) ||
         (typeof err === 'string' && err.includes('error sending request for url'));
 
+      if (context?.signal?.aborted) throw new ConnectionTestCancelledError();
       if (!looksLikeNetworkError) throw err;
 
       let serverReachable = false;
       try {
-        await tauriRequest(trimmedServerUrl, 'OPTIONS', {
-          username,
-          password: effectivePassword,
-          acceptInvalidCerts: true,
-        });
+        await tauriRequest(
+          trimmedServerUrl,
+          'OPTIONS',
+          {
+            username,
+            password: effectivePassword,
+            acceptInvalidCerts: true,
+          },
+          undefined,
+          undefined,
+          context,
+        );
         serverReachable = true;
       } catch {
+        if (context?.signal?.aborted) throw new ConnectionTestCancelledError();
         // also failed with bypass - genuinely unreachable
       }
 
@@ -419,13 +461,42 @@ export function AccountModal({
     }
   };
 
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: the modal test flow coordinates validation, confirmation, connection probing, and cancellation cleanup
   const handleTestConnection = async () => {
+    cancelTestConnection();
+    const probeConnectionId = generateUUID();
+    const testStateId = account?.id ?? probeConnectionId;
+    const isTestStarted = beginTesting(testStateId);
+
+    if (!isTestStarted) {
+      setSetupError({
+        title: 'Connection test already in progress',
+        message: 'This account is already being tested elsewhere.',
+        hint: 'Wait for the other connection test to finish, then try again.',
+      });
+      return;
+    }
+
+    const testRunId = testRunIdRef.current;
+    const assertTestActive = () => {
+      if (testRunIdRef.current !== testRunId) {
+        throw new ConnectionTestCancelledError();
+      }
+    };
+
     setSetupError(null);
     setSetupNotice(null);
-    setTestSuccess(false);
-    setTestedConnectionId(null);
     setTestedCalendars([]);
     setIsTesting(true);
+    activeTestConnectionIdRef.current = probeConnectionId;
+    activeTestStateIdRef.current = testStateId;
+    const abortController = new AbortController();
+    activeTestAbortControllerRef.current = abortController;
+    const requestContext: HttpRequestContext = {
+      operationId: `account-connection-test:${testStateId}:${testRunId}`,
+      signal: abortController.signal,
+    };
+    let keepTestConnection = false;
 
     try {
       const effectivePassword = password || account?.caldav?.password;
@@ -454,56 +525,88 @@ export function AccountModal({
       }
 
       const proceedWithUrl = await confirmServerUrlWarning(trimmedServerUrl);
+      assertTestActive();
       if (!proceedWithUrl) {
         setIsTesting(false);
         return;
       }
 
-      const tempId = generateUUID();
       log.debug(`Testing connection to ${trimmedServerUrl}...`);
 
       const connectionInfo = await connectWithCertHandling(
-        tempId,
+        probeConnectionId,
         effectivePassword,
         trimmedServerUrl,
+        requestContext,
       );
+      assertTestActive();
       if (!connectionInfo) {
         setIsTesting(false);
         return;
       }
 
       const proceed = await confirmServerWarning(connectionInfo.calendarHome);
+      assertTestActive();
 
       if (!proceed) {
-        CalDAVClient.disconnect(tempId);
         setIsTesting(false);
         return;
       }
 
       log.debug(`Fetching calendars...`);
-      const client = CalDAVClient.getForAccount(tempId);
-      const { calendars, diagnostics } = await client.discoverCalendars(enforceVapid);
+      const client = CalDAVClient.getForAccount(probeConnectionId);
+      const { calendars, diagnostics } = await client.discoverCalendars(
+        enforceVapid,
+        requestContext,
+      );
+      assertTestActive();
       const canCreateVtodoCalendar = await probeSetupVtodoCreationIfNeeded(
         client,
         diagnostics,
         enforceVapid,
+        requestContext,
       );
+      assertTestActive();
       log.info(`Connection test successful - found ${calendars.length} calendars`);
 
-      setTestedConnectionId(tempId);
+      setTestConnectionId(probeConnectionId);
       setTestedCalendars(calendars);
       setSetupNotice(getSetupNotice(diagnostics, canCreateVtodoCalendar));
       setTestSuccess(true);
+      keepTestConnection = true;
     } catch (err) {
+      if (err instanceof ConnectionTestCancelledError || abortController.signal.aborted) {
+        log.info('Connection test cancelled; ignoring the result.');
+        return;
+      }
       setSetupError(
         getSetupErrorInfo(err, 'Failed to test CalDAV connection', serverType, serverUrl),
       );
       log.error('Connection test failed:', err);
-      setTestedConnectionId(null);
-      setTestedCalendars([]);
-      setSetupNotice(null);
     } finally {
-      setIsTesting(false);
+      if (!keepTestConnection) {
+        const ownsActiveTest =
+          activeTestConnectionIdRef.current === probeConnectionId &&
+          activeTestStateIdRef.current === testStateId;
+        if (ownsActiveTest) {
+          clearTestConnection();
+        } else {
+          // a new test may have started before the cancelled request settled.
+          // only tear down this run's probe connection in that case
+          CalDAVClient.disconnect(probeConnectionId);
+        }
+      }
+      const isCurrentTest = testRunIdRef.current === testRunId;
+      if (isCurrentTest) {
+        setIsTesting(false);
+      }
+      if (isCurrentTest && activeTestStateIdRef.current === testStateId) {
+        activeTestStateIdRef.current = null;
+        endTesting(testStateId);
+      }
+      if (activeTestAbortControllerRef.current === abortController) {
+        activeTestAbortControllerRef.current = null;
+      }
     }
   };
 
@@ -561,23 +664,23 @@ export function AccountModal({
     const trimmedServerUrl = serverUrl.trim();
     if (!validatePrincipalUrl(trimmedServerUrl)) return null;
 
-    if (testSuccess && testedConnectionId) {
+    if (testSuccess && testConnectionId) {
       log.debug('Reusing tested connection...');
       return {
-        tempId: testedConnectionId,
+        testConnectionId,
         calendars: testedCalendars,
         serverUrl: trimmedServerUrl,
       };
     }
 
-    const tempId = generateUUID();
+    const probeConnectionId = generateUUID();
 
     log.debug(`Connecting to ${trimmedServerUrl}...`);
     const proceedWithUrl = await confirmServerUrlWarning(trimmedServerUrl);
     if (!proceedWithUrl) return null;
 
     const connectionInfo = await connectWithCertHandling(
-      tempId,
+      probeConnectionId,
       effectivePassword,
       trimmedServerUrl,
     );
@@ -586,12 +689,12 @@ export function AccountModal({
     const proceed = await confirmServerWarning(connectionInfo.calendarHome);
 
     if (!proceed) {
-      CalDAVClient.disconnect(tempId);
+      CalDAVClient.disconnect(probeConnectionId);
       return null;
     }
 
     log.debug(`Fetching calendars...`);
-    const client = CalDAVClient.getForAccount(tempId);
+    const client = CalDAVClient.getForAccount(probeConnectionId);
     const { calendars, diagnostics } = await client.discoverCalendars(enforceVapid);
     const canCreateVtodoCalendar = await probeSetupVtodoCreationIfNeeded(
       client,
@@ -601,17 +704,17 @@ export function AccountModal({
     log.info(`Found ${calendars.length} calendars:`, calendars);
     setSetupNotice(getSetupNotice(diagnostics, canCreateVtodoCalendar));
 
-    return { tempId, calendars, serverUrl: trimmedServerUrl };
+    return { testConnectionId: probeConnectionId, calendars, serverUrl: trimmedServerUrl };
   };
 
   const createNewAccount = async (effectivePassword: string) => {
     const accountSetup = await connectAndFetchCalendars(effectivePassword);
     if (!accountSetup) return false;
 
-    const { tempId, calendars, serverUrl: trimmedServerUrl } = accountSetup;
+    const { testConnectionId, calendars, serverUrl: trimmedServerUrl } = accountSetup;
     createAccountMutation.mutate(
       {
-        id: tempId,
+        id: testConnectionId,
         name,
         icon,
         emoji,
@@ -684,6 +787,9 @@ export function AccountModal({
         return;
       }
 
+      if (account) {
+        cancelTestConnection();
+      }
       onClose();
       setIsLoading(false);
     } catch (err) {
@@ -749,22 +855,29 @@ export function AccountModal({
     acceptInvalidCerts,
   ]);
 
+  const isAccountTestInProgress = account ? account.id in testingAccountIds : false;
+
   const testConnectionButton = (
     <ModalButton
       variant="secondary"
       onClick={handleTestConnection}
       disabled={
         isTesting ||
+        isAccountTestInProgress ||
         isLoading ||
         testSuccess ||
         !serverUrl.trim() ||
         !username.trim() ||
         (!password.trim() && !account?.caldav?.password)
       }
-      loading={isTesting}
+      loading={isTesting || isAccountTestInProgress}
     >
       {testSuccess && <CheckCircle className="h-4 w-4 text-semantic-success" />}
-      {testSuccess ? 'Success' : isTesting ? 'Testing...' : 'Test connection'}
+      {testSuccess
+        ? 'Success'
+        : isTesting || isAccountTestInProgress
+          ? 'Testing...'
+          : 'Test connection'}
     </ModalButton>
   );
 
@@ -773,6 +886,7 @@ export function AccountModal({
     fastmailRef.current?.cancel();
     stalwartOAuthRef.current?.cancel();
     disrootRef.current?.cancel();
+    cancelTestConnection();
     onClose();
   };
 

@@ -3,7 +3,10 @@ use reqwest::{Method, Proxy, Url};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::str::FromStr;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
+use tauri::State;
+use tokio::sync::oneshot;
 
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(15);
 const MAX_REQUEST_BODY_BYTES: usize = 8 * 1024 * 1024;
@@ -54,12 +57,51 @@ pub struct HttpResponse {
     pub body: String,
 }
 
+#[derive(Default)]
+pub struct HttpRequestState {
+    next_request_id: AtomicU64,
+    active_requests: parking_lot::Mutex<HashMap<String, HashMap<u64, oneshot::Sender<()>>>>,
+}
+
+impl HttpRequestState {
+    fn register(&self, operation_id: &str) -> (u64, oneshot::Receiver<()>) {
+        let request_id = self.next_request_id.fetch_add(1, Ordering::Relaxed);
+        let (cancel_sender, cancel_receiver) = oneshot::channel();
+        self.active_requests
+            .lock()
+            .entry(operation_id.to_string())
+            .or_default()
+            .insert(request_id, cancel_sender);
+        (request_id, cancel_receiver)
+    }
+
+    fn unregister(&self, operation_id: &str, request_id: u64) {
+        let mut active_requests = self.active_requests.lock();
+        if let Some(requests) = active_requests.get_mut(operation_id) {
+            requests.remove(&request_id);
+            if requests.is_empty() {
+                active_requests.remove(operation_id);
+            }
+        }
+    }
+
+    fn cancel(&self, operation_id: &str) {
+        let requests = self.active_requests.lock().remove(operation_id);
+        if let Some(requests) = requests {
+            for cancel_sender in requests.into_values() {
+                let _ = cancel_sender.send(());
+            }
+        }
+    }
+}
+
 /// low-level HTTP request executor with optional certificate validation bypass
 ///
 /// this command is used instead of the Tauri HTTP plugin when the account has
 /// `accept_invalid_certs = true`, allowing connections to servers with self-signed
 /// or privately-signed certificates. redirect following is disabled. the TypeScript
 /// layer handles redirects to keep behaviour consistent with the normal path
+#[allow(clippy::too_many_arguments)]
 #[tauri::command]
 pub async fn http_request(
     url: String,
@@ -69,6 +111,8 @@ pub async fn http_request(
     accept_invalid_certs: bool,
     proxy_config: Option<ProxyConfig>,
     timeout_ms: Option<u64>,
+    operation_id: Option<String>,
+    state: State<'_, HttpRequestState>,
 ) -> Result<HttpResponse, String> {
     let url = validate_url(&url)?;
     let method = validate_method(&method)?;
@@ -102,7 +146,35 @@ pub async fn http_request(
         request = request.body(b);
     }
 
-    let mut response = request.send().await.map_err(sanitize_reqwest_error)?;
+    let request_registration = operation_id
+        .as_deref()
+        .map(|operation_id| (operation_id, state.register(operation_id)));
+    let (request_id, cancel_receiver) = match request_registration {
+        Some((_, (request_id, cancel_receiver))) => (Some(request_id), Some(cancel_receiver)),
+        None => (None, None),
+    };
+
+    let result = execute_request(request, cancel_receiver).await;
+
+    if let (Some(operation_id), Some(request_id)) = (operation_id.as_deref(), request_id) {
+        state.unregister(operation_id, request_id);
+    }
+
+    result
+}
+
+async fn execute_request(
+    request: reqwest::RequestBuilder,
+    mut cancel_receiver: Option<oneshot::Receiver<()>>,
+) -> Result<HttpResponse, String> {
+    let mut response = if let Some(cancel_receiver) = cancel_receiver.as_mut() {
+        tokio::select! {
+            result = request.send() => result.map_err(sanitize_reqwest_error)?,
+            _ = cancel_receiver => return Err("HTTP request cancelled".to_string()),
+        }
+    } else {
+        request.send().await.map_err(sanitize_reqwest_error)?
+    };
 
     let status = response.status().as_u16();
     let mut resp_headers: HashMap<String, String> = HashMap::new();
@@ -120,7 +192,20 @@ pub async fn http_request(
     }
 
     let mut body_bytes = Vec::new();
-    while let Some(chunk) = response.chunk().await.map_err(sanitize_reqwest_error)? {
+    loop {
+        let next_chunk = if let Some(cancel_receiver) = cancel_receiver.as_mut() {
+            tokio::select! {
+                result = response.chunk() => result.map_err(sanitize_reqwest_error)?,
+                _ = cancel_receiver => return Err("HTTP request cancelled".to_string()),
+            }
+        } else {
+            response.chunk().await.map_err(sanitize_reqwest_error)?
+        };
+
+        let Some(chunk) = next_chunk else {
+            break;
+        };
+
         if body_bytes.len().saturating_add(chunk.len()) > MAX_RESPONSE_BODY_BYTES {
             return Err("Response body exceeds the 64 MiB limit".to_string());
         }
@@ -133,6 +218,12 @@ pub async fn http_request(
         headers: resp_headers,
         body: body_text,
     })
+}
+
+#[tauri::command]
+pub fn cancel_http_operation(operation_id: String, state: State<'_, HttpRequestState>) {
+    log::debug!("Cancelling HTTP operation {operation_id}");
+    state.cancel(&operation_id);
 }
 
 fn apply_proxy_config(

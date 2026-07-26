@@ -120,6 +120,35 @@ describe('tauriRequest routing', () => {
       }),
     );
   });
+
+  it('cancels the native request when its operation signal is aborted', async () => {
+    let resolveRequest!: (response: ReturnType<typeof httpResponse>) => void;
+    const pendingRequest = new Promise<ReturnType<typeof httpResponse>>((resolve) => {
+      resolveRequest = resolve;
+    });
+    vi.mocked(invoke).mockImplementation((command) => {
+      if (command === 'http_request') return pendingRequest;
+      return Promise.resolve();
+    });
+
+    const controller = new AbortController();
+    const request = tauriRequest(
+      'https://calendar.example',
+      'GET',
+      credentials,
+      undefined,
+      undefined,
+      { operationId: 'test-operation', signal: controller.signal },
+    );
+
+    controller.abort();
+    expect(invoke).toHaveBeenCalledWith('cancel_http_operation', {
+      operationId: 'test-operation',
+    });
+
+    resolveRequest(httpResponse(200));
+    await expect(request).rejects.toThrow(/cancelled/i);
+  });
 });
 
 describe('parseMultiStatus', () => {

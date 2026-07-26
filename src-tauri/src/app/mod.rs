@@ -49,6 +49,7 @@ pub fn run() {
                 .build(),
         )
         .manage(tray::TrayState::default())
+        .manage(http::HttpRequestState::default())
         .manage(push::maintenance::PushMaintenanceState::default())
         .manage(push::autopush::MozillaAutopushState::default())
         .manage(push::ntfy::NtfySseState::default());
@@ -61,6 +62,7 @@ pub fn run() {
             commands::force_quit,
             commands::was_launched_from_autostart,
             http::http_request,
+            http::cancel_http_operation,
             install::get_install_type,
             install::should_disable_updates,
             #[cfg(target_os = "linux")]

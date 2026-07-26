@@ -49,6 +49,11 @@ export interface HttpProxyConfig {
   port?: number;
 }
 
+export interface HttpRequestContext {
+  operationId?: string;
+  signal?: AbortSignal;
+}
+
 export interface CalDAVCredentials {
   username: string;
   password: string;
@@ -124,6 +129,7 @@ const sendHttpRequest = async (
   credentials: CalDAVCredentials,
   requestHeaders: Record<string, string>,
   body?: string,
+  context?: HttpRequestContext,
 ) => {
   // route all CalDAV requests through the Rust command. the Tauri HTTP plugin
   // uses a persistent cookie jar: Nextcloud's login flow stores session cookies,
@@ -140,7 +146,23 @@ const sendHttpRequest = async (
     acceptInvalidCerts: credentials.acceptInvalidCerts ?? false,
     proxyConfig,
     timeoutMs: REQUEST_TIMEOUT_MS,
+    ...(context?.operationId ? { operationId: context.operationId } : {}),
   });
+};
+
+const throwIfAborted = (signal?: AbortSignal) => {
+  if (signal?.aborted) {
+    throw new Error('HTTP request cancelled');
+  }
+};
+
+const cancelHttpOperation = (operationId?: string) => {
+  if (operationId) {
+    void invoke('cancel_http_operation', { operationId }).catch(() => {
+      // the request may have completed between aborting and issuing the
+      // cancellation command. there is nothing left to cancel in that case
+    });
+  }
 };
 
 const getRedirectUrl = (response: HttpResponse, url: string) => {
@@ -245,10 +267,13 @@ export const tauriRequest = async (
   credentials: CalDAVCredentials,
   body?: string,
   headers?: Record<string, string>,
+  context?: HttpRequestContext,
   _retried = false,
   _redirects = 0,
   _allowAuth = true,
 ): Promise<HttpResponse> => {
+  throwIfAborted(context?.signal);
+
   // for known Digest-only hosts, skip sending wrong Basic auth upfront
   // we'll still do 2 round-trips (need server's nonce), but won't waste one
   // on a credential that's guaranteed to be rejected
@@ -265,7 +290,21 @@ export const tauriRequest = async (
   // reqwest client per request and does not use a cookie jar. this prevents
   // servers like Nextcloud from rejecting requests with "CSRF check not passed"
   // because of stale session cookies left over from the login flow.
-  const response = await sendHttpRequest(url, method, credentials, requestHeaders, body);
+  const abortHandler = () => {
+    if (context?.operationId) {
+      log.debug(`Cancelling HTTP operation ${context.operationId}...`);
+    }
+    cancelHttpOperation(context?.operationId);
+  };
+  context?.signal?.addEventListener('abort', abortHandler, { once: true });
+
+  let response: HttpResponse;
+  try {
+    response = await sendHttpRequest(url, method, credentials, requestHeaders, body, context);
+  } finally {
+    context?.signal?.removeEventListener('abort', abortHandler);
+  }
+  throwIfAborted(context?.signal);
 
   if (!silent) log.debug(`Response: ${response.status}`);
 
@@ -282,6 +321,7 @@ export const tauriRequest = async (
       credentials,
       body,
       headers,
+      context,
       false,
       _redirects + 1,
       _allowAuth && hasSameOrigin(url, redirectUrl),
@@ -300,6 +340,7 @@ export const tauriRequest = async (
       credentials,
       body,
       { ...headers, Authorization: digestRetry.header },
+      context,
       true,
       _redirects,
       _allowAuth,
@@ -317,11 +358,19 @@ export const propfind = async (
   credentials: CalDAVCredentials,
   body: string,
   depth: '0' | '1' | 'infinity' = '1',
+  context?: HttpRequestContext,
 ) => {
-  return tauriRequest(url, 'PROPFIND', credentials, body, {
-    Depth: depth,
-    'Content-Type': 'application/xml; charset=utf-8',
-  });
+  return tauriRequest(
+    url,
+    'PROPFIND',
+    credentials,
+    body,
+    {
+      Depth: depth,
+      'Content-Type': 'application/xml; charset=utf-8',
+    },
+    context,
+  );
 };
 
 /**
@@ -374,7 +423,12 @@ export const put = async (
 /**
  * DELETE request for removing calendar objects
  */
-export const del = async (url: string, credentials: CalDAVCredentials, etag?: string) => {
+export const del = async (
+  url: string,
+  credentials: CalDAVCredentials,
+  etag?: string,
+  context?: HttpRequestContext,
+) => {
   const headers: Record<string, string> = {};
 
   if (etag) {
@@ -382,14 +436,19 @@ export const del = async (url: string, credentials: CalDAVCredentials, etag?: st
     headers['If-Match'] = `"${etag}"`;
   }
 
-  return tauriRequest(url, 'DELETE', credentials, undefined, headers);
+  return tauriRequest(url, 'DELETE', credentials, undefined, headers, context);
 };
 
 /**
  * MKCALENDAR request for creating a new calendar collection
  */
-export const mkcalendar = async (url: string, credentials: CalDAVCredentials, body: string) => {
-  return tauriRequest(url, 'MKCALENDAR', credentials, body);
+export const mkcalendar = async (
+  url: string,
+  credentials: CalDAVCredentials,
+  body: string,
+  context?: HttpRequestContext,
+) => {
+  return tauriRequest(url, 'MKCALENDAR', credentials, body, undefined, context);
 };
 
 const parsePropValue = (child: Element) => {

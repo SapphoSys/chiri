@@ -13,6 +13,8 @@ interface AccountConnection {
 interface ConnectionState {
   connections: Record<string, AccountConnection>;
   statuses: Record<string, AccountConnectionStatus>;
+  testingAccountIds: Record<string, true>;
+  testingOperationIds: Record<string, string>;
 }
 
 export type AccountConnectionStatus = 'connected' | 'connecting' | 'reconnecting' | 'disconnected';
@@ -24,12 +26,21 @@ interface ConnectionActions {
   hasConnection: (accountId: string) => boolean;
   getStatus: (accountId: string) => AccountConnectionStatus;
   beginConnection: (accountId: string) => void;
+  beginTesting: (accountId: string, operationId?: string) => boolean;
+  endTesting: (accountId: string, operationId?: string) => void;
+  isTesting: (accountId: string) => boolean;
+  isAnyTesting: () => boolean;
 }
 
 export type ConnectionStore = ConnectionState & ConnectionActions;
 
 // singleton store for accessing state outside React
-let state: ConnectionState = { connections: {}, statuses: {} };
+let state: ConnectionState = {
+  connections: {},
+  statuses: {},
+  testingAccountIds: {},
+  testingOperationIds: {},
+};
 const listeners = new Set<() => void>();
 
 const emitChange = () => {
@@ -94,6 +105,40 @@ export const connectionStore = {
     };
     emitChange();
   },
+
+  beginTesting: (accountId: string, operationId?: string) => {
+    if (accountId in state.testingAccountIds) return false;
+
+    state = {
+      ...state,
+      testingAccountIds: {
+        ...state.testingAccountIds,
+        [accountId]: true,
+      },
+      testingOperationIds: operationId
+        ? { ...state.testingOperationIds, [accountId]: operationId }
+        : state.testingOperationIds,
+    };
+    emitChange();
+    return true;
+  },
+
+  endTesting: (accountId: string, operationId?: string) => {
+    if (operationId && state.testingOperationIds[accountId] !== operationId) return;
+
+    const { [accountId]: _, ...rest } = state.testingAccountIds;
+    const { [accountId]: _operationId, ...restOperations } = state.testingOperationIds;
+    state = {
+      ...state,
+      testingAccountIds: rest,
+      testingOperationIds: restOperations,
+    };
+    emitChange();
+  },
+
+  isTesting: (accountId: string) => accountId in state.testingAccountIds,
+
+  isAnyTesting: () => Object.keys(state.testingAccountIds).length > 0,
 };
 
 // context for React components

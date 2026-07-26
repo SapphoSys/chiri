@@ -41,6 +41,7 @@ interface AppShellProps {
   syncProgress: { current: number; total: number } | null;
   onSync: () => void;
   disableSync: boolean;
+  isConnectionTesting: boolean;
   isOffline: boolean;
   isReconnecting: boolean;
   lastSyncTime: Date | null;
@@ -71,6 +72,7 @@ export const AppShell = ({
   syncProgress,
   onSync,
   disableSync,
+  isConnectionTesting,
   isOffline,
   isReconnecting,
   lastSyncTime,
@@ -145,6 +147,7 @@ export const AppShell = ({
               syncProgress={syncProgress}
               onSync={onSync}
               disableSync={disableSync}
+              isConnectionTesting={isConnectionTesting}
               isOffline={isOffline}
               lastSyncTime={lastSyncTime}
               lastSyncSource={lastSyncSource}
@@ -157,6 +160,7 @@ export const AppShell = ({
             syncProgress={syncProgress}
             onSync={onSync}
             disableSync={disableSync}
+            isConnectionTesting={isConnectionTesting}
             isOffline={isOffline}
             lastSyncTime={lastSyncTime}
             lastSyncSource={lastSyncSource}

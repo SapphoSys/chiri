@@ -1,5 +1,6 @@
 import type { CalDAVClient } from '$lib/caldav';
 import type { CalendarDiscoveryDiagnostics } from '$lib/caldav/calendars';
+import type { HttpRequestContext } from '$lib/http';
 import { DetailedError, getErrorMessage, isCertError } from '$lib/http';
 import type { ServerType } from '$types';
 
@@ -86,6 +87,15 @@ export const getSetupErrorInfo = (
 
   if (vtodoSetupError) {
     return vtodoSetupError;
+  }
+
+  if (lower.includes('connection test is already in progress')) {
+    return {
+      title: 'Connection test already in progress',
+      message: normalizedMessage,
+      hint: 'Wait for the current test to finish before trying again.',
+      detail: rawDetail,
+    };
   }
 
   if (lower.includes('password is required') || lower.includes('server url and username')) {
@@ -237,13 +247,14 @@ export const probeSetupVtodoCreationIfNeeded = async (
   client: CalDAVClient,
   diagnostics: CalendarDiscoveryDiagnostics,
   enforceVapid = false,
+  context?: HttpRequestContext,
 ) => {
   if (diagnostics.includedCalendarCount > 0) {
     return false;
   }
 
   try {
-    await client.probeVtodoCalendarCreation(enforceVapid);
+    await client.probeVtodoCalendarCreation(enforceVapid, context);
     return true;
   } catch (error) {
     const detail = getErrorMessage(error);

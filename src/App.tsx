@@ -1,5 +1,6 @@
 import { AppModals } from '$components/AppModals';
 import { AppShell } from '$components/AppShell';
+import { useConnectionStore } from '$context/connectionContext';
 import { useModalState } from '$context/modalStateContext';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
@@ -39,6 +40,7 @@ const App = () => {
     onboardingCompleted,
     syncOnReconnect,
   } = useSettingsStore();
+  const { isAnyTesting } = useConnectionStore();
 
   const updates = useAppUpdates();
   const { setShowUpdateModal, updateAvailable, checkForUpdatesFromMenu, showChangelogFromMenu } =
@@ -58,6 +60,7 @@ const App = () => {
 
   // derived app state used by the shell and global integrations
   const isSyncInProgress = isSyncing || syncingCalendarId !== null;
+  const isConnectionTesting = isAnyTesting();
   const hasCalDAVAccounts = accounts.some((account) => account.caldav);
   const calDAVAccountCount = accounts.filter((account) => account.caldav).length;
   const visibleTask = useVisibleEditorTask(tasks);
@@ -102,6 +105,7 @@ const App = () => {
       isOffline={isOffline}
       isReconnecting={isReconnecting}
       isSyncInProgress={isSyncInProgress}
+      isConnectionTesting={isConnectionTesting}
       isUnsupportedFile={isUnsupportedFile}
       lastSyncSource={lastSyncSource}
       lastSyncTime={lastSyncTime}

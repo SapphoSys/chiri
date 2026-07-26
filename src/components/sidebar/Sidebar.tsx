@@ -1,3 +1,4 @@
+import { emit } from '@tauri-apps/api/event';
 import Inbox from 'lucide-react/icons/inbox';
 import Trash2 from 'lucide-react/icons/trash-2';
 import { type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -17,6 +18,8 @@ import { SidebarHeader } from '$components/sidebar/SidebarHeader';
 import { SidebarLocalList } from '$components/sidebar/SidebarLocalList';
 import { SidebarTagsList } from '$components/sidebar/SidebarTagsList';
 import { getFilterPresetId } from '$constants/filters';
+import { MENU_EVENTS } from '$constants/menu';
+import { useConnectionStore } from '$context/connectionContext';
 import { useModalState } from '$context/modalStateContext';
 import { settingsStore, useSettingsStore } from '$context/settingsContext';
 import { useAccountDeletion } from '$hooks/deletion/useAccountDeletion';
@@ -45,8 +48,11 @@ import {
   resetStaleCursorAfterLayout,
   resetStaleCursorOnLayerClose,
 } from '$hooks/ui/useStaleCursorReset';
+import { getSetupErrorInfo } from '$lib/caldav/setup';
+import { testAccountConnection } from '$lib/caldav/test';
 import { exportMobileConfigFile } from '$lib/mobileconfig/export';
 import { getTasksByCalendar } from '$lib/store/tasks';
+import { toastManager } from '$lib/toastManager';
 import type { Account, Calendar, KeyboardShortcut } from '$types';
 import type { SidebarSectionKey } from '$types/settings';
 import { formatShortcut, getModifierJoiner } from '$utils/keyboard';
@@ -114,6 +120,7 @@ export const Sidebar = ({
   const { deleteTag } = useTagDeletion();
   const { syncCalendar, syncingCalendarId } = useSyncQuery();
   const createAccountMutation = useCreateAccount();
+  const { testingAccountIds } = useConnectionStore();
 
   const activeCalendarId = uiState?.activeCalendarId ?? null;
   const activeTagId = uiState?.activeTagId ?? null;
@@ -140,6 +147,7 @@ export const Sidebar = ({
     showFiltersSection,
     showTagsSection,
     showSidebarTaskCounts,
+    enforceVapid,
     sidebarSectionOrder,
     toggleLocalSectionCollapsed,
     toggleAccountsSectionCollapsed,
@@ -264,6 +272,54 @@ export const Sidebar = ({
       console.error('Failed to export .mobileconfig:', err);
     }
   };
+
+  const handleTestConnection = useCallback(
+    async (account: Account) => {
+      if (account.id in testingAccountIds) return;
+
+      const groupKey = `connection-test-${account.id}`;
+      toastManager.loading('Testing connection…', account.name, {
+        groupKey,
+        duration: 30_000,
+      });
+
+      try {
+        const { calendars, notice } = await testAccountConnection(account, enforceVapid);
+        toastManager.dismiss(groupKey);
+        toastManager.success(
+          'Connection successful',
+          `Found ${calendars.length} ${calendars.length === 1 ? 'calendar' : 'calendars'}.`,
+          { groupKey: `connection-test-result-${account.id}` },
+        );
+        if (notice) {
+          toastManager.warning(notice.title, notice.message, {
+            duration: 8_000,
+          });
+        }
+      } catch (error) {
+        toastManager.dismiss(groupKey);
+        const setupError = getSetupErrorInfo(
+          error,
+          'Failed to test CalDAV connection',
+          account.caldav?.serverType ?? 'generic',
+          account.caldav?.serverUrl ?? '',
+        );
+        const errorMessage = setupError.hint
+          ? `${setupError.message} ${setupError.hint}`
+          : setupError.message;
+        toastManager.error(setupError.title, errorMessage, {
+          groupKey: `connection-test-result-${account.id}`,
+          action: {
+            label: 'Edit Account',
+            onClick: () => {
+              emit(MENU_EVENTS.EDIT_ACCOUNT, { accountId: account.id });
+            },
+          },
+        });
+      }
+    },
+    [enforceVapid, testingAccountIds],
+  );
 
   useEffect(() => {
     if (!activeAccountMenuTriggerId) return;
@@ -604,6 +660,7 @@ export const Sidebar = ({
           contextMenu={contextMenu}
           accounts={accounts}
           syncingCalendarId={syncingCalendarId}
+          testingAccountIds={testingAccountIds}
           syncCalendar={syncCalendar}
           onClose={handleCloseContextMenu}
           onPointerClose={resetStaleCursorAfterContextMenuDismiss}
@@ -611,6 +668,7 @@ export const Sidebar = ({
             setEditingAccount(account);
             setShowAccountModal(true);
           }}
+          onTestConnection={handleTestConnection}
           onEditCalendar={(calendarId, accountId) => {
             const account = accounts.find((a) => a.id === accountId);
             const calendar = account?.calendars.find((c) => c.id === calendarId);

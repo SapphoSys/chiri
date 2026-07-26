@@ -5,7 +5,7 @@ import Loader2 from 'lucide-react/icons/loader-2';
 import Plus from 'lucide-react/icons/plus';
 import Trash2 from 'lucide-react/icons/trash-2';
 import User from 'lucide-react/icons/user';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ConnectionNoticeBanner } from '$components/banners/ConnectionNoticeBanner';
 import { MobileConfigExportModal } from '$components/modals/MobileConfigExportModal';
 import { ConnectionsSettingsPushAccountStatus } from '$components/settings/ConnectionSettings/ConnectionsSettingsPushAccountStatus';
@@ -14,16 +14,13 @@ import { useConnectionStore } from '$context/connectionContext';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAccountDeletion } from '$hooks/deletion/useAccountDeletion';
 import { useTasks } from '$hooks/queries/useTasks';
-import { CalDAVClient } from '$lib/caldav';
 import type { CalDAVSetupError, CalDAVSetupNotice } from '$lib/caldav/setup';
-import {
-  getSetupErrorInfo,
-  getSetupNotice,
-  probeSetupVtodoCreationIfNeeded,
-} from '$lib/caldav/setup';
+import { getSetupErrorInfo } from '$lib/caldav/setup';
+import { testAccountConnection } from '$lib/caldav/test';
+import type { HttpRequestContext } from '$lib/http';
 import { exportMobileConfigFile } from '$lib/mobileconfig/export';
 import type { Account } from '$types';
-import { pluralize } from '$utils/misc';
+import { generateUUID, pluralize } from '$utils/misc';
 
 interface ConnectionsSettingsProps {
   accounts: Account[];
@@ -39,7 +36,7 @@ export const ConnectionsSettings = ({
   const accounts = allAccounts.filter((a) => a.caldav);
   const { enforceVapid } = useSettingsStore();
   const { deleteAccount } = useAccountDeletion();
-  const { getStatus } = useConnectionStore();
+  const { endTesting, getStatus } = useConnectionStore();
   const { data: tasks = [] } = useTasks();
 
   const [testingAccounts, setTestingAccounts] = useState<Set<string>>(new Set());
@@ -55,6 +52,19 @@ export const ConnectionsSettings = ({
     >
   >({});
   const [exportingAccount, setExportingAccount] = useState<Account | null>(null);
+  const activeTestsRef = useRef(
+    new Map<string, { controller: AbortController; operationId: string }>(),
+  );
+
+  useEffect(() => {
+    return () => {
+      for (const [accountId, { controller, operationId }] of activeTestsRef.current) {
+        controller.abort();
+        endTesting(accountId, operationId);
+      }
+      activeTestsRef.current.clear();
+    };
+  }, [endTesting]);
 
   // calculate task counts per account
   const accountStats = useMemo(() => {
@@ -82,6 +92,15 @@ export const ConnectionsSettings = ({
   };
 
   const handleTestConnection = async (account: Account) => {
+    const controller = new AbortController();
+    const operationId = `settings-connection-test:${account.id}:${generateUUID()}`;
+    const requestContext: HttpRequestContext = {
+      operationId,
+      signal: controller.signal,
+    };
+    const activeTest = { controller, operationId };
+    activeTestsRef.current.set(account.id, activeTest);
+
     setTestingAccounts((prev) => new Set(prev).add(account.id));
     setTestResults((prev) => {
       const next = { ...prev };
@@ -90,13 +109,10 @@ export const ConnectionsSettings = ({
     });
 
     try {
-      await CalDAVClient.reconnect(account);
-      const client = CalDAVClient.getForAccount(account.id);
-      const { calendars, diagnostics } = await client.discoverCalendars(enforceVapid);
-      const canCreateVtodoCalendar = await probeSetupVtodoCreationIfNeeded(
-        client,
-        diagnostics,
+      const { calendars, notice } = await testAccountConnection(
+        account,
         enforceVapid,
+        requestContext,
       );
 
       setTestResults((prev) => ({
@@ -104,11 +120,12 @@ export const ConnectionsSettings = ({
         [account.id]: {
           success: true,
           error: null,
-          notice: getSetupNotice(diagnostics, canCreateVtodoCalendar),
+          notice,
           calendarCount: calendars.length,
         },
       }));
     } catch (error) {
+      if (controller.signal.aborted) return;
       setTestResults((prev) => ({
         ...prev,
         [account.id]: {
@@ -124,6 +141,9 @@ export const ConnectionsSettings = ({
         },
       }));
     } finally {
+      if (activeTestsRef.current.get(account.id) === activeTest) {
+        activeTestsRef.current.delete(account.id);
+      }
       setTestingAccounts((prev) => {
         const next = new Set(prev);
         next.delete(account.id);

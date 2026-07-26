@@ -2,22 +2,25 @@ import { type ComponentProps, isValidElement, type ReactElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ToastTitle, type ToastType } from '$components/ToastTitle';
 
-const { toastError, toastWarning, toastInfo, toastSuccess, toastDismiss } = vi.hoisted(() => {
-  let nextId = 0;
-  return {
-    toastError: vi.fn((..._args: unknown[]) => ++nextId),
-    toastWarning: vi.fn((..._args: unknown[]) => ++nextId),
-    toastInfo: vi.fn((..._args: unknown[]) => ++nextId),
-    toastSuccess: vi.fn((..._args: unknown[]) => ++nextId),
-    toastDismiss: vi.fn(),
-  };
-});
+const { toastError, toastWarning, toastInfo, toastLoading, toastSuccess, toastDismiss } =
+  vi.hoisted(() => {
+    let nextId = 0;
+    return {
+      toastError: vi.fn((..._args: unknown[]) => ++nextId),
+      toastWarning: vi.fn((..._args: unknown[]) => ++nextId),
+      toastInfo: vi.fn((..._args: unknown[]) => ++nextId),
+      toastLoading: vi.fn((..._args: unknown[]) => ++nextId),
+      toastSuccess: vi.fn((..._args: unknown[]) => ++nextId),
+      toastDismiss: vi.fn(),
+    };
+  });
 
 vi.mock('sonner', () => ({
   toast: {
     error: toastError,
     warning: toastWarning,
     info: toastInfo,
+    loading: toastLoading,
     success: toastSuccess,
     dismiss: toastDismiss,
   },
@@ -49,6 +52,7 @@ const TYPE_METHODS: Array<{ method: ToastType; mock: ToastMock }> = [
   { method: 'error', mock: toastError },
   { method: 'warning', mock: toastWarning },
   { method: 'info', mock: toastInfo },
+  { method: 'loading', mock: toastLoading },
   { method: 'success', mock: toastSuccess },
 ];
 

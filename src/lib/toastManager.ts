@@ -93,6 +93,10 @@ class ToastManager {
     return this.show(title, message, { ...options, type: 'info' });
   }
 
+  loading(title: ReactNode, message: ReactNode, options: ToastOptions = {}) {
+    return this.show(title, message, { ...options, type: 'loading' });
+  }
+
   success(title: ReactNode, message: ReactNode, options: ToastOptions = {}) {
     return this.show(title, message, { ...options, type: 'success' });
   }

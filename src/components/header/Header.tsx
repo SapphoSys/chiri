@@ -47,6 +47,7 @@ const SYNC_SOURCE_LABELS: Record<string, string> = {
 // extracted helper: get sync button tooltip content
 const getSyncTooltip = (
   disableSync: boolean,
+  isConnectionTesting: boolean,
   isOffline: boolean,
   isSyncing: boolean,
   lastSyncTime: Date | null | undefined,
@@ -57,6 +58,7 @@ const getSyncTooltip = (
   lastSyncSource: string | null,
   accountCount: number,
 ) => {
+  if (isConnectionTesting) return 'Connection test in progress...';
   if (disableSync) return 'Add an account to be able to use sync';
   if (isOffline) return 'Cannot sync while offline';
   if (isSyncing) {
@@ -103,6 +105,7 @@ interface HeaderProps {
   lastSyncSource?: string | null;
   onSync?: () => void;
   disableSync?: boolean;
+  isConnectionTesting?: boolean;
 }
 
 export const Header = ({
@@ -115,6 +118,7 @@ export const Header = ({
   lastSyncSource = null,
   onSync,
   disableSync = false,
+  isConnectionTesting = false,
 }: HeaderProps) => {
   const { data: uiState } = useUIState();
   const { data: accounts = [] } = useAccounts();
@@ -261,6 +265,7 @@ export const Header = ({
             <Tooltip
               content={getSyncTooltip(
                 disableSync,
+                isConnectionTesting,
                 isOffline,
                 isSyncing,
                 lastSyncTime,
@@ -276,8 +281,13 @@ export const Header = ({
               <button
                 type="button"
                 onClick={onSync}
-                disabled={isSyncing || isOffline || disableSync}
-                className={getSyncButtonClass(isSyncing, isOffline, disableSync, isAnyModalOpen)}
+                disabled={isSyncing || isOffline || disableSync || isConnectionTesting}
+                className={getSyncButtonClass(
+                  isSyncing,
+                  isOffline,
+                  disableSync || isConnectionTesting,
+                  isAnyModalOpen,
+                )}
               >
                 <RefreshCw
                   className={`h-5 w-5 shrink-0 ${isSyncing ? 'motion-safe:animate-spin' : ''}`}

@@ -2,7 +2,7 @@ import { connectionStore } from '$context/connectionContext';
 import { refreshFastmailToken } from '$lib/auth/fastmail';
 import { refreshStalwartToken } from '$lib/auth/stalwart';
 import { hasHttpUrlScheme, makeAbsoluteUrl, normalizeUrl } from '$lib/caldav/utils';
-import type { CalDAVCredentials, HttpResponse } from '$lib/http';
+import type { CalDAVCredentials, HttpRequestContext, HttpResponse } from '$lib/http';
 import { DetailedError, parseMultiStatus, propfind, tauriRequest } from '$lib/http';
 import { updateAccount } from '$lib/store/accounts';
 import type { Account, ServerType } from '$types';
@@ -150,7 +150,11 @@ export const handleCommonHttpErrors = (
   }
 };
 
-const discoverPrincipal = async (davRootUrl: string, credentials: CalDAVCredentials) => {
+const discoverPrincipal = async (
+  davRootUrl: string,
+  credentials: CalDAVCredentials,
+  context?: HttpRequestContext,
+) => {
   const propfindBody = `<?xml version="1.0" encoding="utf-8"?>
 <d:propfind xmlns:d="DAV:">
   <d:prop>
@@ -158,7 +162,9 @@ const discoverPrincipal = async (davRootUrl: string, credentials: CalDAVCredenti
   </d:prop>
 </d:propfind>`;
 
-  const response = await propfind(davRootUrl, credentials, propfindBody, '0');
+  const response = context
+    ? await propfind(davRootUrl, credentials, propfindBody, '0', context)
+    : await propfind(davRootUrl, credentials, propfindBody, '0');
   handleCommonHttpErrors(response, 'CalDAV service', davRootUrl, credentials);
   if (response.status !== 207) return null;
 
@@ -170,7 +176,11 @@ const discoverPrincipal = async (davRootUrl: string, credentials: CalDAVCredenti
   return match ? match[1] : null;
 };
 
-const discoverCalendarHome = async (principalUrl: string, credentials: CalDAVCredentials) => {
+const discoverCalendarHome = async (
+  principalUrl: string,
+  credentials: CalDAVCredentials,
+  context?: HttpRequestContext,
+) => {
   const propfindBody = `<?xml version="1.0" encoding="utf-8"?>
 <d:propfind xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav">
   <d:prop>
@@ -178,7 +188,9 @@ const discoverCalendarHome = async (principalUrl: string, credentials: CalDAVCre
   </d:prop>
 </d:propfind>`;
 
-  const response = await propfind(principalUrl, credentials, propfindBody, '0');
+  const response = context
+    ? await propfind(principalUrl, credentials, propfindBody, '0', context)
+    : await propfind(principalUrl, credentials, propfindBody, '0');
   handleCommonHttpErrors(response, 'CalDAV principal', principalUrl, credentials);
   if (response.status !== 207) return null;
 
@@ -200,9 +212,15 @@ const PRINCIPAL_RE =
 
 /** resolves the DAV root URL for generic/auto-detect servers, trying .well-known
  *  first and falling back to common paths if it returns 404 */
-const resolveGenericDavRoot = async (baseUrl: string, credentials: CalDAVCredentials) => {
+const resolveGenericDavRoot = async (
+  baseUrl: string,
+  credentials: CalDAVCredentials,
+  context?: HttpRequestContext,
+) => {
   const wellKnownUrl = `${baseUrl}/.well-known/caldav`;
-  const wkResponse = await propfind(wellKnownUrl, credentials, PRINCIPAL_QUERY, '0');
+  const wkResponse = context
+    ? await propfind(wellKnownUrl, credentials, PRINCIPAL_QUERY, '0', context)
+    : await propfind(wellKnownUrl, credentials, PRINCIPAL_QUERY, '0');
 
   if (wkResponse.status !== 404) {
     handleCommonHttpErrors(wkResponse, 'CalDAV service', wellKnownUrl, credentials);
@@ -215,7 +233,9 @@ const resolveGenericDavRoot = async (baseUrl: string, credentials: CalDAVCredent
   // .well-known not configured. try common SabreDAV/Baikal paths
   for (const path of ['/dav.php', '/caldav']) {
     const fbUrl = `${baseUrl}${path}`;
-    const fbResponse = await propfind(fbUrl, credentials, PRINCIPAL_QUERY, '0');
+    const fbResponse = context
+      ? await propfind(fbUrl, credentials, PRINCIPAL_QUERY, '0', context)
+      : await propfind(fbUrl, credentials, PRINCIPAL_QUERY, '0');
     if (fbResponse.status !== 404) {
       handleCommonHttpErrors(fbResponse, 'CalDAV service', fbUrl, credentials);
       return {
@@ -230,8 +250,12 @@ const resolveGenericDavRoot = async (baseUrl: string, credentials: CalDAVCredent
 };
 
 /** discovers principalUrl + calendarHome for generic/auto-detect server types */
-const discoverGenericUrls = async (baseUrl: string, credentials: CalDAVCredentials) => {
-  const { davRootUrl, davRootBody } = await resolveGenericDavRoot(baseUrl, credentials);
+const discoverGenericUrls = async (
+  baseUrl: string,
+  credentials: CalDAVCredentials,
+  context?: HttpRequestContext,
+) => {
+  const { davRootUrl, davRootBody } = await resolveGenericDavRoot(baseUrl, credentials, context);
 
   // try to extract principal from the response we already have before issuing
   // another PROPFIND
@@ -240,7 +264,7 @@ const discoverGenericUrls = async (baseUrl: string, credentials: CalDAVCredentia
     : null;
 
   if (!discoveredPrincipal) {
-    discoveredPrincipal = await discoverPrincipal(davRootUrl, credentials);
+    discoveredPrincipal = await discoverPrincipal(davRootUrl, credentials, context);
   }
 
   // last resort: the multistatus href itself may be the DAV root
@@ -250,7 +274,7 @@ const discoverGenericUrls = async (baseUrl: string, credentials: CalDAVCredentia
       const davRoot = results[0].href.startsWith('http')
         ? results[0].href
         : new URL(results[0].href, baseUrl).toString();
-      discoveredPrincipal = await discoverPrincipal(davRoot, credentials);
+      discoveredPrincipal = await discoverPrincipal(davRoot, credentials, context);
     }
   }
 
@@ -259,7 +283,7 @@ const discoverGenericUrls = async (baseUrl: string, credentials: CalDAVCredentia
   }
 
   const principalUrl = makeAbsoluteUrl(discoveredPrincipal, baseUrl);
-  const discoveredCalendarHome = await discoverCalendarHome(principalUrl, credentials);
+  const discoveredCalendarHome = await discoverCalendarHome(principalUrl, credentials, context);
 
   if (!discoveredCalendarHome) {
     throw new Error('Failed to discover calendar-home-set. Server may not support CalDAV.');
@@ -268,10 +292,23 @@ const discoverGenericUrls = async (baseUrl: string, credentials: CalDAVCredentia
   return { principalUrl, calendarHome: makeAbsoluteUrl(discoveredCalendarHome, baseUrl) };
 };
 
-export const detectVikunja = async (serverUrl: string, credentials: CalDAVCredentials) => {
+export const detectVikunja = async (
+  serverUrl: string,
+  credentials: CalDAVCredentials,
+  context?: HttpRequestContext,
+) => {
   try {
     const baseUrl = serverUrl.replace(/\/$/, '');
-    const response = await tauriRequest(`${baseUrl}/api/v1/info`, 'GET', credentials);
+    const response = context
+      ? await tauriRequest(
+          `${baseUrl}/api/v1/info`,
+          'GET',
+          credentials,
+          undefined,
+          undefined,
+          context,
+        )
+      : await tauriRequest(`${baseUrl}/api/v1/info`, 'GET', credentials);
     if (response.status !== 200) return false;
     const body = JSON.parse(response.body);
     if (typeof body.caldav_enabled !== 'boolean') return false;
@@ -297,6 +334,7 @@ export const connect = async (
   principalUrlOverride?: string,
   acceptInvalidCerts?: boolean,
   bearerToken?: string,
+  context?: HttpRequestContext,
 ) => {
   connectionStore.beginConnection(accountId);
 
@@ -338,7 +376,7 @@ export const connect = async (
     } else if (principalUrlOverride) {
       // principal URL provided, derive calendar home from it
       principalUrl = makeAbsoluteUrl(principalUrlOverride, baseUrl);
-      const discoveredCalendarHome = await discoverCalendarHome(principalUrl, credentials);
+      const discoveredCalendarHome = await discoverCalendarHome(principalUrl, credentials, context);
       if (!discoveredCalendarHome) {
         throw new Error('Failed to discover calendar-home-set from the provided Principal URL.');
       }
@@ -367,7 +405,11 @@ export const connect = async (
         case 'runbox':
         case 'stalwart':
         case 'generic': {
-          ({ principalUrl, calendarHome } = await discoverGenericUrls(baseUrl, credentials));
+          ({ principalUrl, calendarHome } = await discoverGenericUrls(
+            baseUrl,
+            credentials,
+            context,
+          ));
           break;
         }
         default:
@@ -383,7 +425,9 @@ export const connect = async (
   </d:prop>
 </d:propfind>`;
 
-    const response = await propfind(principalUrl, credentials, propfindBody, '0');
+    const response = context
+      ? await propfind(principalUrl, credentials, propfindBody, '0', context)
+      : await propfind(principalUrl, credentials, propfindBody, '0');
 
     if (response.status === 401) {
       const shortMessage = 'Authentication failed. Check your credentials.';
@@ -428,6 +472,7 @@ export const connectWithBearer = async (
   calendarHomeUrl?: string,
   principalUrlOverride?: string,
   acceptInvalidCerts?: boolean,
+  context?: HttpRequestContext,
 ) => {
   // pass empty string for password; bearerToken overrides it in tauriRequest
   return connect(
@@ -440,6 +485,7 @@ export const connectWithBearer = async (
     principalUrlOverride,
     acceptInvalidCerts,
     accessToken,
+    context,
   );
 };
 
@@ -451,7 +497,11 @@ export const isConnected = (accountId: string) => {
   return connectionStore.hasConnection(accountId);
 };
 
-export const reconnect = async (account: Account) => {
+export const reconnect = async (
+  account: Account,
+  context?: HttpRequestContext,
+  connectionId = account.id,
+) => {
   if (!account.caldav) {
     throw new Error('Cannot reconnect a local account');
   }
@@ -506,7 +556,7 @@ export const reconnect = async (account: Account) => {
     }
 
     await connectWithBearer(
-      account.id,
+      connectionId,
       caldav.serverUrl,
       caldav.username,
       accessToken,
@@ -514,6 +564,7 @@ export const reconnect = async (account: Account) => {
       caldav.calendarHomeUrl,
       caldav.principalUrl,
       caldav.acceptInvalidCerts,
+      context,
     );
     return;
   }
@@ -523,7 +574,7 @@ export const reconnect = async (account: Account) => {
   }
 
   await connect(
-    account.id,
+    connectionId,
     caldav.serverUrl,
     caldav.username,
     caldav.password,
@@ -531,6 +582,8 @@ export const reconnect = async (account: Account) => {
     caldav.calendarHomeUrl,
     caldav.principalUrl,
     caldav.acceptInvalidCerts,
+    undefined,
+    context,
   );
 };
 
