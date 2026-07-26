@@ -1,3 +1,4 @@
+import Info from 'lucide-react/icons/info';
 import { type SubmitEvent, useMemo, useState } from 'react';
 import { ColorSwatchPicker } from '$components/ColorSwatchPicker';
 import { ComposedInput } from '$components/ComposedInput';
@@ -37,6 +38,8 @@ export const TagModal = ({ tagId, initialName, onClose, onSave }: TagModalProps)
   const [icon, setIcon] = useState(existingTag?.icon || 'tag');
   const [emoji, setEmoji] = useState(existingTag?.emoji || '');
   const nameInputRef = useInitialFocusRef<HTMLInputElement>();
+  const hasCustomDefaultColor = !existingTag && defaultTagColor !== 'accent';
+  const isUsingDefaultColor = hasCustomDefaultColor && color === initialColor;
 
   const hasChanges = useMemo(() => {
     if (!existingTag) return true;
@@ -120,6 +123,30 @@ export const TagModal = ({ tagId, initialName, onClose, onSave }: TagModalProps)
           <p className="mb-2 block font-medium text-sm text-surface-700 dark:text-surface-300">
             Color
           </p>
+          {hasCustomDefaultColor && (
+            <div className="mb-3 flex items-start gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-sm text-surface-700 dark:text-surface-300">
+              <Info className="mt-0.5 size-4 shrink-0 text-semantic-info" />
+              <div className="min-w-0 flex-1">
+                <p>
+                  {isUsingDefaultColor
+                    ? 'The new tag will use a default color as defined in Settings → Tasks → Defaults.'
+                    : 'A default tag color is defined in Settings → Tasks → Defaults.'}
+                  {!isUsingDefaultColor && (
+                    <>
+                      {' '}
+                      <button
+                        type="button"
+                        onClick={() => setColor(resolvedDefaultTagColor)}
+                        className="font-medium text-semantic-info outline-hidden hover:underline focus-visible:underline"
+                      >
+                        Use default
+                      </button>
+                    </>
+                  )}
+                </p>
+              </div>
+            </div>
+          )}
           <ColorSwatchPicker
             options={colorPresets.map((preset) => ({
               id: preset,

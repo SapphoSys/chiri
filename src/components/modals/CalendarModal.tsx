@@ -1,3 +1,4 @@
+import Info from 'lucide-react/icons/info';
 import AlertTriangle from 'lucide-react/icons/triangle-alert';
 import { type SubmitEvent, useMemo, useState } from 'react';
 import { ColorSwatchPicker } from '$components/ColorSwatchPicker';
@@ -61,6 +62,8 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
   const [error, setError] = useState('');
   const [warning, setWarning] = useState('');
   const displayNameInputRef = useInitialFocusRef<HTMLInputElement>();
+  const hasCustomDefaultColor = !calendar && defaultCalendarColor !== 'accent';
+  const isUsingDefaultColor = hasCustomDefaultColor && color === initialColor;
 
   const hasChanges = useMemo(() => {
     if (!calendar) return true;
@@ -269,6 +272,30 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
           <p className="mb-2 block font-medium text-sm text-surface-700 dark:text-surface-300">
             Color
           </p>
+          {hasCustomDefaultColor && (
+            <div className="mb-3 flex items-start gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-sm text-surface-700 dark:text-surface-300">
+              <Info className="mt-0.5 size-4 shrink-0 text-semantic-info" />
+              <div className="min-w-0 flex-1">
+                <p>
+                  {isUsingDefaultColor
+                    ? 'The new calendar will use a default color as defined in Settings → Tasks → Defaults.'
+                    : 'A default calendar color is defined in Settings → Tasks → Defaults.'}
+                  {!isUsingDefaultColor && (
+                    <>
+                      {' '}
+                      <button
+                        type="button"
+                        onClick={() => setColor(resolvedDefaultCalendarColor)}
+                        className="font-medium text-semantic-info outline-hidden hover:underline focus-visible:underline"
+                      >
+                        Use default
+                      </button>
+                    </>
+                  )}
+                </p>
+              </div>
+            </div>
+          )}
           <ColorSwatchPicker
             options={colorPresets.map((preset) => ({
               id: preset,
