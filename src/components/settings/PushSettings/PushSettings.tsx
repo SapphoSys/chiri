@@ -245,7 +245,9 @@ export const PushSettings = () => {
 
                 <div className="space-y-2 p-4">
                   <div>
-                    <p className="text-sm text-surface-700 dark:text-surface-300">ntfy server</p>
+                    <p className="text-sm text-surface-700 dark:text-surface-300">
+                      ntfy server URL
+                    </p>
                     <p className="text-surface-500 text-xs dark:text-surface-400">
                       Leave blank to use ntfy.sh
                     </p>
