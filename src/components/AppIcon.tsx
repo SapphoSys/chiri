@@ -1,4 +1,4 @@
-const Icon = ({ className }: { className?: string }) => {
+const AppIcon = ({ className }: { className?: string }) => {
   return (
     <svg
       viewBox="0 0 96 96"
@@ -12,4 +12,4 @@ const Icon = ({ className }: { className?: string }) => {
   );
 };
 
-export default Icon;
+export default AppIcon;

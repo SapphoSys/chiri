@@ -1,7 +1,7 @@
 import Cloud from 'lucide-react/icons/cloud';
 import HardDrive from 'lucide-react/icons/hard-drive';
 import Sparkles from 'lucide-react/icons/sparkles';
-import AppIcon from '$components/Icon';
+import AppIcon from '$components/AppIcon';
 
 export const WelcomeStep = () => (
   <div className="flex flex-1 flex-col justify-between gap-6">
