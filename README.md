@@ -4,7 +4,7 @@
     <h1>Chiri</h1>
   </div>
 
-  <p>🍃 Cross-platform CalDAV-compatible task management app.</p>
+  <p>🍃 Cross-platform CalDAV task management app.</p>
 
   <p>
     <a href="#download">Download</a>
