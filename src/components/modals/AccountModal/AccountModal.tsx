@@ -512,7 +512,17 @@ export function AccountModal({
     const trimmedServerUrl = serverUrl.trim();
     if (!validatePrincipalUrl(trimmedServerUrl)) return false;
 
-    if (effectivePassword) {
+    const existingCalDav = account!.caldav!;
+    const connectionSettingsChanged =
+      serverType !== (existingCalDav.serverType || 'generic') ||
+      trimmedServerUrl !== existingCalDav.serverUrl ||
+      username !== existingCalDav.username ||
+      calendarHomeUrl.trim() !== (existingCalDav.calendarHomeUrl || '') ||
+      principalUrl.trim() !== (existingCalDav.principalUrl || '') ||
+      acceptInvalidCerts !== (existingCalDav.acceptInvalidCerts ?? false) ||
+      password.trim().length > 0;
+
+    if (connectionSettingsChanged && effectivePassword) {
       log.debug(`Testing connection to ${trimmedServerUrl}...`);
       const result = await connectWithCertHandling(
         account!.id,
