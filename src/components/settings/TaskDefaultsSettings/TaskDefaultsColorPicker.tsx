@@ -61,6 +61,7 @@ export const TaskDefaultsColorPicker = ({
             onSelect={onChange}
             onCustomChange={onChange}
             ariaLabel={`Custom ${label.toLowerCase()}`}
+            selectedVariant="border"
           />
         </div>
       )}

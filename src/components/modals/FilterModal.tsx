@@ -113,6 +113,7 @@ export const FilterModal = ({ filterId, onClose }: FilterModalProps) => {
             colorInputValue={color}
             onSelect={setColor}
             onCustomChange={setColor}
+            selectedVariant="border"
           />
         </div>
       </form>
