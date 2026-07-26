@@ -23,6 +23,7 @@ interface MenuCallbacks {
   onToggleUnstarted?: RefObject<((currentValue: boolean) => void) | null>;
   onSync?: RefObject<(() => void) | null>;
   onAllTasks?: RefObject<(() => void) | null>;
+  onRecentlyDeleted?: RefObject<(() => void) | null>;
   onSetSortMode?: RefObject<
     ((mode: SortMode, currentMode: SortMode, currentDirection: SortDirection) => void) | null
   >;
@@ -61,6 +62,11 @@ const SIMPLE_EVENTS: SimpleEventConfig[] = [
   { event: MENU_EVENTS.NEW_TASK, callback: 'onNewTask', label: 'New Task' },
   { event: MENU_EVENTS.SYNC, callback: 'onSync', label: 'Sync' },
   { event: MENU_EVENTS.ALL_TASKS, callback: 'onAllTasks', label: 'All Tasks' },
+  {
+    event: MENU_EVENTS.RECENTLY_DELETED,
+    callback: 'onRecentlyDeleted',
+    label: 'Recently Deleted',
+  },
   { event: MENU_EVENTS.PREFERENCES, callback: 'onOpenSettings', label: 'Preferences' },
   { event: MENU_EVENTS.ADD_ACCOUNT, callback: 'onOpenAccount', label: 'Add Account' },
   { event: MENU_EVENTS.IMPORT_TASKS, callback: 'onOpenImport', label: 'Import Tasks' },
@@ -152,6 +158,7 @@ const MODAL_BLOCKED_MENU_EVENTS = new Set<string>([
   MENU_EVENTS.TOGGLE_COMPLETED,
   MENU_EVENTS.TOGGLE_UNSTARTED,
   MENU_EVENTS.ALL_TASKS,
+  MENU_EVENTS.RECENTLY_DELETED,
   MENU_EVENTS.SORT_MANUAL,
   MENU_EVENTS.SORT_SMART,
   MENU_EVENTS.SORT_START_DATE,

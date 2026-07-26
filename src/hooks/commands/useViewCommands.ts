@@ -6,6 +6,7 @@ import {
   useSetActiveAccount,
   useSetActiveFilter,
   useSetAllTasksView,
+  useSetRecentlyDeletedView,
   useSetShowCompletedTasks,
   useSetShowUnstartedTasks,
   useSetSortConfig,
@@ -24,6 +25,7 @@ export const useViewCommands = ({ modals }: UseViewCommandsOptions) => {
   const setActiveFilterMutation = useSetActiveFilter();
   const setActiveAccountMutation = useSetActiveAccount();
   const setAllTasksViewMutation = useSetAllTasksView();
+  const setRecentlyDeletedViewMutation = useSetRecentlyDeletedView();
   const { toggleSidebarCollapsed } = useSettingsStore();
   const { isAnyModalOpen } = useModalState();
   const { navPrevList, navNextList } = useListNavigationCommands();
@@ -107,6 +109,11 @@ export const useViewCommands = ({ modals }: UseViewCommandsOptions) => {
     setActiveAccountMutation.mutate(null);
   }, [isAnyModalOpen, setActiveAccountMutation, setAllTasksViewMutation]);
 
+  const recentlyDeleted = useCallback(() => {
+    if (isAnyModalOpen) return;
+    setRecentlyDeletedViewMutation.mutate();
+  }, [isAnyModalOpen, setRecentlyDeletedViewMutation]);
+
   return {
     openSettings,
     openImport,
@@ -118,6 +125,7 @@ export const useViewCommands = ({ modals }: UseViewCommandsOptions) => {
     setSortMode,
     setSortDirection,
     allTasks,
+    recentlyDeleted,
     selectFilter,
     toggleSidebar,
     navPrevList,

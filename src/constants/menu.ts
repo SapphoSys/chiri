@@ -6,6 +6,7 @@ export const MENU_EVENTS = {
   SELECT_ALL: 'menu:select-all',
   SYNC: 'menu:sync',
   ALL_TASKS: 'menu:all-tasks',
+  RECENTLY_DELETED: 'menu:recently-deleted',
   SELECT_FILTER: 'menu:select-filter',
   PREFERENCES: 'menu:preferences',
   ADD_ACCOUNT: 'menu:add-account',
