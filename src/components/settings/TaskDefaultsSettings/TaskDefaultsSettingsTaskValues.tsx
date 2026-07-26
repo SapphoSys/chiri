@@ -44,7 +44,7 @@ const STATUS_OPTIONS = [
   },
 ] as const;
 
-export const TaskDefaultsTaskValues = () => {
+export const TaskDefaultsSettingsTaskValues = () => {
   const {
     defaultPriority,
     setDefaultPriority,

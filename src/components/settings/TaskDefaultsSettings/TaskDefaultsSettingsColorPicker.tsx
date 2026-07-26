@@ -9,7 +9,7 @@ const SWITCHER_ACTIVE =
 const SWITCHER_INACTIVE =
   'border-surface-200 dark:border-surface-700 hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400';
 
-interface TaskDefaultsColorPickerProps {
+interface TaskDefaultsSettingsColorPickerProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
@@ -17,13 +17,13 @@ interface TaskDefaultsColorPickerProps {
   accentColor: string;
 }
 
-export const TaskDefaultsColorPicker = ({
+export const TaskDefaultsSettingsColorPicker = ({
   label,
   value,
   onChange,
   presets,
   accentColor,
-}: TaskDefaultsColorPickerProps) => {
+}: TaskDefaultsSettingsColorPickerProps) => {
   const isAccent = value === 'accent';
   const resolvedValue = isAccent ? accentColor : value;
 

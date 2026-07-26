@@ -6,7 +6,7 @@ import { useSettingsStore } from '$context/settingsContext';
 import { defaultState } from '$context/settingsDefaults';
 import { rruleToText } from '$utils/recurrence';
 
-export const TaskDefaultsRecurrenceSection = () => {
+export const TaskDefaultsSettingsRecurrenceSection = () => {
   const { defaultRrule, setDefaultRrule, defaultRepeatFrom, setDefaultRepeatFrom, dateFormat } =
     useSettingsStore();
   const [showRepeatModal, setShowRepeatModal] = useState(false);

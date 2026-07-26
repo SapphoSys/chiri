@@ -1,13 +1,13 @@
 import RotateCcw from 'lucide-react/icons/rotate-ccw';
 import { Select } from '$components/Select';
-import { TaskDefaultsColorPicker } from '$components/settings/TaskDefaultsSettings/TaskDefaultsColorPicker';
+import { TaskDefaultsSettingsColorPicker } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsColorPicker';
 import { useSettingsStore } from '$context/settingsContext';
 import { defaultState } from '$context/settingsDefaults';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useColorPresets } from '$hooks/ui/useColorPresets';
 import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 
-export const TaskDefaultsCalendarSection = () => {
+export const TaskDefaultsSettingsCalendarSection = () => {
   const {
     defaultCalendarId,
     setDefaultCalendarId,
@@ -107,7 +107,7 @@ export const TaskDefaultsCalendarSection = () => {
 
         <div className="border-surface-200 border-t dark:border-surface-700" />
 
-        <TaskDefaultsColorPicker
+        <TaskDefaultsSettingsColorPicker
           label="Default calendar color"
           value={defaultCalendarColor}
           onChange={setDefaultCalendarColor}

@@ -2,7 +2,7 @@ import AlignJustify from 'lucide-react/icons/align-justify';
 import LayoutList from 'lucide-react/icons/layout-list';
 import type { ReactNode } from 'react';
 import { BadgesSettings } from '$components/settings/BadgesSettings/BadgesSettings';
-import { TaskListDensityPreview } from '$components/settings/TaskListLayoutSettings/TaskListDensityPreview';
+import { TaskListLayoutSettingsDensityPreview } from '$components/settings/TaskListLayoutSettings/TaskListLayoutSettingsDensityPreview';
 import { useSettingsStore } from '$context/settingsContext';
 import type { TaskListDensity } from '$types/settings';
 
@@ -48,7 +48,7 @@ export const TaskListLayoutSettings = () => {
           <p className="mt-4 mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
             Preview
           </p>
-          <TaskListDensityPreview density={taskListDensity} />
+          <TaskListLayoutSettingsDensityPreview density={taskListDensity} />
         </div>
       </div>
 

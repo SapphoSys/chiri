@@ -13,11 +13,11 @@ import { queryKeys } from '$lib/queryClient';
 import type { Account } from '$types';
 import type { PushProviderConfig, WebDAVPushAccountDiagnostics } from '$types/push';
 
-interface WebDAVPushAccountStatusProps {
+interface ConnectionsSettingsPushAccountStatusProps {
   account: Account;
 }
 
-interface WebDAVPushStatusDetail {
+interface ConnectionsSettingsPushStatusDetail {
   label: string;
   value: string;
 }
@@ -27,10 +27,10 @@ const formatAge = (date: Date | null) => {
   return formatDistanceToNow(date, { addSuffix: true });
 };
 
-const getWebDAVPushStatusDetails = (
+const getConnectionsSettingsPushStatusDetails = (
   diagnostics: WebDAVPushAccountDiagnostics | undefined,
   providerConfig: PushProviderConfig,
-): WebDAVPushStatusDetail[] => {
+): ConnectionsSettingsPushStatusDetail[] => {
   if (!diagnostics || diagnostics.supportedCalendars === 0) return [];
 
   const details = [
@@ -68,7 +68,9 @@ const getWebDAVPushStatusDetails = (
   return details;
 };
 
-export const WebDAVPushAccountStatus = ({ account }: WebDAVPushAccountStatusProps) => {
+export const ConnectionsSettingsPushAccountStatus = ({
+  account,
+}: ConnectionsSettingsPushAccountStatusProps) => {
   const statusButtonRef = useRef<HTMLButtonElement>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const {
@@ -112,7 +114,7 @@ export const WebDAVPushAccountStatus = ({ account }: WebDAVPushAccountStatusProp
     diagnostics.data,
   );
   const toneClass = webdavPushToneClass[status.tone];
-  const details = getWebDAVPushStatusDetails(diagnostics.data, pushProviderConfig);
+  const details = getConnectionsSettingsPushStatusDetails(diagnostics.data, pushProviderConfig);
 
   return (
     <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">

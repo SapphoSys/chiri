@@ -8,7 +8,7 @@ import User from 'lucide-react/icons/user';
 import { useMemo, useState } from 'react';
 import { ConnectionNoticeBanner } from '$components/banners/ConnectionNoticeBanner';
 import { MobileConfigExportModal } from '$components/modals/MobileConfigExportModal';
-import { WebDAVPushAccountStatus } from '$components/settings/ConnectionSettings/WebDAVPushAccountStatus';
+import { ConnectionsSettingsPushAccountStatus } from '$components/settings/ConnectionSettings/ConnectionsSettingsPushAccountStatus';
 import { Tooltip } from '$components/Tooltip';
 import { useConnectionStore } from '$context/connectionContext';
 import { useSettingsStore } from '$context/settingsContext';
@@ -235,7 +235,7 @@ export const ConnectionsSettings = ({
                         )}
                       </div>
 
-                      <WebDAVPushAccountStatus account={account} />
+                      <ConnectionsSettingsPushAccountStatus account={account} />
                     </div>
 
                     <div className="flex items-center justify-center gap-1">

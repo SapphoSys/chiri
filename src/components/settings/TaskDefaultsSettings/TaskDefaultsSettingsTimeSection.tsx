@@ -15,7 +15,7 @@ const formatTimeLabel = (minutes: number | null, use24h: boolean) => {
   return `${hour - 12}:${String(minute).padStart(2, '0')} PM`;
 };
 
-export const TaskDefaultsTimeSection = () => {
+export const TaskDefaultsSettingsTimeSection = () => {
   const { defaultStartTime, setDefaultStartTime, defaultDueTime, setDefaultDueTime, timeFormat } =
     useSettingsStore();
   const use24h = timeFormat === '24';

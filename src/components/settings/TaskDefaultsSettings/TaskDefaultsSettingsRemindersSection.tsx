@@ -24,7 +24,7 @@ const REMINDER_LABELS = Object.fromEntries(
   REMINDER_OPTIONS.map((o) => [o.value, o.label]),
 ) as Record<DefaultReminderOffset, string>;
 
-export const TaskDefaultsRemindersSection = () => {
+export const TaskDefaultsSettingsRemindersSection = () => {
   const { defaultReminders, setDefaultReminders } = useSettingsStore();
   const [showReminderPicker, setShowReminderPicker] = useState(false);
   const [editingReminderOffset, setEditingReminderOffset] = useState<DefaultReminderOffset | null>(

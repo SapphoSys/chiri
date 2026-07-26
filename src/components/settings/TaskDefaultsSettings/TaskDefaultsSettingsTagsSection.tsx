@@ -3,7 +3,7 @@ import RotateCcw from 'lucide-react/icons/rotate-ccw';
 import X from 'lucide-react/icons/x';
 import { useState } from 'react';
 import { BatchTaskTagsModal } from '$components/modals/BatchTaskTagsModal';
-import { TaskDefaultsColorPicker } from '$components/settings/TaskDefaultsSettings/TaskDefaultsColorPicker';
+import { TaskDefaultsSettingsColorPicker } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsColorPicker';
 import { getIconByName } from '$constants/icons';
 import { useSettingsStore } from '$context/settingsContext';
 import { defaultState } from '$context/settingsDefaults';
@@ -11,7 +11,7 @@ import { useTags } from '$hooks/queries/useTags';
 import { useColorPresets } from '$hooks/ui/useColorPresets';
 import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 
-export const TaskDefaultsTagsSection = () => {
+export const TaskDefaultsSettingsTagsSection = () => {
   const { defaultTags, setDefaultTags, defaultTagColor, setDefaultTagColor } = useSettingsStore();
   const colorPresets = useColorPresets();
   const resolvedAccentColor = useResolvedAccentColor();
@@ -98,7 +98,7 @@ export const TaskDefaultsTagsSection = () => {
 
         <div className="border-surface-200 border-t dark:border-surface-700" />
 
-        <TaskDefaultsColorPicker
+        <TaskDefaultsSettingsColorPicker
           label="Default tag color"
           value={defaultTagColor}
           onChange={setDefaultTagColor}

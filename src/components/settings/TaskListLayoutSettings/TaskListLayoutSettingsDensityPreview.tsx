@@ -3,7 +3,7 @@ import Clock from 'lucide-react/icons/clock';
 import Tag from 'lucide-react/icons/tag';
 import type { TaskListDensity } from '$types/settings';
 
-interface TaskListDensityPreviewProps {
+interface TaskListLayoutSettingsDensityPreviewProps {
   density: TaskListDensity;
 }
 
@@ -23,7 +23,9 @@ const renderPreviewBadges = () => (
   </>
 );
 
-export const TaskListDensityPreview = ({ density }: TaskListDensityPreviewProps) => {
+export const TaskListLayoutSettingsDensityPreview = ({
+  density,
+}: TaskListLayoutSettingsDensityPreviewProps) => {
   const isCompact = density === 'compact';
 
   return (

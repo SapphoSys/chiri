@@ -18,7 +18,7 @@ import { TimePickerModal } from '$components/modals/TimePickerModal';
 import {
   type NotificationActionConfig,
   NotificationSettingsSortableAction,
-} from '$components/settings/NotificationSettingsSortableAction';
+} from '$components/settings/NotificationSettings/NotificationSettingsSortableAction';
 import { MAX_NOTIFICATION_ACTIONS } from '$constants';
 import { useNotificationContext } from '$context/notificationContext';
 import { useSettingsStore } from '$context/settingsContext';

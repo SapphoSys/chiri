@@ -5,7 +5,7 @@ import type { KeyboardShortcut } from '$types';
 import { formatShortcut } from '$utils/keyboard';
 import { isMacPlatform } from '$utils/platform';
 
-export const ShortcutRow = ({
+export const ShortcutsSettingsRow = ({
   shortcut,
   onEdit,
   isLast = false,

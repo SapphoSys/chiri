@@ -8,7 +8,7 @@ import TriangleAlert from 'lucide-react/icons/triangle-alert';
 import XCircle from 'lucide-react/icons/x-circle';
 import { useEffect, useRef, useState } from 'react';
 import { Select } from '$components/Select';
-import { PushOperationalControls } from '$components/settings/PushSettings/PushOperationalControls';
+import { PushSettingsOperationalControls } from '$components/settings/PushSettings/PushSettingsOperationalControls';
 import { useSettingsStore } from '$context/settingsContext';
 import { usePushProviderAvailability } from '$hooks/push/usePushProviderAvailability';
 import { useAccounts } from '$hooks/queries/useAccounts';
@@ -406,7 +406,7 @@ export const PushSettings = () => {
       )}
 
       {enablePush && (
-        <PushOperationalControls
+        <PushSettingsOperationalControls
           providerAvailable={providerAvailable}
           providerConfig={pushProviderConfig}
           isResolvingProvider={isResolvingKUnifiedPush}

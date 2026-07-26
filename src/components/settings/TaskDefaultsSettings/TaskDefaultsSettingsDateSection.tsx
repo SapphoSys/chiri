@@ -38,7 +38,7 @@ const START_DATE_OPTION_GROUPS = [
 const selectClassName =
   'w-[160px] text-sm border border-transparent bg-surface-100 dark:bg-surface-700 text-surface-800 dark:text-surface-200 rounded-lg outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors shrink-0';
 
-export const TaskDefaultsDateSection = () => {
+export const TaskDefaultsSettingsDateSection = () => {
   const { defaultStartDate, setDefaultStartDate, defaultDueDate, setDefaultDueDate } =
     useSettingsStore();
 

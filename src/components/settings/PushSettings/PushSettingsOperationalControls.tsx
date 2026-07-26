@@ -26,7 +26,7 @@ import type {
   WebDAVPushAccountDiagnostics,
 } from '$types/push';
 
-interface PushOperationalControlsProps {
+interface PushSettingsOperationalControlsProps {
   providerAvailable: boolean;
   providerConfig: PushProviderConfig;
   isResolvingProvider: boolean;
@@ -189,11 +189,11 @@ const renderSubscriptionContent = (
   );
 };
 
-export const PushOperationalControls = ({
+export const PushSettingsOperationalControls = ({
   providerAvailable,
   providerConfig,
   isResolvingProvider,
-}: PushOperationalControlsProps) => {
+}: PushSettingsOperationalControlsProps) => {
   const {
     enforceVapid,
     enablePush,

@@ -2,10 +2,10 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import GripVertical from 'lucide-react/icons/grip-vertical';
 import type { CSSProperties, ReactNode } from 'react';
+import { Select } from '$components/Select';
 import { MAX_NOTIFICATION_ACTIONS } from '$constants';
 import { SNOOZE_DURATION_UNITS } from '$lib/notifications/duration';
 import type { NotificationActionKey, SnoozeDuration } from '$types/settings';
-import { Select } from '../Select';
 
 export type NotificationActionConfig = {
   key: NotificationActionKey;
