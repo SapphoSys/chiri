@@ -489,7 +489,7 @@ export const SidebarCollapsedView = ({
                             content={
                               <SidebarCollapsedItemTooltip
                                 name={calendar.displayName}
-                                type="Calendar"
+                                type={account.caldav ? 'Calendar' : 'Local calendar'}
                               />
                             }
                             position="right"
