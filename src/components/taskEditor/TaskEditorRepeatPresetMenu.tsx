@@ -3,7 +3,7 @@ import type { RefObject } from 'react';
 import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
 import type { RepeatPreset } from '$utils/recurrence';
 
-interface RepeatPresetMenuProps {
+interface TaskEditorRepeatPresetMenuProps {
   anchorRef: RefObject<HTMLElement | null>;
   presets: RepeatPreset[];
   onSelect: (rrule: string) => void;
@@ -14,13 +14,13 @@ interface RepeatPresetMenuProps {
 const menuItemClass =
   'flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:bg-surface-100 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 dark:text-surface-300 dark:hover:bg-surface-700 dark:focus-visible:bg-surface-700';
 
-export const RepeatPresetMenu = ({
+export const TaskEditorRepeatPresetMenu = ({
   anchorRef,
   presets,
   onSelect,
   onCustom,
   onClose,
-}: RepeatPresetMenuProps) => (
+}: TaskEditorRepeatPresetMenuProps) => (
   <FloatingDropdownFrame
     anchorRef={anchorRef}
     onClose={onClose}

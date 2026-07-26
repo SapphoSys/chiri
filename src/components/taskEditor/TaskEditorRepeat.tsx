@@ -4,8 +4,8 @@ import RefreshCw from 'lucide-react/icons/refresh-cw';
 import RefreshCwOff from 'lucide-react/icons/refresh-cw-off';
 import X from 'lucide-react/icons/x';
 import { useRef, useState } from 'react';
-import { RepeatPresetMenu } from '$components/taskEditor/RepeatPresetMenu';
 import { TaskEditorEmptyState } from '$components/taskEditor/TaskEditorEmptyState';
+import { TaskEditorRepeatPresetMenu } from '$components/taskEditor/TaskEditorRepeatPresetMenu';
 import { useSettingsStore } from '$context/settingsContext';
 import type { Task } from '$types';
 import { formatDate } from '$utils/date';
@@ -127,7 +127,7 @@ export const TaskEditorRepeat = ({
             Add repeat rule
           </button>
           {showPresets && (
-            <RepeatPresetMenu
+            <TaskEditorRepeatPresetMenu
               anchorRef={addButtonRef}
               presets={presets}
               onSelect={(rrule) => {
