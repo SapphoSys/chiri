@@ -106,7 +106,6 @@ export const SidebarAccountItem = ({
     <div
       ref={sortable ? setNodeRef : undefined}
       style={sortable ? { transform: transformStr } : undefined}
-      data-context-menu
       className={isDragging ? 'opacity-50' : ''}
     >
       <div
@@ -114,6 +113,7 @@ export const SidebarAccountItem = ({
       >
         <button
           type="button"
+          data-context-menu
           onClick={() => onToggleAccount(account.id)}
           onContextMenu={(e) => onContextMenu(e, 'account', account.id)}
           className={`flex h-9 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${accountButtonBackgroundClass(
