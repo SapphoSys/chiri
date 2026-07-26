@@ -10,7 +10,7 @@ vi.mock('$lib/database', () => ({
   },
 }));
 
-import { matchesFilter } from '$lib/store/filters';
+import { matchesFilter } from '$lib/filters';
 
 const makeFilter = (overrides: Partial<Filter>): Filter => ({
   id: 'filter-1',

@@ -33,8 +33,8 @@ vi.mock('$utils/recurrence', () => ({
 }));
 
 import { getVisibleTasks } from '$hooks/queries/useVisibleTasks';
+import { getFilteredTasks } from '$lib/filters';
 import { dataStore, defaultDataStore, defaultUIState } from '$lib/store';
-import { getFilteredTasks } from '$lib/store/filters';
 
 const seedStore = (tasks: Task[], activeView: UIState['activeView']) => {
   dataStore.save({

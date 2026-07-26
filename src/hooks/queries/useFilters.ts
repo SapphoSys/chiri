@@ -6,15 +6,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { queryKeys } from '$lib/queryClient';
 import { dataStore } from '$lib/store';
-import { moveItem } from '$lib/store/reorder';
-import { reorderFilters } from '$lib/store/reorder/filters';
 import {
   createFilter,
   deleteFilter,
   getAllFilters,
   getFilterById,
   updateFilter,
-} from '$lib/store/savedFilters';
+} from '$lib/store/filters';
+import { moveItem } from '$lib/store/reorder';
+import { reorderFilters } from '$lib/store/reorder/filters';
 import type { Filter } from '$types/filter';
 
 export const useFilters = () => {

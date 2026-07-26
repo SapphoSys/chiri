@@ -1,5 +1,5 @@
+import { getSortedTasks } from '$lib/filters';
 import { dataStore } from '$lib/store';
-import { getSortedTasks } from '$lib/store/filters';
 import type { Task } from '$types';
 import type { SortConfig } from '$types/sort';
 import type { FlattenedTask } from '$types/store';

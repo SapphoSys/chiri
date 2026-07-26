@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { DEFAULT_SORT_CONFIG } from '$constants';
 import { useFilteredTasks } from '$hooks/queries/useTasks';
 import { useUIState } from '$hooks/queries/useUIState';
-import { getSortedTasks } from '$lib/store/filters';
+import { getSortedTasks } from '$lib/filters';
 import { getChildTasks } from '$lib/store/tasks';
 import type { Task } from '$types';
 import type { SortConfig } from '$types/sort';
