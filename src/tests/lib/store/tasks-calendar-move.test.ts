@@ -34,7 +34,6 @@ const { mockAddPendingDeletion, mockUpdateTask, mockGetSettingsState, mockSettin
   });
 
 vi.mock('@tauri-apps/plugin-sql', () => ({ default: { load: vi.fn() } }));
-vi.mock('@tauri-apps/plugin-notification', () => ({}));
 
 vi.mock('$lib/database', () => ({
   db: {
