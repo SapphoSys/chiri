@@ -1,3 +1,4 @@
+import { settingsStore } from '$context/settingsContext';
 import { db } from '$lib/database';
 import { dataStore } from '$lib/store';
 import type { Filter } from '$types/filter';
@@ -61,6 +62,10 @@ export const updateFilter = (id: string, updates: Partial<Filter>) => {
 
 export const deleteFilter = (id: string) => {
   const data = dataStore.load();
+
+  if (settingsStore.getState().defaultLaunchView === `filter:${id}`) {
+    settingsStore.setDefaultLaunchView('all-tasks');
+  }
 
   db.deleteFilter(id).catch((e) => console.error('Failed to persist filter delete:', e));
 

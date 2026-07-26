@@ -8,7 +8,7 @@ import { preloadAutostartState } from '$hooks/system/useAutostart';
 import { db } from '$lib/database';
 import { initLogger, loggers } from '$lib/logger';
 import { dataStore } from '$lib/store';
-import { setAllTasksView, setRecentlyDeletedView } from '$lib/store/ui';
+import { setActiveFilter, setAllTasksView, setRecentlyDeletedView } from '$lib/store/ui';
 import { initAppMenu } from '$utils/menu';
 import {
   getTrayHostAvailable,
@@ -52,6 +52,19 @@ const applyDefaultLaunchViewPreference = () => {
 
   if (defaultLaunchView === 'all-tasks') {
     setAllTasksView();
+    return;
+  }
+
+  if (defaultLaunchView.startsWith('filter:')) {
+    const filterId = defaultLaunchView.slice('filter:'.length);
+    if (dataStore.load().filters.some((filter) => filter.id === filterId)) {
+      setActiveFilter(filterId);
+    } else {
+      log.warn('Configured default launch filter no longer exists; opening All Tasks', {
+        filterId,
+      });
+      setAllTasksView();
+    }
     return;
   }
 

@@ -35,7 +35,7 @@ export type SettingsSubtab =
 
 export type TaskListDensity = 'compact' | 'normal' | 'comfortable';
 export type WindowDecorationStyle = 'integrated' | 'native';
-export type DefaultLaunchView = 'last-view' | 'all-tasks' | 'recently-deleted';
+export type DefaultLaunchView = 'last-view' | 'all-tasks' | 'recently-deleted' | `filter:${string}`;
 export type SidebarSectionKey = 'filters' | 'local' | 'accounts' | 'tags';
 export type NetworkProxyMode = 'system' | 'none' | 'http' | 'socks';
 

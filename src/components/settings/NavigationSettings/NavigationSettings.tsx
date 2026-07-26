@@ -17,6 +17,7 @@ import {
   NavigationSettingsSortableSection,
 } from '$components/settings/NavigationSettings/NavigationSettingsSortableSection';
 import { useSettingsStore } from '$context/settingsContext';
+import { useFilters } from '$hooks/queries/useFilters';
 import type { DefaultLaunchView, SidebarSectionKey } from '$types/settings';
 
 const SECTIONS: NavigationSectionConfig[] = [
@@ -65,6 +66,7 @@ export const NavigationSettings = () => {
     showTagsSection,
     setShowTagsSection,
   } = useSettingsStore();
+  const { data: filters = [] } = useFilters();
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const orderedSections = sidebarSectionOrder
     .map((key) => SECTION_MAP.get(key))
@@ -119,8 +121,19 @@ export const NavigationSettings = () => {
             className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-500 focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
           >
             <option value="last-view">Last view</option>
-            <option value="all-tasks">All Tasks</option>
-            <option value="recently-deleted">Recently Deleted</option>
+            <optgroup label="Views">
+              <option value="all-tasks">All Tasks</option>
+              <option value="recently-deleted">Recently Deleted</option>
+            </optgroup>
+            {filters.length > 0 && (
+              <optgroup label="Filters">
+                {filters.map((filter) => (
+                  <option key={filter.id} value={`filter:${filter.id}`}>
+                    {filter.name}
+                  </option>
+                ))}
+              </optgroup>
+            )}
           </Select>
         </label>
 
