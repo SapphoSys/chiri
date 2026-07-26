@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { ConnectionNoticeBanner } from '$components/banners/ConnectionNoticeBanner';
+import { ServerTypeDescriptionBanner } from '$components/banners/ServerTypeDescriptionBanner';
 import { ComposedInput } from '$components/ComposedInput';
-import { ConnectionNoticeBanner } from '$components/ConnectionNoticeBanner';
 import { BrowserAuthStep } from '$components/modals/AccountModal/BrowserAuthStep';
-import { ServerTypeDescriptionBanner } from '$components/ServerTypeDescriptionBanner';
 import { useInitialFocusRef } from '$hooks/ui/useInitialFocusRef';
 import { type CalDAVSetupError, toCalDAVSetupError } from '$lib/caldav/setup';
 import { hasHttpUrlScheme } from '$lib/caldav/utils';

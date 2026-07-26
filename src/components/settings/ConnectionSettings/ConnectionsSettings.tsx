@@ -6,7 +6,7 @@ import Plus from 'lucide-react/icons/plus';
 import Trash2 from 'lucide-react/icons/trash-2';
 import User from 'lucide-react/icons/user';
 import { useMemo, useState } from 'react';
-import { ConnectionNoticeBanner } from '$components/ConnectionNoticeBanner';
+import { ConnectionNoticeBanner } from '$components/banners/ConnectionNoticeBanner';
 import { MobileConfigExportModal } from '$components/modals/MobileConfigExportModal';
 import { WebDAVPushAccountStatus } from '$components/settings/ConnectionSettings/WebDAVPushAccountStatus';
 import { Tooltip } from '$components/Tooltip';

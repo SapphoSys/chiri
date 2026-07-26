@@ -4,7 +4,7 @@ import { usePlatform } from '$hooks/system/usePlatform';
 import { useTrayHostAvailability } from '$hooks/system/useTrayHostAvailability';
 import { isLinuxPlatform } from '$utils/platform';
 
-export const TrayHostWarning = () => {
+export const TrayHostWarningBanner = () => {
   const { enableSystemTray } = useSettingsStore();
   const { isGNOME } = usePlatform();
   const { isAvailable } = useTrayHostAvailability();

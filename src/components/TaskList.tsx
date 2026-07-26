@@ -6,7 +6,7 @@ import Plus from 'lucide-react/icons/plus';
 import SearchX from 'lucide-react/icons/search-x';
 import Trash2 from 'lucide-react/icons/trash-2';
 import type { ReactNode } from 'react';
-import { RecentlyDeletedNoticeBanner } from '$components/RecentlyDeletedNoticeBanner';
+import { RecentlyDeletedNoticeBanner } from '$components/banners/RecentlyDeletedNoticeBanner';
 import { TaskItem } from '$components/taskItem/TaskItem';
 import { DEFAULT_SORT_CONFIG } from '$constants';
 import { useCreateTask } from '$hooks/queries/useTasks';

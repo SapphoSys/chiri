@@ -6,9 +6,9 @@ import {
   useEffect,
   useRef,
 } from 'react';
+import { OfflineBanner } from '$components/banners/OfflineBanner';
 import { DragOverlay } from '$components/DragOverlay';
 import { Header } from '$components/header/Header';
-import { OfflineBanner } from '$components/OfflineBanner';
 import { Sidebar } from '$components/sidebar/Sidebar';
 import { TaskList } from '$components/TaskList';
 import { TaskEditor } from '$components/taskEditor/TaskEditor';

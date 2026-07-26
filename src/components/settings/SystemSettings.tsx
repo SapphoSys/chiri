@@ -4,7 +4,7 @@ import { relaunch } from '@tauri-apps/plugin-process';
 import AlertTriangle from 'lucide-react/icons/alert-triangle';
 import Loader2 from 'lucide-react/icons/loader-2';
 import { useEffect, useState } from 'react';
-import { TrayHostWarning } from '$components/TrayHostWarning';
+import { TrayHostWarningBanner } from '$components/banners/TrayHostWarningBanner';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAutostart } from '$hooks/system/useAutostart';
 import { useTrayHostAvailability } from '$hooks/system/useTrayHostAvailability';
@@ -278,7 +278,7 @@ export const SystemSettings = () => {
 
         {isLinux && enableSystemTray && isTrayHostAvailable === false && (
           <div className="px-4 pb-4">
-            <TrayHostWarning />
+            <TrayHostWarningBanner />
           </div>
         )}
       </div>

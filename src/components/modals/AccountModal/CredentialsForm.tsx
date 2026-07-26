@@ -1,11 +1,11 @@
 import Info from 'lucide-react/icons/info';
 import AlertTriangle from 'lucide-react/icons/triangle-alert';
 import type { ReactNode, SubmitEvent } from 'react';
+import { ConnectionNoticeBanner } from '$components/banners/ConnectionNoticeBanner';
+import { ServerTypeDescriptionBanner } from '$components/banners/ServerTypeDescriptionBanner';
 import { ComposedInput } from '$components/ComposedInput';
-import { ConnectionNoticeBanner } from '$components/ConnectionNoticeBanner';
 import { IconEmojiPicker } from '$components/IconEmojiPicker';
 import { AdvancedSection } from '$components/modals/AccountModal/AdvancedSection';
-import { ServerTypeDescriptionBanner } from '$components/ServerTypeDescriptionBanner';
 import { Tooltip } from '$components/Tooltip';
 import { getPredefinedServerUrl } from '$constants/settings';
 import { useInitialFocusRef } from '$hooks/ui/useInitialFocusRef';

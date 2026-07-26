@@ -4,8 +4,8 @@ import Loader2 from 'lucide-react/icons/loader-2';
 import LogIn from 'lucide-react/icons/log-in';
 import PanelTop from 'lucide-react/icons/panel-top';
 import Rocket from 'lucide-react/icons/rocket';
+import { TrayHostWarningBanner } from '$components/banners/TrayHostWarningBanner';
 import { ToggleRow } from '$components/modals/OnboardingModal/ToggleRow';
-import { TrayHostWarning } from '$components/TrayHostWarning';
 
 interface StartupWindowStepProps {
   autostartEnabled: boolean | null;
@@ -93,6 +93,6 @@ export const StartupWindowStep = ({
       </div>
     )}
 
-    <TrayHostWarning />
+    <TrayHostWarningBanner />
   </div>
 );
