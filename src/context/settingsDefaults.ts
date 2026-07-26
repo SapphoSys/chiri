@@ -5,10 +5,6 @@ import {
   DEFAULT_SIDEBAR_WIDTH,
 } from '$constants';
 import { DEFAULT_COLOR_SCHEME_ID } from '$constants/color';
-import {
-  DEFAULT_MOZILLA_AUTOPUSH_ENDPOINT_URL,
-  DEFAULT_MOZILLA_AUTOPUSH_WEBSOCKET_URL,
-} from '$lib/push/providers/mozillaAutopush';
 import { NTFY_DIRECT_PROVIDER_ID } from '$types/push';
 import type { SettingsState } from '$types/settings';
 import { getDefaultAccentColor } from '$utils/color/scheme';
@@ -147,9 +143,9 @@ export const defaultState: SettingsState = {
   enablePush: false,
   enforceVapid: false,
   pushProvider: NTFY_DIRECT_PROVIDER_ID,
-  ntfyServerUrl: 'https://ntfy.sh',
-  mozillaAutopushWebsocketUrl: DEFAULT_MOZILLA_AUTOPUSH_WEBSOCKET_URL,
-  mozillaAutopushEndpointUrl: DEFAULT_MOZILLA_AUTOPUSH_ENDPOINT_URL,
+  ntfyServerUrl: '',
+  mozillaAutopushWebsocketUrl: '',
+  mozillaAutopushEndpointUrl: '',
   notificationActions: {
     complete: true,
     snooze: true,

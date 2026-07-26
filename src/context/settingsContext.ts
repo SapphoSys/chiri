@@ -9,6 +9,11 @@ import {
   mergeShortcuts,
 } from '$context/settingsImportExport';
 import { loggers } from '$lib/logger';
+import {
+  DEFAULT_MOZILLA_AUTOPUSH_ENDPOINT_URL,
+  DEFAULT_MOZILLA_AUTOPUSH_WEBSOCKET_URL,
+} from '$lib/push/providers/mozillaAutopush';
+import { DEFAULT_NTFY_SERVER_URL } from '$lib/push/providers/ntfy';
 import type {
   DefaultDateOffset,
   DefaultReminderOffset,
@@ -65,6 +70,20 @@ const loadFromStorage = (): { state: SettingsState; migrated: boolean } => {
       const loadedState = { ...defaultState, ...storedState };
       loadedState.networkProxyPort = normalizeProxyPort(loadedState.networkProxyPort);
 
+      // keep built-in WebDAV provider defaults as placeholders instead of persisted values
+      const legacyDefaultPushUrls = [
+        ['ntfyServerUrl', DEFAULT_NTFY_SERVER_URL],
+        ['mozillaAutopushWebsocketUrl', DEFAULT_MOZILLA_AUTOPUSH_WEBSOCKET_URL],
+        ['mozillaAutopushEndpointUrl', DEFAULT_MOZILLA_AUTOPUSH_ENDPOINT_URL],
+      ] as const;
+      let migrated = false;
+      for (const [key, defaultUrl] of legacyDefaultPushUrls) {
+        if (loadedState[key] === defaultUrl) {
+          loadedState[key] = '';
+          migrated = true;
+        }
+      }
+
       // migrate old number[] quickTimePresets to object format
       if (Array.isArray(loadedState.quickTimePresets)) {
         loadedState.quickTimePresets = defaultState.quickTimePresets;
@@ -104,7 +123,6 @@ const loadFromStorage = (): { state: SettingsState; migrated: boolean } => {
       );
 
       // merge keyboard shortcuts to include any new defaults
-      let migrated = false;
       if (parsed.state?.keyboardShortcuts) {
         const originalLength = parsed.state.keyboardShortcuts.length;
         const originalIds = parsed.state.keyboardShortcuts.map((s: KeyboardShortcut) => s.id);
