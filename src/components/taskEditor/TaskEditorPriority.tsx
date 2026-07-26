@@ -42,9 +42,11 @@ export const TaskEditorPriority = ({ task, readOnly = false }: PriorityProps) =>
           >
             <span
               className={
-                task.priority === p.value || !readOnly
-                  ? p.color
-                  : 'text-surface-400 dark:text-surface-500'
+                task.priority === p.value
+                  ? 'text-surface-900 dark:text-surface-100'
+                  : !readOnly
+                    ? p.color
+                    : 'text-surface-400 dark:text-surface-500'
               }
             >
               {p.label}
