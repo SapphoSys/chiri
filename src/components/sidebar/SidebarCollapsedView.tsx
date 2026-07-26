@@ -336,7 +336,11 @@ export const SidebarCollapsedView = ({
       className={`flex min-h-0 flex-1 flex-col items-center motion-safe:transition-opacity motion-safe:duration-150 ${showCollapsedContent ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
     >
       <div className="flex min-h-0 w-full flex-1 flex-col items-center gap-1 overflow-y-auto overscroll-contain py-2">
-        <Tooltip content="All Tasks" position="right" disabled={isAnyCollapsedItemDragging}>
+        <Tooltip
+          content={<SidebarCollapsedItemTooltip name="All Tasks" type="View" />}
+          position="right"
+          disabled={isAnyCollapsedItemDragging}
+        >
           <button
             type="button"
             onClick={onAllTasks}
@@ -350,7 +354,11 @@ export const SidebarCollapsedView = ({
           </button>
         </Tooltip>
 
-        <Tooltip content="Recently Deleted" position="right" disabled={isAnyCollapsedItemDragging}>
+        <Tooltip
+          content={<SidebarCollapsedItemTooltip name="Recently Deleted" type="View" />}
+          position="right"
+          disabled={isAnyCollapsedItemDragging}
+        >
           <button
             type="button"
             onClick={onRecentlyDeleted}
