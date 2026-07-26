@@ -15,8 +15,10 @@ import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useRes
 import { getSnoozedUntil, subscribeToSnoozes } from '$lib/notifications/snoozes';
 import { getAllTags } from '$lib/store/tags';
 import { getChildTasks } from '$lib/store/tasks';
-import type { Account, Tag, Task } from '$types';
-import type { TaskBadgeKey, TaskBadgeVisibility } from '$types/settings';
+import type { Account } from '$types/account';
+import type { TaskBadgeKey, TaskBadgeVisibility } from '$types/settings/categories/editor';
+import type { Tag } from '$types/tag';
+import type { Task } from '$types/task/model';
 import { formatStartDate } from '$utils/date';
 
 interface TaskItemBadgesProps {

@@ -2,10 +2,10 @@ import type DatabasePlugin from '@tauri-apps/plugin-sql';
 import { settingsStore } from '$context/settingsContext';
 import { getAllAccounts } from '$lib/database/accounts';
 import { rowToTask } from '$lib/database/converters';
+import type { TaskRow } from '$lib/database/types';
 import { getUIState, setSelectedTask } from '$lib/database/ui';
 import { toAppleEpoch } from '$lib/ical/vtodo';
-import type { Task, TaskStatus } from '$types';
-import type { TaskRow } from '$types/database';
+import type { Status, Task } from '$types/task/model';
 import { generateUUID } from '$utils/misc';
 import { getRecentlyDeletedRetentionCutoff } from '$utils/taskDeletion';
 
@@ -429,7 +429,7 @@ export const toggleTaskComplete = async (conn: DatabasePlugin, id: string) => {
   const task = await getTaskById(conn, id);
   if (!task) return;
 
-  const newStatus: TaskStatus =
+  const newStatus: Status =
     task.status === 'completed'
       ? 'needs-action'
       : task.status === 'cancelled' || task.status === 'in-process'

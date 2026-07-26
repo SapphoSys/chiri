@@ -5,7 +5,7 @@ import {
   DEFAULT_SORT_CONFIG,
   DEFAULT_TAG_SORT_CONFIG,
 } from '$constants';
-import type { UIStateRow } from '$types/database';
+import type { UIStateRow } from '$lib/database/types';
 import type {
   AccountSortConfig,
   AccountSortMode,
@@ -17,7 +17,7 @@ import type {
   TagSortConfig,
   TagSortMode,
 } from '$types/sort';
-import type { UIState } from '$types/store';
+import type { UIState } from '$types/store/state';
 
 export const DEFAULT_UI_STATE: UIState = {
   activeView: 'tasks',

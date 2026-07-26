@@ -1,18 +1,9 @@
-import type { Account, Tag, Task } from '$types';
+import type { Account } from '$types/account';
 import type { Filter } from '$types/filter';
 import type { AccountSortConfig, CalendarSortConfig, SortConfig, TagSortConfig } from '$types/sort';
-
-export interface PendingDeletion {
-  uid: string;
-  href: string;
-  accountId: string;
-  calendarId: string;
-  etag?: string;
-  deletedAt?: Date;
-  attemptCount?: number;
-  lastAttemptAt?: Date;
-  lastError?: string;
-}
+import type { PendingDeletion } from '$types/store/sync';
+import type { Tag } from '$types/tag';
+import type { Task } from '$types/task/model';
 
 export interface UIState {
   activeView: 'tasks' | 'recently-deleted' | 'filter';
@@ -41,8 +32,3 @@ export interface DataStore {
 }
 
 export type DataChangeListener = () => void;
-
-export interface FlattenedTask extends Task {
-  ancestorIds: string[];
-  depth: number;
-}

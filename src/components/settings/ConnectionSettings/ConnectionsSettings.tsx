@@ -19,7 +19,7 @@ import { getSetupErrorInfo } from '$lib/caldav/setup';
 import { testAccountConnection } from '$lib/caldav/test';
 import type { HttpRequestContext } from '$lib/http';
 import { exportMobileConfigFile } from '$lib/mobileconfig/export';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 import { generateUUID, pluralize } from '$utils/misc';
 
 interface ConnectionsSettingsProps {

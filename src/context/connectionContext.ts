@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 import type { CalDAVCredentials } from '$lib/http';
-import type { ServerType } from '$types';
+import type { ServerType } from '$types/account';
 
 interface AccountConnection {
   serverUrl: string;

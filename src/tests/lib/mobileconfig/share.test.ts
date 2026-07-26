@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { shareMobileConfig } from '$lib/mobileconfig/share';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 
 const account = (): Account => ({
   id: 'account-1',

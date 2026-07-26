@@ -2,7 +2,10 @@ import CalendarDays from 'lucide-react/icons/calendar-days';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { MobileConfigSignatureWarning } from '$components/modals/MobileConfigSignatureWarning';
-import type { MobileConfigCalDAVSettings, MobileConfigImportProfile } from '$types/mobileconfig';
+import type {
+  MobileConfigCalDAVSettings,
+  MobileConfigImportProfile,
+} from '$types/mobileconfig/import';
 
 interface MobileConfigImportChooserModalProps {
   profile: MobileConfigImportProfile;

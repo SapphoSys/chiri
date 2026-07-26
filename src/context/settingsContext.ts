@@ -14,32 +14,26 @@ import {
   DEFAULT_MOZILLA_AUTOPUSH_WEBSOCKET_URL,
 } from '$lib/push/providers/mozillaAutopush';
 import { DEFAULT_NTFY_SERVER_URL } from '$lib/push/providers/ntfy';
-import type {
-  DefaultDateOffset,
-  DefaultReminderOffset,
-  KeyboardShortcut,
-  Priority,
-  TaskStatus,
-} from '$types';
 import type { AccentColor, Theme } from '$types/color';
-import type { DateFormat, StartOfWeek, TimeFormat, WorkingDay } from '$types/preference';
-import type { PushProviderId } from '$types/push';
+import type { NotificationActionSettings } from '$types/notifications/settings';
+import type { PushProviderId } from '$types/push/providers';
+import type { DefaultDateOffset, DefaultReminderOffset } from '$types/settings/categories/defaults';
 import type {
-  DefaultLaunchView,
   EditorFieldKey,
   EditorFieldVisibility,
-  NetworkProxyMode,
-  NotificationActionSettings,
-  QuickTimePresets,
-  SettingsState,
-  SettingsStore,
-  SidebarSectionKey,
-  SubtaskDeletionBehavior,
   TaskBadgeKey,
   TaskBadgeVisibility,
-  TaskListDensity,
-  WindowDecorationStyle,
-} from '$types/settings';
+} from '$types/settings/categories/editor';
+import type { TaskListDensity } from '$types/settings/categories/layout';
+import type { DefaultLaunchView, SidebarSectionKey } from '$types/settings/categories/navigation';
+import type { NetworkProxyMode } from '$types/settings/categories/network';
+import type { DateFormat, StartOfWeek, TimeFormat } from '$types/settings/categories/region';
+import type { SubtaskDeletionBehavior } from '$types/settings/categories/safety';
+import type { QuickTimePresets, WorkingDay } from '$types/settings/categories/scheduling';
+import type { WindowDecorationStyle } from '$types/settings/categories/system';
+import type { SettingsState, SettingsStore } from '$types/settings/state';
+import type { KeyboardShortcut } from '$types/shortcuts';
+import type { Priority, Status } from '$types/task/model';
 import { applyAccentColor, applySchemeAccentColor, resolveAccentColor } from '$utils/color/accent';
 import { applyColorScheme, getColorSchemeFlavor } from '$utils/color/scheme';
 import { applyTheme, resolveEffectiveTheme } from '$utils/color/theme';
@@ -307,7 +301,7 @@ export const settingsStore = {
     return false;
   },
   setDefaultPriority: (defaultPriority: Priority) => setState({ defaultPriority }),
-  setDefaultStatus: (defaultStatus: TaskStatus) => setState({ defaultStatus }),
+  setDefaultStatus: (defaultStatus: Status) => setState({ defaultStatus }),
   setDefaultPercentComplete: (defaultPercentComplete: number) =>
     setState({ defaultPercentComplete }),
   setDefaultTags: (defaultTags: string[]) => setState({ defaultTags }),

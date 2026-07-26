@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { mapDecodedMobileConfig } from '$lib/mobileconfig/import';
-import type { DecodedMobileConfig, DecodedMobileConfigCalDAVPayload } from '$types/mobileconfig';
+import type {
+  DecodedMobileConfig,
+  DecodedMobileConfigCalDAVPayload,
+} from '$types/mobileconfig/decode';
 
 const decodedProfile = (
   ...caldavPayloads: DecodedMobileConfigCalDAVPayload[]

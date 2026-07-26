@@ -22,7 +22,7 @@ import {
   BadgesSettingsSortableBadges,
 } from '$components/settings/BadgesSettings/BadgesSettingsSortableBadges';
 import { useSettingsStore } from '$context/settingsContext';
-import type { TaskBadgeKey } from '$types/settings';
+import type { TaskBadgeKey } from '$types/settings/categories/editor';
 
 const BADGES: BadgeConfig[] = [
   {

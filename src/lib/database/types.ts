@@ -152,15 +152,6 @@ export interface ReminderRow {
   [key: string]: unknown;
 }
 
-export interface TaskHistoryEntry {
-  id: string;
-  taskUid: string;
-  changedAt: Date;
-  field: string;
-  oldValue: string | null;
-  newValue: string | null;
-}
-
 export interface TaskHistoryRow {
   id: string;
   task_uid: string;

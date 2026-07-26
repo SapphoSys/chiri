@@ -6,7 +6,7 @@ import { CalDAVClient } from '$lib/caldav';
 import { loggers } from '$lib/logger';
 import { disablePushForCalendar } from '$lib/push';
 import { deleteCalendar as storeDeleteCalendar } from '$lib/store/calendars';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 
 const log = loggers.deleteHandlers;
 

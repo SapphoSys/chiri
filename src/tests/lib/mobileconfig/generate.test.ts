@@ -4,7 +4,7 @@ import {
   getMobileConfigCredentialWarnings,
   getMobileConfigExportEligibility,
 } from '$lib/mobileconfig/generate';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 
 const account = (overrides: Partial<Account> = {}): Account => ({
   id: 'account-1',

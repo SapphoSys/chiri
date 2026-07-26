@@ -1,6 +1,6 @@
 import { getIconByName } from '$constants/icons';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 
 interface CalendarOptionProps {
   cal: Account['calendars'][number];

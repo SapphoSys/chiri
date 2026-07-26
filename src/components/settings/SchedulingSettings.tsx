@@ -7,8 +7,7 @@ import { useMemo, useState } from 'react';
 import { TimePickerModal } from '$components/modals/TimePickerModal';
 import { useSettingsStore } from '$context/settingsContext';
 import { defaultState } from '$context/settingsDefaults';
-import type { WorkingDay } from '$types/preference';
-import type { QuickTimePresets } from '$types/settings';
+import type { QuickTimePresets, WorkingDay } from '$types/settings/categories/scheduling';
 import { getOrderedWorkingDays, WORKING_DAY_META } from '$utils/calendar';
 import { formatTime } from '$utils/date';
 

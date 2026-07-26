@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Account, Calendar, Task } from '$types';
-import type { DataStore, PendingDeletion } from '$types/store';
+import type { Account } from '$types/account';
+import type { Calendar } from '$types/calendar';
+import type { DataStore } from '$types/store/state';
+import type { PendingDeletion } from '$types/store/sync';
+import type { Task } from '$types/task/model';
 import { makeTask } from '../../fixtures';
 
 const {

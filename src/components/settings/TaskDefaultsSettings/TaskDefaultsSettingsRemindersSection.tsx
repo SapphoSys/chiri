@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { TaskDefaultsReminderPickerModal } from '$components/modals/TaskDefaultsReminderPickerModal';
 import { useSettingsStore } from '$context/settingsContext';
 import { defaultState } from '$context/settingsDefaults';
-import type { DefaultReminderOffset } from '$types';
+import type { DefaultReminderOffset } from '$types/settings/categories/defaults';
 
 const REMINDER_OPTIONS: { value: DefaultReminderOffset; label: string }[] = [
   { value: 'at-due', label: 'At due time' },

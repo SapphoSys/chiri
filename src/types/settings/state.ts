@@ -1,108 +1,22 @@
-import type {
-  DefaultDateOffset,
-  DefaultReminderOffset,
-  KeyboardShortcut,
-  Priority,
-  ServerType,
-  TaskStatus,
-} from '$types';
 import type { AccentColor, Theme } from '$types/color';
-import type { DateFormat, StartOfWeek, TimeFormat, WorkingDay } from '$types/preference';
-import type { PushProviderId } from '$types/push';
-
-export type SubtaskDeletionBehavior = 'delete' | 'keep';
-
-export type SettingsCategory = 'app' | 'tasks' | 'accounts' | 'misc';
-export type SettingsSubtab =
-  | 'appearance'
-  | 'navigation'
-  | 'safety'
-  | 'defaults'
-  | 'scheduling'
-  | 'list-layout'
-  | 'editor'
-  | 'notifications'
-  | 'region-and-time'
-  | 'keyboard-shortcuts'
-  | 'startup-window'
-  | 'connections'
-  | 'data-diagnostics'
-  | 'sync'
-  | 'push'
-  | 'network'
-  | 'updates'
-  | 'about';
-
-export type TaskListDensity = 'compact' | 'normal' | 'comfortable';
-export type WindowDecorationStyle = 'integrated' | 'native';
-export type DefaultLaunchView = 'last-view' | 'all-tasks' | 'recently-deleted' | `filter:${string}`;
-export type SidebarSectionKey = 'filters' | 'local' | 'accounts' | 'tags';
-export type NetworkProxyMode = 'system' | 'none' | 'http' | 'socks';
-
-export interface EditorFieldVisibility {
-  status: boolean;
-  description: boolean;
-  url: boolean;
-  dates: boolean;
-  repeat: boolean;
-  priority: boolean;
-  calendar: boolean;
-  tags: boolean;
-  reminders: boolean;
-  subtasks: boolean;
-}
-
-export type EditorFieldKey = keyof EditorFieldVisibility;
-
-export type NotificationActionKey = 'complete' | 'snooze';
-
-export type SnoozeDurationUnit = 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks';
-
-export interface SnoozeDuration {
-  id: string;
-  value: number;
-  unit: SnoozeDurationUnit;
-}
-
-export interface NotificationActionSettings {
-  complete: boolean;
-  snooze: boolean;
-  snoozeDurations: SnoozeDuration[];
-  order: NotificationActionKey[];
-}
-
-export interface TaskBadgeVisibility {
-  startDate: boolean;
-  dueDate: boolean;
-  tags: boolean;
-  calendar: boolean;
-  url: boolean;
-  status: boolean;
-  snooze: boolean;
-  repeat: boolean;
-  subtasks: boolean;
-}
-
-export type TaskBadgeKey = keyof TaskBadgeVisibility;
-
-export interface QuickTimePresets {
-  morning: number;
-  afternoon: number;
-  evening: number;
-  night: number;
-}
-
-export interface ServerTypeOption {
-  value: ServerType;
-  label: string;
-  description?: string;
-  homepageUrl?: string;
-}
-
-export interface ServerTypeGroup {
-  label: string;
-  options: ServerTypeOption[];
-}
+import type { NotificationActionSettings } from '$types/notifications/settings';
+import type { PushProviderId } from '$types/push/providers';
+import type { DefaultDateOffset, DefaultReminderOffset } from '$types/settings/categories/defaults';
+import type {
+  EditorFieldKey,
+  EditorFieldVisibility,
+  TaskBadgeKey,
+  TaskBadgeVisibility,
+} from '$types/settings/categories/editor';
+import type { TaskListDensity } from '$types/settings/categories/layout';
+import type { DefaultLaunchView, SidebarSectionKey } from '$types/settings/categories/navigation';
+import type { NetworkProxyMode } from '$types/settings/categories/network';
+import type { DateFormat, StartOfWeek, TimeFormat } from '$types/settings/categories/region';
+import type { SubtaskDeletionBehavior } from '$types/settings/categories/safety';
+import type { QuickTimePresets, WorkingDay } from '$types/settings/categories/scheduling';
+import type { WindowDecorationStyle } from '$types/settings/categories/system';
+import type { KeyboardShortcut } from '$types/shortcuts';
+import type { Priority, Status } from '$types/task/model';
 
 export interface SettingsState {
   theme: Theme;
@@ -130,7 +44,7 @@ export interface SettingsState {
   enableSystemTray: boolean;
   checkForUpdatesAutomatically: boolean;
   defaultPriority: Priority;
-  defaultStatus: TaskStatus;
+  defaultStatus: Status;
   defaultPercentComplete: number;
   defaultTags: string[];
   defaultStartDate: DefaultDateOffset;
@@ -230,7 +144,7 @@ interface SettingsActions {
   resetShortcuts: () => void;
   ensureLatestShortcuts: () => void;
   setDefaultPriority: (priority: Priority) => void;
-  setDefaultStatus: (status: TaskStatus) => void;
+  setDefaultStatus: (status: Status) => void;
   setDefaultPercentComplete: (pct: number) => void;
   setDefaultTags: (tagIds: string[]) => void;
   setDefaultStartDate: (offset: DefaultDateOffset) => void;

@@ -17,7 +17,8 @@ import { SidebarTagsSortMenu } from '$components/sidebar/SidebarTagsSortMenu';
 import { Tooltip } from '$components/Tooltip';
 import { useReorderTags } from '$hooks/queries/useTags';
 import { useTagSortConfig } from '$hooks/queries/useUIState';
-import type { Tag, Task } from '$types';
+import type { Tag } from '$types/tag';
+import type { Task } from '$types/task/model';
 
 interface SidebarTagsListProps {
   tags: Tag[];

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { KeyboardShortcut } from '$types';
+import type { KeyboardShortcut } from '$types/shortcuts';
 
 vi.mock('@tauri-apps/plugin-os', () => ({
   platform: () => 'macos',

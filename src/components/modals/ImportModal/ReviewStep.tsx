@@ -8,8 +8,8 @@ import Circle from 'lucide-react/icons/circle';
 import Flag from 'lucide-react/icons/flag';
 import Loader2 from 'lucide-react/icons/loader-2';
 import { useState } from 'react';
-import type { Calendar } from '$types';
-import type { ParsedTaskWithStatus } from '$types/import';
+import type { Calendar } from '$types/calendar';
+import type { ParsedTaskWithStatus } from '$types/task/import';
 
 interface ReviewStepProps {
   tasks: ParsedTaskWithStatus[];

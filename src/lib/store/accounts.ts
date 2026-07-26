@@ -2,7 +2,7 @@ import { deleteAppPassword as deleteNextcloudAppPassword } from '$lib/auth/nextc
 import { db } from '$lib/database';
 import { loggers } from '$lib/logger';
 import { dataStore } from '$lib/store';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 import { generateUUID } from '$utils/misc';
 
 const log = loggers.dataStore;

@@ -1,5 +1,5 @@
 import Cloud from 'lucide-react/icons/cloud';
-import type { ServerType } from '$types';
+import type { ServerType } from '$types/account';
 
 interface QuickConnectConfig {
   label: string;

@@ -9,7 +9,7 @@ import { useSettingsStore } from '$context/settingsContext';
 import { useSyncStore } from '$context/syncContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useTasks } from '$hooks/queries/useTasks';
-import type { DateFormat, TimeFormat } from '$types/preference';
+import type { DateFormat, TimeFormat } from '$types/settings/categories/region';
 import { formatDate, formatTime } from '$utils/date';
 
 const SYNC_SOURCE_LABELS: Record<string, string> = {

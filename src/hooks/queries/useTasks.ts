@@ -24,8 +24,8 @@ import {
   toggleTaskComplete,
   updateTask,
 } from '$lib/store/tasks';
-import type { Task } from '$types';
-import type { FlattenedTask } from '$types/store';
+import type { FlattenedTask } from '$types/store/tasks';
+import type { Task } from '$types/task/model';
 
 const dateTime = (date: Date | undefined) => date?.getTime();
 

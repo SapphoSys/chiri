@@ -1,6 +1,4 @@
-import type { Task } from '$types';
-
-export type ImportStep = 'upload' | 'destination' | 'review';
+import type { Task } from '$types/task/model';
 
 export interface ParsedTaskWithStatus extends Partial<Task> {
   importStatus?: 'pending' | 'importing' | 'success' | 'error';

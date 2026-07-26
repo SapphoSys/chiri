@@ -1,6 +1,6 @@
 import BellRing from 'lucide-react/icons/bell-ring';
 import { ModalWrapper } from '$components/ModalWrapper';
-import type { DefaultReminderOffset } from '$types';
+import type { DefaultReminderOffset } from '$types/settings/categories/defaults';
 
 interface TaskDefaultsReminderPickerModalProps {
   available: { value: DefaultReminderOffset; label: string }[];

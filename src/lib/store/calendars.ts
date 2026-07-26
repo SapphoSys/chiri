@@ -3,7 +3,9 @@ import { settingsStore } from '$context/settingsContext';
 import { db } from '$lib/database';
 import { loggers } from '$lib/logger';
 import { dataStore } from '$lib/store';
-import type { Account, Calendar, Task } from '$types';
+import type { Account } from '$types/account';
+import type { Calendar } from '$types/calendar';
+import type { Task } from '$types/task/model';
 import { generateUUID } from '$utils/misc';
 
 const log = loggers.dataStore;

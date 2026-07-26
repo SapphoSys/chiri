@@ -5,7 +5,8 @@ import TagX from 'lucide-react/icons/tag-x';
 import X from 'lucide-react/icons/x';
 import { TaskEditorEmptyState } from '$components/taskEditor/TaskEditorEmptyState';
 import { getIconByName } from '$constants/icons';
-import type { Tag, Task } from '$types';
+import type { Tag } from '$types/tag';
+import type { Task } from '$types/task/model';
 
 interface TagsProps {
   task: Task;

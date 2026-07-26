@@ -2,7 +2,7 @@ import RotateCcw from 'lucide-react/icons/rotate-ccw';
 import { Select } from '$components/Select';
 import { useSettingsStore } from '$context/settingsContext';
 import { defaultState } from '$context/settingsDefaults';
-import type { DefaultDateOffset } from '$types';
+import type { DefaultDateOffset } from '$types/settings/categories/defaults';
 
 const DUE_DATE_OPTIONS = [
   { value: 'none', label: 'None' },

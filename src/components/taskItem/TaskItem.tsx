@@ -24,7 +24,8 @@ import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import { refreshStaleCursorAfterLayoutAtEventPoint } from '$hooks/ui/useStaleCursorReset';
 import { filterCalDavDescription } from '$lib/ical/vtodo';
 import { toggleTaskCollapsed } from '$lib/store/tasks';
-import type { Account, Task } from '$types';
+import type { Account } from '$types/account';
+import type { Task } from '$types/task/model';
 import { getContrastTextColor } from '$utils/color';
 import { getSortableItemDisabled, getSortableItemId } from '$utils/sortable';
 

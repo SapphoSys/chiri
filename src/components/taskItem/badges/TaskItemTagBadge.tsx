@@ -1,7 +1,7 @@
 import type { MouseEvent } from 'react';
 import { getIconByName } from '$constants/icons';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
-import type { Tag } from '$types';
+import type { Tag } from '$types/tag';
 
 export const TaskItemTagBadge = ({
   tag,

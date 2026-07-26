@@ -1,7 +1,7 @@
 import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
 import { hasHttpUrlScheme } from '$lib/caldav/utils';
 import { loggers } from '$lib/logger';
-import type { ServerValidationResult } from '$types';
+import type { ServerValidationResult } from '$types/account';
 
 const log = loggers.http;
 

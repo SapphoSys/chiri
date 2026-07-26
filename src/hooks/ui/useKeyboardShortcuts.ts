@@ -23,7 +23,7 @@ import {
   useUIState,
 } from '$hooks/queries/useUIState';
 import { useVisibleTasks } from '$hooks/queries/useVisibleTasks';
-import type { KeyboardShortcut } from '$types';
+import type { KeyboardShortcut } from '$types/shortcuts';
 import {
   getAltKeyLabel,
   getMetaKeyLabel,

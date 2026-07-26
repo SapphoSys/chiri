@@ -11,7 +11,7 @@ import {
   useSetShowUnstartedTasks,
   useSetSortConfig,
 } from '$hooks/queries/useUIState';
-import type { AppModals } from '$types/controller';
+import type { AppModals } from '$types/modals';
 import type { SortDirection, SortMode } from '$types/sort';
 
 interface UseViewCommandsOptions {

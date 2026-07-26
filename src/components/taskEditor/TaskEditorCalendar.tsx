@@ -4,7 +4,8 @@ import AlertTriangle from 'lucide-react/icons/triangle-alert';
 import { TaskEditorEmptyState } from '$components/taskEditor/TaskEditorEmptyState';
 import { getIconByName } from '$constants/icons';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
-import type { Account, Task } from '$types';
+import type { Account } from '$types/account';
+import type { Task } from '$types/task/model';
 
 interface TaskEditorCalendarProps {
   task: Task;

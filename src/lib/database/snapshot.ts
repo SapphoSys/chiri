@@ -8,7 +8,7 @@ import { getAllTags } from '$lib/database/tags';
 import { getAllTasks } from '$lib/database/tasks';
 import { getUIState, setAllTasksView } from '$lib/database/ui';
 import { loggers } from '$lib/logger';
-import type { DataStore } from '$types/store';
+import type { DataStore } from '$types/store/state';
 import { generateUUID } from '$utils/misc';
 
 const log = loggers.database;

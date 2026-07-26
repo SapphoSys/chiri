@@ -13,9 +13,13 @@ import {
   exportTasksAsMarkdown,
 } from '$lib/ical/export';
 import { loggers } from '$lib/logger';
-import type { Calendar, ExportFormat, ExportType, Task } from '$types';
+import type { Calendar } from '$types/calendar';
+import type { Task } from '$types/task/model';
 import { saveTextFile } from '$utils/fs';
 import { pluralize } from '$utils/misc';
+
+type ExportFormat = 'ics' | 'json' | 'markdown' | 'csv';
+type ExportType = 'tasks' | 'all-calendars' | 'single-calendar';
 
 const log = loggers.export;
 

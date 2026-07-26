@@ -7,7 +7,7 @@ import {
 import { settingsStore } from '$context/settingsContext';
 import { db } from '$lib/database';
 import { loggers } from '$lib/logger';
-import type { DataChangeListener, DataStore, UIState } from '$types/store';
+import type { DataChangeListener, DataStore, UIState } from '$types/store/state';
 
 const log = loggers.dataStore;
 

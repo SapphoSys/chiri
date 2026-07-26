@@ -23,7 +23,7 @@ import {
 import { registerDeepLinkHandler, unregisterDeepLinkHandler } from '$lib/deepLink';
 import type { HttpResponse } from '$lib/http';
 import { loggers } from '$lib/logger';
-import type { ServerValidationResult } from '$types';
+import type { ServerValidationResult } from '$types/account';
 
 const log = loggers.account;
 const STALWART_VALIDATION_TIMEOUT_MS = 10_000;

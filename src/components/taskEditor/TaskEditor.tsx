@@ -41,8 +41,8 @@ import {
   useResetStaleCursorOnLayerOpen,
 } from '$hooks/ui/useStaleCursorReset';
 import { getTaskByUid } from '$lib/store/tasks';
-import type { Task, TaskStatus } from '$types';
-import type { EditorFieldKey } from '$types/settings';
+import type { EditorFieldKey } from '$types/settings/categories/editor';
+import type { Status, Task } from '$types/task/model';
 import { getContrastTextColor } from '$utils/color';
 
 interface TaskEditorProps {
@@ -141,7 +141,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
     },
   });
 
-  const handleStatusChange = (status: TaskStatus) => {
+  const handleStatusChange = (status: Status) => {
     updateTaskMutation.mutate({
       id: task.id,
       updates: {

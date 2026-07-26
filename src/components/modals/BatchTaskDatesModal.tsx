@@ -5,8 +5,8 @@ import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { DatePickerModal } from '$components/modals/DatePickerModal';
 import { useBatchUpdateTasks } from '$hooks/queries/useTasks';
-import type { Task } from '$types';
-import type { TimeFormat } from '$types/preference';
+import type { TimeFormat } from '$types/settings/categories/region';
+import type { Task } from '$types/task/model';
 import { formatDate, formatTime } from '$utils/date';
 
 interface BatchTaskDatesModalProps {

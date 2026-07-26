@@ -1,13 +1,15 @@
 import { invoke } from '@tauri-apps/api/core';
 import { snoozeDurationToSeconds } from '$lib/notifications/duration';
 import type {
+  SendNotificationOptions,
+  SimpleNotificationOptions,
+} from '$types/notifications/events';
+import type {
   NotificationPermissionResult,
   NotificationPermissionStatus,
   NotificationPermissionStatusResult,
-  SendNotificationOptions,
-  SimpleNotificationOptions,
-} from '$types/notification';
-import type { NotificationActionSettings } from '$types/settings';
+} from '$types/notifications/permission';
+import type { NotificationActionSettings } from '$types/notifications/settings';
 
 // cache for permission status to avoid re-checking on every component mount
 let cachedPermissionStatus: NotificationPermissionStatus | null = null;

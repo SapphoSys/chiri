@@ -1,6 +1,6 @@
 import type { MouseEvent } from 'react';
 import { getIconByName } from '$constants/icons';
-import type { Calendar } from '$types';
+import type { Calendar } from '$types/calendar';
 
 export const TaskItemCalendarBadge = ({
   calendar,

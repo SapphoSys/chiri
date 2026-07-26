@@ -1,8 +1,8 @@
 import { addDays, endOfDay, startOfDay, subDays } from 'date-fns';
 import { dataStore } from '$lib/store';
-import type { Priority, Task } from '$types';
 import type { DateFilterField, Filter, FilterCriterion } from '$types/filter';
 import type { SortConfig } from '$types/sort';
+import type { Priority, Task } from '$types/task/model';
 
 const priorityOrder: Record<Priority, number> = {
   high: 0,

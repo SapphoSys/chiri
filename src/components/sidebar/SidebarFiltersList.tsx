@@ -15,8 +15,8 @@ import { SidebarFilterItem } from '$components/sidebar/SidebarFilterItem';
 import { Tooltip } from '$components/Tooltip';
 import { useReorderFilters } from '$hooks/queries/useFilters';
 import { matchesFilter } from '$lib/filters';
-import type { Task } from '$types';
 import type { Filter } from '$types/filter';
+import type { Task } from '$types/task/model';
 
 interface SidebarFiltersListProps {
   filters: Filter[];

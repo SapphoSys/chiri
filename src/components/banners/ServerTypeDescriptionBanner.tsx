@@ -1,6 +1,6 @@
 import Info from 'lucide-react/icons/info';
 import { SERVER_TYPE_OPTIONS } from '$constants/settings';
-import type { ServerType } from '$types';
+import type { ServerType } from '$types/account';
 
 interface ServerTypeDescriptionBannerProps {
   serverType: ServerType;

@@ -1,5 +1,5 @@
 import TriangleAlert from 'lucide-react/icons/triangle-alert';
-import type { MobileConfigSignatureStatus } from '$types/mobileconfig';
+import type { MobileConfigSignatureStatus } from '$types/mobileconfig/decode';
 
 interface MobileConfigSignatureWarningProps {
   signature: MobileConfigSignatureStatus;

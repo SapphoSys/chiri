@@ -1,7 +1,7 @@
 import Flag from 'lucide-react/icons/flag';
 import { PRIORITIES } from '$constants/priority';
 import { useUpdateTask } from '$hooks/queries/useTasks';
-import type { Priority, Task } from '$types';
+import type { Priority, Task } from '$types/task/model';
 
 interface PriorityProps {
   task: Task;

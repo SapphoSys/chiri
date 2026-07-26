@@ -8,7 +8,7 @@ import { importMobileConfig } from '$lib/mobileconfig/import';
 import type {
   MobileConfigImportFailureReason,
   MobileConfigImportProfile,
-} from '$types/mobileconfig';
+} from '$types/mobileconfig/import';
 
 const log = loggers.fileDrop;
 

@@ -7,7 +7,7 @@ import {
 import { settingsStore } from '$context/settingsContext';
 import { buildDigestAuth, parseDigestChallenge } from '$lib/auth/digest';
 import { loggers } from '$lib/logger';
-import type { NetworkProxyMode } from '$types/settings';
+import type { NetworkProxyMode } from '$types/settings/categories/network';
 
 const log = loggers.http;
 const REQUEST_TIMEOUT_MS = 15_000;

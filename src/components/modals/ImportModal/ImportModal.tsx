@@ -8,13 +8,14 @@ import { ModalWrapper } from '$components/ModalWrapper';
 import { DestinationStep } from '$components/modals/ImportModal/DestinationStep';
 import { FileUploadStep } from '$components/modals/ImportModal/FileUploadStep';
 import { ReviewStep } from '$components/modals/ImportModal/ReviewStep';
-import { StepIndicator } from '$components/modals/ImportModal/StepIndicator';
+import { type ImportStep, StepIndicator } from '$components/modals/ImportModal/StepIndicator';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useCreateTask } from '$hooks/queries/useTasks';
 import { createImportedTask, parseIcsFile, parseJsonTasksFile } from '$lib/ical/import';
 import { loggers } from '$lib/logger';
-import type { Calendar, Task } from '$types';
-import type { ImportStep, ParsedTaskWithStatus } from '$types/import';
+import type { Calendar } from '$types/calendar';
+import type { ParsedTaskWithStatus } from '$types/task/import';
+import type { Task } from '$types/task/model';
 import { generateUUID, pluralize } from '$utils/misc';
 
 const log = loggers.import;

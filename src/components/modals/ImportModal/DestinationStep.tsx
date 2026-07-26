@@ -5,7 +5,7 @@ import Cloud from 'lucide-react/icons/cloud';
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 
 interface CalendarOption {
   accountId: string;

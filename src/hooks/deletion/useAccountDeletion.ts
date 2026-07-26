@@ -3,7 +3,7 @@ import { useConfirmDialog } from '$context/confirmDialogContext';
 import { useDeleteAccount } from '$hooks/queries/useAccounts';
 import { loggers } from '$lib/logger';
 import { disablePushForCalendar } from '$lib/push';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 
 const log = loggers.deleteHandlers;
 

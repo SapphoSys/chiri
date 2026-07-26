@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ComposedInput } from '$components/ComposedInput';
 import { Tooltip } from '$components/Tooltip';
 import { getPredefinedServerUrl } from '$constants/settings';
-import type { ServerType } from '$types';
+import type { ServerType } from '$types/account';
 
 interface AdvancedSectionProps {
   serverType: ServerType;

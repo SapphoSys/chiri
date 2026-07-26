@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { CalDAVTaskObject, TaskWithCalDAVObject } from '$types';
+import type { CalDAVTaskObject, TaskWithCalDAVObject } from '$lib/caldav/types';
 import { makeCalendar, makeTask } from '../../fixtures';
 
 /**

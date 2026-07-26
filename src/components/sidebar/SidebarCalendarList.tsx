@@ -12,8 +12,10 @@ import { type MouseEvent, useCallback, useRef, useState } from 'react';
 import { SidebarCalendarItem } from '$components/sidebar/SidebarCalendarItem';
 import { useReorderCalendars } from '$hooks/queries/useAccounts';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
-import type { Account, Calendar, Task } from '$types';
+import type { Account } from '$types/account';
+import type { Calendar } from '$types/calendar';
 import type { CalendarSortConfig } from '$types/sort';
+import type { Task } from '$types/task/model';
 
 interface SidebarCalendarListProps {
   account: Account;

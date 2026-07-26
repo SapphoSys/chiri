@@ -15,7 +15,7 @@ import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useRes
 import { CalDAVClient } from '$lib/caldav';
 import { loggers } from '$lib/logger';
 import { enablePushForCalendar, isPushProviderAvailable } from '$lib/push';
-import type { Calendar } from '$types';
+import type { Calendar } from '$types/calendar';
 
 const log = loggers.caldav;
 

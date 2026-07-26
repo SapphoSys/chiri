@@ -53,8 +53,10 @@ import { testAccountConnection } from '$lib/caldav/test';
 import { exportMobileConfigFile } from '$lib/mobileconfig/export';
 import { getTasksByCalendar } from '$lib/store/tasks';
 import { toastManager } from '$lib/toastManager';
-import type { Account, Calendar, KeyboardShortcut } from '$types';
-import type { SidebarSectionKey } from '$types/settings';
+import type { Account } from '$types/account';
+import type { Calendar } from '$types/calendar';
+import type { SidebarSectionKey } from '$types/settings/categories/navigation';
+import type { KeyboardShortcut } from '$types/shortcuts';
 import { formatShortcut, getModifierJoiner } from '$utils/keyboard';
 
 interface SidebarProps {

@@ -1,4 +1,4 @@
-import type { KeyboardShortcut } from '$types';
+import type { KeyboardShortcut } from '$types/shortcuts';
 import { isMacPlatform, isWindowsPlatform } from '$utils/platform';
 
 type ShortcutPlatform = 'macos' | 'windows' | 'other';

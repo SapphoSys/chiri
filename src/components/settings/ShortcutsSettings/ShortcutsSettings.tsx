@@ -7,7 +7,7 @@ import { ShortcutsSettingsRow } from '$components/settings/ShortcutsSettings/Sho
 import { Tooltip } from '$components/Tooltip';
 import { DEFAULT_SHORTCUTS } from '$constants';
 import { useSettingsStore } from '$context/settingsContext';
-import type { KeyboardShortcut } from '$types';
+import type { KeyboardShortcut } from '$types/shortcuts';
 import { keyboardShortcutsMatch } from '$utils/keyboard';
 
 const SHORTCUT_GROUPS: { label: string; ids: string[] }[] = [

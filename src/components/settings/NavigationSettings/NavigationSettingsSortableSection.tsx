@@ -2,7 +2,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import GripVertical from 'lucide-react/icons/grip-vertical';
 import type { CSSProperties, ReactNode } from 'react';
-import type { SidebarSectionKey } from '$types/settings';
+import type { SidebarSectionKey } from '$types/settings/categories/navigation';
 
 export type NavigationSectionConfig = {
   key: SidebarSectionKey;

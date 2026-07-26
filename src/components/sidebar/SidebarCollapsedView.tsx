@@ -34,9 +34,12 @@ import {
   useTagSortConfig,
 } from '$hooks/queries/useUIState';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
-import type { Account, Calendar, Tag, Task } from '$types';
+import type { Account } from '$types/account';
+import type { Calendar } from '$types/calendar';
 import type { Filter } from '$types/filter';
-import type { SidebarSectionKey } from '$types/settings';
+import type { SidebarSectionKey } from '$types/settings/categories/navigation';
+import type { Tag } from '$types/tag';
+import type { Task } from '$types/task/model';
 
 interface SidebarCollapsedViewProps {
   accounts: Account[];

@@ -10,7 +10,7 @@ import { useCreateTag, useTags, useUpdateTag } from '$hooks/queries/useTags';
 import { useColorPresets } from '$hooks/ui/useColorPresets';
 import { useInitialFocusRef } from '$hooks/ui/useInitialFocusRef';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
-import type { Tag } from '$types';
+import type { Tag } from '$types/tag';
 
 interface TagModalProps {
   tagId: string | null;

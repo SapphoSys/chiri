@@ -7,7 +7,7 @@ import {
   isTomorrow,
 } from 'date-fns';
 import { settingsStore } from '$context/settingsContext';
-import type { DateFormat, TimeFormat } from '$types/preference';
+import type { DateFormat, TimeFormat } from '$types/settings/categories/region';
 
 /**
  * standard date format strings for consistent formatting across the app

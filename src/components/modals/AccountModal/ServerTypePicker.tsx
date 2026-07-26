@@ -3,7 +3,7 @@ import Cloud from 'lucide-react/icons/cloud';
 import Globe from 'lucide-react/icons/globe';
 import Server from 'lucide-react/icons/server';
 import type { ReactNode } from 'react';
-import type { ServerType } from '$types';
+import type { ServerType } from '$types/account';
 
 interface ServerTypeCard {
   value: ServerType;

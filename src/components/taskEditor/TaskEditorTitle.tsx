@@ -7,7 +7,7 @@ import { ComposedTextarea } from '$components/ComposedTextarea';
 import { useToggleTaskComplete } from '$hooks/queries/useTasks';
 import { consumeSelectedTaskTitleAutofocus } from '$hooks/queries/useUIState';
 import { useDebouncedTaskUpdate } from '$hooks/ui/useDebouncedTaskUpdate';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 
 interface TaskEditorTitleProps {
   task: Task;

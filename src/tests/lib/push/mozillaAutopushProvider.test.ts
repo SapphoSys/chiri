@@ -8,8 +8,9 @@ import {
   restoreMozillaAutopushProviderSubscription,
   startMozillaAutopushProviderListening,
 } from '$lib/push/providers/mozillaAutopush';
-import type { Calendar } from '$types';
-import { MOZILLA_AUTOPUSH_PROVIDER_ID, type PushSubscription } from '$types/push';
+import type { Calendar } from '$types/calendar';
+import { MOZILLA_AUTOPUSH_PROVIDER_ID } from '$types/push/providers';
+import type { PushSubscription } from '$types/push/webdav';
 
 const tauriMocks = vi.hoisted(() => {
   const handlers = new Map<string, (event: { payload: unknown }) => void>();

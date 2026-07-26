@@ -14,7 +14,7 @@ import {
 } from '$lib/mobileconfig/generate';
 import { shareMobileConfig } from '$lib/mobileconfig/share';
 import { toastManager } from '$lib/toastManager';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 import { isMacPlatform } from '$utils/platform';
 
 interface MobileConfigExportModalProps {

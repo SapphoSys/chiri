@@ -1,9 +1,10 @@
-import type { Priority, TaskStatus } from '$types';
+import type { Priority, Status } from '$types/task/model';
 
 type FilterCombinator = 'all' | 'any';
 
-export type DateFilterField = 'dueDate' | 'startDate' | 'createdAt' | 'modifiedAt' | 'completedAt';
 type DateFilterOp = 'exists' | 'empty' | 'today' | 'tomorrow' | 'beforeToday' | 'withinDays';
+
+export type DateFilterField = 'dueDate' | 'startDate' | 'createdAt' | 'modifiedAt' | 'completedAt';
 
 export type FilterCriterion =
   | {
@@ -14,7 +15,7 @@ export type FilterCriterion =
   | {
       field: 'status';
       op: 'is' | 'isNot' | 'in' | 'notIn';
-      value: TaskStatus | TaskStatus[];
+      value: Status | Status[];
     }
   | {
       field: 'priority';

@@ -7,8 +7,9 @@
 
 import { format } from 'date-fns';
 import { RRuleTemporal } from 'rrule-temporal';
-import type { DateFormat, WorkingDay } from '$types/preference';
-import type { RecurrenceFrequency } from '$types/recurrence';
+import type { DateFormat } from '$types/settings/categories/region';
+import type { WorkingDay } from '$types/settings/categories/scheduling';
+import type { RecurrenceFrequency } from '$types/task/recurrence';
 import { WORKING_DAY_META } from '$utils/calendar';
 import { formatDate } from '$utils/date';
 

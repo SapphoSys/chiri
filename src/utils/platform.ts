@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { platform } from '@tauri-apps/plugin-os';
 import { loggers } from '$lib/logger';
-import type { InstallType } from '$types';
+import type { InstallType } from '$types/platform';
 
 const log = loggers.platform;
 

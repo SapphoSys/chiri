@@ -23,7 +23,7 @@ import { MAX_NOTIFICATION_ACTIONS } from '$constants';
 import { useNotificationContext } from '$context/notificationContext';
 import { useSettingsStore } from '$context/settingsContext';
 import { usePlatform } from '$hooks/system/usePlatform';
-import type { NotificationActionKey, SnoozeDuration } from '$types/settings';
+import type { NotificationActionKey, SnoozeDuration } from '$types/notifications/settings';
 import { isLinuxPlatform, isMacPlatform, isWindowsPlatform } from '$utils/platform';
 
 const formatHour = (hour: number, use24h: boolean) => {

@@ -1,7 +1,7 @@
 import { type MouseEvent, useCallback, useEffect, useMemo } from 'react';
 import { useTaskSelection } from '$context/taskSelectionContext';
 import { useSetEditorOpen, useSetSelectedTask, useUIState } from '$hooks/queries/useUIState';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 
 interface UseTaskListSelectionOptions {
   visibleTasks: ReadonlyArray<Pick<Task, 'id'>>;

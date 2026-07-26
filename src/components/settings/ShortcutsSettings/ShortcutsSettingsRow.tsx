@@ -1,7 +1,7 @@
 import Pencil from 'lucide-react/icons/pencil';
 import PencilLine from 'lucide-react/icons/pencil-line';
 import { Tooltip } from '$components/Tooltip';
-import type { KeyboardShortcut } from '$types';
+import type { KeyboardShortcut } from '$types/shortcuts';
 import { formatShortcut } from '$utils/keyboard';
 import { isMacPlatform } from '$utils/platform';
 

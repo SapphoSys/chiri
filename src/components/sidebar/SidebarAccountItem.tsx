@@ -7,8 +7,9 @@ import { SidebarAccountItemDisconnectedIndicator } from '$components/sidebar/Sid
 import { SidebarCalendarList } from '$components/sidebar/SidebarCalendarList';
 import { Tooltip } from '$components/Tooltip';
 import { getIconByName } from '$constants/icons';
-import type { Account, Task } from '$types';
+import type { Account } from '$types/account';
 import type { CalendarSortConfig } from '$types/sort';
+import type { Task } from '$types/task/model';
 
 interface SidebarAccountItemProps {
   account: Account;

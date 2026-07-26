@@ -1,6 +1,17 @@
-import type { ServerType } from '$types';
-import type { DateFormat, StartOfWeek } from '$types/preference';
-import type { ServerTypeGroup, ServerTypeOption } from '$types/settings';
+import type { ServerType } from '$types/account';
+import type { DateFormat, StartOfWeek } from '$types/settings/categories/region';
+
+interface ServerTypeOption {
+  value: ServerType;
+  label: string;
+  description?: string;
+  homepageUrl?: string;
+}
+
+interface ServerTypeGroup {
+  label: string;
+  options: ServerTypeOption[];
+}
 
 /**
  * date format options

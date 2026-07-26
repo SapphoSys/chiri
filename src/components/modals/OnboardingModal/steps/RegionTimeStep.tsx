@@ -6,12 +6,8 @@ import { Select } from '$components/Select';
 import { DATE_FORMAT_OPTIONS, WEEK_START_OPTIONS } from '$constants/settings';
 import { useSettingsStore } from '$context/settingsContext';
 import { getSystemRegionPreferences } from '$lib/preferences';
-import type {
-  DateFormat,
-  StartOfWeek,
-  SystemRegionPreferences,
-  TimeFormat,
-} from '$types/preference';
+import type { SystemRegionPreferences } from '$types/platform';
+import type { DateFormat, StartOfWeek, TimeFormat } from '$types/settings/categories/region';
 
 let nativeDefaultsApplied = false;
 

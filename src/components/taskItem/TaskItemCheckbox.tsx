@@ -2,10 +2,10 @@ import Check from 'lucide-react/icons/check';
 import Minus from 'lucide-react/icons/minus';
 import X from 'lucide-react/icons/x';
 import type { MouseEvent } from 'react';
-import type { TaskStatus } from '$types';
+import type { Status } from '$types/task/model';
 
 interface TaskItemCheckboxProps {
-  status: TaskStatus;
+  status: Status;
   flashComplete: boolean;
   checkmarkColor: string;
   useAccentColor: boolean;

@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { getPredefinedServerUrl } from '$constants/settings';
 import { CalDAVClient } from '$lib/caldav';
 import { fetchCalendars } from '$lib/caldav/calendars';
-import type { ServerType } from '$types';
+import type { ServerType } from '$types/account';
 
 const url = process.env.CHIRI_TEST_CALDAV_URL;
 const username = process.env.CHIRI_TEST_CALDAV_USERNAME;

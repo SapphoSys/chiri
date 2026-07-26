@@ -4,9 +4,9 @@ import { useFilteredTasks } from '$hooks/queries/useTasks';
 import { useUIState } from '$hooks/queries/useUIState';
 import { getSortedTasks } from '$lib/filters';
 import { getChildTasks } from '$lib/store/tasks';
-import type { Task } from '$types';
 import type { SortConfig } from '$types/sort';
-import type { UIState } from '$types/store';
+import type { UIState } from '$types/store/state';
+import type { Task } from '$types/task/model';
 import { flattenTasks } from '$utils/sortable';
 
 interface VisibleTasksOptions {

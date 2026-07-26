@@ -1,7 +1,7 @@
 import CalendarClock from 'lucide-react/icons/calendar-clock';
 import CornerDownRight from 'lucide-react/icons/corner-down-right';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
-import type { DateFormat } from '$types/preference';
+import type { DateFormat } from '$types/settings/categories/region';
 import { formatDate } from '$utils/date';
 import { getNextOccurrences, rruleToText } from '$utils/recurrence';
 

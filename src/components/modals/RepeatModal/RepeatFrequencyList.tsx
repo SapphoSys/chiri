@@ -1,5 +1,5 @@
 import { useSettingsStore } from '$context/settingsContext';
-import type { RecurrenceFrequency } from '$types/recurrence';
+import type { RecurrenceFrequency } from '$types/task/recurrence';
 import { WORKING_DAY_META } from '$utils/calendar';
 import { frequencyToRRule, parseRRule } from '$utils/recurrence';
 

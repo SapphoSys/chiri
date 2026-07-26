@@ -7,7 +7,7 @@ import { BrowserAuthStep } from '$components/modals/AccountModal/BrowserAuthStep
 import { useInitialFocusRef } from '$hooks/ui/useInitialFocusRef';
 import { type CalDAVSetupError, toCalDAVSetupError } from '$lib/caldav/setup';
 import { hasHttpUrlScheme } from '$lib/caldav/utils';
-import type { ServerType } from '$types';
+import type { ServerType } from '$types/account';
 
 export type BrowserAuthFlowPhase = 'idle' | 'validating' | 'browser' | 'connecting' | 'done';
 

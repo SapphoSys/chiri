@@ -13,7 +13,7 @@ import {
   propfind,
   proppatch,
 } from '$lib/http';
-import type { Calendar } from '$types';
+import type { Calendar } from '$types/calendar';
 import { normalizeHexColor } from '$utils/color';
 
 const checkPropertySuccess = (responseBody: string, propertyName: string) => {

@@ -7,8 +7,8 @@ import AlertTriangle from 'lucide-react/icons/triangle-alert';
 import X from 'lucide-react/icons/x';
 import type { KeyboardEvent } from 'react';
 import { TaskEditorEmptyState } from '$components/taskEditor/TaskEditorEmptyState';
-import type { Task } from '$types';
-import type { TimeFormat } from '$types/preference';
+import type { TimeFormat } from '$types/settings/categories/region';
+import type { Task } from '$types/task/model';
 import { formatDate, formatTime } from '$utils/date';
 import { isMacPlatform } from '$utils/platform';
 

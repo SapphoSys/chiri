@@ -45,7 +45,7 @@ describe('parsedVTodoToTask', () => {
     expect(result.uid).toMatch(/^uuid-/);
   });
 
-  it('maps iCal STATUS to TaskStatus', () => {
+  it('maps iCal STATUS to Status', () => {
     const tests: [string, string][] = [
       ['COMPLETED', 'completed'],
       ['IN-PROCESS', 'in-process'],

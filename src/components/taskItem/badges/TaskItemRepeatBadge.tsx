@@ -1,6 +1,6 @@
 import RefreshCw from 'lucide-react/icons/refresh-cw';
 import type { MouseEvent } from 'react';
-import type { DateFormat } from '$types/preference';
+import type { DateFormat } from '$types/settings/categories/region';
 import { rruleToDisplaySummary, rruleToText } from '$utils/recurrence';
 
 export const TaskItemRepeatBadge = ({

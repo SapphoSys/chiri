@@ -1,4 +1,4 @@
-import type { SettingsCategory, SettingsSubtab } from '$types/settings';
+import type { SettingsCategory, SettingsSubtab } from '$types/settings/categories/navigation';
 
 export type AccountModalZIndex = 'z-60' | 'z-70';
 export type AccountModalLayer = 'default' | 'above-modal';

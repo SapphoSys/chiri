@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { BadgesSettings } from '$components/settings/BadgesSettings/BadgesSettings';
 import { TaskListLayoutSettingsDensityPreview } from '$components/settings/TaskListLayoutSettings/TaskListLayoutSettingsDensityPreview';
 import { useSettingsStore } from '$context/settingsContext';
-import type { TaskListDensity } from '$types/settings';
+import type { TaskListDensity } from '$types/settings/categories/layout';
 
 const DENSITY_OPTIONS: { value: TaskListDensity; label: string; icon: ReactNode }[] = [
   { value: 'comfortable', label: 'Comfortable', icon: <LayoutList className="h-4 w-4" /> },

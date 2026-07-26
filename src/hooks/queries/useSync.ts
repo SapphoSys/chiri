@@ -18,7 +18,7 @@ import {
   syncCalendarTasks,
 } from '$lib/store/sync';
 import { toastManager } from '$lib/toastManager';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 
 const log = loggers.sync;
 

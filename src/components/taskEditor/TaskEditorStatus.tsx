@@ -4,11 +4,11 @@ import Check from 'lucide-react/icons/check';
 import RotateCcw from 'lucide-react/icons/rotate-ccw';
 import Timer from 'lucide-react/icons/timer';
 import { type CSSProperties, useState } from 'react';
-import type { Task, TaskStatus } from '$types';
+import type { Status, Task } from '$types/task/model';
 
 interface TaskEditorStatusProps {
   task: Task;
-  onStatusChange: (status: TaskStatus) => void;
+  onStatusChange: (status: Status) => void;
   onCommitPercent: (value: number) => void;
   readOnly?: boolean;
 }

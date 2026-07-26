@@ -2,7 +2,7 @@ import { useAccountCommands } from '$hooks/commands/useAccountCommands';
 import { useCalendarCommands } from '$hooks/commands/useCalendarCommands';
 import { useTaskCommands } from '$hooks/commands/useTaskCommands';
 import { useViewCommands } from '$hooks/commands/useViewCommands';
-import type { AppModals } from '$types/controller';
+import type { AppModals } from '$types/modals';
 
 interface UseAppCommandsOptions {
   modals: AppModals;

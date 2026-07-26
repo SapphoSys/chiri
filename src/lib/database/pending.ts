@@ -1,6 +1,6 @@
 import type DatabasePlugin from '@tauri-apps/plugin-sql';
-import type { PendingDeletionRow } from '$types/database';
-import type { PendingDeletion } from '$types/store';
+import type { PendingDeletionRow } from '$lib/database/types';
+import type { PendingDeletion } from '$types/store/sync';
 
 const fromDate = (date: Date | undefined) => date?.toISOString() ?? null;
 const toDate = (value: string | null) => (value ? new Date(value) : undefined);

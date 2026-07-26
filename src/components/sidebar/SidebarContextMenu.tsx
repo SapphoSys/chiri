@@ -5,7 +5,7 @@ import { SidebarAccountsContextMenu } from '$components/sidebar/SidebarAccountsC
 import { SidebarCalendarContextMenu } from '$components/sidebar/SidebarCalendarContextMenu';
 import { SidebarFilterItemContextMenu } from '$components/sidebar/SidebarFilterItemContextMenu';
 import { SidebarTagItemContextMenu } from '$components/sidebar/SidebarTagItemContextMenu';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 
 interface ContextMenuState {
   type: 'account' | 'calendar' | 'tag' | 'filter' | 'accounts-section';

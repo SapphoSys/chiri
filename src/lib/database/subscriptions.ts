@@ -1,12 +1,12 @@
 import type DatabasePlugin from '@tauri-apps/plugin-sql';
-import type { PushSubscriptionRow } from '$types/database';
+import type { PushSubscriptionRow } from '$lib/database/types';
+import type { PushProviderId } from '$types/push/providers';
 import {
   KUNIFIED_PUSH_PROVIDER_ID,
   MOZILLA_AUTOPUSH_PROVIDER_ID,
   NTFY_DIRECT_PROVIDER_ID,
-  type PushProviderId,
-  type PushSubscription,
-} from '$types/push';
+} from '$types/push/providers';
+import type { PushSubscription } from '$types/push/webdav';
 
 const normalizePushProviderId = (providerId: string | null): PushProviderId => {
   switch (providerId) {

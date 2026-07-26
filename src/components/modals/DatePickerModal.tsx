@@ -29,7 +29,7 @@ import { TimePickerModal } from '$components/modals/TimePickerModal';
 import { DEFAULT_TIME } from '$constants';
 import { settingsStore } from '$context/settingsContext';
 import { useDatePickerKeyboardNavigation } from '$hooks/ui/useDatePickerKeyboardNavigation';
-import type { QuickTimePresets } from '$types/settings';
+import type { QuickTimePresets } from '$types/settings/categories/scheduling';
 import {
   createAllDayDate,
   createPaddedDaysArray,

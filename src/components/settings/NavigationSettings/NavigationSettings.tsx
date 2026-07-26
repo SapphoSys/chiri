@@ -18,7 +18,7 @@ import {
 } from '$components/settings/NavigationSettings/NavigationSettingsSortableSection';
 import { useSettingsStore } from '$context/settingsContext';
 import { useFilters } from '$hooks/queries/useFilters';
-import type { DefaultLaunchView, SidebarSectionKey } from '$types/settings';
+import type { DefaultLaunchView, SidebarSectionKey } from '$types/settings/categories/navigation';
 
 const SECTIONS: NavigationSectionConfig[] = [
   {

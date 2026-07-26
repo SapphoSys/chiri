@@ -3,7 +3,7 @@ import { CalDAVClient } from '$lib/caldav';
 import type { CalendarDiscoveryDiagnostics } from '$lib/caldav/calendars';
 import { getSetupNotice, probeSetupVtodoCreationIfNeeded } from '$lib/caldav/setup';
 import type { HttpRequestContext } from '$lib/http';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 import { generateUUID } from '$utils/misc';
 
 export interface AccountConnectionTestResult {

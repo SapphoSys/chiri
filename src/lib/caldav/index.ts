@@ -3,7 +3,9 @@ import type { Connection } from '$lib/caldav/connection';
 import * as connectionOps from '$lib/caldav/connection';
 import * as taskOps from '$lib/caldav/tasks';
 import type { HttpRequestContext } from '$lib/http';
-import type { Account, Calendar, ServerType, Task } from '$types';
+import type { Account, ServerType } from '$types/account';
+import type { Calendar } from '$types/calendar';
+import type { Task } from '$types/task/model';
 
 export class CalDAVClient {
   readonly accountId: string;

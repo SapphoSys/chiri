@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 import { makeTask } from '../../fixtures';
 
 const { mockDb } = vi.hoisted(() => ({

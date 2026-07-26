@@ -13,8 +13,8 @@ import {
   setNotificationActionConfig,
 } from '$lib/notifications';
 import { getTaskSnoozeStatus, snoozeTaskFor } from '$lib/notifications/snoozes';
-import type { Task } from '$types';
-import type { NotificationActionEvent, NotificationType } from '$types/notification';
+import type { NotificationActionEvent, NotificationType } from '$types/notifications/events';
+import type { Task } from '$types/task/model';
 
 const log = loggers.notifications;
 

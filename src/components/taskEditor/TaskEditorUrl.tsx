@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react';
 import { ComposedTextarea } from '$components/ComposedTextarea';
 import { TaskEditorEmptyState } from '$components/taskEditor/TaskEditorEmptyState';
 import { useDebouncedTaskUpdate } from '$hooks/ui/useDebouncedTaskUpdate';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 
 interface UrlProps {
   task: Task;

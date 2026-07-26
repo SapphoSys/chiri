@@ -19,12 +19,10 @@ import {
 import { getPushProviderConfigKey } from '$lib/push/providers';
 import { getWebDAVPushStatus, webdavPushToneClass } from '$lib/push/status';
 import { queryKeys } from '$lib/queryClient';
-import type { Account } from '$types';
-import type {
-  PushProviderConfig,
-  PushSubscription,
-  WebDAVPushAccountDiagnostics,
-} from '$types/push';
+import type { Account } from '$types/account';
+import type { WebDAVPushAccountDiagnostics } from '$types/push/diagnostics';
+import type { PushProviderConfig } from '$types/push/providers';
+import type { PushSubscription } from '$types/push/webdav';
 
 interface PushSettingsOperationalControlsProps {
   providerAvailable: boolean;

@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useModalState } from '$context/modalStateContext';
 import { useAccountDeletion } from '$hooks/deletion/useAccountDeletion';
 import { useAccounts } from '$hooks/queries/useAccounts';
-import type { AppModals } from '$types/controller';
+import type { AppModals } from '$types/modals';
 
 interface UseAccountCommandsOptions {
   modals: AppModals;

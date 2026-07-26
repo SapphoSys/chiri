@@ -9,7 +9,7 @@ import Share2 from 'lucide-react/icons/share-2';
 import Trash2 from 'lucide-react/icons/trash-2';
 import { MENU_EVENTS } from '$constants/menu';
 import { toastManager } from '$lib/toastManager';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 
 interface SidebarAccountItemContextMenuProps {
   accountId: string;

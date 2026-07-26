@@ -22,7 +22,7 @@ import {
   type FieldConfig,
 } from '$components/settings/EditorSettings/EditorSettingsSortableFields';
 import { useSettingsStore } from '$context/settingsContext';
-import type { EditorFieldKey } from '$types/settings';
+import type { EditorFieldKey } from '$types/settings/categories/editor';
 
 const FIELDS: FieldConfig[] = [
   {

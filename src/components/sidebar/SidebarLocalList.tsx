@@ -6,7 +6,8 @@ import { SidebarCalendarList } from '$components/sidebar/SidebarCalendarList';
 import { SidebarLocalSortMenu } from '$components/sidebar/SidebarLocalSortMenu';
 import { Tooltip } from '$components/Tooltip';
 import { useCalendarSortConfig } from '$hooks/queries/useUIState';
-import type { Account, Task } from '$types';
+import type { Account } from '$types/account';
+import type { Task } from '$types/task/model';
 
 interface SidebarLocalListProps {
   accounts: Account[];

@@ -2,7 +2,7 @@ import type { CalDAVClient } from '$lib/caldav';
 import type { CalendarDiscoveryDiagnostics } from '$lib/caldav/calendars';
 import type { HttpRequestContext } from '$lib/http';
 import { DetailedError, getErrorMessage, isCertError } from '$lib/http';
-import type { ServerType } from '$types';
+import type { ServerType } from '$types/account';
 
 export interface CalDAVSetupError {
   title: string;

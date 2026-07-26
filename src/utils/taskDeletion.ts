@@ -1,5 +1,5 @@
 import { RECENTLY_DELETED_RETENTION_DAYS } from '$constants';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 

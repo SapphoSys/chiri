@@ -13,7 +13,7 @@ import {
 } from 'react';
 import { useChildTasks } from '$hooks/queries/useTasks';
 import { usePrefersReducedMotion } from '$hooks/ui/usePrefersReducedMotion';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 import { getSortableItemDisabled, getSortableItemId } from '$utils/sortable';
 
 const createAnimateLayoutChanges =

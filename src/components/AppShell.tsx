@@ -14,7 +14,7 @@ import { TaskList } from '$components/TaskList';
 import { TaskEditor } from '$components/taskEditor/TaskEditor';
 import { useSettingsStore } from '$context/settingsContext';
 import { useWindowFullscreen } from '$hooks/system/useWindowFullscreen';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 import { isMacPlatform } from '$utils/platform';
 
 interface AppShellProps {

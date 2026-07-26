@@ -1,7 +1,7 @@
 import ChevronRight from 'lucide-react/icons/chevron-right';
 import Clock from 'lucide-react/icons/clock';
 import Tag from 'lucide-react/icons/tag';
-import type { TaskListDensity } from '$types/settings';
+import type { TaskListDensity } from '$types/settings/categories/layout';
 
 interface TaskListLayoutSettingsDensityPreviewProps {
   density: TaskListDensity;

@@ -25,7 +25,7 @@ import { useAccounts } from '$hooks/queries/useAccounts';
 import { useTags } from '$hooks/queries/useTags';
 import { useBatchUpdateTasks, useRestoreTask } from '$hooks/queries/useTasks';
 import { exportTaskAndChildren } from '$lib/store/tasks';
-import type { Priority, Task, TaskStatus } from '$types';
+import type { Priority, Status, Task } from '$types/task/model';
 
 interface TaskBatchActionsBarProps {
   selectedTasks: Task[];
@@ -204,7 +204,7 @@ export const TaskBatchActionsBar = ({
     setShowMoveModal(false);
   };
 
-  const handleStatusChange = (status: TaskStatus) => {
+  const handleStatusChange = (status: Status) => {
     const now = new Date();
     const updates = selectedTasks.flatMap((task) => {
       const nextUpdates: Partial<Task> = {

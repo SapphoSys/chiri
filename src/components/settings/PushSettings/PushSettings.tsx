@@ -18,13 +18,13 @@ import {
   DEFAULT_MOZILLA_AUTOPUSH_WEBSOCKET_URL,
 } from '$lib/push/providers/mozillaAutopush';
 import { DEFAULT_NTFY_SERVER_URL } from '$lib/push/providers/ntfy';
-import type { DateFormat, TimeFormat } from '$types/preference';
+import type { PushProviderId } from '$types/push/providers';
 import {
   KUNIFIED_PUSH_PROVIDER_ID,
   MOZILLA_AUTOPUSH_PROVIDER_ID,
   NTFY_DIRECT_PROVIDER_ID,
-  type PushProviderId,
-} from '$types/push';
+} from '$types/push/providers';
+import type { DateFormat, TimeFormat } from '$types/settings/categories/region';
 import { formatDate, formatTime } from '$utils/date';
 
 const NTFY_SERVER_URL_DEBOUNCE_MS = 500;

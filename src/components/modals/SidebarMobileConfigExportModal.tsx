@@ -1,5 +1,5 @@
 import { MobileConfigExportModal } from '$components/modals/MobileConfigExportModal';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 
 interface SidebarMobileConfigExportModalProps {
   accountId: string | null;

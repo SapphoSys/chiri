@@ -17,8 +17,8 @@ import Tag from 'lucide-react/icons/tag';
 import Timer from 'lucide-react/icons/timer';
 import Type from 'lucide-react/icons/type';
 import type { ReactNode } from 'react';
-import type { TaskHistoryEntry } from '$types/database';
 import type { LucideIcon } from '$types/lucide';
+import type { TaskHistoryEntry } from '$types/task/history';
 import { formatDate, formatTime } from '$utils/date';
 import { rruleToText } from '$utils/recurrence';
 

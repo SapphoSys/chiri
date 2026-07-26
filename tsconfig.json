@@ -27,7 +27,6 @@
       "$lib/*": ["./src/lib/*"],
       "$providers/*": ["./src/providers/*"],
       "$styles/*": ["./src/styles/*"],
-      "$types": ["./src/types/index.ts"],
       "$types/*": ["./src/types/*"],
       "$utils/*": ["./src/utils/*"]
     }

@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { dataStore } from '$lib/store';
 import { exportTaskAndChildren, getAllDescendants } from '$lib/store/tasks';
-import type { Task } from '$types';
-import type { DataStore, UIState } from '$types/store';
+import type { DataStore, UIState } from '$types/store/state';
+import type { Task } from '$types/task/model';
 import { makeTask } from '../../fixtures';
 
 vi.mock('$lib/store', () => ({

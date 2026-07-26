@@ -5,7 +5,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import { Select } from '$components/Select';
 import { MAX_NOTIFICATION_ACTIONS } from '$constants';
 import { SNOOZE_DURATION_UNITS } from '$lib/notifications/duration';
-import type { NotificationActionKey, SnoozeDuration } from '$types/settings';
+import type { NotificationActionKey, SnoozeDuration } from '$types/notifications/settings';
 
 export type NotificationActionConfig = {
   key: NotificationActionKey;

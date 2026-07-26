@@ -23,7 +23,7 @@ import { useTags } from '$hooks/queries/useTags';
 import { useCreateTask, useRestoreTask, useUpdateTask } from '$hooks/queries/useTasks';
 import { useSetSelectedTask } from '$hooks/queries/useUIState';
 import { exportTaskAndChildren } from '$lib/store/tasks';
-import type { Priority, Task, TaskStatus } from '$types';
+import type { Priority, Status, Task } from '$types/task/model';
 
 interface TaskItemContextMenuProps {
   task: Task;
@@ -135,7 +135,7 @@ export const TaskItemContextMenu = ({
     priorityHideTimer.current = setTimeout(() => setPriorityFlyoutPos(null), FLYOUT_HIDE_DELAY_MS);
   };
 
-  const handleChangeStatus = (status: TaskStatus) => {
+  const handleChangeStatus = (status: Status) => {
     updateTaskMutation.mutate({
       id: task.id,
       updates: {

@@ -17,7 +17,8 @@ import { SidebarAccountsSortMenu } from '$components/sidebar/SidebarAccountsSort
 import { Tooltip } from '$components/Tooltip';
 import { useReorderAccounts } from '$hooks/queries/useAccounts';
 import { useAccountSortConfig, useCalendarSortConfig } from '$hooks/queries/useUIState';
-import type { Account, Task } from '$types';
+import type { Account } from '$types/account';
+import type { Task } from '$types/task/model';
 
 interface SidebarAccountsListProps {
   accounts: Account[];

@@ -9,7 +9,7 @@ import { RepeatRuleAlerts } from '$components/modals/RepeatModal/RepeatRuleAlert
 import { RepeatRuleSummary } from '$components/modals/RepeatModal/RepeatRuleSummary';
 import { Select } from '$components/Select';
 import { useSettingsStore } from '$context/settingsContext';
-import type { RecurrenceFrequency } from '$types/recurrence';
+import type { RecurrenceFrequency } from '$types/task/recurrence';
 import { WORKING_DAY_META } from '$utils/calendar';
 import { formatDate } from '$utils/date';
 import {

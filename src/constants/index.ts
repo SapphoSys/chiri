@@ -1,4 +1,4 @@
-import type { KeyboardShortcut } from '$types';
+import type { KeyboardShortcut } from '$types/shortcuts';
 import type {
   AccountSortMode,
   CalendarSortMode,

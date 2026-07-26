@@ -1,5 +1,5 @@
-import type { Task } from '$types';
-import type { FlattenedTask } from '$types/store';
+import type { FlattenedTask } from '$types/store/tasks';
+import type { Task } from '$types/task/model';
 
 export const getSortableItemId = (id: string, isOverlay?: boolean) =>
   isOverlay ? `${id}:drag-overlay` : id;

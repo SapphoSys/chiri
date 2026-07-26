@@ -19,7 +19,8 @@ import {
 } from '@tauri-apps/plugin-os';
 import { settingsStore } from '$context/settingsContext';
 import { dataStore } from '$lib/store';
-import type { Account, InstallType } from '$types';
+import type { Account } from '$types/account';
+import type { InstallType } from '$types/platform';
 import {
   getInstallType,
   getPackageManagerName,

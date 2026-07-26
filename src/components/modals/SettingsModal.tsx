@@ -41,7 +41,7 @@ import { TaskDefaultsSettings } from '$components/settings/TaskDefaultsSettings/
 import { TaskListLayoutSettings } from '$components/settings/TaskListLayoutSettings/TaskListLayoutSettings';
 import { UpdateSettings } from '$components/settings/UpdateSettings';
 import { useAccounts } from '$hooks/queries/useAccounts';
-import type { SettingsCategory, SettingsSubtab } from '$types/settings';
+import type { SettingsCategory, SettingsSubtab } from '$types/settings/categories/navigation';
 
 interface SettingsModalProps {
   onClose: () => void;

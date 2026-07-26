@@ -1,9 +1,9 @@
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 import type {
   MobileConfigCredentialWarning,
   MobileConfigExportEligibility,
   MobileConfigGenerationOptions,
-} from '$types/mobileconfig';
+} from '$types/mobileconfig/export';
 
 const escapeXml = (value: string) =>
   value

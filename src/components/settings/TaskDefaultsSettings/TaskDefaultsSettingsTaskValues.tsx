@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { PRIORITIES } from '$constants/priority';
 import { useSettingsStore } from '$context/settingsContext';
 import { defaultState } from '$context/settingsDefaults';
-import type { TaskStatus } from '$types';
+import type { Status } from '$types/task/model';
 
 const STATUS_OPTIONS = [
   {
@@ -55,7 +55,7 @@ export const TaskDefaultsSettingsTaskValues = () => {
   } = useSettingsStore();
   const [savedInProcessPercent, setSavedInProcessPercent] = useState(defaultPercentComplete);
 
-  const handleStatusChange = (status: TaskStatus) => {
+  const handleStatusChange = (status: Status) => {
     setDefaultStatus(status);
     if (status === 'in-process') {
       setDefaultPercentComplete(savedInProcessPercent);
@@ -114,7 +114,7 @@ export const TaskDefaultsSettingsTaskValues = () => {
               <button
                 key={value}
                 type="button"
-                onClick={() => handleStatusChange(value as TaskStatus)}
+                onClick={() => handleStatusChange(value as Status)}
                 className={`flex items-center gap-2 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                   defaultStatus === value
                     ? activeClass

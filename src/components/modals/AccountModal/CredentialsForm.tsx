@@ -10,7 +10,7 @@ import { Tooltip } from '$components/Tooltip';
 import { getPredefinedServerUrl } from '$constants/settings';
 import { useInitialFocusRef } from '$hooks/ui/useInitialFocusRef';
 import type { CalDAVSetupError, CalDAVSetupNotice } from '$lib/caldav/setup';
-import type { Account, ServerType } from '$types';
+import type { Account, ServerType } from '$types/account';
 
 interface CredentialsFormProps {
   serverType: ServerType;

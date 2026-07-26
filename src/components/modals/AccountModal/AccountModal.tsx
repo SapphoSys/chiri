@@ -47,8 +47,9 @@ import { type HttpRequestContext, isCertError, tauriRequest } from '$lib/http';
 import { loggers } from '$lib/logger';
 import { ensureTagExists } from '$lib/store/sync';
 import { createTask } from '$lib/store/tasks';
-import type { Account, Calendar, ServerType } from '$types';
-import type { MobileConfigImportSelection } from '$types/mobileconfig';
+import type { Account, ServerType } from '$types/account';
+import type { Calendar } from '$types/calendar';
+import type { MobileConfigImportSelection } from '$types/mobileconfig/import';
 import { generateUUID } from '$utils/misc';
 
 const log = loggers.account;

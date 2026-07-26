@@ -1,17 +1,18 @@
 import Check from 'lucide-react/icons/check';
-import type { ImportStep } from '$types/import';
+
+const STEPS = [
+  { key: 'upload', label: 'Select File' },
+  { key: 'destination', label: 'Choose Destination' },
+  { key: 'review', label: 'Review & Import' },
+] as const;
+
+export type ImportStep = (typeof STEPS)[number]['key'];
 
 interface StepIndicatorProps {
   currentStep: ImportStep;
   hasFile: boolean;
   hasDestination: boolean;
 }
-
-const STEPS: { key: ImportStep; label: string }[] = [
-  { key: 'upload', label: 'Select File' },
-  { key: 'destination', label: 'Choose Destination' },
-  { key: 'review', label: 'Review & Import' },
-];
 
 export const StepIndicator = ({ currentStep, hasFile, hasDestination }: StepIndicatorProps) => {
   const getStepStatus = (step: ImportStep): 'completed' | 'active' | 'pending' => {

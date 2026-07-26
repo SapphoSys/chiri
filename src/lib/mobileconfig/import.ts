@@ -2,10 +2,12 @@ import { decodeMobileConfig } from '$lib/mobileconfig/decode';
 import type {
   DecodedMobileConfig,
   DecodedMobileConfigCalDAVPayload,
+} from '$types/mobileconfig/decode';
+import type {
   MobileConfigCalDAVSettings,
   MobileConfigImportFailureReason,
   MobileConfigImportResult,
-} from '$types/mobileconfig';
+} from '$types/mobileconfig/import';
 
 type PayloadMappingResult =
   | { ok: true; settings: MobileConfigCalDAVSettings }

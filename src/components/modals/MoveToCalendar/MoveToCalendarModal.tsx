@@ -7,7 +7,8 @@ import { ModalWrapper } from '$components/ModalWrapper';
 import { CalendarOption } from '$components/modals/MoveToCalendar/CalendarOption';
 import { getIconByName } from '$constants/icons';
 import { useInitialFocusRef } from '$hooks/ui/useInitialFocusRef';
-import type { Account, Task } from '$types';
+import type { Account } from '$types/account';
+import type { Task } from '$types/task/model';
 
 interface MoveToCalendarModalProps {
   task?: Task;

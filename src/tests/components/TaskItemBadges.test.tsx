@@ -2,7 +2,7 @@ import { act, createElement } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TaskItemBadges } from '$components/taskItem/TaskItemBadges';
-import type { TaskBadgeKey, TaskBadgeVisibility } from '$types/settings';
+import type { TaskBadgeKey, TaskBadgeVisibility } from '$types/settings/categories/editor';
 import { makeTask } from '../fixtures';
 
 const SNOOZED_UNTIL = Date.now() + 60 * 60 * 1000;

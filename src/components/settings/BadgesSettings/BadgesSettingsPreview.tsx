@@ -10,7 +10,7 @@ import Tag from 'lucide-react/icons/tag';
 import Timer from 'lucide-react/icons/timer';
 import { Fragment, type ReactNode } from 'react';
 import { useSettingsStore } from '$context/settingsContext';
-import type { TaskBadgeKey } from '$types/settings';
+import type { TaskBadgeKey } from '$types/settings/categories/editor';
 
 const PREVIEW_BADGE_RENDERERS: Record<TaskBadgeKey, () => ReactNode> = {
   startDate: () => (

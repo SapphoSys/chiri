@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Task } from '$types';
-import type { SettingsState } from '$types/settings';
-import type { PendingDeletion } from '$types/store';
+import type { SettingsState } from '$types/settings/state';
+import type { PendingDeletion } from '$types/store/sync';
+import type { Task } from '$types/task/model';
 import { makeTask } from '../../fixtures';
 
 // vi.mock factories are hoisted; pre-create the mock fn refs via vi.hoisted

@@ -1,8 +1,9 @@
 import { DEFAULT_SHORTCUTS, MAX_NOTIFICATION_ACTIONS } from '$constants';
 import { loggers } from '$lib/logger';
-import type { KeyboardShortcut } from '$types';
-import type { WorkingDay } from '$types/preference';
-import type { NotificationActionSettings, SettingsState } from '$types/settings';
+import type { NotificationActionSettings } from '$types/notifications/settings';
+import type { WorkingDay } from '$types/settings/categories/scheduling';
+import type { SettingsState } from '$types/settings/state';
+import type { KeyboardShortcut } from '$types/shortcuts';
 
 import { isReservedShortcut } from '$utils/keyboard';
 import { normalizeProxyPort } from '$utils/misc';

@@ -1,5 +1,5 @@
-import type { Account } from '$types';
-import type { MobileConfigGenerationOptions } from '$types/mobileconfig';
+import type { Account } from '$types/account';
+import type { MobileConfigGenerationOptions } from '$types/mobileconfig/export';
 import { getMobileConfigFileName } from './export';
 import { generateMobileConfig } from './generate';
 

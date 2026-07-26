@@ -10,7 +10,8 @@ import { getIconByName } from '$constants/icons';
 import { useBatchUpdateTasks } from '$hooks/queries/useTasks';
 import { useInitialFocusRef } from '$hooks/ui/useInitialFocusRef';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
-import type { Tag, Task } from '$types';
+import type { Tag } from '$types/tag';
+import type { Task } from '$types/task/model';
 
 type TagSelectionState = 'all' | 'some' | 'none';
 

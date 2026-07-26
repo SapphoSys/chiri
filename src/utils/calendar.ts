@@ -1,5 +1,6 @@
 import { addDays, startOfDay } from 'date-fns';
-import type { StartOfWeek, WorkingDay } from '$types/preference';
+import type { StartOfWeek } from '$types/settings/categories/region';
+import type { WorkingDay } from '$types/settings/categories/scheduling';
 
 type WeekStartDay = 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
 

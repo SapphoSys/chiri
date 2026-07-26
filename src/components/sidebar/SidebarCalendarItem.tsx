@@ -1,7 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import type { HTMLAttributes, MouseEvent } from 'react';
 import { getIconByName } from '$constants/icons';
-import type { Calendar } from '$types';
+import type { Calendar } from '$types/calendar';
 
 interface SidebarCalendarItemProps {
   calendar: Calendar;

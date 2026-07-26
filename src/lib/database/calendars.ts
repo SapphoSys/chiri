@@ -2,9 +2,9 @@ import type DatabasePlugin from '@tauri-apps/plugin-sql';
 import { DEFAULT_CALENDAR_NAME } from '$constants';
 import { getAllAccounts } from '$lib/database/accounts';
 import { rowToCalendar } from '$lib/database/converters';
+import type { CalendarRow } from '$lib/database/types';
 import { getUIState } from '$lib/database/ui';
-import type { Calendar } from '$types';
-import type { CalendarRow } from '$types/database';
+import type { Calendar } from '$types/calendar';
 import { generateUUID } from '$utils/misc';
 
 export const addCalendar = async (

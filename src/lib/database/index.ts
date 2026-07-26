@@ -1,4 +1,5 @@
 import DatabasePlugin from '@tauri-apps/plugin-sql';
+import type { CalDAVTaskObject } from '$lib/caldav/types';
 import * as accountOps from '$lib/database/accounts';
 import * as caldavTaskObjectOps from '$lib/database/caldav';
 import * as calendarOps from '$lib/database/calendars';
@@ -11,11 +12,15 @@ import * as tagOps from '$lib/database/tags';
 import * as taskOps from '$lib/database/tasks';
 import * as uiOps from '$lib/database/ui';
 import { loggers } from '$lib/logger';
-import type { Account, CalDAVTaskObject, Calendar, Tag, Task } from '$types';
+import type { Account } from '$types/account';
+import type { Calendar } from '$types/calendar';
 import type { Filter } from '$types/filter';
-import type { PushSubscription } from '$types/push';
+import type { PushSubscription } from '$types/push/webdav';
 import type { AccountSortConfig, CalendarSortConfig, SortConfig, TagSortConfig } from '$types/sort';
-import type { DataChangeListener, PendingDeletion } from '$types/store';
+import type { DataChangeListener } from '$types/store/state';
+import type { PendingDeletion } from '$types/store/sync';
+import type { Tag } from '$types/tag';
+import type { Task } from '$types/task/model';
 
 const DB_NAME = 'sqlite:chiri.db';
 

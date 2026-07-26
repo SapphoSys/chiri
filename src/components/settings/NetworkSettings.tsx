@@ -20,8 +20,8 @@ import {
   subscribeConnectivityCheckResult,
   subscribeConnectivityCheckStatus,
 } from '$lib/network/connectivity';
-import type { DateFormat, TimeFormat } from '$types/preference';
-import type { NetworkProxyMode } from '$types/settings';
+import type { NetworkProxyMode } from '$types/settings/categories/network';
+import type { DateFormat, TimeFormat } from '$types/settings/categories/region';
 import { formatDate, formatTime } from '$utils/date';
 
 const formatCheckedAt = (checkedAt: string, dateFormat: DateFormat, timeFormat: TimeFormat) => {

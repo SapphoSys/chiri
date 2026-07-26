@@ -5,7 +5,7 @@ import { hasHttpUrlScheme, makeAbsoluteUrl, normalizeUrl } from '$lib/caldav/uti
 import type { CalDAVCredentials, HttpRequestContext, HttpResponse } from '$lib/http';
 import { DetailedError, parseMultiStatus, propfind, tauriRequest } from '$lib/http';
 import { updateAccount } from '$lib/store/accounts';
-import type { Account, ServerType } from '$types';
+import type { Account, ServerType } from '$types/account';
 
 interface ServerConfig {
   principalPath: (username: string) => string;

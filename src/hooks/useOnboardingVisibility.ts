@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { Account, Task } from '$types';
+import type { Account } from '$types/account';
+import type { Task } from '$types/task/model';
 import { shouldShowOnboarding } from '$utils/onboarding';
 
 interface UseOnboardingVisibilityOptions {

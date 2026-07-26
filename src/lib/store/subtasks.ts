@@ -1,6 +1,6 @@
 import { settingsStore } from '$context/settingsContext';
 import { db } from '$lib/database';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 import { generateUUID } from '$utils/misc';
 
 /**

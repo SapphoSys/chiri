@@ -11,13 +11,13 @@ import { UpdateModal } from '$components/modals/UpdateModal';
 import type { FileDropResult } from '$hooks/system/useFileDrop';
 import type { UpdateError, UpdateInfo } from '$hooks/system/useUpdateChecker';
 import { getTasksByCalendar } from '$lib/store/tasks';
-import type { Account } from '$types';
-import type { AppModalActions, AppModalState } from '$types/controller';
+import type { Account } from '$types/account';
 import type {
   MobileConfigCalDAVSettings,
   MobileConfigImportProfile,
   MobileConfigImportSelection,
-} from '$types/mobileconfig';
+} from '$types/mobileconfig/import';
+import type { AppModalActions, AppModalState } from '$types/modals';
 
 interface AppModalsOnboarding {
   show: boolean;

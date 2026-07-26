@@ -1,7 +1,7 @@
 import { act, createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 import { makeTask } from '../../fixtures';
 
 const {

@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { DEFAULT_SORT_CONFIG } from '$constants';
 import { reorderTaskList } from '$lib/store/reorder/tasks';
-import type { Task } from '$types';
-import type { FlattenedTask } from '$types/store';
+import type { FlattenedTask } from '$types/store/tasks';
+import type { Task } from '$types/task/model';
 import { flattenTasks } from '$utils/sortable';
 import { makeTask } from '../../fixtures';
 
