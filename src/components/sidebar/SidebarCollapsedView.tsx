@@ -25,7 +25,7 @@ import {
 import { SidebarCollapsedItemTooltip } from '$components/sidebar/SidebarCollapsedItemTooltip';
 import { Tooltip } from '$components/Tooltip';
 import { getIconByName } from '$constants/icons';
-import { useReorderAccounts, useReorderCalendars } from '$hooks/queries/useAccounts';
+import { useReorderCalendars } from '$hooks/queries/useAccounts';
 import { useReorderFilters } from '$hooks/queries/useFilters';
 import { useReorderTags } from '$hooks/queries/useTags';
 import {
@@ -161,20 +161,18 @@ export const SidebarCollapsedView = ({
   const accountSortConfig = useAccountSortConfig();
   const calendarSortConfig = useCalendarSortConfig();
   const tagSortConfig = useTagSortConfig();
-  const reorderAccountsMutation = useReorderAccounts();
   const reorderCalendarsMutation = useReorderCalendars();
   const reorderFiltersMutation = useReorderFilters();
   const reorderTagsMutation = useReorderTags();
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const filtersDragBoundsRef = useRef<HTMLDivElement>(null);
-  const accountsDragBoundsRef = useRef<HTMLDivElement>(null);
+  const calendarsDragBoundsRef = useRef<HTMLDivElement>(null);
   const tagsDragBoundsRef = useRef<HTMLDivElement>(null);
   const [isDraggingFilters, setIsDraggingFilters] = useState(false);
-  const [isDraggingAccounts, setIsDraggingAccounts] = useState(false);
   const [draggingCalendarAccountId, setDraggingCalendarAccountId] = useState<string | null>(null);
   const [isDraggingTags, setIsDraggingTags] = useState(false);
   const isAnyCollapsedItemDragging =
-    isDraggingFilters || isDraggingAccounts || draggingCalendarAccountId !== null || isDraggingTags;
+    isDraggingFilters || draggingCalendarAccountId !== null || isDraggingTags;
   const getCollapsedSectionOrder = (...sections: SidebarSectionKey[]) => {
     const indexes = sections
       .map((section) => sidebarSectionOrder.indexOf(section))
@@ -204,7 +202,7 @@ export const SidebarCollapsedView = ({
     [],
   );
   const restrictFilterDragToSection = restrictDragToBounds(filtersDragBoundsRef);
-  const restrictAccountDragToSection = restrictDragToBounds(accountsDragBoundsRef);
+  const restrictCalendarDragToSection = restrictDragToBounds(calendarsDragBoundsRef);
   const restrictTagDragToSection = restrictDragToBounds(tagsDragBoundsRef);
 
   const sortedFilters = [...filters].sort((a, b) => a.sortOrder - b.sortOrder);
@@ -281,18 +279,21 @@ export const SidebarCollapsedView = ({
     return sorted;
   };
 
+  const visibleAccounts = sortedAccounts.filter(
+    (account) =>
+      (!account.caldav && showLocalSection && !localSectionCollapsed) ||
+      (account.caldav && showAccountsSection && !accountsSectionCollapsed),
+  );
+  const calendarAccounts = [
+    ...visibleAccounts.filter((account) => !account.caldav),
+    ...visibleAccounts.filter((account) => account.caldav),
+  ].filter((account) => account.calendars.length > 0);
+
   const handleFilterDragEnd = (event: DragEndEvent) => {
     setIsDraggingFilters(false);
     const { active, over } = event;
     if (!over || active.id === over.id) return;
     reorderFiltersMutation.mutate({ activeId: active.id as string, overId: over.id as string });
-  };
-
-  const handleAccountDragEnd = (event: DragEndEvent) => {
-    setIsDraggingAccounts(false);
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    reorderAccountsMutation.mutate({ activeId: active.id as string, overId: over.id as string });
   };
 
   const handleCalendarDragEnd = (accountId: string, event: DragEndEvent) => {
@@ -447,143 +448,101 @@ export const SidebarCollapsedView = ({
 
         {(showLocalSection || showAccountsSection) && (
           <div
-            ref={accountsDragBoundsRef}
+            ref={calendarsDragBoundsRef}
             className="flex w-full flex-col items-center gap-1"
             style={{ order: getCollapsedSectionOrder('local', 'accounts') }}
           >
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              modifiers={[restrictAccountDragToSection]}
-              onDragStart={() => setIsDraggingAccounts(true)}
-              onDragEnd={handleAccountDragEnd}
-              onDragCancel={() => setIsDraggingAccounts(false)}
-            >
-              <SortableContext
-                items={sortedAccounts
-                  .filter(
-                    (a) =>
-                      (!a.caldav && showLocalSection && !localSectionCollapsed) ||
-                      (a.caldav && showAccountsSection && !accountsSectionCollapsed),
-                  )
-                  .map((account) => account.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {sortedAccounts
-                  .filter(
-                    (a) =>
-                      (!a.caldav && showLocalSection && !localSectionCollapsed) ||
-                      (a.caldav && showAccountsSection && !accountsSectionCollapsed),
-                  )
-                  .map((account) => {
-                    const sortedCalendars = getSortedCalendars(account.calendars);
-                    const isAccountSortable =
-                      accountSortConfig.mode === 'manual' && !!account.caldav;
-                    if (sortedCalendars.length === 0) return null;
+            {calendarAccounts.map((account, index) => {
+              const sortedCalendars = getSortedCalendars(account.calendars);
+              const startsCalendarSection =
+                index === 0 || account.caldav !== calendarAccounts[index - 1]?.caldav;
 
-                    return (
-                      <div key={account.id} className="flex w-full flex-col items-center gap-1">
-                        <CollapsedSortableItem
-                          id={account.id}
-                          sortable={isAccountSortable}
-                          isAnyDragging={isDraggingAccounts}
-                        >
-                          {(dragHandleProps) => (
-                            <button
-                              type="button"
-                              data-context-menu
-                              aria-label={`${account.name} account`}
-                              onContextMenu={(e) => onContextMenu(e, 'account', account.id)}
-                              className={`my-1 h-px w-8 shrink-0 rounded-full bg-surface-200 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700 ${
-                                isAccountSortable
-                                  ? 'cursor-grab hover:h-1 hover:bg-surface-300 active:cursor-grabbing dark:hover:bg-surface-600'
-                                  : ''
-                              }`}
-                              {...dragHandleProps}
-                            />
-                          )}
-                        </CollapsedSortableItem>
-
-                        <DndContext
-                          sensors={sensors}
-                          collisionDetection={closestCenter}
-                          modifiers={[restrictAccountDragToSection]}
-                          onDragStart={() => setDraggingCalendarAccountId(account.id)}
-                          onDragEnd={(event) => handleCalendarDragEnd(account.id, event)}
-                          onDragCancel={() => setDraggingCalendarAccountId(null)}
-                        >
-                          <SortableContext
-                            items={sortedCalendars.map((calendar) => calendar.id)}
-                            strategy={verticalListSortingStrategy}
+              return (
+                <div key={account.id} className="flex w-full flex-col items-center gap-1">
+                  {startsCalendarSection && (
+                    <div
+                      aria-hidden="true"
+                      className="my-1 h-px w-8 shrink-0 bg-surface-200 dark:bg-surface-700"
+                    />
+                  )}
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    modifiers={[restrictCalendarDragToSection]}
+                    onDragStart={() => setDraggingCalendarAccountId(account.id)}
+                    onDragEnd={(event) => handleCalendarDragEnd(account.id, event)}
+                    onDragCancel={() => setDraggingCalendarAccountId(null)}
+                  >
+                    <SortableContext
+                      items={sortedCalendars.map((calendar) => calendar.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {sortedCalendars.map((calendar) => {
+                        const CalendarIcon = getIconByName(calendar.icon ?? 'calendar');
+                        const isActive = activeCalendarId === calendar.id;
+                        const calendarColor = calendar.color
+                          ? resolveAccent(calendar.color)
+                          : resolvedAccentColor;
+                        return (
+                          <Tooltip
+                            key={calendar.id}
+                            content={
+                              <SidebarCollapsedItemTooltip
+                                name={calendar.displayName}
+                                type="Calendar"
+                              />
+                            }
+                            position="right"
+                            disabled={isAnyCollapsedItemDragging}
                           >
-                            {sortedCalendars.map((calendar) => {
-                              const CalendarIcon = getIconByName(calendar.icon ?? 'calendar');
-                              const isActive = activeCalendarId === calendar.id;
-                              const calendarColor = calendar.color
-                                ? resolveAccent(calendar.color)
-                                : resolvedAccentColor;
-                              return (
-                                <Tooltip
-                                  key={calendar.id}
-                                  content={
-                                    <SidebarCollapsedItemTooltip
-                                      name={calendar.displayName}
-                                      type="Calendar"
-                                    />
+                            <CollapsedSortableItem
+                              id={calendar.id}
+                              sortable={calendarSortConfig.mode === 'manual'}
+                              isAnyDragging={draggingCalendarAccountId === account.id}
+                            >
+                              {(dragHandleProps) => (
+                                <button
+                                  type="button"
+                                  data-context-menu
+                                  aria-label={`${calendar.displayName} calendar`}
+                                  onClick={() => onSelectCalendar(account.id, calendar.id)}
+                                  onContextMenu={(e) =>
+                                    onContextMenu(e, 'calendar', calendar.id, account.id)
                                   }
-                                  position="right"
-                                  disabled={isAnyCollapsedItemDragging}
+                                  className={`flex size-10 shrink-0 items-center justify-center rounded-lg outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                                    isActive
+                                      ? 'bg-surface-200 dark:bg-surface-700'
+                                      : contextMenu?.type === 'calendar' &&
+                                          contextMenu.id === calendar.id
+                                        ? 'bg-surface-200 dark:bg-surface-700'
+                                        : 'hover:bg-surface-200 dark:hover:bg-surface-700'
+                                  }`}
+                                  {...dragHandleProps}
                                 >
-                                  <CollapsedSortableItem
-                                    id={calendar.id}
-                                    sortable={calendarSortConfig.mode === 'manual'}
-                                    isAnyDragging={draggingCalendarAccountId === account.id}
-                                  >
-                                    {(dragHandleProps) => (
-                                      <button
-                                        type="button"
-                                        data-context-menu
-                                        aria-label={`${calendar.displayName} calendar`}
-                                        onClick={() => onSelectCalendar(account.id, calendar.id)}
-                                        onContextMenu={(e) =>
-                                          onContextMenu(e, 'calendar', calendar.id, account.id)
-                                        }
-                                        className={`flex size-10 shrink-0 items-center justify-center rounded-lg outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
-                                          isActive
-                                            ? 'bg-surface-200 dark:bg-surface-700'
-                                            : contextMenu?.type === 'calendar' &&
-                                                contextMenu.id === calendar.id
-                                              ? 'bg-surface-200 dark:bg-surface-700'
-                                              : 'hover:bg-surface-200 dark:hover:bg-surface-700'
-                                        }`}
-                                        {...dragHandleProps}
-                                      >
-                                        {calendar.emoji ? (
-                                          <span
-                                            className="text-base leading-none"
-                                            style={{ color: calendarColor }}
-                                          >
-                                            {calendar.emoji}
-                                          </span>
-                                        ) : (
-                                          <CalendarIcon
-                                            className="h-5 w-5"
-                                            style={{ color: calendarColor }}
-                                          />
-                                        )}
-                                      </button>
-                                    )}
-                                  </CollapsedSortableItem>
-                                </Tooltip>
-                              );
-                            })}
-                          </SortableContext>
-                        </DndContext>
-                      </div>
-                    );
-                  })}
-              </SortableContext>
-            </DndContext>
+                                  {calendar.emoji ? (
+                                    <span
+                                      className="text-base leading-none"
+                                      style={{ color: calendarColor }}
+                                    >
+                                      {calendar.emoji}
+                                    </span>
+                                  ) : (
+                                    <CalendarIcon
+                                      className="h-5 w-5"
+                                      style={{ color: calendarColor }}
+                                    />
+                                  )}
+                                </button>
+                              )}
+                            </CollapsedSortableItem>
+                          </Tooltip>
+                        );
+                      })}
+                    </SortableContext>
+                  </DndContext>
+                </div>
+              );
+            })}
           </div>
         )}
 
