@@ -12,19 +12,24 @@ interface AccountConnection {
 
 interface ConnectionState {
   connections: Record<string, AccountConnection>;
+  statuses: Record<string, AccountConnectionStatus>;
 }
+
+export type AccountConnectionStatus = 'connected' | 'connecting' | 'reconnecting' | 'disconnected';
 
 interface ConnectionActions {
   setConnection: (accountId: string, connection: AccountConnection) => void;
   getConnection: (accountId: string) => AccountConnection | undefined;
   deleteConnection: (accountId: string) => void;
   hasConnection: (accountId: string) => boolean;
+  getStatus: (accountId: string) => AccountConnectionStatus;
+  beginConnection: (accountId: string) => void;
 }
 
 export type ConnectionStore = ConnectionState & ConnectionActions;
 
 // singleton store for accessing state outside React
-let state: ConnectionState = { connections: {} };
+let state: ConnectionState = { connections: {}, statuses: {} };
 const listeners = new Set<() => void>();
 
 const emitChange = () => {
@@ -55,6 +60,10 @@ export const connectionStore = {
         ...state.connections,
         [accountId]: connection,
       },
+      statuses: {
+        ...state.statuses,
+        [accountId]: 'connected',
+      },
     };
     emitChange();
   },
@@ -63,11 +72,28 @@ export const connectionStore = {
 
   deleteConnection: (accountId: string) => {
     const { [accountId]: _, ...rest } = state.connections;
-    state = { ...state, connections: rest };
+    state = {
+      ...state,
+      connections: rest,
+      statuses: { ...state.statuses, [accountId]: 'disconnected' },
+    };
     emitChange();
   },
 
   hasConnection: (accountId: string) => accountId in state.connections,
+
+  getStatus: (accountId: string) => state.statuses[accountId] ?? 'disconnected',
+
+  beginConnection: (accountId: string) => {
+    state = {
+      ...state,
+      statuses: {
+        ...state.statuses,
+        [accountId]: accountId in state.connections ? 'reconnecting' : 'connecting',
+      },
+    };
+    emitChange();
+  },
 };
 
 // context for React components

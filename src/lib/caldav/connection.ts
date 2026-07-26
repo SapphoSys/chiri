@@ -298,6 +298,8 @@ export const connect = async (
   acceptInvalidCerts?: boolean,
   bearerToken?: string,
 ) => {
+  connectionStore.beginConnection(accountId);
+
   try {
     const credentials: CalDAVCredentials = {
       username,

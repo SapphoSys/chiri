@@ -16,9 +16,10 @@ vi.mock('$lib/http', () => ({
 
 // mock the connection store. vi.hoisted runs before vi.mock factories so the
 // spy reference is initialized in time
-const { setConnection, deleteConnection } = vi.hoisted(() => ({
+const { setConnection, deleteConnection, beginConnection } = vi.hoisted(() => ({
   setConnection: vi.fn(),
   deleteConnection: vi.fn(),
+  beginConnection: vi.fn(),
 }));
 vi.mock('$context/connectionContext', () => ({
   connectionStore: {
@@ -26,6 +27,7 @@ vi.mock('$context/connectionContext', () => ({
     getConnection: vi.fn(),
     deleteConnection,
     hasConnection: vi.fn(),
+    beginConnection,
   },
 }));
 

@@ -39,7 +39,7 @@ export const ConnectionsSettings = ({
   const accounts = allAccounts.filter((a) => a.caldav);
   const { enforceVapid } = useSettingsStore();
   const { deleteAccount } = useAccountDeletion();
-  const { hasConnection } = useConnectionStore();
+  const { getStatus } = useConnectionStore();
   const { data: tasks = [] } = useTasks();
 
   const [testingAccounts, setTestingAccounts] = useState<Set<string>>(new Set());
@@ -182,7 +182,8 @@ export const ConnectionsSettings = ({
         ) : (
           <div className="space-y-3">
             {accounts.map((account) => {
-              const isConnected = hasConnection(account.id);
+              const connectionStatus = getStatus(account.id);
+              const isConnected = connectionStatus === 'connected';
               const isTesting = testingAccounts.has(account.id);
               const testResult = testResults[account.id];
               const taskCount = accountStats[account.id] || 0;
@@ -200,7 +201,22 @@ export const ConnectionsSettings = ({
                           {account.name}
                         </p>
                         {!isConnected && (
-                          <span className="text-semantic-warning text-xs">Disconnected</span>
+                          <span
+                            className={`inline-flex items-center gap-1.5 text-xs ${
+                              connectionStatus === 'disconnected'
+                                ? 'text-semantic-warning'
+                                : 'text-surface-500 dark:text-surface-400'
+                            }`}
+                          >
+                            {connectionStatus === 'disconnected' ? null : (
+                              <Loader2 className="h-3 w-3 motion-safe:animate-spin" />
+                            )}
+                            {connectionStatus === 'connecting'
+                              ? 'Connecting…'
+                              : connectionStatus === 'reconnecting'
+                                ? 'Reconnecting…'
+                                : 'Disconnected'}
+                          </span>
                         )}
                       </div>
 
