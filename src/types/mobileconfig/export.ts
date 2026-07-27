@@ -6,7 +6,7 @@ export type MobileConfigExportEligibility =
   | { eligible: true }
   | { eligible: false; reason: MobileConfigExportIneligibleReason };
 
-export type MobileConfigExportResult = 'saved' | 'downloaded' | 'cancelled';
+export type MobileConfigExportResult = 'saved' | 'cancelled';
 
 export interface MobileConfigGenerationOptions {
   includePassword?: boolean;
