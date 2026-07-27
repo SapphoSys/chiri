@@ -4,11 +4,10 @@ import { MOBILE_CONFIG_MIME_TYPE } from '.';
 import { getMobileConfigFileName } from './export';
 import { generateMobileConfig } from './generate';
 
-export type ShareMobileConfigResult = 'shared' | 'copied' | 'unsupported';
+export type ShareMobileConfigResult = 'shared' | 'unsupported';
 
 /**
  * Share a generated .mobileconfig profile using the Web Share API.
- * Falls back to copying the profile XML to the clipboard if sharing is not available.
  */
 export const shareMobileConfig = async (
   account: Account,
@@ -30,13 +29,7 @@ export const shareMobileConfig = async (
       if (error instanceof Error && error.name === 'AbortError') {
         throw error;
       }
-      // Otherwise fall back to the clipboard.
     }
-  }
-
-  if (typeof navigator.clipboard?.writeText === 'function') {
-    await navigator.clipboard.writeText(xml);
-    return 'copied';
   }
 
   return 'unsupported';

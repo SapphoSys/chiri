@@ -40,15 +40,10 @@ export const MobileConfigExportModal = ({
       const result = await shareMobileConfig(account, { includePassword });
       if (result === 'shared') {
         toastManager.success('Profile shared', 'Open it on the target device to install.');
-      } else if (result === 'copied') {
-        toastManager.success(
-          'Profile copied',
-          'The .mobileconfig content has been copied to your clipboard.',
-        );
       } else {
         toastManager.error(
           'Sharing unavailable',
-          'Your system does not support sharing this file.',
+          'Your system does not support sharing this file. Use Export to save it instead.',
         );
       }
     } catch (error) {
