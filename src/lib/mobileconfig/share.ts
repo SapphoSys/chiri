@@ -1,9 +1,8 @@
 import type { Account } from '$types/account';
 import type { MobileConfigGenerationOptions } from '$types/mobileconfig/export';
+import { MOBILE_CONFIG_MIME_TYPE } from '.';
 import { getMobileConfigFileName } from './export';
 import { generateMobileConfig } from './generate';
-
-const MOBILE_CONFIG_MIME_TYPE = 'application/x-apple-aspen-config';
 
 export type ShareMobileConfigResult = 'shared' | 'copied' | 'unsupported';
 
