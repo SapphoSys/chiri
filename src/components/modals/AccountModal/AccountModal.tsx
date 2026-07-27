@@ -27,6 +27,7 @@ import {
   StalwartOAuthStep,
   type StalwartOAuthStepHandle,
 } from '$components/modals/AccountModal/StalwartOAuthStep';
+import { MobileConfigImportSkippedWarning } from '$components/modals/MobileConfigImportSkippedWarning';
 import { MobileConfigSignatureWarning } from '$components/modals/MobileConfigSignatureWarning';
 import { getPredefinedServerUrl, SERVER_TYPE_OPTIONS } from '$constants/settings';
 import { useConfirmDialog } from '$context/confirmDialogContext';
@@ -41,7 +42,7 @@ import {
   getSetupNotice,
   probeSetupVtodoCreationIfNeeded,
 } from '$lib/caldav/setup';
-import { hasHttpUrlScheme, isValidPrincipalUrlOverride } from '$lib/caldav/utils';
+import { isValidPrincipalUrlOverride } from '$lib/caldav/utils';
 import { getServerWarning, getUrlWarning, toConfirmOptions } from '$lib/caldav/warnings';
 import { type HttpRequestContext, isCertError, tauriRequest } from '$lib/http';
 import { loggers } from '$lib/logger';
@@ -1112,6 +1113,13 @@ export function AccountModal({
                 />
               </div>
             )}
+            {preloadedConfig?.skippedCandidates?.length ? (
+              <div className="px-4 pt-4">
+                <MobileConfigImportSkippedWarning
+                  skippedCandidates={preloadedConfig.skippedCandidates}
+                />
+              </div>
+            ) : null}
             <CredentialsForm
               serverType={serverType}
               name={name}

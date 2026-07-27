@@ -1,6 +1,7 @@
 import CalendarDays from 'lucide-react/icons/calendar-days';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
+import { MobileConfigImportSkippedWarning } from '$components/modals/MobileConfigImportSkippedWarning';
 import { MobileConfigSignatureWarning } from '$components/modals/MobileConfigSignatureWarning';
 import type {
   MobileConfigCalDAVSettings,
@@ -46,6 +47,7 @@ export const MobileConfigImportChooserModal = ({
     }
   >
     <MobileConfigSignatureWarning signature={profile.signature} />
+    <MobileConfigImportSkippedWarning skippedCandidates={profile.skippedCandidates} />
 
     <div className="space-y-3">
       {profile.candidates.map((candidate, index) => (

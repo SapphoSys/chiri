@@ -17,6 +17,10 @@ export interface MobileConfigCalDAVSettings {
   serverType: 'generic';
 }
 
+export interface MobileConfigSkippedCalDAVPayload {
+  reason: MobileConfigImportFailureReason;
+}
+
 export type MobileConfigImportFailureReason =
   | MobileConfigDecodeFailureReason
   | 'missing-hostname'
@@ -31,6 +35,7 @@ export type MobileConfigImportResult =
       signature: MobileConfigSignatureStatus;
       signer?: MobileConfigSignerInfo;
       candidates: MobileConfigCalDAVSettings[];
+      skippedCandidates?: MobileConfigSkippedCalDAVPayload[];
     }
   | { ok: false; reason: MobileConfigImportFailureReason };
 
@@ -41,4 +46,5 @@ export interface MobileConfigImportSelection {
   signature: MobileConfigSignatureStatus;
   signer?: MobileConfigSignerInfo;
   settings: MobileConfigCalDAVSettings;
+  skippedCandidates?: MobileConfigSkippedCalDAVPayload[];
 }

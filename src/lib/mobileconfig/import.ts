@@ -7,6 +7,7 @@ import type {
   MobileConfigCalDAVSettings,
   MobileConfigImportFailureReason,
   MobileConfigImportResult,
+  MobileConfigSkippedCalDAVPayload,
 } from '$types/mobileconfig/import';
 
 type PayloadMappingResult =
@@ -114,13 +115,19 @@ const mapPayload = (payload: DecodedMobileConfigCalDAVPayload): PayloadMappingRe
 /** validate and map every decoded CalDAV payload into Chiri's account setup shape */
 export const mapDecodedMobileConfig = (profile: DecodedMobileConfig): MobileConfigImportResult => {
   const candidates: MobileConfigCalDAVSettings[] = [];
+  const skippedCandidates: MobileConfigSkippedCalDAVPayload[] = [];
   for (const payload of profile.caldavPayloads) {
     const mapped = mapPayload(payload);
-    if (!mapped.ok) return mapped;
+    if (!mapped.ok) {
+      skippedCandidates.push({ reason: mapped.reason });
+      continue;
+    }
     candidates.push(mapped.settings);
   }
 
-  if (candidates.length === 0) return { ok: false, reason: 'missing-caldav-payload' };
+  if (candidates.length === 0) {
+    return { ok: false, reason: skippedCandidates[0]?.reason ?? 'missing-caldav-payload' };
+  }
 
   return {
     ok: true,
@@ -128,6 +135,7 @@ export const mapDecodedMobileConfig = (profile: DecodedMobileConfig): MobileConf
     signature: profile.signature,
     ...(profile.signer ? { signer: profile.signer } : {}),
     candidates,
+    ...(skippedCandidates.length > 0 ? { skippedCandidates } : {}),
   };
 };
 

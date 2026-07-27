@@ -46,6 +46,7 @@ export const useAppFileDrop = ({
         signature: profile.signature,
         signer: profile.signer,
         settings,
+        skippedCandidates: profile.skippedCandidates,
       });
       setPreloadedConfigProfile(profile.candidates.length > 1 ? profile : null);
       openAccount({ accountId: null });
