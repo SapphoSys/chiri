@@ -33,6 +33,8 @@ export const MobileConfigExportModal = ({
   const credentialWarnings = getMobileConfigCredentialWarnings(account, includePassword);
   const eligibility = getMobileConfigExportEligibility(account);
   const hasOAuthTokenWarning = credentialWarnings.includes('oauth-token-may-expire');
+  const credentialLabel =
+    account.caldav?.authType === 'oauth' ? 'Include current access token' : 'Include password';
 
   const handleShare = async () => {
     setIsSharing(true);
@@ -156,7 +158,7 @@ export const MobileConfigExportModal = ({
             <div>
               <p className="flex items-center gap-1.5 font-medium text-sm text-surface-700 dark:text-surface-300">
                 <KeyRound className="h-3.5 w-3.5 shrink-0 text-surface-500 dark:text-surface-400" />
-                Include password
+                {credentialLabel}
               </p>
               <p className="mt-0.5 text-surface-500 text-xs leading-relaxed dark:text-surface-400">
                 {includePassword
