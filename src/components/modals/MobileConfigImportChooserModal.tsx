@@ -46,7 +46,7 @@ export const MobileConfigImportChooserModal = ({
       </ModalButton>
     }
   >
-    <MobileConfigSignatureWarning signature={profile.signature} />
+    <MobileConfigSignatureWarning signature={profile.signature} signer={profile.signer} />
     <MobileConfigImportSkippedWarning skippedCandidates={profile.skippedCandidates} />
 
     <div className="space-y-3">
