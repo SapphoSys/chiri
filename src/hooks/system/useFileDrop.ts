@@ -18,7 +18,8 @@ const CONFIG_PROFILE_IMPORT_ERRORS: Record<MobileConfigImportFailureReason, stri
   'file-too-large': 'This configuration profile is too large to import.',
   'invalid-profile': 'This file is not a valid configuration profile.',
   'invalid-cms': 'This signed configuration profile is invalid.',
-  'encrypted-profile-unsupported': 'Encrypted configuration profiles are not supported yet.',
+  'encrypted-profile-unsupported':
+    'Encrypted configuration profiles are not supported yet. Ask the provider for an unsigned or signed profile instead.',
   'missing-payload-content': 'This configuration profile does not contain payload data.',
   'missing-caldav-payload': 'This configuration profile does not contain CalDAV account settings.',
   'invalid-caldav-payload': 'This configuration profile contains invalid CalDAV account settings.',
