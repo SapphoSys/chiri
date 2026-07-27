@@ -96,6 +96,7 @@ describe('mapDecodedMobileConfig', () => {
     const result = mapDecodedMobileConfig({
       format: 'signed-cms',
       signature: 'signed-unverified',
+      signer: { commonName: 'Profile Signer', organization: 'Example Org' },
       caldavPayloads: [
         { hostname: 'personal.example.test', accountDescription: 'Personal' },
         { hostname: 'work.example.test', accountDescription: 'Work' },
@@ -104,6 +105,10 @@ describe('mapDecodedMobileConfig', () => {
 
     expect(result.ok && result.format).toBe('signed-cms');
     expect(result.ok && result.signature).toBe('signed-unverified');
+    expect(result.ok && result.signer).toEqual({
+      commonName: 'Profile Signer',
+      organization: 'Example Org',
+    });
     expect(result.ok && result.candidates.map(({ accountName }) => accountName)).toEqual([
       'Personal',
       'Work',

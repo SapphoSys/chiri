@@ -1106,7 +1106,10 @@ export function AccountModal({
           <div>
             {preloadedConfig?.signature === 'signed-unverified' && (
               <div className="px-4 pt-4">
-                <MobileConfigSignatureWarning signature={preloadedConfig.signature} />
+                <MobileConfigSignatureWarning
+                  signature={preloadedConfig.signature}
+                  signer={preloadedConfig.signer}
+                />
               </div>
             )}
             <CredentialsForm

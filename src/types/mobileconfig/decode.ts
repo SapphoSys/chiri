@@ -4,6 +4,12 @@ export type MobileConfigFormat = 'xml' | 'binary-plist' | 'signed-cms';
 /** Chiri can currently identify CMS signatures, but does not verify their trust chain */
 export type MobileConfigSignatureStatus = 'unsigned' | 'signed-unverified';
 
+/** display-only metadata from an embedded CMS signing certificate. Chiri does not verify it. not right now anyway */
+export interface MobileConfigSignerInfo {
+  commonName?: string;
+  organization?: string;
+}
+
 export type MobileConfigDecodeFailureReason =
   | 'file-too-large'
   | 'invalid-profile'
@@ -30,6 +36,7 @@ export interface DecodedMobileConfigCalDAVPayload {
 export interface DecodedMobileConfig {
   format: MobileConfigFormat;
   signature: MobileConfigSignatureStatus;
+  signer?: MobileConfigSignerInfo;
   caldavPayloads: DecodedMobileConfigCalDAVPayload[];
 }
 

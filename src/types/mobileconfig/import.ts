@@ -2,6 +2,7 @@ import type {
   MobileConfigDecodeFailureReason,
   MobileConfigFormat,
   MobileConfigSignatureStatus,
+  MobileConfigSignerInfo,
 } from '$types/mobileconfig/decode';
 
 /** account setup values produced from a decoded CalDAV payload */
@@ -28,6 +29,7 @@ export type MobileConfigImportResult =
       ok: true;
       format: MobileConfigFormat;
       signature: MobileConfigSignatureStatus;
+      signer?: MobileConfigSignerInfo;
       candidates: MobileConfigCalDAVSettings[];
     }
   | { ok: false; reason: MobileConfigImportFailureReason };
@@ -37,5 +39,6 @@ export type MobileConfigImportProfile = Extract<MobileConfigImportResult, { ok: 
 export interface MobileConfigImportSelection {
   format: MobileConfigFormat;
   signature: MobileConfigSignatureStatus;
+  signer?: MobileConfigSignerInfo;
   settings: MobileConfigCalDAVSettings;
 }

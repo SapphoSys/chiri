@@ -126,6 +126,7 @@ export const mapDecodedMobileConfig = (profile: DecodedMobileConfig): MobileConf
     ok: true,
     format: profile.format,
     signature: profile.signature,
+    ...(profile.signer ? { signer: profile.signer } : {}),
     candidates,
   };
 };

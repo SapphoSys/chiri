@@ -44,6 +44,7 @@ export const useAppFileDrop = ({
       setPreloadedConfig({
         format: profile.format,
         signature: profile.signature,
+        signer: profile.signer,
         settings,
       });
       setPreloadedConfigProfile(profile.candidates.length > 1 ? profile : null);
