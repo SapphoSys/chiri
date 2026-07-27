@@ -115,6 +115,47 @@ describe('mapDecodedMobileConfig', () => {
     ]);
   });
 
+  it('keeps valid CalDAV payloads when another payload is invalid', () => {
+    const result = mapDecodedMobileConfig({
+      format: 'xml',
+      signature: 'unsigned',
+      caldavPayloads: [
+        { accountDescription: 'Broken', port: 8443 },
+        { hostname: 'work.example.test', accountDescription: 'Work', password: 'app-password' },
+      ],
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      format: 'xml',
+      signature: 'unsigned',
+      candidates: [
+        {
+          accountName: 'Work',
+          serverUrl: 'https://work.example.test',
+          username: undefined,
+          password: 'app-password',
+          principalUrl: undefined,
+          serverType: 'generic',
+        },
+      ],
+      skippedCandidates: [{ reason: 'missing-hostname' }],
+    });
+  });
+
+  it('fails with the first payload reason when every CalDAV payload is invalid', () => {
+    expect(
+      mapDecodedMobileConfig({
+        format: 'xml',
+        signature: 'unsigned',
+        caldavPayloads: [{ port: 8443 }, { hostname: 'example.test', port: 0 }],
+      }),
+    ).toEqual({
+      ok: false,
+      reason: 'missing-hostname',
+    });
+  });
+
   it('falls back to a trimmed username for the account name', () => {
     const result = mapPayload({ hostname: 'example.test', username: ' alice ' });
     expect(result.ok && result.candidates[0]?.accountName).toBe('alice');
@@ -130,6 +171,10 @@ describe('mapDecodedMobileConfig', () => {
     [{ hostname: 'example.test', port: 65536 }, 'invalid-port'],
     [
       { hostname: 'example.test', principalUrl: 'ftp://example.test/alice' },
+      'invalid-principal-url',
+    ],
+    [
+      { hostname: 'example.test', principalUrl: 'mailto:alice@example.test' },
       'invalid-principal-url',
     ],
     [

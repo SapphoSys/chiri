@@ -42,7 +42,7 @@ import {
   getSetupNotice,
   probeSetupVtodoCreationIfNeeded,
 } from '$lib/caldav/setup';
-import { isValidPrincipalUrlOverride } from '$lib/caldav/utils';
+import { isValidPrincipalUrlOverride, parseCalDAVServerUrl } from '$lib/caldav/utils';
 import { getServerWarning, getUrlWarning, toConfirmOptions } from '$lib/caldav/warnings';
 import { type HttpRequestContext, isCertError, tauriRequest } from '$lib/http';
 import { loggers } from '$lib/logger';
@@ -319,12 +319,34 @@ export function AccountModal({
   };
 
   const validateServerUrlScheme = () => {
-    if (hasHttpUrlScheme(serverUrl)) return true;
+    const result = parseCalDAVServerUrl(serverUrl);
+    if (result.ok) return true;
+
+    if (result.reason === 'missing-url') {
+      setSetupError({
+        title: 'Server URL required',
+        message: 'Enter the CalDAV server URL for this account.',
+        hint: 'Use a full URL like https://caldav.example.com.',
+      });
+      return false;
+    }
+
+    if (result.reason === 'unsupported-scheme' || result.reason === 'invalid-url') {
+      setSetupError({
+        title: 'URL scheme required',
+        message: 'Server URL must start with http:// or https://.',
+        hint: 'Add the scheme explicitly, for example https://caldav.example.com.',
+      });
+      return false;
+    }
 
     setSetupError({
-      title: 'URL scheme required',
-      message: 'Server URL must start with http:// or https://.',
-      hint: 'Add the scheme explicitly, for example https://caldav.example.com.',
+      title: 'Invalid server URL',
+      message: 'Server URL must be a valid HTTP(S) URL without embedded credentials.',
+      hint:
+        result.reason === 'invalid-port'
+          ? 'Use a port between 1 and 65535, or omit the port.'
+          : 'Use a full URL like https://caldav.example.com.',
     });
     return false;
   };

@@ -1,3 +1,4 @@
+import { parseCalDAVServerUrl } from '$lib/caldav/utils';
 import { serializePlist } from '$lib/mobileconfig/plist';
 import type { Account } from '$types/account';
 import type {
@@ -19,10 +20,11 @@ export const generateMobileConfig = (
   const caldav = account.caldav;
   if (!caldav) throw new Error('Account has no CalDAV configuration');
 
-  const url = new URL(caldav.serverUrl);
-  if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+  const parsedServerUrl = parseCalDAVServerUrl(caldav.serverUrl);
+  if (!parsedServerUrl.ok) {
     throw new Error('Account has an invalid CalDAV server URL');
   }
+  const url = parsedServerUrl.url;
 
   const normalizedProfileUuid = (profileUuid ?? crypto.randomUUID()).toUpperCase();
   const normalizedPayloadUuid = (payloadUuid ?? crypto.randomUUID()).toUpperCase();
@@ -64,12 +66,8 @@ export const getMobileConfigExportEligibility = (
 ): MobileConfigExportEligibility => {
   if (!account.caldav) return { eligible: false, reason: 'local-account' };
 
-  try {
-    const url = new URL(account.caldav.serverUrl);
-    if (url.protocol !== 'https:' && url.protocol !== 'http:') {
-      return { eligible: false, reason: 'invalid-server-url' };
-    }
-  } catch {
+  const parsedServerUrl = parseCalDAVServerUrl(account.caldav.serverUrl);
+  if (!parsedServerUrl.ok) {
     return { eligible: false, reason: 'invalid-server-url' };
   }
 
