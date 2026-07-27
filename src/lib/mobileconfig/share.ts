@@ -1,8 +1,8 @@
+import { MOBILE_CONFIG_MIME_TYPE } from '$lib/mobileconfig';
+import { getMobileConfigFileName } from '$lib/mobileconfig/export';
+import { generateMobileConfig } from '$lib/mobileconfig/generate';
 import type { Account } from '$types/account';
 import type { MobileConfigGenerationOptions } from '$types/mobileconfig/export';
-import { MOBILE_CONFIG_MIME_TYPE } from '.';
-import { getMobileConfigFileName } from './export';
-import { generateMobileConfig } from './generate';
 
 export type ShareMobileConfigResult = 'shared' | 'unsupported';
 
