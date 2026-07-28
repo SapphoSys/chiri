@@ -1,5 +1,9 @@
+#[cfg(not(target_os = "linux"))]
 use log::error;
-use tauri::{tray::TrayIconId, State};
+use tauri::State;
+
+#[cfg(not(target_os = "linux"))]
+use tauri::tray::TrayIconId;
 
 use super::{menu, AppRuntime, TrayState};
 
@@ -28,7 +32,15 @@ pub async fn initialize_tray(
     #[cfg(target_os = "linux")]
     refresh_tray_host_availability(&state).await;
 
-    menu::initialize(app_handle, &state, enabled)
+    #[cfg(target_os = "linux")]
+    {
+        menu::initialize(app_handle, &state, enabled).await
+    }
+
+    #[cfg(not(target_os = "linux"))]
+    {
+        menu::initialize(app_handle, &state, enabled)
+    }
 }
 
 /// get the current tray enabled state (for frontend to read on startup)
@@ -72,17 +84,34 @@ pub async fn set_tray_visible(
     #[cfg(target_os = "linux")]
     refresh_tray_host_availability(&state).await;
 
-    let tray_id = TrayIconId::new("main");
-    if let Some(tray) = app_handle.tray_by_id(&tray_id) {
-        tray.set_visible(visible).map_err(|e| {
-            error!("[Tray] Failed to set visibility: {}", e);
-            e.to_string()
-        })?;
-        state.set_enabled(visible)?;
-    } else if visible {
-        menu::initialize(app_handle, &state, true)?;
-    } else {
-        state.set_enabled(false)?;
+    #[cfg(target_os = "linux")]
+    {
+        if let Some(handle) = state.linux_tray_handle()? {
+            let _ = handle.update(|tray| tray.visible = visible).await;
+            state.set_enabled(visible)?;
+        } else if visible {
+            menu::initialize(app_handle, &state, true).await?;
+        } else {
+            state.set_enabled(false)?;
+        }
+
+        return Ok(());
     }
-    Ok(())
+
+    #[cfg(not(target_os = "linux"))]
+    {
+        let tray_id = TrayIconId::new("main");
+        if let Some(tray) = app_handle.tray_by_id(&tray_id) {
+            tray.set_visible(visible).map_err(|e| {
+                error!("[Tray] Failed to set visibility: {}", e);
+                e.to_string()
+            })?;
+            state.set_enabled(visible)?;
+        } else if visible {
+            menu::initialize(app_handle, &state, true)?;
+        } else {
+            state.set_enabled(false)?;
+        }
+        Ok(())
+    }
 }

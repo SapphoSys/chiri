@@ -1,15 +1,20 @@
 use log::{debug, error};
+#[cfg(not(target_os = "linux"))]
 use tauri::{
     menu::{Menu, MenuItem, PredefinedMenuItem},
     tray::{TrayIconBuilder, TrayIconEvent, TrayIconId},
     Emitter, Manager,
 };
 
+#[cfg(target_os = "linux")]
+use ksni::TrayMethods;
+
 use super::{icon, AppRuntime, TrayState};
 
 #[cfg(target_os = "macos")]
 use crate::macos::quit::is_keyboard_shortcut;
 
+#[cfg(not(target_os = "linux"))]
 pub(in crate::tray) fn initialize(
     app_handle: tauri::AppHandle<AppRuntime>,
     state: &TrayState,
@@ -87,11 +92,6 @@ pub(in crate::tray) fn initialize(
     #[cfg(target_os = "macos")]
     let tray_builder = tray_builder.icon_as_template(true);
 
-    // inside Flatpak, the default tray-icon temp path is private to the sandbox
-    // /tmp is shared with the host tray manager, so the SNI icon path resolves
-    #[cfg(target_os = "linux")]
-    let tray_builder = tray_builder.temp_dir_path("/tmp");
-
     let _tray = tray_builder
         .on_menu_event(|app, event| match event.id.as_ref() {
             "show" => {
@@ -138,19 +138,39 @@ pub(in crate::tray) fn initialize(
             e.to_string()
         })?;
 
-    // Tauri's Linux `title` setter currently maps to AppIndicator's label,
-    // which KDE does not use as the StatusNotifierItem's human-readable name.
-    // Set the actual AppIndicator title through tray-icon's Linux escape hatch.
-    #[cfg(target_os = "linux")]
-    _tray
-        .with_inner_tray_icon(|tray| unsafe {
-            let indicator = &mut *(tray.app_indicator() as *mut libappindicator::AppIndicator);
-            indicator.set_title("Chiri");
-        })
-        .map_err(|e| {
-            error!("[Tray] Failed to set Linux tray title: {}", e);
-            e.to_string()
-        })?;
-
     Ok(())
+}
+
+#[cfg(target_os = "linux")]
+pub(in crate::tray) async fn initialize(
+    app_handle: tauri::AppHandle<AppRuntime>,
+    state: &TrayState,
+    enabled: bool,
+) -> Result<(), String> {
+    state.set_enabled(enabled)?;
+
+    if let Some(handle) = state.linux_tray_handle()? {
+        let _ = handle.update(|tray| tray.visible = enabled).await;
+        return Ok(());
+    }
+
+    if !enabled {
+        debug!("[Tray] Linux tray is disabled");
+        return Ok(());
+    }
+
+    let (tray_icon, theme, icon_label) = icon::load(&app_handle)?;
+    debug!(
+        "[Tray] Initializing Linux ksni tray with icon '{}' (theme: {:?})",
+        icon_label, theme
+    );
+
+    let tray = super::linux::LinuxTray::new(app_handle, tray_icon);
+    let handle = tray
+        .assume_sni_available(true)
+        .spawn()
+        .await
+        .map_err(|error| format!("Failed to initialize Linux ksni tray: {error}"))?;
+
+    state.set_linux_tray(handle)
 }
