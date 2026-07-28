@@ -95,7 +95,7 @@ pub async fn set_tray_visible(
             state.set_enabled(false)?;
         }
 
-        return Ok(());
+        Ok(())
     }
 
     #[cfg(not(target_os = "linux"))]
