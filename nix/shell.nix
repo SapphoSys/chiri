@@ -26,7 +26,6 @@ let
     pkgs.pango
     pkgs.cairo
     pkgs.atk
-    pkgs.libayatana-appindicator
   ];
 
   buildInputs = [

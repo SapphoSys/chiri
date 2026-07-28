@@ -19,7 +19,6 @@
 
   # Linux dependencies
   glib-networking,
-  libayatana-appindicator,
   openssl,
   webkitgtk_4_1,
 }:
@@ -82,7 +81,6 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ]
   ++ lib.optionals stdenv.hostPlatform.isLinux [
     glib-networking
-    libayatana-appindicator # needed for tauri system tray on linux
     webkitgtk_4_1
   ];
 
@@ -90,22 +88,12 @@ rustPlatform.buildRustPackage (finalAttrs: {
   cargoRoot = "src-tauri";
   buildAndTestSubdir = "src-tauri";
 
-  # patch libappindicator path on Linux for tray icon support
-  postPatch =
-    lib.optionalString stdenv.hostPlatform.isLinux ''
-      for libappindicatorRs in $cargoDepsCopy/*/libappindicator-sys-*/src/lib.rs; do
-        if [[ -f "$libappindicatorRs" ]]; then
-          substituteInPlace "$libappindicatorRs" \
-            --replace-fail "libayatana-appindicator3.so.1" "${libayatana-appindicator}/lib/libayatana-appindicator3.so.1"
-        fi
-      done
-    ''
-    + ''
-      # disable updater artifact creation to avoid requiring signing keys
-      # regular users don't have the private signing key, and don't need updater artifacts
-      substituteInPlace src-tauri/tauri.conf.json \
-        --replace-fail '"createUpdaterArtifacts": true' '"createUpdaterArtifacts": false'
-    '';
+  postPatch = ''
+    # disable updater artifact creation to avoid requiring signing keys
+    # regular users don't have the private signing key, and don't need updater artifacts
+    substituteInPlace src-tauri/tauri.conf.json \
+      --replace-fail '"createUpdaterArtifacts": true' '"createUpdaterArtifacts": false'
+  '';
 
   # build the frontend before Tauri build
   # disable bundle signing since we don't have the signing keys
