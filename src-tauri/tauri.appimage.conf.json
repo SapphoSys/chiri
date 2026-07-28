@@ -1,14 +1,5 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "garden.chiri.Chiri",
-  "mainBinaryName": "garden.chiri.Chiri",
-  "bundle": {
-    "linux": {
-      "appimage": {
-        "files": {
-          "/usr/share/applications/garden.chiri.Chiri.desktop": "linux/garden.chiri.Chiri.appimage.desktop"
-        }
-      }
-    }
-  }
+  "mainBinaryName": "garden.chiri.Chiri"
 }
