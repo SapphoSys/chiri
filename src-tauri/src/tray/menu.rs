@@ -84,11 +84,6 @@ pub(in crate::tray) fn initialize(
         .menu(&menu)
         .tooltip("Chiri");
 
-    // Linux tray backends do not support tooltips consistently. setting the
-    // title gives KDE's StatusNotifierItem a human-readable application name
-    #[cfg(target_os = "linux")]
-    let tray_builder = tray_builder.title("Chiri");
-
     #[cfg(target_os = "macos")]
     let tray_builder = tray_builder.icon_as_template(true);
 
@@ -142,5 +137,20 @@ pub(in crate::tray) fn initialize(
             error!("[Tray] Failed to build tray: {}", e);
             e.to_string()
         })?;
+
+    // Tauri's Linux `title` setter currently maps to AppIndicator's label,
+    // which KDE does not use as the StatusNotifierItem's human-readable name.
+    // Set the actual AppIndicator title through tray-icon's Linux escape hatch.
+    #[cfg(target_os = "linux")]
+    _tray
+        .with_inner_tray_icon(|tray| unsafe {
+            let indicator = &mut *(tray.app_indicator() as *mut _);
+            indicator.set_title("Chiri");
+        })
+        .map_err(|e| {
+            error!("[Tray] Failed to set Linux tray title: {}", e);
+            e.to_string()
+        })?;
+
     Ok(())
 }
