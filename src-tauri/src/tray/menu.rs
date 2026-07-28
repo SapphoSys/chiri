@@ -84,6 +84,11 @@ pub(in crate::tray) fn initialize(
         .menu(&menu)
         .tooltip("Chiri");
 
+    // Linux tray backends do not support tooltips consistently. setting the
+    // title gives KDE's StatusNotifierItem a human-readable application name
+    #[cfg(target_os = "linux")]
+    let tray_builder = tray_builder.title("Chiri");
+
     #[cfg(target_os = "macos")]
     let tray_builder = tray_builder.icon_as_template(true);
 
