@@ -21,7 +21,6 @@ runs:
       shell: bash
       run: |
         pacman -Syu --noconfirm \
-          libayatana-appindicator \
           librsvg \
           openssl \
           patchelf \
