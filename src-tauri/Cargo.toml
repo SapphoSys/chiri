@@ -63,6 +63,7 @@ block2 = "0.6"
 tauri-plugin-http = { version = "2", default-features = false, features = ["rustls-tls-native-roots"] }
 reqwest = { version = "0.12", features = ["rustls-tls-native-roots", "socks"] }
 gtk = "0.18"
+libappindicator = "0.9"
 notify-rust = "4"
 zbus = { version = "5.15.0", default-features = false, features = ["tokio"] }
 

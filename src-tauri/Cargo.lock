@@ -17,6 +17,7 @@ dependencies = [
  "iana-time-zone",
  "icu_calendar",
  "icu_locale",
+ "libappindicator",
  "log",
  "notify-rust",
  "objc2",

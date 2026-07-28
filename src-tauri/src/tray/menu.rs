@@ -144,7 +144,7 @@ pub(in crate::tray) fn initialize(
     #[cfg(target_os = "linux")]
     _tray
         .with_inner_tray_icon(|tray| unsafe {
-            let indicator = &mut *(tray.app_indicator() as *mut _);
+            let indicator = &mut *(tray.app_indicator() as *mut libappindicator::AppIndicator);
             indicator.set_title("Chiri");
         })
         .map_err(|e| {
