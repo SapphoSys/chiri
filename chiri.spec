@@ -22,12 +22,8 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  webkit2gtk4.1-devel
 BuildRequires:  libsoup3-devel
 BuildRequires:  gtk3-devel
-BuildRequires:  libayatana-appindicator-gtk3-devel
 BuildRequires:  openssl-devel
 
-# dlopened via GIO modules / bare soname at runtime, so rpm auto-requires
-# will not catch these
-Requires:       libayatana-appindicator-gtk3
 Requires:       glib-networking
 Requires:       hicolor-icon-theme
 
