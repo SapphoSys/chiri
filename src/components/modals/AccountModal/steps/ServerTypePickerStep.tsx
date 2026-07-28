@@ -63,11 +63,11 @@ const CATEGORIES: ServerTypeCategory[] = [
   },
 ];
 
-interface ServerTypePickerProps {
+interface ServerTypePickerStepProps {
   onSelect: (type: ServerType) => void;
 }
 
-export const ServerTypePicker = ({ onSelect }: ServerTypePickerProps) => {
+export const ServerTypePickerStep = ({ onSelect }: ServerTypePickerStepProps) => {
   return (
     <div className="space-y-5 p-4">
       {CATEGORIES.map((category) => (

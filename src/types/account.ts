@@ -24,6 +24,19 @@ export type ServerValidationResult =
   | { ok: true }
   | { ok: false; reason: 'timeout' | 'unreachable' };
 
+export interface AccountDraft {
+  name: string;
+  icon: string;
+  emoji: string;
+  serverUrl: string;
+  username: string;
+  password: string;
+  serverType: ServerType;
+  calendarHomeUrl: string;
+  principalUrl: string;
+  acceptInvalidCerts: boolean;
+}
+
 export interface CalDAVConfig {
   serverUrl: string;
   username: string;

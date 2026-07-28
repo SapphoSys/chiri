@@ -6,7 +6,7 @@ import { Tooltip } from '$components/Tooltip';
 import { getPredefinedServerUrl } from '$constants/settings';
 import type { ServerType } from '$types/account';
 
-interface AdvancedSectionProps {
+interface AdvancedSectionStepProps {
   serverType: ServerType;
   principalUrl: string;
   onPrincipalUrlChange: (v: string) => void;
@@ -15,14 +15,14 @@ interface AdvancedSectionProps {
   initialOpen?: boolean;
 }
 
-export const AdvancedSection = ({
+export const AdvancedSectionStep = ({
   serverType,
   principalUrl,
   onPrincipalUrlChange,
   calendarHomeUrl,
   onCalendarHomeUrlChange,
   initialOpen = false,
-}: AdvancedSectionProps) => {
+}: AdvancedSectionStepProps) => {
   const [open, setOpen] = useState(initialOpen);
 
   if (getPredefinedServerUrl(serverType)) return null;

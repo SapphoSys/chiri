@@ -3,21 +3,21 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import { ConnectionNoticeBanner } from '$components/banners/ConnectionNoticeBanner';
 import { ServerTypeDescriptionBanner } from '$components/banners/ServerTypeDescriptionBanner';
 import { ComposedInput } from '$components/ComposedInput';
-import { BrowserAuthStep } from '$components/modals/AccountModal/BrowserAuthStep';
+import { BrowserAuthStep } from '$components/modals/AccountModal/steps/BrowserAuthStep';
 import { useInitialFocusRef } from '$hooks/ui/useInitialFocusRef';
 import { type CalDAVSetupError, toCalDAVSetupError } from '$lib/caldav/setup';
 import { hasHttpUrlScheme } from '$lib/caldav/utils';
 import type { ServerType } from '$types/account';
 
-export type BrowserAuthFlowPhase = 'idle' | 'validating' | 'browser' | 'connecting' | 'done';
+export type BrowserAuthFlowStepPhase = 'idle' | 'validating' | 'browser' | 'connecting' | 'done';
 
-export interface BrowserAuthFlowHandle {
+export interface BrowserAuthFlowStepHandle {
   connect: () => void;
   cancel: () => void;
-  getPhase: () => BrowserAuthFlowPhase;
+  getPhase: () => BrowserAuthFlowStepPhase;
 }
 
-interface BrowserAuthFlowProps {
+interface BrowserAuthFlowStepProps {
   providerName: string;
   serverType: ServerType;
   requiresServerUrl?: boolean;
@@ -33,14 +33,14 @@ interface BrowserAuthFlowProps {
     setPhase: (phase: 'browser' | 'connecting') => void;
   }) => Promise<void>;
   onSuccess: () => void;
-  onPhaseChange?: (phase: BrowserAuthFlowPhase) => void;
+  onPhaseChange?: (phase: BrowserAuthFlowStepPhase) => void;
   onConnectStateChange?: (state: { disabled: boolean; loading: boolean }) => void;
 }
 
 const isAbortError = (error: unknown): boolean =>
   error instanceof DOMException && error.name === 'AbortError';
 
-export const BrowserAuthFlow = forwardRef<BrowserAuthFlowHandle, BrowserAuthFlowProps>(
+export const BrowserAuthFlowStep = forwardRef<BrowserAuthFlowStepHandle, BrowserAuthFlowStepProps>(
   (
     {
       providerName,
@@ -59,15 +59,15 @@ export const BrowserAuthFlow = forwardRef<BrowserAuthFlowHandle, BrowserAuthFlow
     },
     ref,
   ) => {
-    const [phase, setPhase] = useState<BrowserAuthFlowPhase>('idle');
+    const [phase, setPhase] = useState<BrowserAuthFlowStepPhase>('idle');
     const [error, setError] = useState<CalDAVSetupError | null>(null);
     const [direction, setDirection] = useState<'forward' | 'back' | null>(null);
     const controllerRef = useRef<AbortController | null>(null);
     const flowIdRef = useRef(0);
-    const prevPhaseRef = useRef<BrowserAuthFlowPhase>('idle');
+    const prevPhaseRef = useRef<BrowserAuthFlowStepPhase>('idle');
     const focusRef = useInitialFocusRef<HTMLInputElement>();
 
-    const updatePhase = (next: BrowserAuthFlowPhase) => {
+    const updatePhase = (next: BrowserAuthFlowStepPhase) => {
       setPhase(next);
       onPhaseChange?.(next);
     };
@@ -230,4 +230,4 @@ export const BrowserAuthFlow = forwardRef<BrowserAuthFlowHandle, BrowserAuthFlow
   },
 );
 
-BrowserAuthFlow.displayName = 'BrowserAuthFlow';
+BrowserAuthFlowStep.displayName = 'BrowserAuthFlowStep';

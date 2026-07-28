@@ -5,14 +5,14 @@ import { ConnectionNoticeBanner } from '$components/banners/ConnectionNoticeBann
 import { ServerTypeDescriptionBanner } from '$components/banners/ServerTypeDescriptionBanner';
 import { ComposedInput } from '$components/ComposedInput';
 import { IconEmojiPicker } from '$components/IconEmojiPicker';
-import { AdvancedSection } from '$components/modals/AccountModal/AdvancedSection';
+import { AdvancedSectionStep } from '$components/modals/AccountModal/steps/AdvancedSectionStep';
 import { Tooltip } from '$components/Tooltip';
 import { getPredefinedServerUrl } from '$constants/settings';
 import { useInitialFocusRef } from '$hooks/ui/useInitialFocusRef';
 import type { CalDAVSetupError, CalDAVSetupNotice } from '$lib/caldav/setup';
 import type { Account, ServerType } from '$types/account';
 
-interface CredentialsFormProps {
+interface CredentialsFormStepProps {
   serverType: ServerType;
   name: string;
   onNameChange: (v: string) => void;
@@ -244,7 +244,7 @@ const PASSWORD_PLACEHOLDERS: Partial<Record<ServerType, string>> = {
   stalwart: 'Enter password or app password',
 };
 
-export const CredentialsForm = ({
+export const CredentialsFormStep = ({
   serverType,
   name,
   onNameChange,
@@ -269,7 +269,7 @@ export const CredentialsForm = ({
   testedCalendarCount,
   testedPushSupportedCount,
   onSubmit,
-}: CredentialsFormProps) => {
+}: CredentialsFormStepProps) => {
   const nameInputRef = useInitialFocusRef<HTMLInputElement>();
   const hint = SERVER_HINTS[serverType];
 
@@ -383,7 +383,7 @@ export const CredentialsForm = ({
         )}
       </div>
 
-      <AdvancedSection
+      <AdvancedSectionStep
         serverType={serverType}
         principalUrl={principalUrl}
         onPrincipalUrlChange={onPrincipalUrlChange}

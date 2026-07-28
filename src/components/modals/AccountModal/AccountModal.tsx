@@ -1,68 +1,25 @@
-import { useQueryClient } from '@tanstack/react-query';
-import ArrowLeft from 'lucide-react/icons/arrow-left';
-import ArrowRight from 'lucide-react/icons/arrow-right';
-import CheckCircle from 'lucide-react/icons/check-circle';
-import Cloud from 'lucide-react/icons/cloud';
-import KeyRound from 'lucide-react/icons/key-round';
-import { type SyntheticEvent, useMemo, useRef, useState } from 'react';
-import { ModalButton } from '$components/ModalButton';
+import { useRef, useState } from 'react';
 import { ModalWrapper } from '$components/ModalWrapper';
-import { CredentialsForm } from '$components/modals/AccountModal/CredentialsForm';
-import {
-  DisrootCloudBrowserLoginStep,
-  type DisrootCloudBrowserLoginStepHandle,
-} from '$components/modals/AccountModal/DisrootCloudBrowserLoginStep';
-import {
-  FastmailOAuthStep,
-  type FastmailOAuthStepHandle,
-} from '$components/modals/AccountModal/FastmailOAuthStep';
+import { AccountModalBody } from '$components/modals/AccountModal/AccountModalBody';
+import { AccountModalFooter } from '$components/modals/AccountModal/AccountModalFooter';
+import type { DisrootCloudBrowserLoginStepHandle } from '$components/modals/AccountModal/steps/DisrootCloudBrowserLoginStep';
+import type { FastmailOAuthStepHandle } from '$components/modals/AccountModal/steps/FastmailOAuthStep';
 import type {
-  QuickConnectFlowHandle,
+  QuickConnectFlowStepHandle,
   QuickConnectLoginStep,
-} from '$components/modals/AccountModal/QuickConnectFlow';
-import { QuickConnectFlow } from '$components/modals/AccountModal/QuickConnectFlow';
-import { ServerTypePicker } from '$components/modals/AccountModal/ServerTypePicker';
-import {
-  type StalwartOAuthLoginStep,
-  StalwartOAuthStep,
-  type StalwartOAuthStepHandle,
-} from '$components/modals/AccountModal/StalwartOAuthStep';
-import { MobileConfigImportSkippedWarning } from '$components/modals/MobileConfigImportSkippedWarning';
-import { MobileConfigSignatureWarning } from '$components/modals/MobileConfigSignatureWarning';
-import { getPredefinedServerUrl, SERVER_TYPE_OPTIONS } from '$constants/settings';
+} from '$components/modals/AccountModal/steps/QuickConnectFlowStep';
+import type {
+  StalwartOAuthLoginStep,
+  StalwartOAuthStepHandle,
+} from '$components/modals/AccountModal/steps/StalwartOAuthStep';
+import { SERVER_TYPE_OPTIONS } from '$constants/settings';
 import { useConfirmDialog } from '$context/confirmDialogContext';
-import { useConnectionStore } from '$context/connectionContext';
 import { useSettingsStore } from '$context/settingsContext';
-import { useAddCalendar, useCreateAccount, useUpdateAccount } from '$hooks/queries/useAccounts';
-import { CalDAVClient } from '$lib/caldav';
-import {
-  type CalDAVSetupError,
-  type CalDAVSetupNotice,
-  getSetupErrorInfo,
-  getSetupNotice,
-  probeSetupVtodoCreationIfNeeded,
-} from '$lib/caldav/setup';
-import { isValidPrincipalUrlOverride, parseCalDAVServerUrl } from '$lib/caldav/utils';
-import { getServerWarning, getUrlWarning, toConfirmOptions } from '$lib/caldav/warnings';
-import { type HttpRequestContext, isCertError, tauriRequest } from '$lib/http';
-import { loggers } from '$lib/logger';
-import { ensureTagExists } from '$lib/store/sync';
-import { createTask } from '$lib/store/tasks';
+import { useAccountConnectionTest } from '$hooks/account/useAccountConnectionTest';
+import { useAccountDraft } from '$hooks/account/useAccountDraft';
+import { useAccountSetup } from '$hooks/account/useAccountSetup';
 import type { Account, ServerType } from '$types/account';
-import type { Calendar } from '$types/calendar';
 import type { MobileConfigImportSelection } from '$types/mobileconfig/import';
-import { generateUUID } from '$utils/misc';
-
-const log = loggers.account;
-
-type Step =
-  | 'pick-type'
-  | 'connect-method'
-  | 'quick-connect'
-  | 'credentials'
-  | 'fastmail-oauth'
-  | 'stalwart-oauth'
-  | 'disrootCloud-browser';
 
 const QUICK_CONNECT_SERVER_TYPES: Partial<Record<ServerType, true>> = {
   nextcloud: true,
@@ -76,18 +33,21 @@ const BROWSER_LOGIN_SERVER_TYPES: Partial<Record<ServerType, true>> = {
   disrootCloud: true,
 };
 
-class ConnectionTestCancelledError extends Error {
-  constructor() {
-    super('Connection test cancelled');
-    this.name = 'ConnectionTestCancelledError';
-  }
-}
 /** all server types that go through the connect-method chooser step */
 const CONNECT_METHOD_SERVER_TYPES: Partial<Record<ServerType, true>> = {
   ...QUICK_CONNECT_SERVER_TYPES,
   ...OAUTH_SERVER_TYPES,
   ...BROWSER_LOGIN_SERVER_TYPES,
 };
+
+export type AccountModalStep =
+  | 'pick-type'
+  | 'connect-method'
+  | 'quick-connect'
+  | 'credentials'
+  | 'fastmail-oauth'
+  | 'stalwart-oauth'
+  | 'disrootCloud-browser';
 
 interface AccountModalProps {
   account: Account | null;
@@ -97,50 +57,20 @@ interface AccountModalProps {
   zIndex?: 'z-60' | 'z-70';
 }
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: This modal owns a multi-step account setup flow whose branches share state and confirmation dialogs
-export function AccountModal({
+export const AccountModal = ({
   account,
   onClose,
   onBackToConfigProfileChooser,
   preloadedConfig,
   zIndex = 'z-60',
-}: AccountModalProps) {
-  const queryClient = useQueryClient();
+}: AccountModalProps) => {
   const { confirm } = useConfirmDialog();
-  const createAccountMutation = useCreateAccount();
-  const updateAccountMutation = useUpdateAccount();
-  const addCalendarMutation = useAddCalendar();
-  const preloadedSettings = preloadedConfig?.settings;
-
   const hasInitialType = !!(account || preloadedConfig);
-  const [step, setStep] = useState<Step>(hasInitialType ? 'credentials' : 'pick-type');
-
-  const [name, setName] = useState(() => preloadedSettings?.accountName || account?.name || '');
-  const [icon, setIcon] = useState(() => account?.icon || 'user');
-  const [emoji, setEmoji] = useState(() => account?.emoji || '');
-  const [serverUrl, setServerUrl] = useState(
-    () => preloadedSettings?.serverUrl || account?.caldav?.serverUrl || '',
-  );
-  const [username, setUsername] = useState(
-    () => preloadedSettings?.username || account?.caldav?.username || '',
-  );
-  const [password, setPassword] = useState(() => preloadedSettings?.password || '');
-  const [serverType, setServerType] = useState<ServerType>(
-    () => preloadedSettings?.serverType || account?.caldav?.serverType || 'generic',
-  );
-  const [calendarHomeUrl, setCalendarHomeUrl] = useState(
-    () => account?.caldav?.calendarHomeUrl || '',
-  );
-  const [principalUrl, setPrincipalUrl] = useState(
-    () => preloadedSettings?.principalUrl || account?.caldav?.principalUrl || '',
-  );
-  const [isLoading, setIsLoading] = useState(false);
-  const [isTesting, setIsTesting] = useState(false);
-  const [testSuccess, setTestSuccess] = useState(false);
-  const [testConnectionId, setTestConnectionId] = useState<string | null>(null);
-  const [testedCalendars, setTestedCalendars] = useState<Calendar[]>([]);
-  const [setupError, setSetupError] = useState<CalDAVSetupError | null>(null);
-  const [setupNotice, setSetupNotice] = useState<CalDAVSetupNotice | null>(null);
+  const [step, setStep] = useState<AccountModalStep>(hasInitialType ? 'credentials' : 'pick-type');
+  const { draft, updateDraft, setDraftField, selectServerType, hasChanges } = useAccountDraft({
+    account,
+    preloadedConfig,
+  });
   const [quickConnectLoginStep, setQuickConnectLoginStep] =
     useState<QuickConnectLoginStep>('input');
   const [stalwartOAuthLoginStep, setStalwartOAuthLoginStep] =
@@ -150,7 +80,6 @@ export function AccountModal({
     useState(false);
   const [navDirection, setNavDirection] = useState<'forward' | 'back' | null>(null);
   const { enforceVapid } = useSettingsStore();
-  const { testingAccountIds, beginTesting, endTesting } = useConnectionStore();
   const [quickConnectButtonState, setQuickConnectButtonState] = useState({
     disabled: true,
     loading: false,
@@ -167,80 +96,60 @@ export function AccountModal({
     disabled: false,
     loading: false,
   });
-  const quickConnectRef = useRef<QuickConnectFlowHandle>(null);
+  const quickConnectRef = useRef<QuickConnectFlowStepHandle>(null);
   const fastmailRef = useRef<FastmailOAuthStepHandle>(null);
   const stalwartOAuthRef = useRef<StalwartOAuthStepHandle>(null);
   const disrootRef = useRef<DisrootCloudBrowserLoginStepHandle>(null);
-  const activeTestConnectionIdRef = useRef<string | null>(null);
-  const activeTestStateIdRef = useRef<string | null>(null);
-  const activeTestAbortControllerRef = useRef<AbortController | null>(null);
-  const testRunIdRef = useRef(0);
 
-  const clearTestConnection = () => {
-    const connectionId = activeTestConnectionIdRef.current ?? testConnectionId;
-    if (connectionId) {
-      CalDAVClient.disconnect(connectionId);
-    }
-    activeTestConnectionIdRef.current = null;
-    setTestConnectionId(null);
-    setTestSuccess(false);
-    setTestedCalendars([]);
-    setSetupNotice(null);
-  };
-
-  const cancelTestConnection = () => {
-    testRunIdRef.current += 1;
-    activeTestAbortControllerRef.current?.abort();
-    activeTestAbortControllerRef.current = null;
-    const testStateId = activeTestStateIdRef.current;
-    if (testStateId) {
-      log.debug(`Cancelling connection test for ${testStateId}...`);
-    }
-    if (testStateId) {
-      activeTestStateIdRef.current = null;
-      endTesting(testStateId);
-    }
-    clearTestConnection();
-  };
-
-  const [acceptInvalidCerts, setAcceptInvalidCerts] = useState(
-    () => account?.caldav?.acceptInvalidCerts ?? false,
-  );
-
-  // reset test state when credentials change
-  const [prevCredentials, setPrevCredentials] = useState({
-    serverUrl,
-    username,
-    password,
-    calendarHomeUrl,
-    principalUrl,
+  const {
+    isTesting,
+    testSuccess,
+    testConnectionId,
+    testedCalendars,
+    setupError,
+    setupNotice,
+    setSetupError,
+    setSetupNotice,
+    testingAccountIds,
+    cancelTestConnection,
+    testConnection: handleTestConnection,
+    connectWithCertHandling,
+    validateServerUrlScheme,
+    validatePrincipalUrl,
+    confirmServerWarning,
+    confirmServerUrlWarning,
+  } = useAccountConnectionTest({
+    account,
+    draft,
+    enforceVapid,
+    updateDraft,
+    confirm,
   });
-  if (
-    serverUrl !== prevCredentials.serverUrl ||
-    username !== prevCredentials.username ||
-    password !== prevCredentials.password ||
-    calendarHomeUrl !== prevCredentials.calendarHomeUrl ||
-    principalUrl !== prevCredentials.principalUrl
-  ) {
-    setPrevCredentials({ serverUrl, username, password, calendarHomeUrl, principalUrl });
-    cancelTestConnection();
-  }
 
-  const handleSelectServerType = (type: ServerType) => {
-    setServerType(type);
-    setName('');
-    setIcon('user');
-    setEmoji('');
-    setServerUrl(getPredefinedServerUrl(type) ?? '');
-    setUsername('');
-    setPassword('');
-    setCalendarHomeUrl('');
-    setPrincipalUrl('');
+  const { isLoading, handleSubmit } = useAccountSetup({
+    account,
+    draft,
+    enforceVapid,
+    testSuccess,
+    testConnectionId,
+    testedCalendars,
+    connectWithCertHandling,
+    validateServerUrlScheme,
+    validatePrincipalUrl,
+    confirmServerWarning,
+    confirmServerUrlWarning,
+    setSetupError,
+    setSetupNotice,
+    cancelTestConnection,
+    onClose,
+  });
+
+  const handleSelectServerType = (serverType: ServerType) => {
+    selectServerType(serverType);
     setSetupError(null);
     cancelTestConnection();
-    setAcceptInvalidCerts(false);
     setNavDirection('forward');
-    setStep(CONNECT_METHOD_SERVER_TYPES[type] ? 'connect-method' : 'credentials');
+    setStep(CONNECT_METHOD_SERVER_TYPES[serverType] ? 'connect-method' : 'credentials');
   };
 
   const handleBack = () => {
@@ -248,7 +157,25 @@ export function AccountModal({
     cancelTestConnection();
     setNavDirection('back');
     // credentials back-destination: connect-method for types that go through it, otherwise pick-type
-    setStep(CONNECT_METHOD_SERVER_TYPES[serverType] ? 'connect-method' : 'pick-type');
+    setStep(CONNECT_METHOD_SERVER_TYPES[draft.serverType] ? 'connect-method' : 'pick-type');
+  };
+
+  const handleSelectBrowserLogin = () => {
+    setNavDirection('forward');
+    if (draft.serverType === 'fastmail') {
+      setStep('fastmail-oauth');
+    } else if (draft.serverType === 'stalwart') {
+      setStep('stalwart-oauth');
+    } else if (BROWSER_LOGIN_SERVER_TYPES[draft.serverType]) {
+      setStep('disrootCloud-browser');
+    } else {
+      setStep('quick-connect');
+    }
+  };
+
+  const handleSelectCredentials = () => {
+    setNavDirection('forward');
+    setStep('credentials');
   };
 
   const handleBackFromOAuth = () => {
@@ -311,533 +238,43 @@ export function AccountModal({
     setStep('connect-method');
   };
 
-  const confirmServerWarning = async (calendarHome?: string) => {
-    const warning = getServerWarning(serverType, { calendarHome });
-    if (!warning) return true;
-
-    return await confirm(toConfirmOptions(warning));
-  };
-
-  const validateServerUrlScheme = () => {
-    const result = parseCalDAVServerUrl(serverUrl);
-    if (result.ok) return true;
-
-    if (result.reason === 'missing-url') {
-      setSetupError({
-        title: 'Server URL required',
-        message: 'Enter the CalDAV server URL for this account.',
-        hint: 'Use a full URL like https://caldav.example.com.',
-      });
-      return false;
-    }
-
-    if (result.reason === 'unsupported-scheme' || result.reason === 'invalid-url') {
-      setSetupError({
-        title: 'URL scheme required',
-        message: 'Server URL must start with http:// or https://.',
-        hint: 'Add the scheme explicitly, for example https://caldav.example.com.',
-      });
-      return false;
-    }
-
-    setSetupError({
-      title: 'Invalid server URL',
-      message: 'Server URL must be a valid HTTP(S) URL without embedded credentials.',
-      hint:
-        result.reason === 'invalid-port'
-          ? 'Use a port between 1 and 65535, or omit the port.'
-          : 'Use a full URL like https://caldav.example.com.',
-    });
-    return false;
-  };
-
-  const validatePrincipalUrl = (baseUrl: string) => {
-    if (isValidPrincipalUrlOverride(principalUrl, baseUrl)) return true;
-
-    setSetupError({
-      title: 'Invalid principal URL',
-      message: 'Principal URL must be an HTTP(S) URL or a server-relative path.',
-      hint: 'Use a path like /principals/alice/ or a full URL like https://caldav.example.com/principals/alice/.',
-    });
-    return false;
-  };
-
-  const confirmServerUrlWarning = async (url: string) => {
-    const warning = getUrlWarning(url);
-    if (!warning) return true;
-
-    return await confirm(toConfirmOptions(warning));
-  };
-
-  const fetchTasksForCalendar = async (accountId: string, calendar: Calendar) => {
-    try {
-      const remoteTasks = await CalDAVClient.getForAccount(accountId).fetchTasks(calendar);
-
-      if (!remoteTasks) {
-        log.warn(`No tasks fetched from ${calendar.displayName}`);
-        return;
-      }
-
-      log.info(`Fetched ${remoteTasks.length} tasks from ${calendar.displayName}`);
-
-      for (const remoteTask of remoteTasks) {
-        let tagIds: string[] = [];
-        if (remoteTask.categoryId) {
-          const categoryNames = remoteTask.categoryId
-            .split(',')
-            .map((s: string) => s.trim())
-            .filter(Boolean);
-          tagIds = categoryNames.map((name: string) => ensureTagExists(name));
-        }
-
-        createTask({
-          ...remoteTask,
-          tags: tagIds,
-        });
-      }
-    } catch (error) {
-      log.error(`Failed to fetch tasks for calendar ${calendar.displayName}:`, error);
+  const handleBackAction = () => {
+    if (step === 'credentials' && onBackToConfigProfileChooser) {
+      onBackToConfigProfileChooser();
+    } else if (step === 'credentials') {
+      handleBack();
+    } else if (step === 'quick-connect') {
+      handleBackFromQuickConnect();
+    } else if (step === 'fastmail-oauth' || step === 'stalwart-oauth') {
+      handleBackFromOAuth();
+    } else if (step === 'disrootCloud-browser') {
+      handleBackFromDisrootCloudBrowser();
+    } else {
+      handleBackToTypePicker();
     }
   };
 
-  const showCertTrustDialog = async () => {
-    return await confirm({
-      title: 'Untrusted certificate',
-      message: (
-        <div className="space-y-3">
-          <p>
-            The server's SSL/TLS certificate is not trusted. This could be because it's self-signed
-            or from an unknown certificate authority.
-          </p>
-          <p>
-            Connecting to a server with an untrusted certificate could allow attackers to intercept
-            your data if you're on an untrusted network.
-          </p>
-          <p className="font-bold text-surface-800 dark:text-surface-200">
-            Do you want to proceed anyway?
-          </p>
-        </div>
-      ),
-      confirmLabel: 'Trust and connect',
-      cancelLabel: 'Cancel',
-      destructive: true,
-    });
-  };
-
-  const connectWithCertHandling = async (
-    accountId: string,
-    effectivePassword: string,
-    trimmedServerUrl: string,
-    context?: HttpRequestContext,
-  ) => {
-    const isOAuth = account?.caldav?.authType === 'oauth';
-    const tryConnect = (withInvalidCerts?: boolean) =>
-      CalDAVClient.connect(
-        accountId,
-        trimmedServerUrl,
-        username,
-        isOAuth ? '' : effectivePassword,
-        serverType,
-        calendarHomeUrl.trim() || undefined,
-        principalUrl.trim() || undefined,
-        withInvalidCerts,
-        isOAuth ? effectivePassword : undefined,
-        context,
-      );
-
-    try {
-      return await tryConnect(acceptInvalidCerts || undefined);
-    } catch (err) {
-      const looksLikeNetworkError =
-        isCertError(err) ||
-        (typeof err === 'string' && err.includes('error sending request for url'));
-
-      if (context?.signal?.aborted) throw new ConnectionTestCancelledError();
-      if (!looksLikeNetworkError) throw err;
-
-      let serverReachable = false;
-      try {
-        await tauriRequest(
-          trimmedServerUrl,
-          'OPTIONS',
-          {
-            username,
-            password: effectivePassword,
-            acceptInvalidCerts: true,
-          },
-          undefined,
-          undefined,
-          context,
-        );
-        serverReachable = true;
-      } catch {
-        if (context?.signal?.aborted) throw new ConnectionTestCancelledError();
-        // also failed with bypass - genuinely unreachable
-      }
-
-      if (!serverReachable) throw err;
-
-      const proceed = await showCertTrustDialog();
-      if (!proceed) return null;
-
-      setAcceptInvalidCerts(true);
-      return await tryConnect(true);
-    }
-  };
-
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: the modal test flow coordinates validation, confirmation, connection probing, and cancellation cleanup
-  const handleTestConnection = async () => {
+  const handleClose = () => {
+    quickConnectRef.current?.cancel();
+    fastmailRef.current?.cancel();
+    stalwartOAuthRef.current?.cancel();
+    disrootRef.current?.cancel();
     cancelTestConnection();
-    const probeConnectionId = generateUUID();
-    const testStateId = account?.id ?? probeConnectionId;
-    const isTestStarted = beginTesting(testStateId);
-
-    if (!isTestStarted) {
-      setSetupError({
-        title: 'Connection test already in progress',
-        message: 'This account is already being tested elsewhere.',
-        hint: 'Wait for the other connection test to finish, then try again.',
-      });
-      return;
-    }
-
-    const testRunId = testRunIdRef.current;
-    const assertTestActive = () => {
-      if (testRunIdRef.current !== testRunId) {
-        throw new ConnectionTestCancelledError();
-      }
-    };
-
-    setSetupError(null);
-    setSetupNotice(null);
-    setTestedCalendars([]);
-    setIsTesting(true);
-    activeTestConnectionIdRef.current = probeConnectionId;
-    activeTestStateIdRef.current = testStateId;
-    const abortController = new AbortController();
-    activeTestAbortControllerRef.current = abortController;
-    const requestContext: HttpRequestContext = {
-      operationId: `account-connection-test:${testStateId}:${testRunId}`,
-      signal: abortController.signal,
-    };
-    let keepTestConnection = false;
-
-    try {
-      const effectivePassword = password || account?.caldav?.password;
-
-      if (!effectivePassword) {
-        throw new Error(
-          account?.caldav?.authType === 'oauth'
-            ? 'Access token missing, try reconnecting via OAuth'
-            : 'Password is required to test connection',
-        );
-      }
-
-      if (!serverUrl.trim() || !username.trim()) {
-        throw new Error('Server URL and username are required');
-      }
-
-      if (!validateServerUrlScheme()) {
-        setIsTesting(false);
-        return;
-      }
-
-      const trimmedServerUrl = serverUrl.trim();
-      if (!validatePrincipalUrl(trimmedServerUrl)) {
-        setIsTesting(false);
-        return;
-      }
-
-      const proceedWithUrl = await confirmServerUrlWarning(trimmedServerUrl);
-      assertTestActive();
-      if (!proceedWithUrl) {
-        setIsTesting(false);
-        return;
-      }
-
-      log.debug(`Testing connection to ${trimmedServerUrl}...`);
-
-      const connectionInfo = await connectWithCertHandling(
-        probeConnectionId,
-        effectivePassword,
-        trimmedServerUrl,
-        requestContext,
-      );
-      assertTestActive();
-      if (!connectionInfo) {
-        setIsTesting(false);
-        return;
-      }
-
-      const proceed = await confirmServerWarning(connectionInfo.calendarHome);
-      assertTestActive();
-
-      if (!proceed) {
-        setIsTesting(false);
-        return;
-      }
-
-      log.debug(`Fetching calendars...`);
-      const client = CalDAVClient.getForAccount(probeConnectionId);
-      const { calendars, diagnostics } = await client.discoverCalendars(
-        enforceVapid,
-        requestContext,
-      );
-      assertTestActive();
-      const canCreateVtodoCalendar = await probeSetupVtodoCreationIfNeeded(
-        client,
-        diagnostics,
-        enforceVapid,
-        requestContext,
-      );
-      assertTestActive();
-      log.info(`Connection test successful - found ${calendars.length} calendars`);
-
-      setTestConnectionId(probeConnectionId);
-      setTestedCalendars(calendars);
-      setSetupNotice(getSetupNotice(diagnostics, canCreateVtodoCalendar));
-      setTestSuccess(true);
-      keepTestConnection = true;
-    } catch (err) {
-      if (err instanceof ConnectionTestCancelledError || abortController.signal.aborted) {
-        log.info('Connection test cancelled; ignoring the result.');
-        return;
-      }
-      setSetupError(
-        getSetupErrorInfo(err, 'Failed to test CalDAV connection', serverType, serverUrl),
-      );
-      log.error('Connection test failed:', err);
-    } finally {
-      if (!keepTestConnection) {
-        const ownsActiveTest =
-          activeTestConnectionIdRef.current === probeConnectionId &&
-          activeTestStateIdRef.current === testStateId;
-        if (ownsActiveTest) {
-          clearTestConnection();
-        } else {
-          // a new test may have started before the cancelled request settled.
-          // only tear down this run's probe connection in that case
-          CalDAVClient.disconnect(probeConnectionId);
-        }
-      }
-      const isCurrentTest = testRunIdRef.current === testRunId;
-      if (isCurrentTest) {
-        setIsTesting(false);
-      }
-      if (isCurrentTest && activeTestStateIdRef.current === testStateId) {
-        activeTestStateIdRef.current = null;
-        endTesting(testStateId);
-      }
-      if (activeTestAbortControllerRef.current === abortController) {
-        activeTestAbortControllerRef.current = null;
-      }
-    }
-  };
-
-  const updateExistingAccount = async (effectivePassword: string | undefined) => {
-    if (!validateServerUrlScheme()) return false;
-    const trimmedServerUrl = serverUrl.trim();
-    if (!validatePrincipalUrl(trimmedServerUrl)) return false;
-
-    const existingCalDav = account!.caldav!;
-    const connectionSettingsChanged =
-      serverType !== (existingCalDav.serverType || 'generic') ||
-      trimmedServerUrl !== existingCalDav.serverUrl ||
-      username !== existingCalDav.username ||
-      calendarHomeUrl.trim() !== (existingCalDav.calendarHomeUrl || '') ||
-      principalUrl.trim() !== (existingCalDav.principalUrl || '') ||
-      acceptInvalidCerts !== (existingCalDav.acceptInvalidCerts ?? false) ||
-      password.trim().length > 0;
-
-    if (connectionSettingsChanged && effectivePassword) {
-      log.debug(`Testing connection to ${trimmedServerUrl}...`);
-      const result = await connectWithCertHandling(
-        account!.id,
-        effectivePassword,
-        trimmedServerUrl,
-      );
-      if (!result) return false;
-    }
-
-    updateAccountMutation.mutate({
-      id: account!.id,
-      updates: {
-        name,
-        icon,
-        emoji,
-        caldav: {
-          serverUrl: trimmedServerUrl,
-          username,
-          password: effectivePassword || account!.caldav!.password,
-          serverType,
-          calendarHomeUrl: calendarHomeUrl.trim() || undefined,
-          principalUrl: principalUrl.trim() || undefined,
-          acceptInvalidCerts: acceptInvalidCerts || undefined,
-          authType: account!.caldav!.authType,
-          refreshToken: account!.caldav!.refreshToken,
-          tokenExpiry: account!.caldav!.tokenExpiry,
-        },
-      },
-    });
-
-    return true;
-  };
-
-  const connectAndFetchCalendars = async (effectivePassword: string) => {
-    if (!validateServerUrlScheme()) return null;
-    const trimmedServerUrl = serverUrl.trim();
-    if (!validatePrincipalUrl(trimmedServerUrl)) return null;
-
-    if (testSuccess && testConnectionId) {
-      log.debug('Reusing tested connection...');
-      return {
-        testConnectionId,
-        calendars: testedCalendars,
-        serverUrl: trimmedServerUrl,
-      };
-    }
-
-    const probeConnectionId = generateUUID();
-
-    log.debug(`Connecting to ${trimmedServerUrl}...`);
-    const proceedWithUrl = await confirmServerUrlWarning(trimmedServerUrl);
-    if (!proceedWithUrl) return null;
-
-    const connectionInfo = await connectWithCertHandling(
-      probeConnectionId,
-      effectivePassword,
-      trimmedServerUrl,
-    );
-    if (!connectionInfo) return null;
-
-    const proceed = await confirmServerWarning(connectionInfo.calendarHome);
-
-    if (!proceed) {
-      CalDAVClient.disconnect(probeConnectionId);
-      return null;
-    }
-
-    log.debug(`Fetching calendars...`);
-    const client = CalDAVClient.getForAccount(probeConnectionId);
-    const { calendars, diagnostics } = await client.discoverCalendars(enforceVapid);
-    const canCreateVtodoCalendar = await probeSetupVtodoCreationIfNeeded(
-      client,
-      diagnostics,
-      enforceVapid,
-    );
-    log.info(`Found ${calendars.length} calendars:`, calendars);
-    setSetupNotice(getSetupNotice(diagnostics, canCreateVtodoCalendar));
-
-    return { testConnectionId: probeConnectionId, calendars, serverUrl: trimmedServerUrl };
-  };
-
-  const createNewAccount = async (effectivePassword: string) => {
-    const accountSetup = await connectAndFetchCalendars(effectivePassword);
-    if (!accountSetup) return false;
-
-    const { testConnectionId, calendars, serverUrl: trimmedServerUrl } = accountSetup;
-    createAccountMutation.mutate(
-      {
-        id: testConnectionId,
-        name,
-        icon,
-        emoji,
-        caldav: {
-          serverUrl: trimmedServerUrl,
-          username,
-          password: effectivePassword,
-          serverType,
-          calendarHomeUrl: calendarHomeUrl.trim() || undefined,
-          principalUrl: principalUrl.trim() || undefined,
-          acceptInvalidCerts: acceptInvalidCerts || undefined,
-          authType: 'basic',
-        },
-      },
-      {
-        onSuccess: async (newAccount) => {
-          try {
-            for (const calendar of calendars) {
-              addCalendarMutation.mutate({ accountId: newAccount.id, calendarData: calendar });
-            }
-
-            log.debug('Fetching tasks for all calendars...');
-            for (const calendar of calendars) {
-              await fetchTasksForCalendar(newAccount.id, calendar);
-            }
-
-            queryClient.invalidateQueries({ queryKey: ['tasks'] });
-            queryClient.invalidateQueries({ queryKey: ['tags'] });
-
-            onClose();
-          } catch (error) {
-            log.error('Error setting up account:', error);
-            onClose();
-          } finally {
-            setIsLoading(false);
-          }
-        },
-        onError: (error) => {
-          log.error('Error creating account:', error);
-          setSetupError(
-            getSetupErrorInfo(error, 'Failed to create account', serverType, serverUrl),
-          );
-          setIsLoading(false);
-        },
-      },
-    );
-
-    return true;
-  };
-
-  const handleSubmit = async (e: SyntheticEvent) => {
-    e.preventDefault();
-    setSetupError(null);
-    setSetupNotice(null);
-    setIsLoading(true);
-
-    try {
-      const effectivePassword = password || account?.caldav?.password;
-
-      if (account) {
-        const didUpdate = await updateExistingAccount(effectivePassword);
-        if (!didUpdate) setIsLoading(false);
-      } else {
-        if (!effectivePassword) {
-          throw new Error('Password is required');
-        }
-
-        const didStartCreate = await createNewAccount(effectivePassword);
-        if (!didStartCreate) setIsLoading(false);
-        return;
-      }
-
-      if (account) {
-        cancelTestConnection();
-      }
-      onClose();
-      setIsLoading(false);
-    } catch (err) {
-      setSetupError(
-        getSetupErrorInfo(err, 'Failed to connect to CalDAV server', serverType, serverUrl),
-      );
-      log.error('Failed to connect:', err);
-      setIsLoading(false);
-    }
+    onClose();
   };
 
   const serverTypeLabel =
-    SERVER_TYPE_OPTIONS.find((o) => o.value === serverType)?.label ?? serverType;
+    SERVER_TYPE_OPTIONS.find((option) => option.value === draft.serverType)?.label ??
+    draft.serverType;
   const modalTitle = account
     ? 'Edit Account'
     : step === 'pick-type'
       ? 'Add CalDAV Account'
-      : serverType === 'generic'
+      : draft.serverType === 'generic'
         ? 'Add a CalDAV Account'
         : `Add ${serverTypeLabel} Account`;
-
   const modalDescription =
     step === 'pick-type' ? 'Choose your server type to get started.' : undefined;
-
   const isProcessing =
     (step === 'quick-connect' && quickConnectLoginStep === 'processing') ||
     fastmailOAuthSetupInProgress ||
@@ -849,93 +286,51 @@ export function AccountModal({
       : navDirection === 'back'
         ? 'motion-safe:animate-step-back'
         : '';
-
-  const hasChanges = useMemo(() => {
-    if (!account) return true;
-
-    return (
-      name !== (account.name || '') ||
-      icon !== (account.icon || 'user') ||
-      emoji !== (account.emoji || '') ||
-      serverType !== (account.caldav?.serverType || 'generic') ||
-      serverUrl !== (account.caldav?.serverUrl || '') ||
-      username !== (account.caldav?.username || '') ||
-      password.trim().length > 0 ||
-      calendarHomeUrl !== (account.caldav?.calendarHomeUrl || '') ||
-      principalUrl !== (account.caldav?.principalUrl || '') ||
-      acceptInvalidCerts !== (account.caldav?.acceptInvalidCerts ?? false)
-    );
-  }, [
-    account,
-    name,
-    icon,
-    emoji,
-    serverType,
-    serverUrl,
-    username,
-    password,
-    calendarHomeUrl,
-    principalUrl,
-    acceptInvalidCerts,
-  ]);
-
   const isAccountTestInProgress = account ? account.id in testingAccountIds : false;
 
-  const testConnectionButton = (
-    <ModalButton
-      variant="secondary"
-      onClick={handleTestConnection}
-      disabled={
-        isTesting ||
-        isAccountTestInProgress ||
-        isLoading ||
-        testSuccess ||
-        !serverUrl.trim() ||
-        !username.trim() ||
-        (!password.trim() && !account?.caldav?.password)
-      }
-      loading={isTesting || isAccountTestInProgress}
-    >
-      {testSuccess && <CheckCircle className="h-4 w-4 text-semantic-success" />}
-      {testSuccess
-        ? 'Success'
-        : isTesting || isAccountTestInProgress
-          ? 'Testing...'
-          : 'Test connection'}
-    </ModalButton>
-  );
+  const browserLoginDescription =
+    draft.serverType === 'stalwart' || QUICK_CONNECT_SERVER_TYPES[draft.serverType]
+      ? 'Enter your server URL and authenticate through your browser'
+      : 'Authenticate through your browser';
+  const credentialsDescription =
+    draft.serverType === 'stalwart' ||
+    OAUTH_SERVER_TYPES[draft.serverType] ||
+    BROWSER_LOGIN_SERVER_TYPES[draft.serverType]
+      ? 'Enter your username and app password'
+      : 'Enter your username and password';
 
-  const handleClose = () => {
-    quickConnectRef.current?.cancel();
-    fastmailRef.current?.cancel();
-    stalwartOAuthRef.current?.cancel();
-    disrootRef.current?.cancel();
-    cancelTestConnection();
-    onClose();
+  const footerProps = {
+    account,
+    draft,
+    isLoading,
+    isProcessing,
+    isTesting,
+    isAccountTestInProgress,
+    testSuccess,
+    hasChanges,
+    quickConnectLoginStep,
+    quickConnectButtonState,
+    onQuickConnect: () => {
+      quickConnectRef.current?.connect();
+    },
+    stalwartOAuthLoginStep,
+    stalwartOAuthButtonState,
+    onStalwartConnect: () => {
+      stalwartOAuthRef.current?.connect();
+    },
+    fastmailOAuthButtonState,
+    onFastmailConnect: () => {
+      fastmailRef.current?.connect();
+    },
+    disrootCloudButtonState,
+    onDisrootConnect: () => {
+      disrootRef.current?.connect();
+    },
+    onTestConnection: handleTestConnection,
+    onSubmit: handleSubmit,
+    onClose: handleClose,
+    onBack: handleBackAction,
   };
-
-  const backButton =
-    !account && step !== 'pick-type' && !isProcessing ? (
-      <ModalButton
-        variant="secondary"
-        onClick={
-          step === 'credentials' && onBackToConfigProfileChooser
-            ? onBackToConfigProfileChooser
-            : step === 'credentials'
-              ? handleBack
-              : step === 'quick-connect'
-                ? handleBackFromQuickConnect
-                : step === 'fastmail-oauth' || step === 'stalwart-oauth'
-                  ? handleBackFromOAuth
-                  : step === 'disrootCloud-browser'
-                    ? handleBackFromDisrootCloudBrowser
-                    : handleBackToTypePicker // connect-method goes back to pick-type
-        }
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Back
-      </ModalButton>
-    ) : undefined;
 
   return (
     <ModalWrapper
@@ -947,230 +342,43 @@ export function AccountModal({
       contentPadding={false}
       contentOverflow="auto"
       preventClose={false}
-      footerLeft={account && step === 'credentials' ? testConnectionButton : backButton}
-      footer={
-        step === 'quick-connect' && quickConnectLoginStep === 'input' ? (
-          <ModalButton
-            onClick={() => quickConnectRef.current?.connect()}
-            disabled={quickConnectButtonState.disabled}
-            loading={quickConnectButtonState.loading}
-          >
-            Connect
-            <ArrowRight className="size-4" />
-          </ModalButton>
-        ) : step === 'stalwart-oauth' && stalwartOAuthLoginStep === 'input' ? (
-          <ModalButton
-            onClick={() => stalwartOAuthRef.current?.connect()}
-            disabled={stalwartOAuthButtonState.disabled}
-            loading={stalwartOAuthButtonState.loading}
-          >
-            Connect
-            <ArrowRight className="size-4" />
-          </ModalButton>
-        ) : step === 'fastmail-oauth' && !fastmailOAuthButtonState.disabled ? (
-          <ModalButton
-            onClick={() => fastmailRef.current?.connect()}
-            disabled={fastmailOAuthButtonState.disabled}
-            loading={fastmailOAuthButtonState.loading}
-          >
-            Connect
-            <ArrowRight className="size-4" />
-          </ModalButton>
-        ) : step === 'disrootCloud-browser' && !disrootCloudButtonState.disabled ? (
-          <ModalButton
-            onClick={() => disrootRef.current?.connect()}
-            disabled={disrootCloudButtonState.disabled}
-            loading={disrootCloudButtonState.loading}
-          >
-            Connect
-            <ArrowRight className="size-4" />
-          </ModalButton>
-        ) : step === 'credentials' ? (
-          account ? (
-            <>
-              <ModalButton variant="secondary" onClick={handleClose}>
-                Cancel
-              </ModalButton>
-              <ModalButton
-                onClick={handleSubmit}
-                disabled={
-                  isLoading || !hasChanges || !name.trim() || !serverUrl.trim() || !username.trim()
-                }
-                loading={isLoading}
-              >
-                Save
-              </ModalButton>
-            </>
-          ) : (
-            <>
-              {testConnectionButton}
-              <ModalButton
-                onClick={handleSubmit}
-                disabled={
-                  isLoading ||
-                  !name.trim() ||
-                  !serverUrl.trim() ||
-                  !username.trim() ||
-                  !password.trim()
-                }
-                loading={isLoading}
-              >
-                Add Account
-              </ModalButton>
-            </>
-          )
-        ) : undefined
-      }
+      footerLeft={<AccountModalFooter placement="left" step={step} {...footerProps} />}
+      footer={<AccountModalFooter placement="main" step={step} {...footerProps} />}
     >
-      <div key={step} className={stepAnimationClass}>
-        {step === 'pick-type' && <ServerTypePicker onSelect={handleSelectServerType} />}
-
-        {step === 'connect-method' && (
-          <div className="space-y-3 p-4">
-            <button
-              type="button"
-              onClick={() => {
-                setNavDirection('forward');
-                if (serverType === 'fastmail') {
-                  setStep('fastmail-oauth');
-                } else if (serverType === 'stalwart') {
-                  setStep('stalwart-oauth');
-                } else if (BROWSER_LOGIN_SERVER_TYPES[serverType]) {
-                  setStep('disrootCloud-browser');
-                } else {
-                  setStep('quick-connect');
-                }
-              }}
-              className="group flex w-full items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 px-4 py-4 text-left outline-none transition-colors hover:border-surface-300 hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700/50 dark:hover:border-surface-500 dark:hover:bg-surface-700"
-            >
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface-200 text-surface-600 dark:bg-surface-600 dark:text-surface-300">
-                <Cloud className="size-5" />
-              </div>
-              <div className="min-w-0">
-                <div className="font-semibold text-sm text-surface-800 dark:text-surface-200">
-                  Log in with your browser
-                </div>
-                <div className="mt-0.5 text-surface-500 text-xs dark:text-surface-400">
-                  {serverType === 'stalwart' || QUICK_CONNECT_SERVER_TYPES[serverType]
-                    ? 'Enter your server URL and authenticate through your browser'
-                    : 'Authenticate through your browser'}
-                </div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setNavDirection('forward');
-                setStep('credentials');
-              }}
-              className="group flex w-full items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 px-4 py-4 text-left outline-none transition-colors hover:border-surface-300 hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700/50 dark:hover:border-surface-500 dark:hover:bg-surface-700"
-            >
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface-200 text-surface-600 dark:bg-surface-600 dark:text-surface-300">
-                <KeyRound className="size-5" />
-              </div>
-              <div className="min-w-0">
-                <div className="font-semibold text-sm text-surface-800 dark:text-surface-200">
-                  Manually add credentials
-                </div>
-                <div className="mt-0.5 text-surface-500 text-xs dark:text-surface-400">
-                  {serverType === 'stalwart'
-                    ? 'Enter your username and app password'
-                    : OAUTH_SERVER_TYPES[serverType] || BROWSER_LOGIN_SERVER_TYPES[serverType]
-                      ? 'Enter your username and app password'
-                      : 'Enter your username and password'}
-                </div>
-              </div>
-            </button>
-          </div>
-        )}
-
-        {step === 'quick-connect' && (
-          <QuickConnectFlow
-            ref={quickConnectRef}
-            serverType={serverType as 'nextcloud' | 'rustical'}
-            onSuccess={onClose}
-            onStepChange={setQuickConnectLoginStep}
-            onConnectStateChange={setQuickConnectButtonState}
-          />
-        )}
-
-        {step === 'fastmail-oauth' && (
-          <FastmailOAuthStep
-            ref={fastmailRef}
-            onSuccess={onClose}
-            onSetupInProgressChange={setFastmailOAuthSetupInProgress}
-            onConnectStateChange={setFastmailOAuthButtonState}
-          />
-        )}
-
-        {step === 'stalwart-oauth' && (
-          <StalwartOAuthStep
-            ref={stalwartOAuthRef}
-            serverUrl={serverUrl}
-            onServerUrlChange={setServerUrl}
-            acceptInvalidCerts={acceptInvalidCerts}
-            onSuccess={onClose}
-            onStepChange={setStalwartOAuthLoginStep}
-            onConnectStateChange={setStalwartOAuthButtonState}
-          />
-        )}
-
-        {step === 'disrootCloud-browser' && (
-          <DisrootCloudBrowserLoginStep
-            ref={disrootRef}
-            onSuccess={onClose}
-            onSetupInProgressChange={setDisrootCloudBrowserSetupInProgress}
-            onConnectStateChange={setDisrootCloudButtonState}
-          />
-        )}
-
-        {step === 'credentials' && (
-          <div>
-            {preloadedConfig?.signature === 'signed-unverified' && (
-              <div className="px-4 pt-4">
-                <MobileConfigSignatureWarning
-                  signature={preloadedConfig.signature}
-                  signer={preloadedConfig.signer}
-                />
-              </div>
-            )}
-            {preloadedConfig?.skippedCandidates?.length ? (
-              <div className="px-4 pt-4">
-                <MobileConfigImportSkippedWarning
-                  skippedCandidates={preloadedConfig.skippedCandidates}
-                />
-              </div>
-            ) : null}
-            <CredentialsForm
-              serverType={serverType}
-              name={name}
-              onNameChange={setName}
-              icon={icon}
-              onIconChange={setIcon}
-              emoji={emoji}
-              onEmojiChange={setEmoji}
-              serverUrl={serverUrl}
-              onServerUrlChange={setServerUrl}
-              username={username}
-              onUsernameChange={setUsername}
-              password={password}
-              onPasswordChange={setPassword}
-              principalUrl={principalUrl}
-              onPrincipalUrlChange={setPrincipalUrl}
-              calendarHomeUrl={calendarHomeUrl}
-              onCalendarHomeUrlChange={setCalendarHomeUrl}
-              account={account}
-              error={setupError}
-              setupNotice={setupNotice}
-              testSuccess={testSuccess}
-              testedCalendarCount={testedCalendars.length}
-              testedPushSupportedCount={testedCalendars.filter((c) => c.pushSupported).length}
-              onSubmit={handleSubmit}
-            />
-          </div>
-        )}
-      </div>
+      <AccountModalBody
+        step={step}
+        stepAnimationClass={stepAnimationClass}
+        draft={draft}
+        account={account}
+        preloadedConfig={preloadedConfig}
+        setupError={setupError}
+        setupNotice={setupNotice}
+        testSuccess={testSuccess}
+        testedCalendars={testedCalendars}
+        onSubmit={handleSubmit}
+        onDraftFieldChange={setDraftField}
+        onSelectServerType={handleSelectServerType}
+        onSelectBrowserLogin={handleSelectBrowserLogin}
+        onSelectCredentials={handleSelectCredentials}
+        browserLoginDescription={browserLoginDescription}
+        credentialsDescription={credentialsDescription}
+        quickConnectRef={quickConnectRef}
+        onQuickConnectSuccess={onClose}
+        onQuickConnectStepChange={setQuickConnectLoginStep}
+        onQuickConnectStateChange={setQuickConnectButtonState}
+        fastmailRef={fastmailRef}
+        onFastmailSuccess={onClose}
+        onFastmailSetupInProgressChange={setFastmailOAuthSetupInProgress}
+        onFastmailStateChange={setFastmailOAuthButtonState}
+        stalwartOAuthRef={stalwartOAuthRef}
+        onStalwartSuccess={onClose}
+        onStalwartStepChange={setStalwartOAuthLoginStep}
+        onStalwartStateChange={setStalwartOAuthButtonState}
+        disrootRef={disrootRef}
+        onDisrootSuccess={onClose}
+        onDisrootSetupInProgressChange={setDisrootCloudBrowserSetupInProgress}
+        onDisrootStateChange={setDisrootCloudButtonState}
+      />
     </ModalWrapper>
   );
-}
+};

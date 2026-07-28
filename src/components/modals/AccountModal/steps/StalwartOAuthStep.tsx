@@ -1,10 +1,10 @@
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import {
-  BrowserAuthFlow,
-  type BrowserAuthFlowHandle,
-  type BrowserAuthFlowPhase,
-} from '$components/modals/AccountModal/BrowserAuthFlow';
+  BrowserAuthFlowStep,
+  type BrowserAuthFlowStepHandle,
+  type BrowserAuthFlowStepPhase,
+} from '$components/modals/AccountModal/steps/BrowserAuthFlowStep';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAddCalendar, useCreateAccount } from '$hooks/queries/useAccounts';
 import { useSyncQuery } from '$hooks/queries/useSync';
@@ -27,7 +27,7 @@ export type StalwartOAuthLoginStep = 'input' | 'authenticating' | 'processing';
 export interface StalwartOAuthStepHandle {
   connect: () => void;
   cancel: () => void;
-  getPhase: () => BrowserAuthFlowPhase;
+  getPhase: () => BrowserAuthFlowStepPhase;
 }
 
 interface StalwartOAuthStepProps {
@@ -51,7 +51,7 @@ export const StalwartOAuthStep = forwardRef<StalwartOAuthStepHandle, StalwartOAu
     },
     ref,
   ) => {
-    const flowRef = useRef<BrowserAuthFlowHandle>(null);
+    const flowRef = useRef<BrowserAuthFlowStepHandle>(null);
     const createAccountMutation = useCreateAccount();
     const addCalendarMutation = useAddCalendar();
     const { syncAll } = useSyncQuery();
@@ -199,7 +199,7 @@ export const StalwartOAuthStep = forwardRef<StalwartOAuthStepHandle, StalwartOAu
     }));
 
     return (
-      <BrowserAuthFlow
+      <BrowserAuthFlowStep
         ref={flowRef}
         providerName="Stalwart"
         serverType="stalwart"

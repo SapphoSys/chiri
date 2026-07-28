@@ -1,10 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import {
-  BrowserAuthFlow,
-  type BrowserAuthFlowHandle,
-  type BrowserAuthFlowPhase,
-} from '$components/modals/AccountModal/BrowserAuthFlow';
+  BrowserAuthFlowStep,
+  type BrowserAuthFlowStepHandle,
+  type BrowserAuthFlowStepPhase,
+} from '$components/modals/AccountModal/steps/BrowserAuthFlowStep';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAddCalendar, useCreateAccount } from '$hooks/queries/useAccounts';
 import { useSyncQuery } from '$hooks/queries/useSync';
@@ -23,7 +23,7 @@ const log = loggers.account;
 export interface FastmailOAuthStepHandle {
   connect: () => void;
   cancel: () => void;
-  getPhase: () => BrowserAuthFlowPhase;
+  getPhase: () => BrowserAuthFlowStepPhase;
 }
 
 interface FastmailOAuthStepProps {
@@ -34,7 +34,7 @@ interface FastmailOAuthStepProps {
 
 export const FastmailOAuthStep = forwardRef<FastmailOAuthStepHandle, FastmailOAuthStepProps>(
   ({ onSuccess, onSetupInProgressChange, onConnectStateChange }, ref) => {
-    const flowRef = useRef<BrowserAuthFlowHandle>(null);
+    const flowRef = useRef<BrowserAuthFlowStepHandle>(null);
     const queryClient = useQueryClient();
     const createAccountMutation = useCreateAccount();
     const addCalendarMutation = useAddCalendar();
@@ -156,7 +156,7 @@ export const FastmailOAuthStep = forwardRef<FastmailOAuthStepHandle, FastmailOAu
     }));
 
     return (
-      <BrowserAuthFlow
+      <BrowserAuthFlowStep
         ref={flowRef}
         providerName="Fastmail"
         serverType="fastmail"

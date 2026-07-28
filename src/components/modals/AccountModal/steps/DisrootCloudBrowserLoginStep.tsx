@@ -1,10 +1,10 @@
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import {
-  BrowserAuthFlow,
-  type BrowserAuthFlowHandle,
-  type BrowserAuthFlowPhase,
-} from '$components/modals/AccountModal/BrowserAuthFlow';
+  BrowserAuthFlowStep,
+  type BrowserAuthFlowStepHandle,
+  type BrowserAuthFlowStepPhase,
+} from '$components/modals/AccountModal/steps/BrowserAuthFlowStep';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAddCalendar, useCreateAccount } from '$hooks/queries/useAccounts';
 import { useSyncQuery } from '$hooks/queries/useSync';
@@ -20,7 +20,7 @@ const DISROOT_CLOUD_URL = 'https://cloud.disroot.org';
 export interface DisrootCloudBrowserLoginStepHandle {
   cancel: () => void;
   connect: () => void;
-  getPhase: () => BrowserAuthFlowPhase;
+  getPhase: () => BrowserAuthFlowStepPhase;
 }
 
 interface DisrootCloudBrowserLoginStepProps {
@@ -33,7 +33,7 @@ export const DisrootCloudBrowserLoginStep = forwardRef<
   DisrootCloudBrowserLoginStepHandle,
   DisrootCloudBrowserLoginStepProps
 >(({ onSuccess, onSetupInProgressChange, onConnectStateChange }, ref) => {
-  const flowRef = useRef<BrowserAuthFlowHandle>(null);
+  const flowRef = useRef<BrowserAuthFlowStepHandle>(null);
   const createAccountMutation = useCreateAccount();
   const addCalendarMutation = useAddCalendar();
   const { syncAll } = useSyncQuery();
@@ -132,7 +132,7 @@ export const DisrootCloudBrowserLoginStep = forwardRef<
   }));
 
   return (
-    <BrowserAuthFlow
+    <BrowserAuthFlowStep
       ref={flowRef}
       providerName="Disroot Cloud"
       serverType="disrootCloud"

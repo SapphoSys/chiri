@@ -22,12 +22,12 @@ const QUICK_CONNECT_CONFIG: Partial<Record<ServerType, QuickConnectConfig>> = {
   },
 };
 
-interface QuickConnectSectionProps {
+interface QuickConnectSectionStepProps {
   serverType: ServerType;
   onClick: () => void;
 }
 
-export const QuickConnectSection = ({ serverType, onClick }: QuickConnectSectionProps) => {
+export const QuickConnectSectionStep = ({ serverType, onClick }: QuickConnectSectionStepProps) => {
   const config = QUICK_CONNECT_CONFIG[serverType];
   if (!config) return null;
 
