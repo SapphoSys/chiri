@@ -1,4 +1,6 @@
-use log::{debug, error};
+use log::debug;
+#[cfg(not(target_os = "linux"))]
+use log::error;
 #[cfg(not(target_os = "linux"))]
 use tauri::{
     menu::{Menu, MenuItem, PredefinedMenuItem},

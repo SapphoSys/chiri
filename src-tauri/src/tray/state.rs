@@ -3,6 +3,7 @@ use std::sync::Mutex;
 #[cfg(not(target_os = "linux"))]
 use tauri::menu::MenuItem;
 
+#[cfg(not(target_os = "linux"))]
 use super::AppRuntime;
 
 #[cfg(not(target_os = "linux"))]
@@ -128,18 +129,20 @@ impl TrayState {
                         .await;
                 }
             });
-            return Ok(());
         }
 
         #[cfg(not(target_os = "linux"))]
-        if let Some(updater) = self
-            .menu_updater
-            .lock()
-            .map_err(|e| format!("Failed to lock tray menu updater: {e}"))?
-            .as_ref()
         {
-            updater(time_str);
+            if let Some(updater) = self
+                .menu_updater
+                .lock()
+                .map_err(|e| format!("Failed to lock tray menu updater: {e}"))?
+                .as_ref()
+            {
+                updater(time_str);
+            }
         }
+
         Ok(())
     }
 
@@ -156,18 +159,20 @@ impl TrayState {
                         .await;
                 }
             });
-            return Ok(());
         }
 
         #[cfg(not(target_os = "linux"))]
-        if let Some(sync_item) = self
-            .sync_item
-            .lock()
-            .map_err(|e| format!("Failed to lock tray sync item: {e}"))?
-            .as_ref()
         {
-            sync_item.set_enabled(enabled).map_err(|e| e.to_string())?;
+            if let Some(sync_item) = self
+                .sync_item
+                .lock()
+                .map_err(|e| format!("Failed to lock tray sync item: {e}"))?
+                .as_ref()
+            {
+                sync_item.set_enabled(enabled).map_err(|e| e.to_string())?;
+            }
         }
+
         Ok(())
     }
 }
