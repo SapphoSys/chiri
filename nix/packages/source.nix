@@ -19,6 +19,7 @@
 
   # Linux dependencies
   glib-networking,
+  libayatana-appindicator,
   openssl,
   webkitgtk_4_1,
 }:
@@ -81,6 +82,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ]
   ++ lib.optionals stdenv.hostPlatform.isLinux [
     glib-networking
+    libayatana-appindicator
     webkitgtk_4_1
   ];
 
