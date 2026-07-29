@@ -171,10 +171,6 @@ export const HistoryEntry = ({ entry, timeFormat, isLast }: HistoryEntryProps) =
           <span>{label}</span>
           <span className="text-surface-300 dark:text-surface-600">&middot;</span>
           <span className="font-normal text-surface-400 text-xs dark:text-surface-500">
-            {formatDate(entry.changedAt, true)}
-          </span>
-          <span className="text-surface-300 dark:text-surface-600">&middot;</span>
-          <span className="font-normal text-surface-400 text-xs dark:text-surface-500">
             {formatTime(entry.changedAt, timeFormat)}
           </span>
         </div>
