@@ -95,13 +95,13 @@ export const useFilteredTasks = () => {
 /**
  * hook to create a task
  */
-export const useCreateTask = () => {
+export const useCreateTask = (historyField: 'created' | 'imported' = 'created') => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (taskInput: Partial<Task>) => {
       const task = createTask(taskInput);
-      await db.logTaskChange(task.uid, 'created', null, task.title);
+      await db.logTaskChange(task.uid, historyField, null, task.title);
       if (task.parentUid) {
         await db.logTaskChange(task.parentUid, 'subtask', null, task.title);
       }

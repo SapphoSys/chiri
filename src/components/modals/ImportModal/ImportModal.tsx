@@ -30,7 +30,7 @@ interface ImportModalProps {
 
 export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: ImportModalProps) => {
   const { data: accounts = [] } = useAccounts();
-  const createTaskMutation = useCreateTask();
+  const createTaskMutation = useCreateTask('imported');
 
   // state
   const [step, setStep] = useState<ImportStep>('upload');
