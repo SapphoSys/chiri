@@ -47,19 +47,7 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
 
   // get all calendars and find selected calendar
   const allCalendars: Calendar[] = accounts.flatMap((account) => account.calendars);
-  const hasAccounts = accounts.length > 0;
   const selectedCalendar = allCalendars.find((c) => c.id === selectedCalendarId);
-
-  // auto-select first account/calendar if none selected
-  useEffect(() => {
-    if (isOpen && hasAccounts && !selectedAccountId) {
-      const firstAccount = accounts[0];
-      setSelectedAccountId(firstAccount.id);
-      if (firstAccount.calendars.length > 0) {
-        setSelectedCalendarId(firstAccount.calendars[0].id);
-      }
-    }
-  }, [isOpen, hasAccounts, selectedAccountId, accounts]);
 
   // reset state when modal closes (including via parent setting isOpen to false)
   useEffect(() => {
@@ -74,6 +62,8 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
       setImportProgress(0);
       setIsImporting(false);
       setIsDraggingInDropZone(false);
+      setSelectedAccountId('');
+      setSelectedCalendarId('');
 
       // clear App's drag state if user was dragging when modal closed
       onFileDrop?.();
@@ -233,6 +223,8 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
     setImportProgress(0);
     setIsImporting(false);
     setIsDraggingInDropZone(false);
+    setSelectedAccountId('');
+    setSelectedCalendarId('');
 
     // clear App's drag state if user was dragging when modal closed
     onFileDrop?.();
@@ -246,6 +238,8 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
     setFileName('');
     setError('');
     setParseErrors([]);
+    setSelectedAccountId('');
+    setSelectedCalendarId('');
   }, []);
 
   const handleBack = useCallback(() => {
