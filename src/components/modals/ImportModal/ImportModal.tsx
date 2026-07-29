@@ -77,11 +77,12 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
     setImportSuccess(false);
 
     let tasks: Partial<Task>[] = [];
+    const lowerName = name.toLowerCase();
 
     try {
-      if (name.endsWith('.ics') || name.endsWith('.ical')) {
+      if (lowerName.endsWith('.ics') || lowerName.endsWith('.ical')) {
         tasks = parseIcsFile(content);
-      } else if (name.endsWith('.json')) {
+      } else if (lowerName.endsWith('.json')) {
         tasks = parseJsonTasksFile(content);
       } else {
         // try to detect format by content
@@ -90,7 +91,7 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
         } else if (content.trim().startsWith('[') || content.trim().startsWith('{')) {
           tasks = parseJsonTasksFile(content);
         } else {
-          setError('Unsupported file format. Please use .ics or .json files.');
+          setError('Unsupported file format. Please use .ics, .ical, or .json files.');
           return;
         }
       }
@@ -411,6 +412,7 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
               onDrop={handleDropZoneDrop}
               onDragEnter={handleDropZoneDragEnter}
               onDragLeave={handleDropZoneDragLeave}
+              onFileError={setError}
               error={error}
               parseErrors={parseErrors}
             />

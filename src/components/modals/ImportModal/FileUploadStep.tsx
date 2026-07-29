@@ -1,15 +1,10 @@
+import { open } from '@tauri-apps/plugin-dialog';
+import { readTextFile } from '@tauri-apps/plugin-fs';
 import AlertCircle from 'lucide-react/icons/alert-circle';
 import FileText from 'lucide-react/icons/file-text';
 import Upload from 'lucide-react/icons/upload';
 import X from 'lucide-react/icons/x';
-import {
-  type ChangeEvent,
-  type DragEvent,
-  type KeyboardEvent,
-  type MouseEvent,
-  useRef,
-  useState,
-} from 'react';
+import { type DragEvent, type KeyboardEvent, type MouseEvent, useState } from 'react';
 
 interface FileUploadStepProps {
   fileName: string;
@@ -19,6 +14,7 @@ interface FileUploadStepProps {
   onDrop: (e: DragEvent) => void;
   onDragEnter: () => void;
   onDragLeave: () => void;
+  onFileError?: (message: string) => void;
   error: string;
   parseErrors: string[];
 }
@@ -31,41 +27,43 @@ export const FileUploadStep = ({
   onDrop,
   onDragEnter,
   onDragLeave,
+  onFileError,
   error,
   parseErrors,
 }: FileUploadStepProps) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleClick = () => {
-    fileInputRef.current?.click();
+  const handleClick = async () => {
+    setIsProcessing(true);
+    try {
+      const selectedPath = await open({
+        title: 'Import Tasks',
+        multiple: false,
+        filters: [{ name: 'Task files', extensions: ['ics', 'ical', 'json'] }],
+      });
+
+      if (!selectedPath || Array.isArray(selectedPath)) return;
+
+      const content = await readTextFile(selectedPath);
+      const fileName = selectedPath.split(/[\\/]/).pop() || selectedPath;
+      await onFileSelect(new File([content], fileName));
+    } catch {
+      onFileError?.('Failed to read file.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      fileInputRef.current?.click();
-    }
-  };
-
-  const handleFileInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsProcessing(true);
-    try {
-      await onFileSelect(file);
-    } finally {
-      setIsProcessing(false);
+      void handleClick();
     }
   };
 
   const handleRemoveFile = (e: MouseEvent) => {
     e.stopPropagation();
     onReset();
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
   const getFileIcon = () => {
@@ -152,14 +150,6 @@ export const FileUploadStep = ({
             </div>
           </>
         )}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".ics,.ical,.json"
-          onChange={handleFileInputChange}
-          className="hidden"
-          aria-label="Select file to import"
-        />
       </div>
 
       {/* Error Display */}
