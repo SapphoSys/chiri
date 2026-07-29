@@ -134,7 +134,7 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   const setActiveFilterMutation = useSetActiveFilter();
   const setAllTasksViewMutation = useSetAllTasksView();
   const setRecentlyDeletedViewMutation = useSetRecentlyDeletedView();
-  const { moveTaskToRecentlyDeleted } = useTaskDeletion();
+  const { moveTaskToRecentlyDeleted, deleteTasksPermanently } = useTaskDeletion();
   const { isOpen: isConfirmDialogOpen } = useConfirmDialog();
   const { isAnyModalOpen } = useModalState();
 
@@ -162,14 +162,27 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   }, []);
 
   const handleDelete = useCallback(async () => {
-    if (activeView === 'recently-deleted') return;
     const taskIds =
       selectedTaskIds.length > 0 ? selectedTaskIds : selectedTaskId ? [selectedTaskId] : [];
+
+    if (activeView === 'recently-deleted') {
+      const deleted = await deleteTasksPermanently(taskIds);
+      if (deleted && selectedTaskIds.length > 0) clearSelection();
+      return;
+    }
+
     for (const taskId of taskIds) {
       await moveTaskToRecentlyDeleted(taskId);
     }
     if (selectedTaskIds.length > 0) clearSelection();
-  }, [activeView, clearSelection, selectedTaskId, selectedTaskIds, moveTaskToRecentlyDeleted]);
+  }, [
+    activeView,
+    clearSelection,
+    deleteTasksPermanently,
+    selectedTaskId,
+    selectedTaskIds,
+    moveTaskToRecentlyDeleted,
+  ]);
 
   const handleToggleComplete = useCallback(() => {
     if (activeView === 'recently-deleted') return;
