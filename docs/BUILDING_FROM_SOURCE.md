@@ -14,7 +14,6 @@ There are two supported workflows when it comes to building Chiri from source:
       - [Fedora](#fedora)
     - [Windows](#windows)
       - [Quick setup with WinGet](#quick-setup-with-winget)
-
 - [Workflows](#workflows)
   - [Workflow 1: Nix on macOS or Linux (preferred)](#workflow-1-nix-on-macos-or-linux-preferred)
     - [Workflow 1: Starting the app in development mode](#workflow-1-starting-the-app-in-development-mode)
