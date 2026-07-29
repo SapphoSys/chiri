@@ -238,6 +238,9 @@ environment.systemPackages = [
   ```
 </details>
 
+# Building from source
+For development instructions and source builds, see [Building from source](./docs/BUILDING_FROM_SOURCE.md).
+
 # Support
 If you found Chiri useful, please consider donating! 
 

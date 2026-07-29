@@ -8,6 +8,7 @@
   "license": "zlib/libpng",
   "scripts": {
     "build": "tsc && vite build",
+    "build:app": "tauri build --config \"{\\\"bundle\\\":{\\\"createUpdaterArtifacts\\\":false}}\"",
     "check": "biome check",
     "dev": "vite",
     "format": "biome format --write .",
