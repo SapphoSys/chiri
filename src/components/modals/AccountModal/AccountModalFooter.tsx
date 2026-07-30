@@ -1,7 +1,7 @@
 import ArrowLeft from 'lucide-react/icons/arrow-left';
 import ArrowRight from 'lucide-react/icons/arrow-right';
 import CheckCircle from 'lucide-react/icons/check-circle';
-import type { SyntheticEvent } from 'react';
+import type { ReactNode, SyntheticEvent } from 'react';
 import { ModalButton } from '$components/ModalButton';
 import type { AccountModalStep } from '$components/modals/AccountModal/AccountModal';
 import type { Account, AccountDraft } from '$types/account';
@@ -38,7 +38,7 @@ interface AccountModalFooterProps {
   onBack?: () => void;
 }
 
-export const AccountModalFooter = ({
+export const renderAccountModalFooter = ({
   placement,
   account,
   step,
@@ -63,7 +63,7 @@ export const AccountModalFooter = ({
   onSubmit,
   onClose,
   onBack,
-}: AccountModalFooterProps) => {
+}: AccountModalFooterProps): ReactNode => {
   const testConnectionButton = (
     <ModalButton
       variant="secondary"

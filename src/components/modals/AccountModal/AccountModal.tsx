@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { AccountModalBody } from '$components/modals/AccountModal/AccountModalBody';
-import { AccountModalFooter } from '$components/modals/AccountModal/AccountModalFooter';
+import { renderAccountModalFooter } from '$components/modals/AccountModal/AccountModalFooter';
 import type { DisrootCloudBrowserLoginStepHandle } from '$components/modals/AccountModal/steps/DisrootCloudBrowserLoginStep';
 import type { FastmailOAuthStepHandle } from '$components/modals/AccountModal/steps/FastmailOAuthStep';
 import type {
@@ -342,8 +342,8 @@ export const AccountModal = ({
       contentPadding={false}
       contentOverflow="auto"
       preventClose={false}
-      footerLeft={<AccountModalFooter placement="left" step={step} {...footerProps} />}
-      footer={<AccountModalFooter placement="main" step={step} {...footerProps} />}
+      footerLeft={renderAccountModalFooter({ placement: 'left', step, ...footerProps })}
+      footer={renderAccountModalFooter({ placement: 'main', step, ...footerProps })}
     >
       <AccountModalBody
         step={step}
