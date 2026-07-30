@@ -40,8 +40,8 @@ export const SidebarTagsSortMenu = ({
       fallbackWidth={240}
       dataAttribute="data-context-menu-content"
     >
-      <div className="space-y-1 px-1 py-2">
-        <div className="px-3 pt-1 pb-1 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
+      <div className="space-y-1 px-3 py-2">
+        <div className="pt-1 pb-1 font-medium text-sm text-surface-500 dark:text-surface-400">
           Tags
         </div>
 
@@ -53,7 +53,7 @@ export const SidebarTagsSortMenu = ({
             triggerClassName="w-full"
             allowInModal
           >
-            <div className="flex w-full cursor-not-allowed items-center justify-between gap-3 rounded-md px-3 py-1.5 text-sm text-surface-400 dark:text-surface-600">
+            <div className="-mx-2 flex w-[calc(100%+1rem)] cursor-not-allowed items-center justify-between gap-3 rounded-md px-2 py-1.5 text-sm text-surface-400 dark:text-surface-600">
               <span>Sort Direction</span>
               <span className="text-xs">Disabled</span>
             </div>
@@ -62,7 +62,7 @@ export const SidebarTagsSortMenu = ({
           <HoverFlyoutGroup>
             <button
               type="button"
-              className="flex w-full items-center justify-between gap-3 rounded-md px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+              className="-mx-2 flex w-[calc(100%+1rem)] items-center justify-between gap-3 rounded-md px-2 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
             >
               <span>Sort Direction</span>
               <div className="flex min-w-0 items-center gap-2">
@@ -73,8 +73,8 @@ export const SidebarTagsSortMenu = ({
               </div>
             </button>
 
-            <HoverFlyout side="right">
-              <div className="px-3 pt-1 pb-2 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
+            <HoverFlyout side="right" gap={8}>
+              <div className="px-3 pt-1 pb-2 font-medium text-sm text-surface-500 dark:text-surface-400">
                 Sort Direction
               </div>
               <div className="px-1">
@@ -91,7 +91,7 @@ export const SidebarTagsSortMenu = ({
         <HoverFlyoutGroup>
           <button
             type="button"
-            className="flex w-full items-center justify-between gap-3 rounded-md px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+            className="-mx-2 flex w-[calc(100%+1rem)] items-center justify-between gap-3 rounded-md px-2 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
           >
             <span>Sort By</span>
             <div className="flex min-w-0 items-center gap-2">
@@ -102,8 +102,8 @@ export const SidebarTagsSortMenu = ({
             </div>
           </button>
 
-          <HoverFlyout side="right">
-            <div className="px-3 pt-1 pb-2 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
+          <HoverFlyout side="right" gap={8}>
+            <div className="px-3 pt-1 pb-2 font-medium text-sm text-surface-500 dark:text-surface-400">
               Sort By
             </div>
             <div className="space-y-1 px-1">
@@ -112,7 +112,7 @@ export const SidebarTagsSortMenu = ({
                   type="button"
                   key={option.value}
                   onClick={() => handleSortModeChange(option.value)}
-                  className={`flex w-full items-center justify-between gap-2 rounded-md px-3 py-1.5 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                  className={`flex w-full items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                     tagSortConfig.mode === option.value
                       ? 'bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100'
                       : 'text-surface-700 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-surface-700'

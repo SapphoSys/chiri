@@ -108,19 +108,21 @@ export const HoverFlyoutGroup = ({ children }: HoverFlyoutGroupProps) => {
 
 interface HoverFlyoutProps {
   side: 'left' | 'right';
+  gap?: number;
   minWidthClassName?: string;
   children: ReactNode;
 }
 
 export const HoverFlyout = ({
   side,
+  gap = 0,
   minWidthClassName = 'min-w-48',
   children,
 }: HoverFlyoutProps) => {
   const context = useContext(HoverFlyoutContext);
   const flyoutRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<CSSProperties>({});
-  const sideClass = side === 'left' ? 'py-8 pl-3 pr-1' : 'py-8 pl-1 pr-3';
+  const sideClass = side === 'left' ? 'py-8 pl-3 pr-3 -mr-2' : 'py-8 pl-3 pr-3 -ml-2';
 
   const updatePosition = useCallback(() => {
     const anchor = context?.anchorRef.current;
@@ -137,10 +139,10 @@ export const HoverFlyout = ({
 
     setPosition(
       side === 'left'
-        ? { top, right: window.innerWidth - anchorRect.left }
-        : { top, left: anchorRect.right },
+        ? { top, right: window.innerWidth - anchorRect.left + gap }
+        : { top, left: anchorRect.right + gap },
     );
-  }, [context?.anchorRef, side]);
+  }, [context?.anchorRef, gap, side]);
 
   useLayoutEffect(() => {
     if (!context?.isOpen) {
