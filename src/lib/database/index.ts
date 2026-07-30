@@ -296,6 +296,11 @@ class Database {
     this.notify();
   }
 
+  async setMoveCompletedTasksToBottom(moveToBottom: boolean) {
+    await uiOps.setMoveCompletedTasksToBottom(await this.conn(), moveToBottom);
+    this.notify();
+  }
+
   async setShowUnstartedTasks(show: boolean) {
     await uiOps.setShowUnstartedTasks(await this.conn(), show);
     this.notify();

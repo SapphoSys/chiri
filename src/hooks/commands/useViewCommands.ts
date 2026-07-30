@@ -6,6 +6,7 @@ import {
   useSetActiveAccount,
   useSetActiveFilter,
   useSetAllTasksView,
+  useSetMoveCompletedTasksToBottom,
   useSetRecentlyDeletedView,
   useSetShowCompletedTasks,
   useSetShowUnstartedTasks,
@@ -20,6 +21,7 @@ interface UseViewCommandsOptions {
 
 export const useViewCommands = ({ modals }: UseViewCommandsOptions) => {
   const setShowCompletedMutation = useSetShowCompletedTasks();
+  const setMoveCompletedTasksToBottomMutation = useSetMoveCompletedTasksToBottom();
   const setShowUnstartedMutation = useSetShowUnstartedTasks();
   const setSortConfigMutation = useSetSortConfig();
   const setActiveFilterMutation = useSetActiveFilter();
@@ -68,6 +70,13 @@ export const useViewCommands = ({ modals }: UseViewCommandsOptions) => {
       setShowCompletedMutation.mutate(!currentValue);
     },
     [setShowCompletedMutation],
+  );
+
+  const toggleCompletedToBottom = useCallback(
+    (currentValue: boolean) => {
+      setMoveCompletedTasksToBottomMutation.mutate(!currentValue);
+    },
+    [setMoveCompletedTasksToBottomMutation],
   );
 
   const toggleUnstarted = useCallback(
@@ -121,6 +130,7 @@ export const useViewCommands = ({ modals }: UseViewCommandsOptions) => {
     openAbout,
     openKeyboardShortcuts,
     toggleCompleted,
+    toggleCompletedToBottom,
     toggleUnstarted,
     setSortMode,
     setSortDirection,

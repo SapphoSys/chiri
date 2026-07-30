@@ -36,6 +36,7 @@ export const useNativeMenuCommands = ({
   const onOpenAbout = useLatestRef(commands.openAbout);
   const onOpenKeyboardShortcuts = useLatestRef(commands.openKeyboardShortcuts);
   const onToggleCompleted = useLatestRef(commands.toggleCompleted);
+  const onToggleCompletedToBottom = useLatestRef(commands.toggleCompletedToBottom);
   const onToggleUnstarted = useLatestRef(commands.toggleUnstarted);
   const onSyncRef = useLatestRef(onSync ?? null);
   const onAllTasks = useLatestRef(commands.allTasks);
@@ -67,6 +68,7 @@ export const useNativeMenuCommands = ({
       onOpenAbout,
       onOpenKeyboardShortcuts,
       onToggleCompleted,
+      onToggleCompletedToBottom,
       onToggleUnstarted,
       onSync: onSyncRef,
       onAllTasks,
@@ -97,6 +99,7 @@ export const useNativeMenuCommands = ({
       onOpenAbout,
       onOpenKeyboardShortcuts,
       onToggleCompleted,
+      onToggleCompletedToBottom,
       onToggleUnstarted,
       onSyncRef,
       onAllTasks,

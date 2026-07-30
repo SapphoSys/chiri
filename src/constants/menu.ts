@@ -16,6 +16,7 @@ export const MENU_EVENTS = {
   SEARCH: 'menu:search',
   SHOW_KEYBOARD_SHORTCUTS: 'menu:show-keyboard-shortcuts',
   TOGGLE_COMPLETED: 'menu:toggle-completed',
+  TOGGLE_COMPLETED_TO_BOTTOM: 'menu:toggle-completed-to-bottom',
   TOGGLE_UNSTARTED: 'menu:toggle-unstarted',
   SORT_MANUAL: 'menu:sort-manual',
   SORT_SMART: 'menu:sort-smart',

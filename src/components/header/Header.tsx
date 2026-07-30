@@ -20,6 +20,7 @@ import { useTaskSelection } from '$context/taskSelectionContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useCreateTask } from '$hooks/queries/useTasks';
 import {
+  useSetMoveCompletedTasksToBottom,
   useSetSearchQuery,
   useSetSelectedTask,
   useSetShowCompletedTasks,
@@ -125,6 +126,7 @@ export const Header = ({
   const setSearchQueryMutation = useSetSearchQuery();
   const setSortConfigMutation = useSetSortConfig();
   const setShowCompletedTasksMutation = useSetShowCompletedTasks();
+  const setMoveCompletedTasksToBottomMutation = useSetMoveCompletedTasksToBottom();
   const setShowUnstartedTasksMutation = useSetShowUnstartedTasks();
   const createTaskMutation = useCreateTask();
   const setSelectedTaskMutation = useSetSelectedTask();
@@ -134,6 +136,7 @@ export const Header = ({
   const searchQuery = uiState?.searchQuery ?? '';
   const sortConfig = uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
+  const moveCompletedTasksToBottom = uiState?.moveCompletedTasksToBottom ?? false;
   const showUnstartedTasks = uiState?.showUnstartedTasks ?? true;
   const activeView = uiState?.activeView ?? 'tasks';
 
@@ -330,6 +333,14 @@ export const Header = ({
                     label="Show unstarted"
                     checked={showUnstartedTasks}
                     onClick={() => setShowUnstartedTasksMutation.mutate(!showUnstartedTasks)}
+                  />
+                  <ViewMenuCheckbox
+                    label="Move completed tasks to bottom"
+                    checked={moveCompletedTasksToBottom}
+                    disabled={!showCompletedTasks}
+                    onClick={() =>
+                      setMoveCompletedTasksToBottomMutation.mutate(!moveCompletedTasksToBottom)
+                    }
                   />
                 </div>
 

@@ -20,6 +20,7 @@ const log = loggers.menu;
 const menuItemRefs: {
   sync?: MenuItem;
   toggleCompleted?: CheckMenuItem;
+  toggleCompletedToBottom?: CheckMenuItem;
   toggleUnstarted?: CheckMenuItem;
   sortManual?: MenuItem;
   sortSmart?: MenuItem;
@@ -99,6 +100,7 @@ interface DockMenuFilter {
 
 export const createMacMenu = async (options?: {
   showCompleted?: boolean;
+  moveCompletedTasksToBottom?: boolean;
   showUnstarted?: boolean;
   sortMode?: SortMode;
   sortDirection?: SortDirection;
@@ -109,6 +111,7 @@ export const createMacMenu = async (options?: {
   isModalOpen?: boolean;
 }) => {
   const showCompleted = options?.showCompleted ?? true;
+  const moveCompletedTasksToBottom = options?.moveCompletedTasksToBottom ?? false;
   const showUnstarted = options?.showUnstarted ?? true;
   const sortMode = options?.sortMode ?? 'manual';
   const sortDirection = options?.sortDirection ?? 'asc';
@@ -283,6 +286,17 @@ export const createMacMenu = async (options?: {
   });
   menuItemRefs.toggleCompleted = toggleCompletedItem;
 
+  const toggleCompletedToBottomItem = await CheckMenuItem.new({
+    id: 'toggle-completed-to-bottom',
+    text: 'Move Completed Tasks to Bottom',
+    checked: moveCompletedTasksToBottom,
+    enabled: isAppActionEnabled(showCompleted),
+    action: () => {
+      emit(MENU_EVENTS.TOGGLE_COMPLETED_TO_BOTTOM);
+    },
+  });
+  menuItemRefs.toggleCompletedToBottom = toggleCompletedToBottomItem;
+
   const toggleUnstartedItem = await CheckMenuItem.new({
     id: 'toggle-unstarted',
     text: 'Show Unstarted Tasks',
@@ -407,6 +421,7 @@ export const createMacMenu = async (options?: {
     items: [
       toggleCompletedItem,
       toggleUnstartedItem,
+      toggleCompletedToBottomItem,
       await PredefinedMenuItem.new({ item: 'Separator' }),
       await Submenu.new({
         text: 'Sort By',
@@ -677,6 +692,7 @@ export const createMacMenu = async (options?: {
  */
 export const initAppMenu = async (options?: {
   showCompleted?: boolean;
+  moveCompletedTasksToBottom?: boolean;
   sortMode?: SortMode;
   sortDirection?: SortDirection;
   shortcuts?: KeyboardShortcut[];
@@ -720,6 +736,7 @@ export const updateDockMenu = async (options: {
  */
 export const rebuildAppMenu = async (options?: {
   showCompleted?: boolean;
+  moveCompletedTasksToBottom?: boolean;
   showUnstarted?: boolean;
   sortMode?: SortMode;
   sortDirection?: SortDirection;
@@ -753,6 +770,9 @@ export const updateMenuItem = async (
         break;
       case 'toggle-completed':
         item = menuItemRefs.toggleCompleted;
+        break;
+      case 'toggle-completed-to-bottom':
+        item = menuItemRefs.toggleCompletedToBottom;
         break;
       case 'sort-manual':
         item = menuItemRefs.sortManual;
@@ -813,6 +833,7 @@ export const updateMenuItem = async (
 export const updateMenuState = async (options: {
   accountCount?: number;
   showCompleted?: boolean;
+  moveCompletedTasksToBottom?: boolean;
   showUnstarted?: boolean;
   sortMode?: SortMode;
   sortDirection?: SortDirection;
@@ -829,6 +850,14 @@ export const updateMenuState = async (options: {
   }
   if (options.showCompleted !== undefined) {
     await updateMenuItem('toggle-completed', { checked: options.showCompleted });
+    await updateMenuItem('toggle-completed-to-bottom', {
+      enabled: isAppActionEnabled(options.showCompleted),
+    });
+  }
+  if (options.moveCompletedTasksToBottom !== undefined) {
+    await updateMenuItem('toggle-completed-to-bottom', {
+      checked: options.moveCompletedTasksToBottom,
+    });
   }
   if (options.showUnstarted !== undefined) {
     await updateMenuItem('toggle-unstarted', { checked: options.showUnstarted });

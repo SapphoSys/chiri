@@ -24,6 +24,7 @@ export const defaultUIState: UIState = {
   calendarSortConfig: DEFAULT_CALENDAR_SORT_CONFIG,
   tagSortConfig: DEFAULT_TAG_SORT_CONFIG,
   showCompletedTasks: true,
+  moveCompletedTasksToBottom: false,
   showUnstartedTasks: true,
   isEditorOpen: false,
 };

@@ -20,6 +20,7 @@ interface MenuCallbacks {
   onOpenAbout?: RefObject<(() => void) | null>;
   onOpenKeyboardShortcuts?: RefObject<(() => void) | null>;
   onToggleCompleted?: RefObject<((currentValue: boolean) => void) | null>;
+  onToggleCompletedToBottom?: RefObject<((currentValue: boolean) => void) | null>;
   onToggleUnstarted?: RefObject<((currentValue: boolean) => void) | null>;
   onSync?: RefObject<(() => void) | null>;
   onAllTasks?: RefObject<(() => void) | null>;
@@ -156,6 +157,7 @@ const MODAL_BLOCKED_MENU_EVENTS = new Set<string>([
   MENU_EVENTS.SEARCH,
   MENU_EVENTS.SHOW_KEYBOARD_SHORTCUTS,
   MENU_EVENTS.TOGGLE_COMPLETED,
+  MENU_EVENTS.TOGGLE_COMPLETED_TO_BOTTOM,
   MENU_EVENTS.TOGGLE_UNSTARTED,
   MENU_EVENTS.ALL_TASKS,
   MENU_EVENTS.RECENTLY_DELETED,
@@ -346,6 +348,21 @@ export const useMenuEvents = (callbacks: MenuCallbacks) => {
         isActiveRef,
       );
       if (!toggleSuccess) return;
+
+      const toggleCompletedToBottomSuccess = await registerListener(
+        MENU_EVENTS.TOGGLE_COMPLETED_TO_BOTTOM,
+        () => {
+          if (isBlocked(MENU_EVENTS.TOGGLE_COMPLETED_TO_BOTTOM, 'Toggle Completed to Bottom'))
+            return;
+          log.debug('Toggle Completed to Bottom triggered');
+          callbacks.onToggleCompletedToBottom?.current?.(
+            uiState?.moveCompletedTasksToBottom ?? false,
+          );
+        },
+        unlistenCallbacks,
+        isActiveRef,
+      );
+      if (!toggleCompletedToBottomSuccess) return;
 
       const toggleUnstartedSuccess = await registerListener(
         MENU_EVENTS.TOGGLE_UNSTARTED,

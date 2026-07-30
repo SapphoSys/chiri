@@ -49,6 +49,7 @@ const getVisibleIds = (activeView: UIState['activeView']) =>
     activeView,
     filteredTasks: getFilteredTasks(),
     showCompletedTasks: true,
+    moveCompletedTasksToBottom: false,
     sortConfig: defaultUIState.sortConfig,
   }).map((task) => ({ id: task.id, depth: task.depth }));
 
@@ -106,5 +107,33 @@ describe('getVisibleTasks', () => {
     seedStore([parent, child], 'tasks');
 
     expect(getVisibleIds('tasks')).toEqual([{ id: 'child', depth: 0 }]);
+  });
+
+  it('moves completed and cancelled tasks to the bottom while preserving their sort order', () => {
+    const completed = makeTask({
+      id: 'completed',
+      uid: 'completed-uid',
+      status: 'completed',
+      completed: true,
+      sortOrder: 100,
+    });
+    const active = makeTask({ id: 'active', uid: 'active-uid', sortOrder: 200 });
+    const cancelled = makeTask({
+      id: 'cancelled',
+      uid: 'cancelled-uid',
+      status: 'cancelled',
+      sortOrder: 300,
+    });
+    seedStore([completed, active, cancelled], 'tasks');
+
+    const visibleTasks = getVisibleTasks({
+      activeView: 'tasks',
+      filteredTasks: getFilteredTasks(),
+      showCompletedTasks: true,
+      moveCompletedTasksToBottom: true,
+      sortConfig: defaultUIState.sortConfig,
+    });
+
+    expect(visibleTasks.map((task) => task.id)).toEqual(['active', 'completed', 'cancelled']);
   });
 });

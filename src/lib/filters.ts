@@ -11,6 +11,9 @@ const priorityOrder: Record<Priority, number> = {
   none: 3,
 };
 
+export const isCompletedTask = (task: Task) =>
+  task.status === 'completed' || task.status === 'cancelled';
+
 const matchesDeletionVisibility = (task: Task, activeView: string) => {
   return activeView === 'recently-deleted' ? !!task.deletedAt : !task.deletedAt;
 };
@@ -195,11 +198,7 @@ export const getFilteredTasks = () => {
     }
 
     // filter by completion status (completed and cancelled are both "done")
-    if (
-      !activeFilterControlsStatus &&
-      !showCompletedTasks &&
-      (task.status === 'completed' || task.status === 'cancelled')
-    ) {
+    if (!activeFilterControlsStatus && !showCompletedTasks && isCompletedTask(task)) {
       return false;
     }
 
@@ -225,12 +224,16 @@ export const matchesFilter = (task: Task, filter: Filter) => {
   return filter.criteria.every((criterion) => matchesCriterion(task, criterion));
 };
 
-export const getSortedTasks = (tasks: Task[], sortConfig?: SortConfig) => {
+export const getSortedTasks = (
+  tasks: Task[],
+  sortConfig?: SortConfig,
+  moveCompletedTasksToBottom = false,
+) => {
   const config = sortConfig ?? dataStore.load().ui.sortConfig;
   const { mode, direction } = config;
   const multiplier = direction === 'asc' ? 1 : -1;
 
-  return [...tasks].sort((a, b) => {
+  const sortedTasks = [...tasks].sort((a, b) => {
     switch (mode) {
       case 'manual':
       case 'smart':
@@ -264,4 +267,11 @@ export const getSortedTasks = (tasks: Task[], sortConfig?: SortConfig) => {
         return 0;
     }
   });
+
+  if (!moveCompletedTasksToBottom) return sortedTasks;
+
+  return [
+    ...sortedTasks.filter((task) => !isCompletedTask(task)),
+    ...sortedTasks.filter(isCompletedTask),
+  ];
 };

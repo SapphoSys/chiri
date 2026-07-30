@@ -277,6 +277,19 @@ export const setShowCompletedTasks = (show: boolean) => {
   });
 };
 
+export const setMoveCompletedTasksToBottom = (moveToBottom: boolean) => {
+  const data = dataStore.load();
+
+  db.setMoveCompletedTasksToBottom(moveToBottom).catch((e) =>
+    log.error('Failed to persist completed task placement:', e),
+  );
+
+  dataStore.save({
+    ...data,
+    ui: { ...data.ui, moveCompletedTasksToBottom: moveToBottom },
+  });
+};
+
 export const setShowUnstartedTasks = (show: boolean) => {
   const data = dataStore.load();
 

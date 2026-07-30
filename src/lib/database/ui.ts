@@ -32,6 +32,7 @@ export const DEFAULT_UI_STATE: UIState = {
   calendarSortConfig: DEFAULT_CALENDAR_SORT_CONFIG,
   tagSortConfig: DEFAULT_TAG_SORT_CONFIG,
   showCompletedTasks: true,
+  moveCompletedTasksToBottom: false,
   showUnstartedTasks: true,
   isEditorOpen: false,
 };
@@ -71,6 +72,7 @@ export const getUIState = async (conn: DatabasePlugin): Promise<UIState> => {
       direction: (row.tag_sort_direction ?? 'asc') as SortDirection,
     },
     showCompletedTasks: row.show_completed_tasks === 1,
+    moveCompletedTasksToBottom: row.move_completed_tasks_to_bottom === 1,
     showUnstartedTasks: row.show_unstarted_tasks === 1,
     isEditorOpen: row.is_editor_open === 1,
   };
@@ -167,6 +169,15 @@ export const setTagSortConfig = async (conn: DatabasePlugin, config: TagSortConf
 
 export const setShowCompletedTasks = async (conn: DatabasePlugin, show: boolean) => {
   await conn.execute('UPDATE ui_state SET show_completed_tasks = $1 WHERE id = 1', [show ? 1 : 0]);
+};
+
+export const setMoveCompletedTasksToBottom = async (
+  conn: DatabasePlugin,
+  moveToBottom: boolean,
+) => {
+  await conn.execute('UPDATE ui_state SET move_completed_tasks_to_bottom = $1 WHERE id = 1', [
+    moveToBottom ? 1 : 0,
+  ]);
 };
 
 export const setShowUnstartedTasks = async (conn: DatabasePlugin, show: boolean) => {

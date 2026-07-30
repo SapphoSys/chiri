@@ -13,6 +13,7 @@ interface VisibleTasksOptions {
   activeView: UIState['activeView'];
   filteredTasks: Task[];
   showCompletedTasks: boolean;
+  moveCompletedTasksToBottom: boolean;
   sortConfig: SortConfig;
 }
 
@@ -20,13 +21,14 @@ export const getVisibleTasks = ({
   activeView,
   filteredTasks,
   showCompletedTasks,
+  moveCompletedTasksToBottom,
   sortConfig,
 }: VisibleTasksOptions) => {
   const visibleTaskUids = new Set(filteredTasks.map((task) => task.uid));
   const topLevelTasks = filteredTasks.filter(
     (task) => !task.parentUid || !visibleTaskUids.has(task.parentUid),
   );
-  const sortedTopLevel = getSortedTasks(topLevelTasks, sortConfig);
+  const sortedTopLevel = getSortedTasks(topLevelTasks, sortConfig, moveCompletedTasksToBottom);
 
   const getFilteredChildTasks = (parentUid: string) => {
     const children = getChildTasks(
@@ -40,7 +42,7 @@ export const getVisibleTasks = ({
   };
 
   return flattenTasks(sortedTopLevel, getFilteredChildTasks, (tasks) =>
-    getSortedTasks(tasks, sortConfig),
+    getSortedTasks(tasks, sortConfig, moveCompletedTasksToBottom),
   );
 };
 
@@ -50,9 +52,16 @@ export const useVisibleTasks = () => {
 
   const sortConfig = uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
+  const moveCompletedTasksToBottom = uiState?.moveCompletedTasksToBottom ?? false;
   const activeView = uiState?.activeView ?? 'tasks';
 
   return useMemo(() => {
-    return getVisibleTasks({ activeView, filteredTasks, showCompletedTasks, sortConfig });
-  }, [activeView, filteredTasks, showCompletedTasks, sortConfig]);
+    return getVisibleTasks({
+      activeView,
+      filteredTasks,
+      showCompletedTasks,
+      moveCompletedTasksToBottom,
+      sortConfig,
+    });
+  }, [activeView, filteredTasks, moveCompletedTasksToBottom, showCompletedTasks, sortConfig]);
 };

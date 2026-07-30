@@ -21,6 +21,7 @@ import {
   setAllTasksView,
   setCalendarSortConfig,
   setEditorOpen,
+  setMoveCompletedTasksToBottom,
   setRecentlyDeletedView,
   setSearchQuery,
   setSelectedTask,
@@ -403,6 +404,23 @@ export const useSetShowCompletedTasks = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['uiState'] });
       queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+    },
+  });
+};
+
+/**
+ * hook to set whether completed tasks appear after active tasks
+ */
+export const useSetMoveCompletedTasksToBottom = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (moveToBottom: boolean) => {
+      setMoveCompletedTasksToBottom(moveToBottom);
+      return Promise.resolve();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['uiState'] });
     },
   });
 };

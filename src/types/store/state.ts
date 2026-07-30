@@ -18,6 +18,7 @@ export interface UIState {
   calendarSortConfig: CalendarSortConfig;
   tagSortConfig: TagSortConfig;
   showCompletedTasks: boolean;
+  moveCompletedTasksToBottom: boolean;
   showUnstartedTasks: boolean;
   isEditorOpen: boolean;
 }

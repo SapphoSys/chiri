@@ -55,6 +55,7 @@ export const useAppMenu = (isSyncing?: boolean) => {
     updateMenuState({
       accountCount: caldavAccountCount,
       showCompleted: uiState?.showCompletedTasks ?? true,
+      moveCompletedTasksToBottom: uiState?.moveCompletedTasksToBottom ?? false,
       showUnstarted: uiState?.showUnstartedTasks ?? true,
       sortMode,
       sortDirection,
@@ -64,6 +65,7 @@ export const useAppMenu = (isSyncing?: boolean) => {
   }, [
     caldavAccountCount,
     uiState?.showCompletedTasks,
+    uiState?.moveCompletedTasksToBottom,
     uiState?.showUnstartedTasks,
     uiState?.sortConfig?.mode,
     uiState?.sortConfig?.direction,
@@ -78,6 +80,7 @@ export const useAppMenu = (isSyncing?: boolean) => {
 
     rebuildAppMenu({
       showCompleted: uiState?.showCompletedTasks ?? true,
+      moveCompletedTasksToBottom: uiState?.moveCompletedTasksToBottom ?? false,
       showUnstarted: uiState?.showUnstartedTasks ?? true,
       sortMode,
       sortDirection,
@@ -92,6 +95,7 @@ export const useAppMenu = (isSyncing?: boolean) => {
     menuAccounts,
     caldavAccountCount,
     uiState?.showCompletedTasks,
+    uiState?.moveCompletedTasksToBottom,
     uiState?.showUnstartedTasks,
     uiState?.sortConfig?.mode,
     uiState?.sortConfig?.direction,
