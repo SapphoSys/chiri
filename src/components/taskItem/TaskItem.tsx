@@ -249,7 +249,8 @@ export const TaskItem = ({
   const paddingLeft = 12 + depth * 4;
 
   const containerClass = [
-    'group relative flex items-start gap-3 pr-3 rounded-lg border task-item-transition outline-hidden',
+    'group relative flex items-start gap-3 pr-3 rounded-lg border outline-hidden',
+    isHighlighted ? 'task-item-transition' : '',
     'focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-surface-900',
     taskListDensity === 'compact' ? 'py-2' : 'py-3',
     getBackgroundClass(isMultiSelected, isOverlay, contextMenu),
