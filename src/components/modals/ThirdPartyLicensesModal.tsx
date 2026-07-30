@@ -86,7 +86,7 @@ export const ThirdPartyLicensesModal = ({ onClose }: ThirdPartyLicensesModalProp
             onClick={() => setSelectedLicense(null)}
             aria-label="Back"
             title="Back"
-            className="!h-10 !w-10 !p-0"
+            className="h-10! w-10! p-0!"
           >
             <ArrowLeft className="h-5 w-5" />
           </ModalButton>
