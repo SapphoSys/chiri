@@ -53,3 +53,44 @@ export interface AppModalActions {
 }
 
 export type AppModals = AppModalState & AppModalActions;
+
+export type SidebarExportTarget =
+  | { type: 'calendar'; calendarId: string }
+  | { type: 'account'; accountId: string };
+
+export interface SidebarModalState {
+  showAccountModal: boolean;
+  editingAccountId: string | null;
+  showTagModal: boolean;
+  editingTagId: string | null;
+  showCreateCalendar: boolean;
+  createCalendarAccountId: string | null;
+  showCalendarModal: boolean;
+  editingCalendar: EditingCalendar | null;
+  showFilterPresetModal: boolean;
+  editingFilterId: string | null;
+  exportTarget: SidebarExportTarget | null;
+  mobileConfigAccountId: string | null;
+}
+
+export interface SidebarModalActions {
+  openAccount: (accountId?: string | null) => void;
+  closeAccount: () => void;
+  openTag: (tagId?: string | null) => void;
+  closeTag: () => void;
+  openCreateCalendar: (accountId: string) => void;
+  closeCreateCalendar: () => void;
+  openCalendar: (editingCalendar: EditingCalendar) => void;
+  closeCalendar: () => void;
+  openFilterPreset: () => void;
+  closeFilterPreset: () => void;
+  openFilter: (filterId: string) => void;
+  closeFilter: () => void;
+  openExportCalendar: (calendarId: string) => void;
+  openExportAccount: (accountId: string) => void;
+  closeExport: () => void;
+  openMobileConfigExport: (accountId: string) => void;
+  closeMobileConfigExport: () => void;
+}
+
+export type SidebarModals = SidebarModalState & SidebarModalActions;
