@@ -30,7 +30,6 @@ import { settingsStore } from '$context/settingsContext';
 import { useDatePickerKeyboardNavigation } from '$hooks/ui/useDatePickerKeyboardNavigation';
 import type { QuickTimePresets } from '$types/settings/categories/scheduling';
 import {
-  createPaddedDaysArray,
   getDaysOfWeekLabels,
   getMonthStartPadding,
   getNextWorkingDay,
@@ -141,7 +140,6 @@ export const ReminderPickerModal = ({
   const monthEnd = endOfMonth(currentMonth);
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
   const startPadding = getMonthStartPadding(monthStart.getDay(), weekStartsOn);
-  const paddedDays = createPaddedDaysArray(days, startPadding);
 
   const minutesToTimeLabel = (minutes: number) => {
     const d = new Date();
@@ -395,13 +393,8 @@ export const ReminderPickerModal = ({
                 ))}
               </div>
 
-              <div className="grid grid-cols-7 gap-1">
-                {paddedDays.map((day, index) => {
-                  if (!day) {
-                    // empty calendar grid cells reserve row height for shorter months
-                    // biome-ignore lint/suspicious/noArrayIndexKey: padding cells have no identity; index represents stable grid position
-                    return <div key={index} className="h-8" />;
-                  }
+              <div className="grid grid-cols-7 grid-rows-6 gap-1">
+                {days.map((day, index) => {
                   const isSelected = localValue && isSameDay(day, localValue);
                   const isCurrentMonth = isSameMonth(day, currentMonth);
                   const isTodayDate = isToday(day);
@@ -410,6 +403,7 @@ export const ReminderPickerModal = ({
                       key={day.toISOString()}
                       type="button"
                       data-calendar-day-time={day.getTime()}
+                      style={index === 0 ? { gridColumnStart: startPadding + 1 } : undefined}
                       onClick={() => handleDayClick(day)}
                       className={`flex h-8 w-8 items-center justify-center rounded-full text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset data-[keyboard-navigation-focus=true]:ring-2 data-[keyboard-navigation-focus=true]:ring-primary-500 data-[keyboard-navigation-focus=true]:ring-inset ${
                         isSelected

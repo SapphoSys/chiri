@@ -61,7 +61,6 @@ export const getOrderedWorkingDays = (startOfWeek: StartOfWeek): WorkingDay[] =>
 export const DAYS_OF_WEEK_LABELS = Object.entries(WORKING_DAY_META)
   .sort(([, a], [, b]) => a.dayIndex - b.dayIndex)
   .map(([, meta]) => meta.shortLabel.slice(0, 2));
-const CALENDAR_GRID_CELLS = 42;
 
 const WEEK_START_MAP: Record<string, WeekStartDay> = {
   sunday: 0,
@@ -100,18 +99,6 @@ export const getDaysOfWeekLabels = (weekStartsOn: WeekStartDay): readonly string
  */
 export const getMonthStartPadding = (firstDayOfMonth: number, weekStartsOn: WeekStartDay) => {
   return (firstDayOfMonth - weekStartsOn + 7) % 7;
-};
-
-/**
- * create padded days array for a stable six-row calendar grid
- * @param days - array of dates in the month
- * @param startPadding - number of empty cells at start
- * @returns array with null values for padding followed by dates and trailing empty cells
- */
-export const createPaddedDaysArray = (days: Date[], startPadding: number): (Date | null)[] => {
-  const paddedDays = Array(startPadding).fill(null).concat(days);
-  const endPadding = Math.max(0, CALENDAR_GRID_CELLS - paddedDays.length);
-  return paddedDays.concat(Array(endPadding).fill(null));
 };
 
 /**
