@@ -1,3 +1,4 @@
+import SortNeutral from 'lucide-react/icons/arrow-down-up';
 import SortDesc from 'lucide-react/icons/arrow-down-wide-narrow';
 import SortAsc from 'lucide-react/icons/arrow-up-narrow-wide';
 import { Tooltip } from '$components/Tooltip';
@@ -11,7 +12,12 @@ export const SortDirectionButton = ({
   onToggle: () => void;
 }) => {
   const isDisabled = sortConfig.mode === 'manual';
-  const buttonClass = `w-full flex rounded-md items-center justify-between gap-2 px-2 py-1.5 text-sm outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+  const directionLabel = isDisabled
+    ? 'Manual sorting'
+    : sortConfig.direction === 'asc'
+      ? 'Ascending'
+      : 'Descending';
+  const buttonClass = `flex size-7 shrink-0 items-center justify-center rounded-md p-1 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
     isDisabled
       ? 'text-surface-400 dark:text-surface-600 cursor-not-allowed'
       : 'text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700'
@@ -19,26 +25,26 @@ export const SortDirectionButton = ({
 
   return (
     <Tooltip
-      content={isDisabled ? 'Not available for manual sorting' : ''}
-      position="left"
+      content={isDisabled ? "Sort direction isn't used with manual sorting" : directionLabel}
+      position="top"
       allowInModal
       className="whitespace-nowrap"
-      triggerClassName="w-full"
+      triggerClassName="shrink-0"
     >
       <button
         type="button"
         onClick={isDisabled ? () => {} : onToggle}
         disabled={isDisabled}
+        aria-label={isDisabled ? 'Sort direction unavailable' : `Sort direction: ${directionLabel}`}
         className={buttonClass}
       >
-        <div className="flex items-center gap-2">
-          {sortConfig.direction === 'asc' ? (
-            <SortAsc className="h-4 w-4" />
-          ) : (
-            <SortDesc className="h-4 w-4" />
-          )}
-          <span>{sortConfig.direction === 'asc' ? 'Ascending' : 'Descending'}</span>
-        </div>
+        {isDisabled ? (
+          <SortNeutral className="h-4 w-4" />
+        ) : sortConfig.direction === 'asc' ? (
+          <SortAsc className="h-4 w-4" />
+        ) : (
+          <SortDesc className="h-4 w-4" />
+        )}
       </button>
     </Tooltip>
   );

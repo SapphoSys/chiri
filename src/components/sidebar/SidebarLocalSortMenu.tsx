@@ -3,7 +3,6 @@ import type { RefObject } from 'react';
 import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
 import { HoverFlyout, HoverFlyoutGroup } from '$components/HoverFlyout';
 import { SidebarSortDirectionButton } from '$components/sidebar/SidebarSortDirectionButton';
-import { Tooltip } from '$components/Tooltip';
 import { CALENDAR_SORT_OPTIONS } from '$constants';
 import { useSetCalendarSortConfig } from '$hooks/queries/useUIState';
 import type { CalendarSortConfig } from '$types/sort';
@@ -45,49 +44,6 @@ export const SidebarLocalSortMenu = ({
           Local Calendars
         </div>
 
-        {calendarSortConfig.mode === 'manual' ? (
-          <Tooltip
-            content="Not available for manual sorting"
-            position="right"
-            className="whitespace-nowrap"
-            triggerClassName="w-full"
-            allowInModal
-          >
-            <div className="-mx-2 flex w-[calc(100%+1rem)] cursor-not-allowed items-center justify-between gap-3 rounded-md px-2 py-1.5 text-sm text-surface-400 dark:text-surface-600">
-              <span>Sort Direction</span>
-              <span className="text-xs">Disabled</span>
-            </div>
-          </Tooltip>
-        ) : (
-          <HoverFlyoutGroup>
-            <button
-              type="button"
-              className="-mx-2 flex w-[calc(100%+1rem)] items-center justify-between gap-3 rounded-md px-2 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
-            >
-              <span>Sort Direction</span>
-              <div className="flex min-w-0 items-center gap-2">
-                <span className="truncate text-surface-500 text-xs dark:text-surface-400">
-                  {calendarSortConfig.direction === 'asc' ? 'Ascending' : 'Descending'}
-                </span>
-                <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
-              </div>
-            </button>
-
-            <HoverFlyout side="right" gap={8}>
-              <div className="px-3 pt-1 pb-2 font-medium text-sm text-surface-500 dark:text-surface-400">
-                Sort Direction
-              </div>
-              <div className="px-1">
-                <SidebarSortDirectionButton
-                  direction={calendarSortConfig.direction}
-                  disabled={false}
-                  onToggle={toggleSortDirection}
-                />
-              </div>
-            </HoverFlyout>
-          </HoverFlyoutGroup>
-        )}
-
         <HoverFlyoutGroup>
           <button
             type="button"
@@ -106,8 +62,13 @@ export const SidebarLocalSortMenu = ({
           </button>
 
           <HoverFlyout side="right" gap={8}>
-            <div className="px-3 pt-1 pb-2 font-medium text-sm text-surface-500 dark:text-surface-400">
-              Sort By
+            <div className="flex items-center justify-between px-3 pb-1 font-medium text-sm text-surface-500 dark:text-surface-400">
+              <span>Sort By</span>
+              <SidebarSortDirectionButton
+                direction={calendarSortConfig.direction}
+                disabled={calendarSortConfig.mode === 'manual'}
+                onToggle={toggleSortDirection}
+              />
             </div>
             <div className="space-y-1 px-1">
               {CALENDAR_SORT_OPTIONS.map((option) => (
