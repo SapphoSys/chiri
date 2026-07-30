@@ -1,1 +1,1 @@
-export type TaskListDensity = 'compact' | 'normal' | 'comfortable';
+export type TaskListDensity = 'compact' | 'comfortable';
