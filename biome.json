@@ -59,7 +59,8 @@
             "maxAllowedComplexity": 30
           }
         },
-        "noForEach": "off"
+        "noForEach": "off",
+        "noImportantStyles": "off"
       },
       "correctness": {
         "noUnusedVariables": "error",

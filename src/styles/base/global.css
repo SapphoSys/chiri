@@ -46,13 +46,9 @@ body {
   *,
   *::before,
   *::after {
-    /* biome-ignore lint/complexity/noImportantStyles: accessibility reset for reduced motion */
     animation-duration: 0.01ms !important;
-    /* biome-ignore lint/complexity/noImportantStyles: accessibility reset for reduced motion */
     animation-iteration-count: 1 !important;
-    /* biome-ignore lint/complexity/noImportantStyles: accessibility reset for reduced motion */
     transition-duration: 0.01ms !important;
-    /* biome-ignore lint/complexity/noImportantStyles: accessibility reset for reduced motion */
     scroll-behavior: auto !important;
   }
 }
