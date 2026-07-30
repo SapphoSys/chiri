@@ -20,6 +20,7 @@
       "!target",
       "!src-tauri/target",
       "!src-tauri/gen",
+      "!public/licenses.generated.json",
       "!*.min.js",
       "!pnpm-lock.yaml"
     ]

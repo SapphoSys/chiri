@@ -31,6 +31,6 @@
       "$utils/*": ["./src/utils/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "scripts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
