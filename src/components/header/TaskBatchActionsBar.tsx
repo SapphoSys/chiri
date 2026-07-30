@@ -499,7 +499,7 @@ export const TaskBatchActionsBar = ({
         <MoveToCalendarModal
           accounts={accounts}
           currentCalendarIds={currentCalendarIds}
-          title="Move Selected Tasks"
+          title="Move selected tasks"
           description={`${selectedCount} selected ${selectedCount === 1 ? 'task' : 'tasks'}`}
           onMove={handleMoveToCalendar}
           onClose={() => setShowMoveModal(false)}
