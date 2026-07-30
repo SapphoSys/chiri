@@ -1,22 +1,21 @@
-import { closestCenter, DndContext, DragOverlay } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { closestCenter, DndContext, DragOverlay, type Modifier } from '@dnd-kit/core';
 import ClipboardPlus from 'lucide-react/icons/clipboard-plus';
 import FunnelX from 'lucide-react/icons/funnel-x';
 import Plus from 'lucide-react/icons/plus';
 import SearchX from 'lucide-react/icons/search-x';
 import Trash2 from 'lucide-react/icons/trash-2';
-import type { ReactNode } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { RecentlyDeletedNoticeBanner } from '$components/banners/RecentlyDeletedNoticeBanner';
+import { TaskGroupSection } from '$components/TaskGroupSection';
 import { TaskItem } from '$components/taskItem/TaskItem';
-import { DEFAULT_SORT_CONFIG } from '$constants';
+import { DEFAULT_SORT_CONFIG, DEFAULT_TASK_GROUP_CONFIG } from '$constants';
 import { useCreateTask } from '$hooks/queries/useTasks';
 import { useSetSelectedTask, useUIState } from '$hooks/queries/useUIState';
-import { useVisibleTasks } from '$hooks/queries/useVisibleTasks';
+import { useVisibleTaskGroups } from '$hooks/queries/useVisibleTasks';
 import { truncateName, useSortableDrag } from '$hooks/ui/useSortableDrag';
 import { useTaskListSelection } from '$hooks/ui/useTaskListSelection';
 import type { LucideIcon } from '$types/lucide';
 import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
-import { getSortableItemKey } from '$utils/sortable';
 
 const getEmptyState = (
   isRecentlyDeleted: boolean,
@@ -71,13 +70,58 @@ const getEmptyState = (
 
 export const TaskList = () => {
   const { data: uiState } = useUIState();
-  const flattenedTasks = useVisibleTasks();
+  const visibleTaskGroups = useVisibleTaskGroups();
+  const [collapsedGroupKeys, setCollapsedGroupKeys] = useState<ReadonlySet<string>>(new Set());
+  const initializedDefaultGroupKeys = useRef(new Set<string>());
+  useEffect(() => {
+    const defaults = visibleTaskGroups
+      .filter(
+        (group) => group.defaultCollapsed && !initializedDefaultGroupKeys.current.has(group.key),
+      )
+      .map((group) => group.key);
+    if (defaults.length === 0) return;
+
+    for (const key of defaults) initializedDefaultGroupKeys.current.add(key);
+    setCollapsedGroupKeys((keys) => new Set([...keys, ...defaults]));
+  }, [visibleTaskGroups]);
+  const displayedTaskGroups = useMemo(
+    () => visibleTaskGroups.filter((group) => !collapsedGroupKeys.has(group.key)),
+    [collapsedGroupKeys, visibleTaskGroups],
+  );
+  const flattenedTasks = useMemo(
+    () => displayedTaskGroups.flatMap((group) => group.tasks),
+    [displayedTaskGroups],
+  );
   const createTaskMutation = useCreateTask();
   const setSelectedTaskMutation = useSetSelectedTask();
 
   const sortConfig = uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
+  const taskGroupConfig = uiState?.taskGroupConfig ?? DEFAULT_TASK_GROUP_CONFIG;
   const searchQuery = uiState?.searchQuery ?? '';
   const activeView = uiState?.activeView ?? 'tasks';
+  const taskGroupKeys = useMemo(
+    () =>
+      new Map(
+        displayedTaskGroups.flatMap((group) => group.tasks.map((task) => [task.id, group.key])),
+      ),
+    [displayedTaskGroups],
+  );
+  const taskGroupDragBounds = useRef(new Map<string, HTMLDivElement>());
+  const setTaskGroupDragBounds = useCallback(
+    (groupKey: string) => (node: HTMLDivElement | null) => {
+      if (node) {
+        taskGroupDragBounds.current.set(groupKey, node);
+      } else {
+        taskGroupDragBounds.current.delete(groupKey);
+      }
+    },
+    [],
+  );
+  const getDragScope = useCallback(
+    (task: (typeof flattenedTasks)[number]) =>
+      taskGroupConfig.mode === 'none' ? 'all' : (taskGroupKeys.get(task.id) ?? task.id),
+    [taskGroupConfig.mode, taskGroupKeys],
+  );
 
   const {
     activeItem: activeTask,
@@ -90,7 +134,35 @@ export const TaskList = () => {
     handleDragMove,
     handleDragEnd,
     handleDragCancel,
-  } = useSortableDrag({ flattenedItems: flattenedTasks, minIndent: 0 });
+  } = useSortableDrag({ flattenedItems: flattenedTasks, minIndent: 0, getDragScope });
+
+  const restrictTaskDragToGroup = useCallback<Modifier>(
+    ({ draggingNodeRect, transform }) => {
+      const activeGroupKey = activeTask ? taskGroupKeys.get(activeTask.id) : undefined;
+      const bounds = activeGroupKey
+        ? taskGroupDragBounds.current.get(activeGroupKey)?.getBoundingClientRect()
+        : undefined;
+      if (!bounds || !draggingNodeRect) return transform;
+
+      return {
+        ...transform,
+        x: Math.min(
+          Math.max(transform.x, bounds.left - draggingNodeRect.left),
+          bounds.right - draggingNodeRect.right,
+        ),
+        y: Math.min(
+          Math.max(transform.y, bounds.top - draggingNodeRect.top),
+          bounds.bottom - draggingNodeRect.bottom,
+        ),
+      };
+    },
+    [activeTask, taskGroupKeys],
+  );
+
+  const visibleTaskIds = useMemo(
+    () => new Set(visibleFlattenedTasks.map((task) => task.id)),
+    [visibleFlattenedTasks],
+  );
 
   const {
     clearSelection,
@@ -117,13 +189,17 @@ export const TaskList = () => {
   const modifierJoiner = getModifierJoiner();
   const newTaskShortcut = `${metaKey}${modifierJoiner}N`;
 
-  // only enable dragging for manual sort mode
+  // Group order is derived from task properties; manual drag-reordering applies within each group.
   const isRecentlyDeleted = activeView === 'recently-deleted';
   const isFilterView = activeView === 'filter';
   const isDragEnabled = sortConfig.mode === 'manual' && !isRecentlyDeleted;
   const isDraggingTask = activeTask !== null;
 
-  if (flattenedTasks.length === 0) {
+  const visibleTaskCount = visibleTaskGroups.reduce(
+    (count, group) => count + group.tasks.length,
+    0,
+  );
+  if (visibleTaskCount === 0) {
     const isSearching = searchQuery.trim().length > 0;
     const { Icon, title, description, showCreateButton } = getEmptyState(
       isRecentlyDeleted,
@@ -162,33 +238,38 @@ export const TaskList = () => {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        modifiers={taskGroupConfig.mode === 'none' ? undefined : [restrictTaskDragToGroup]}
         onDragStart={handleDragStart}
         onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <SortableContext
-          items={visibleFlattenedTasks.map((t) => t.id)}
-          strategy={verticalListSortingStrategy}
-          disabled={!isDragEnabled}
-        >
-          <div className={isRecentlyDeleted ? 'mt-4 space-y-1.5' : 'space-y-1.5'}>
-            {visibleFlattenedTasks.map((task) => (
-              <TaskItem
-                key={getSortableItemKey(task.id, task.parentUid)}
-                task={task}
-                depth={task.depth}
-                ancestorIds={task.ancestorIds}
-                isDragEnabled={isDragEnabled && !isSelectionMode}
-                isMultiSelected={selectedTaskIdSet.has(task.id)}
-                isSelectionMode={isSelectionMode}
-                onTaskClick={handleTaskClick}
-                onSelectionCheckboxClick={handleSelectionCheckboxClick}
-                onTaskContextMenu={handleTaskContextMenu}
-              />
-            ))}
-          </div>
-        </SortableContext>
+        <div className={isRecentlyDeleted ? 'mt-4 space-y-4' : 'space-y-4'}>
+          {visibleTaskGroups.map((group) => (
+            <TaskGroupSection
+              key={group.key}
+              group={group}
+              visibleTaskIds={visibleTaskIds}
+              dragBoundsRef={setTaskGroupDragBounds(group.key)}
+              showHeader={taskGroupConfig.mode !== 'none'}
+              isCollapsed={collapsedGroupKeys.has(group.key)}
+              isDragEnabled={isDragEnabled}
+              isSelectionMode={isSelectionMode}
+              selectedTaskIdSet={selectedTaskIdSet}
+              onTaskClick={handleTaskClick}
+              onSelectionCheckboxClick={handleSelectionCheckboxClick}
+              onTaskContextMenu={handleTaskContextMenu}
+              onToggleCollapsed={() =>
+                setCollapsedGroupKeys((keys) => {
+                  const next = new Set(keys);
+                  if (next.has(group.key)) next.delete(group.key);
+                  else next.add(group.key);
+                  return next;
+                })
+              }
+            />
+          ))}
+        </div>
 
         <DragOverlay dropAnimation={null}>
           {activeTask ? (

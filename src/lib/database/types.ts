@@ -146,6 +146,8 @@ export interface UIStateRow {
   tag_sort_mode: string | null;
   tag_sort_direction: string | null;
   move_completed_tasks_to_bottom: number;
+  task_group_mode: string | null;
+  task_group_direction: string | null;
 }
 
 export interface ReminderRow {

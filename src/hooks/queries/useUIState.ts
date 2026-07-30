@@ -9,6 +9,7 @@ import {
   DEFAULT_CALENDAR_SORT_CONFIG,
   DEFAULT_SORT_CONFIG,
   DEFAULT_TAG_SORT_CONFIG,
+  DEFAULT_TASK_GROUP_CONFIG,
 } from '$constants';
 import { dataStore } from '$lib/store';
 import {
@@ -29,8 +30,15 @@ import {
   setShowUnstartedTasks,
   setSortConfig,
   setTagSortConfig,
+  setTaskGroupConfig,
 } from '$lib/store/ui';
-import type { AccountSortConfig, CalendarSortConfig, SortConfig, TagSortConfig } from '$types/sort';
+import type {
+  AccountSortConfig,
+  CalendarSortConfig,
+  SortConfig,
+  TagSortConfig,
+  TaskGroupConfig,
+} from '$types/sort';
 
 type SetSelectedTaskInput = string | null | { id: string | null; focusTitle?: boolean };
 
@@ -123,6 +131,11 @@ export const useSearchQuery = () => {
 export const useSortConfig = () => {
   const { data: uiState } = useUIState();
   return uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
+};
+
+export const useTaskGroupConfig = () => {
+  const { data: uiState } = useUIState();
+  return uiState?.taskGroupConfig ?? DEFAULT_TASK_GROUP_CONFIG;
 };
 
 /**
@@ -340,6 +353,20 @@ export const useSetSortConfig = () => {
   return useMutation({
     mutationFn: (config: SortConfig) => {
       setSortConfig(config);
+      return Promise.resolve();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+    },
+  });
+};
+
+export const useSetTaskGroupConfig = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (config: TaskGroupConfig) => {
+      setTaskGroupConfig(config);
       return Promise.resolve();
     },
     onSuccess: () => {

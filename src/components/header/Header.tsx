@@ -12,9 +12,16 @@ import { HoverFlyout, HoverFlyoutGroup } from '$components/HoverFlyout';
 import { SortDirectionButton } from '$components/header/SortDirectionButton';
 import { SortOptionButton } from '$components/header/SortOptionsButton';
 import { TaskBatchActionsBar } from '$components/header/TaskBatchActionsBar';
+import { TaskGroupOptionButton } from '$components/header/TaskGroupOptionButton';
 import { ViewMenuCheckbox } from '$components/header/ViewMenuCheckbox';
 import { Tooltip } from '$components/Tooltip';
-import { DEFAULT_SORT_CONFIG, JUST_NOW_SYNC_TEXT_MS_THRESHOLD, SORT_OPTIONS } from '$constants';
+import {
+  DEFAULT_SORT_CONFIG,
+  DEFAULT_TASK_GROUP_CONFIG,
+  JUST_NOW_SYNC_TEXT_MS_THRESHOLD,
+  SORT_OPTIONS,
+  TASK_GROUP_OPTIONS,
+} from '$constants';
 import { useModalState } from '$context/modalStateContext';
 import { useTaskSelection } from '$context/taskSelectionContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
@@ -26,10 +33,11 @@ import {
   useSetShowCompletedTasks,
   useSetShowUnstartedTasks,
   useSetSortConfig,
+  useSetTaskGroupConfig,
   useUIState,
 } from '$hooks/queries/useUIState';
 import { useVisibleTasks } from '$hooks/queries/useVisibleTasks';
-import type { SortDirection, SortMode } from '$types/sort';
+import type { SortDirection, SortMode, TaskGroupMode } from '$types/sort';
 import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
 import { pluralize } from '$utils/misc';
 
@@ -125,6 +133,7 @@ export const Header = ({
   const { data: accounts = [] } = useAccounts();
   const setSearchQueryMutation = useSetSearchQuery();
   const setSortConfigMutation = useSetSortConfig();
+  const setTaskGroupConfigMutation = useSetTaskGroupConfig();
   const setShowCompletedTasksMutation = useSetShowCompletedTasks();
   const setMoveCompletedTasksToBottomMutation = useSetMoveCompletedTasksToBottom();
   const setShowUnstartedTasksMutation = useSetShowUnstartedTasks();
@@ -135,6 +144,7 @@ export const Header = ({
 
   const searchQuery = uiState?.searchQuery ?? '';
   const sortConfig = uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
+  const taskGroupConfig = uiState?.taskGroupConfig ?? DEFAULT_TASK_GROUP_CONFIG;
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
   const moveCompletedTasksToBottom = uiState?.moveCompletedTasksToBottom ?? false;
   const showUnstartedTasks = uiState?.showUnstartedTasks ?? true;
@@ -228,6 +238,17 @@ export const Header = ({
       ...sortConfig,
       mode,
       direction,
+    });
+  };
+
+  const handleTaskGroupChange = (mode: TaskGroupMode) => {
+    setTaskGroupConfigMutation.mutate({ ...taskGroupConfig, mode });
+  };
+
+  const toggleTaskGroupDirection = () => {
+    setTaskGroupConfigMutation.mutate({
+      ...taskGroupConfig,
+      direction: taskGroupConfig.direction === 'asc' ? 'desc' : 'asc',
     });
   };
 
@@ -367,7 +388,9 @@ export const Header = ({
                       <div className="flex items-center justify-between px-3 pb-1 font-medium text-sm text-surface-500 dark:text-surface-400">
                         <span>Sort By</span>
                         <SortDirectionButton
-                          sortConfig={sortConfig}
+                          direction={sortConfig.direction}
+                          disabled={sortConfig.mode === 'manual'}
+                          disabledLabel="Sort direction isn't used with manual sorting"
                           onToggle={toggleSortDirection}
                         />
                       </div>
@@ -378,6 +401,47 @@ export const Header = ({
                             option={option}
                             isActive={sortConfig.mode === option.value}
                             onClick={() => handleSortChange(option.value)}
+                          />
+                        ))}
+                      </div>
+                    </HoverFlyout>
+                  </HoverFlyoutGroup>
+
+                  <HoverFlyoutGroup>
+                    <button
+                      type="button"
+                      className="-mx-2 flex w-[calc(100%+1rem)] items-center justify-between gap-3 rounded-md px-2 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+                    >
+                      <span>Group By</span>
+                      <div className="flex min-w-0 items-center gap-2">
+                        <span className="truncate text-surface-500 text-xs dark:text-surface-400">
+                          {
+                            TASK_GROUP_OPTIONS.find(
+                              (option) => option.value === taskGroupConfig.mode,
+                            )?.label
+                          }
+                        </span>
+                        <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
+                      </div>
+                    </button>
+
+                    <HoverFlyout side="left" gap={8} minWidthClassName="min-w-52">
+                      <div className="flex items-center justify-between px-3 pb-1 font-medium text-sm text-surface-500 dark:text-surface-400">
+                        Group By
+                        <SortDirectionButton
+                          direction={taskGroupConfig.direction}
+                          disabled={taskGroupConfig.mode === 'none'}
+                          disabledLabel="Grouping is off"
+                          onToggle={toggleTaskGroupDirection}
+                        />
+                      </div>
+                      <div className="space-y-1 px-1">
+                        {TASK_GROUP_OPTIONS.map((option) => (
+                          <TaskGroupOptionButton
+                            key={option.value}
+                            option={option}
+                            isActive={taskGroupConfig.mode === option.value}
+                            onClick={() => handleTaskGroupChange(option.value)}
                           />
                         ))}
                       </div>

@@ -1,6 +1,12 @@
 import type { Account } from '$types/account';
 import type { Filter } from '$types/filter';
-import type { AccountSortConfig, CalendarSortConfig, SortConfig, TagSortConfig } from '$types/sort';
+import type {
+  AccountSortConfig,
+  CalendarSortConfig,
+  SortConfig,
+  TagSortConfig,
+  TaskGroupConfig,
+} from '$types/sort';
 import type { PendingDeletion } from '$types/store/sync';
 import type { Tag } from '$types/tag';
 import type { Task } from '$types/task/model';
@@ -14,6 +20,7 @@ export interface UIState {
   selectedTaskId: string | null;
   searchQuery: string;
   sortConfig: SortConfig;
+  taskGroupConfig: TaskGroupConfig;
   accountSortConfig: AccountSortConfig;
   calendarSortConfig: CalendarSortConfig;
   tagSortConfig: TagSortConfig;

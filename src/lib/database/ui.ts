@@ -4,6 +4,7 @@ import {
   DEFAULT_CALENDAR_SORT_CONFIG,
   DEFAULT_SORT_CONFIG,
   DEFAULT_TAG_SORT_CONFIG,
+  DEFAULT_TASK_GROUP_CONFIG,
 } from '$constants';
 import type { UIStateRow } from '$lib/database/types';
 import type {
@@ -16,6 +17,7 @@ import type {
   SortMode,
   TagSortConfig,
   TagSortMode,
+  TaskGroupConfig,
 } from '$types/sort';
 import type { UIState } from '$types/store/state';
 
@@ -28,6 +30,7 @@ export const DEFAULT_UI_STATE: UIState = {
   selectedTaskId: null,
   searchQuery: '',
   sortConfig: DEFAULT_SORT_CONFIG,
+  taskGroupConfig: DEFAULT_TASK_GROUP_CONFIG,
   accountSortConfig: DEFAULT_ACCOUNT_SORT_CONFIG,
   calendarSortConfig: DEFAULT_CALENDAR_SORT_CONFIG,
   tagSortConfig: DEFAULT_TAG_SORT_CONFIG,
@@ -58,6 +61,10 @@ export const getUIState = async (conn: DatabasePlugin): Promise<UIState> => {
     sortConfig: {
       mode: row.sort_mode as SortMode,
       direction: row.sort_direction as SortDirection,
+    },
+    taskGroupConfig: {
+      mode: (row.task_group_mode ?? DEFAULT_TASK_GROUP_CONFIG.mode) as TaskGroupConfig['mode'],
+      direction: (row.task_group_direction ?? DEFAULT_TASK_GROUP_CONFIG.direction) as SortDirection,
     },
     accountSortConfig: {
       mode: (row.account_sort_mode ?? 'manual') as AccountSortMode,
@@ -144,6 +151,13 @@ export const setSortConfig = async (conn: DatabasePlugin, config: SortConfig) =>
     config.mode,
     config.direction,
   ]);
+};
+
+export const setTaskGroupConfig = async (conn: DatabasePlugin, config: TaskGroupConfig) => {
+  await conn.execute(
+    'UPDATE ui_state SET task_group_mode = $1, task_group_direction = $2 WHERE id = 1',
+    [config.mode, config.direction],
+  );
 };
 
 export const setAccountSortConfig = async (conn: DatabasePlugin, config: AccountSortConfig) => {

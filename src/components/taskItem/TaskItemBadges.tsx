@@ -34,6 +34,8 @@ interface TaskItemBadgesProps {
   compact: boolean;
   badgeVisibility: TaskBadgeVisibility;
   badgeOrder: TaskBadgeKey[];
+  hideDueDateBadge?: boolean;
+  hideStartDateBadge?: boolean;
 }
 
 export const TaskItemBadges = ({
@@ -49,6 +51,8 @@ export const TaskItemBadges = ({
   compact,
   badgeVisibility,
   badgeOrder,
+  hideDueDateBadge = false,
+  hideStartDateBadge = false,
 }: TaskItemBadgesProps) => {
   const { dateFormat } = useSettingsStore();
   const resolveAccent = useAccentColorResolver();
@@ -79,8 +83,8 @@ export const TaskItemBadges = ({
   );
 
   const hasAnyVisibleBadge =
-    (badgeVisibility.startDate && startDateDisplay) ||
-    (badgeVisibility.dueDate && task.dueDate) ||
+    (badgeVisibility.startDate && startDateDisplay && !hideStartDateBadge) ||
+    (badgeVisibility.dueDate && task.dueDate && !hideDueDateBadge) ||
     (badgeVisibility.tags && taskTags.length > 0) ||
     (badgeVisibility.calendar && showCalendar) ||
     (badgeVisibility.url && task.url) ||
@@ -95,11 +99,13 @@ export const TaskItemBadges = ({
 
   const badgeRenderers: Record<TaskBadgeKey, () => ReactNode> = {
     startDate: () =>
-      badgeVisibility.startDate && startDateDisplay ? (
+      badgeVisibility.startDate && startDateDisplay && !hideStartDateBadge ? (
         <TaskItemStartDateBadge startDateDisplay={startDateDisplay} />
       ) : null,
     dueDate: () =>
-      badgeVisibility.dueDate ? <TaskItemDueDateBadge dueDate={task.dueDate} /> : null,
+      badgeVisibility.dueDate && !hideDueDateBadge ? (
+        <TaskItemDueDateBadge dueDate={task.dueDate} />
+      ) : null,
     tags: () =>
       badgeVisibility.tags
         ? taskTags.map((tag) => <TaskItemTagBadge key={tag.id} tag={tag} onTagClick={onTagClick} />)

@@ -16,7 +16,13 @@ import type { Account } from '$types/account';
 import type { Calendar } from '$types/calendar';
 import type { Filter } from '$types/filter';
 import type { PushSubscription } from '$types/push/webdav';
-import type { AccountSortConfig, CalendarSortConfig, SortConfig, TagSortConfig } from '$types/sort';
+import type {
+  AccountSortConfig,
+  CalendarSortConfig,
+  SortConfig,
+  TagSortConfig,
+  TaskGroupConfig,
+} from '$types/sort';
 import type { DataChangeListener } from '$types/store/state';
 import type { PendingDeletion } from '$types/store/sync';
 import type { Tag } from '$types/tag';
@@ -273,6 +279,11 @@ class Database {
 
   async setSortConfig(config: SortConfig) {
     await uiOps.setSortConfig(await this.conn(), config);
+    this.notify();
+  }
+
+  async setTaskGroupConfig(config: TaskGroupConfig) {
+    await uiOps.setTaskGroupConfig(await this.conn(), config);
     this.notify();
   }
 

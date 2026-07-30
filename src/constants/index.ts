@@ -5,6 +5,8 @@ import type {
   SortDirection,
   SortMode,
   TagSortMode,
+  TaskGroupConfig,
+  TaskGroupMode,
 } from '$types/sort';
 
 export const DEFAULT_DAY_OF_WEEK = 'monday';
@@ -38,6 +40,11 @@ export const DEFAULT_SORT_CONFIG = {
   mode: 'manual' as const satisfies SortMode,
   direction: 'asc' as const satisfies SortDirection,
 };
+
+export const DEFAULT_TASK_GROUP_CONFIG = {
+  mode: 'none',
+  direction: 'asc',
+} as const satisfies TaskGroupConfig;
 
 export const DEFAULT_ACCOUNT_SORT_CONFIG = {
   mode: 'manual' as const satisfies AccountSortMode,
@@ -83,6 +90,17 @@ export const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [
   { value: 'title', label: 'Title' },
   { value: 'modified', label: 'Last Modified' },
   { value: 'created', label: 'Created' },
+];
+
+export const TASK_GROUP_OPTIONS: Array<{ value: TaskGroupMode; label: string }> = [
+  { value: 'none', label: 'None' },
+  { value: 'status', label: 'Status' },
+  { value: 'priority', label: 'Priority' },
+  { value: 'calendar', label: 'Calendar' },
+  { value: 'due-date', label: 'Due Date' },
+  { value: 'start-date', label: 'Start Date' },
+  { value: 'created', label: 'Created' },
+  { value: 'modified', label: 'Last Modified' },
 ];
 
 export const DEFAULT_SHORTCUTS: KeyboardShortcut[] = [
