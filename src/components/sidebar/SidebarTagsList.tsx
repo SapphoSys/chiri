@@ -201,7 +201,7 @@ export const SidebarTagsList = ({
               No tags. Click + to add one!
             </div>
           ) : tagSortConfig.mode === 'manual' ? (
-            <div ref={tagsDragBoundsRef} className="space-y-1">
+            <div ref={tagsDragBoundsRef}>
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -210,14 +210,16 @@ export const SidebarTagsList = ({
                 onDragEnd={handleDragEnd}
                 onDragCancel={() => setIsAnyTagDragging(false)}
               >
-                <SortableContext
-                  items={sortedTags.map((t) => t.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {sortedTags.map((tag) => (
-                    <SidebarTagItem key={tag.id} {...sharedItemProps(tag)} sortable />
-                  ))}
-                </SortableContext>
+                <div className="space-y-1">
+                  <SortableContext
+                    items={sortedTags.map((t) => t.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {sortedTags.map((tag) => (
+                      <SidebarTagItem key={tag.id} {...sharedItemProps(tag)} sortable />
+                    ))}
+                  </SortableContext>
+                </div>
               </DndContext>
             </div>
           ) : (

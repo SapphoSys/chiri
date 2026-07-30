@@ -132,7 +132,7 @@ export const SidebarCalendarList = ({
     };
 
     return (
-      <div ref={calendarDragBoundsRef} className="space-y-1">
+      <div ref={calendarDragBoundsRef}>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -141,14 +141,16 @@ export const SidebarCalendarList = ({
           onDragEnd={handleDragEnd}
           onDragCancel={() => setIsAnyCalendarDragging(false)}
         >
-          <SortableContext
-            items={sortedCalendars.map((c) => c.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            {sortedCalendars.map((calendar) => (
-              <SidebarCalendarItem key={calendar.id} {...sharedItemProps(calendar)} sortable />
-            ))}
-          </SortableContext>
+          <div className="space-y-1">
+            <SortableContext
+              items={sortedCalendars.map((c) => c.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {sortedCalendars.map((calendar) => (
+                <SidebarCalendarItem key={calendar.id} {...sharedItemProps(calendar)} sortable />
+              ))}
+            </SortableContext>
+          </div>
         </DndContext>
       </div>
     );
