@@ -55,6 +55,7 @@ export default defineConfig({
             'src/tests/hooks/useSidebarModals.test.tsx',
             'src/tests/hooks/useSidebarActions.test.tsx',
             'src/tests/hooks/useAccountConnectionTestRunner.test.tsx',
+            'src/tests/hooks/ui/useDateTimePickerDraft.test.tsx',
             'src/tests/lib/toastManager.test.tsx',
             'src/tests/hooks/ui/useInitialFocusRef.test.ts',
             'src/tests/hooks/ui/usePreserveScrollOnWindowFocus.test.ts',
