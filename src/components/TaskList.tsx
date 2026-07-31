@@ -146,10 +146,6 @@ export const TaskList = () => {
 
       return {
         ...transform,
-        x: Math.min(
-          Math.max(transform.x, bounds.left - draggingNodeRect.left),
-          bounds.right - draggingNodeRect.right,
-        ),
         y: Math.min(
           Math.max(transform.y, bounds.top - draggingNodeRect.top),
           bounds.bottom - draggingNodeRect.bottom,
