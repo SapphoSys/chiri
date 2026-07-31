@@ -65,3 +65,40 @@ describe('enableSystemTrayExplicitlySet round-trip', () => {
     expect(imported?.enableSystemTrayExplicitlySet).toBe(false);
   });
 });
+
+describe('editor field migration', () => {
+  it('keeps legacy grouped visibility settings in sync', async () => {
+    const { importSettings } = await import('$context/settingsImportExport');
+    const { defaultState } = await import('$context/settingsDefaults');
+
+    const imported = importSettings(
+      JSON.stringify({
+        version: 1,
+        editorFieldVisibility: { status: false },
+        editorFieldOrder: ['status', 'description'],
+      }),
+      defaultState,
+    );
+
+    expect(imported?.editorFieldVisibility.status).toBe(false);
+    expect(imported?.editorFieldVisibility.progress).toBe(false);
+    expect(imported?.editorFieldOrder.slice(0, 2)).toEqual(['status', 'progress']);
+  });
+
+  it('keeps independently configured progress visibility intact', async () => {
+    const { importSettings } = await import('$context/settingsImportExport');
+    const { defaultState } = await import('$context/settingsDefaults');
+
+    const imported = importSettings(
+      JSON.stringify({
+        version: 1,
+        editorFieldVisibility: { status: false, progress: true },
+        editorFieldOrder: ['progress', 'status'],
+      }),
+      defaultState,
+    );
+
+    expect(imported?.editorFieldVisibility).toMatchObject({ status: false, progress: true });
+    expect(imported?.editorFieldOrder.slice(0, 2)).toEqual(['progress', 'status']);
+  });
+});

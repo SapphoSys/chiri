@@ -1,5 +1,6 @@
 export interface EditorFieldVisibility {
   status: boolean;
+  progress: boolean;
   description: boolean;
   url: boolean;
   dates: boolean;

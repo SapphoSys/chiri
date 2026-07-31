@@ -1,6 +1,7 @@
 import { DEFAULT_SHORTCUTS, MAX_NOTIFICATION_ACTIONS } from '$constants';
 import { loggers } from '$lib/logger';
 import type { NotificationActionSettings } from '$types/notifications/settings';
+import type { EditorFieldKey, EditorFieldVisibility } from '$types/settings/categories/editor';
 import type { WorkingDay } from '$types/settings/categories/scheduling';
 import type { SettingsState } from '$types/settings/state';
 import type { KeyboardShortcut } from '$types/shortcuts';
@@ -32,6 +33,38 @@ export const mergeOrder = <T extends string>(storedOrder: unknown, defaultOrder:
   const validStoredOrder = storedOrder.filter((key): key is T => defaultOrder.includes(key as T));
   const missingKeys = defaultOrder.filter((key) => !validStoredOrder.includes(key));
   return [...validStoredOrder, ...missingKeys];
+};
+
+export const mergeEditorFieldVisibility = (
+  storedVisibility: unknown,
+  defaultVisibility: EditorFieldVisibility,
+): EditorFieldVisibility => {
+  if (!storedVisibility || typeof storedVisibility !== 'object') return defaultVisibility;
+
+  const stored = storedVisibility as Partial<EditorFieldVisibility>;
+  return {
+    ...defaultVisibility,
+    ...stored,
+    // Before progress became its own field, this preference controlled both
+    // status and progress. Preserve that behavior for existing settings.
+    progress: 'progress' in stored ? Boolean(stored.progress) : Boolean(stored.status),
+  };
+};
+
+export const mergeEditorFieldOrder = (
+  storedOrder: unknown,
+  defaultOrder: EditorFieldKey[],
+): EditorFieldKey[] => {
+  const mergedOrder = mergeOrder(storedOrder, defaultOrder);
+  if (!Array.isArray(storedOrder) || storedOrder.includes('progress')) return mergedOrder;
+
+  const progressIndex = mergedOrder.indexOf('progress');
+  const statusIndex = mergedOrder.indexOf('status');
+  if (progressIndex === -1 || statusIndex === -1) return mergedOrder;
+
+  const orderWithoutProgress: EditorFieldKey[] = mergedOrder.filter((key) => key !== 'progress');
+  orderWithoutProgress.splice(statusIndex + 1, 0, 'progress');
+  return orderWithoutProgress;
 };
 
 const isWorkingDay = (value: unknown): value is WorkingDay =>
@@ -156,10 +189,14 @@ export const importSettings = (json: string, defaultState: SettingsState): Setti
       ? mergeShortcuts(data.keyboardShortcuts, DEFAULT_SHORTCUTS)
       : defaultState.keyboardShortcuts;
 
-    newState.editorFieldVisibility = data.editorFieldVisibility
-      ? { ...defaultState.editorFieldVisibility, ...data.editorFieldVisibility }
-      : defaultState.editorFieldVisibility;
-    newState.editorFieldOrder = mergeOrder(data.editorFieldOrder, defaultState.editorFieldOrder);
+    newState.editorFieldVisibility = mergeEditorFieldVisibility(
+      data.editorFieldVisibility,
+      defaultState.editorFieldVisibility,
+    );
+    newState.editorFieldOrder = mergeEditorFieldOrder(
+      data.editorFieldOrder,
+      defaultState.editorFieldOrder,
+    );
 
     const notificationActions = data.notificationActions
       ? { ...defaultState.notificationActions, ...data.notificationActions }

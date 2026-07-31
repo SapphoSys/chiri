@@ -11,6 +11,7 @@ import { TaskEditorDescription } from '$components/taskEditor/TaskEditorDescript
 import { TaskEditorFooter } from '$components/taskEditor/TaskEditorFooter';
 import { TaskEditorHeader } from '$components/taskEditor/TaskEditorHeader';
 import { TaskEditorPriority } from '$components/taskEditor/TaskEditorPriority';
+import { TaskEditorProgress } from '$components/taskEditor/TaskEditorProgress';
 import { TaskEditorReadOnlyNotice } from '$components/taskEditor/TaskEditorReadOnlyNotice';
 import { TaskEditorReminders } from '$components/taskEditor/TaskEditorReminders';
 import { TaskEditorRepeat } from '$components/taskEditor/TaskEditorRepeat';
@@ -52,6 +53,7 @@ interface TaskEditorProps {
 
 const ALL_EDITOR_FIELD_KEYS: EditorFieldKey[] = [
   'status',
+  'progress',
   'description',
   'url',
   'dates',
@@ -250,9 +252,12 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
   const editorFieldRenderers: Record<EditorFieldKey, () => ReactNode> = {
     status: () =>
       isReadOnly || editorFieldVisibility.status ? (
-        <TaskEditorStatus
+        <TaskEditorStatus task={task} onStatusChange={handleStatusChange} readOnly={isReadOnly} />
+      ) : null,
+    progress: () =>
+      isReadOnly || editorFieldVisibility.progress ? (
+        <TaskEditorProgress
           task={task}
-          onStatusChange={handleStatusChange}
           onCommitPercent={commitPercentComplete}
           readOnly={isReadOnly}
         />

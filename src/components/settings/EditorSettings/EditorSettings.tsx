@@ -17,6 +17,7 @@ import FolderSync from 'lucide-react/icons/folder-sync';
 import Link from 'lucide-react/icons/link';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
 import Tag from 'lucide-react/icons/tag';
+import Timer from 'lucide-react/icons/timer';
 import {
   EditorSettingsSortableFields,
   type FieldConfig,
@@ -27,9 +28,15 @@ import type { EditorFieldKey } from '$types/settings/categories/editor';
 const FIELDS: FieldConfig[] = [
   {
     key: 'status',
-    label: 'Status & progress',
-    description: 'Status buttons and progress slider',
+    label: 'Status',
+    description: 'Status buttons for the task',
     icon: <Activity className="h-4 w-4" />,
+  },
+  {
+    key: 'progress',
+    label: 'Progress',
+    description: 'Progress slider for the task',
+    icon: <Timer className="h-4 w-4" />,
   },
   {
     key: 'description',

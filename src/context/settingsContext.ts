@@ -5,6 +5,8 @@ import {
   clampSnoozeDurations,
   exportSettings,
   importSettings,
+  mergeEditorFieldOrder,
+  mergeEditorFieldVisibility,
   mergeOrder,
   mergeShortcuts,
 } from '$context/settingsImportExport';
@@ -83,10 +85,10 @@ const loadFromStorage = (): { state: SettingsState; migrated: boolean } => {
         loadedState.quickTimePresets = defaultState.quickTimePresets;
       }
 
-      loadedState.editorFieldVisibility = {
-        ...defaultState.editorFieldVisibility,
-        ...loadedState.editorFieldVisibility,
-      };
+      loadedState.editorFieldVisibility = mergeEditorFieldVisibility(
+        loadedState.editorFieldVisibility,
+        defaultState.editorFieldVisibility,
+      );
       loadedState.notificationActions = {
         ...defaultState.notificationActions,
         ...loadedState.notificationActions,
@@ -103,7 +105,7 @@ const loadFromStorage = (): { state: SettingsState; migrated: boolean } => {
         ...loadedState.taskBadgeVisibility,
       };
 
-      loadedState.editorFieldOrder = mergeOrder(
+      loadedState.editorFieldOrder = mergeEditorFieldOrder(
         loadedState.editorFieldOrder,
         defaultState.editorFieldOrder,
       );

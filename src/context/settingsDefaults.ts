@@ -85,6 +85,7 @@ export const defaultState: SettingsState = {
   quietHoursEnd: 8,
   editorFieldVisibility: {
     status: true,
+    progress: true,
     description: true,
     url: true,
     dates: true,
@@ -97,6 +98,7 @@ export const defaultState: SettingsState = {
   },
   editorFieldOrder: [
     'status',
+    'progress',
     'description',
     'url',
     'dates',
