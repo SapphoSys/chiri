@@ -11,7 +11,7 @@ import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
 import { HoverFlyout, HoverFlyoutGroup } from '$components/HoverFlyout';
 import { SortDirectionButton } from '$components/header/SortDirectionButton';
 import { SortOptionButton } from '$components/header/SortOptionsButton';
-import { TaskBatchActionsBar } from '$components/header/TaskBatchActionsBar';
+import { TaskBatchActionsBar } from '$components/header/TaskBatchActionsBar/TaskBatchActionsBar';
 import { TaskGroupOptionButton } from '$components/header/TaskGroupOptionButton';
 import { ViewMenuCheckbox } from '$components/header/ViewMenuCheckbox';
 import { Tooltip } from '$components/Tooltip';
