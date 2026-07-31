@@ -55,7 +55,6 @@ export const ReviewStep = ({
 
   return (
     <div className="space-y-4">
-      {/* Summary */}
       <div className="flex items-center justify-between rounded-lg bg-surface-50 p-3 dark:bg-surface-700/50">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-200 dark:bg-surface-700">
@@ -89,7 +88,6 @@ export const ReviewStep = ({
         )}
       </div>
 
-      {/* Progress bar during import */}
       {isImporting && (
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
@@ -107,7 +105,6 @@ export const ReviewStep = ({
         </div>
       )}
 
-      {/* Task list preview */}
       <div className="space-y-1">
         <button
           type="button"
@@ -135,7 +132,6 @@ export const ReviewStep = ({
                       : ''
                 }`}
               >
-                {/* Status indicator */}
                 <div className="shrink-0">
                   {task.importStatus === 'importing' ? (
                     <Loader2 className="h-4 w-4 text-primary-500 motion-safe:animate-spin" />
@@ -150,7 +146,6 @@ export const ReviewStep = ({
                   )}
                 </div>
 
-                {/* Task title */}
                 <span
                   className={`flex-1 truncate ${
                     task.completed
@@ -161,7 +156,6 @@ export const ReviewStep = ({
                   {task.title || 'Untitled'}
                 </span>
 
-                {/* Metadata badges */}
                 <div className="flex shrink-0 items-center gap-1.5">
                   {task.priority && task.priority !== 'none' && (
                     <span

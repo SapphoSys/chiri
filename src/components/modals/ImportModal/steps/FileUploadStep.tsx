@@ -81,8 +81,7 @@ export const FileUploadStep = ({
 
   return (
     <div className="space-y-3">
-      {/* Drop Zone - clicking opens file picker, drag/drop handled directly */}
-      {/* biome-ignore lint/a11y/useSemanticElements: Drop zone requires div for drag-drop functionality */}
+      {/* biome-ignore lint/a11y/useSemanticElements: drop zone requires div for drag-drop functionality */}
       <div
         role="button"
         tabIndex={0}
@@ -152,7 +151,6 @@ export const FileUploadStep = ({
         )}
       </div>
 
-      {/* Error Display */}
       {error && (
         <div className="flex items-start gap-2 rounded-lg border border-semantic-error/30 bg-semantic-error/10 p-3 text-sm text-surface-700 dark:text-surface-300">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-semantic-error" />
@@ -160,7 +158,6 @@ export const FileUploadStep = ({
         </div>
       )}
 
-      {/* Parse Warnings */}
       {parseErrors.length > 0 && (
         <div className="rounded-lg border border-semantic-warning/30 bg-semantic-warning/10 p-3 text-sm text-surface-700 dark:text-surface-300">
           <div className="flex items-start gap-2">

@@ -1,24 +1,13 @@
-import Check from 'lucide-react/icons/check';
 import ChevronLeft from 'lucide-react/icons/chevron-left';
-import Loader2 from 'lucide-react/icons/loader-2';
-import Upload from 'lucide-react/icons/upload';
 import { type DragEvent, useCallback, useEffect, useState } from 'react';
-import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
-import { DestinationStep } from '$components/modals/ImportModal/DestinationStep';
-import { FileUploadStep } from '$components/modals/ImportModal/FileUploadStep';
-import { ReviewStep } from '$components/modals/ImportModal/ReviewStep';
-import { type ImportStep, StepIndicator } from '$components/modals/ImportModal/StepIndicator';
+import { ImportModalBody } from '$components/modals/ImportModal/ImportModalBody';
+import { ImportModalFooter } from '$components/modals/ImportModal/ImportModalFooter';
+import type { ImportStep } from '$components/modals/ImportModal/StepIndicator';
+import { useImportExecution } from '$hooks/import/useImportExecution';
+import { useImportFile } from '$hooks/import/useImportFile';
 import { useAccounts } from '$hooks/queries/useAccounts';
-import { useCreateTask } from '$hooks/queries/useTasks';
-import { createImportedTask, parseIcsFile, parseJsonTasksFile } from '$lib/ical/import';
-import { loggers } from '$lib/logger';
 import type { Calendar } from '$types/calendar';
-import type { ParsedTaskWithStatus } from '$types/task/import';
-import type { Task } from '$types/task/model';
-import { generateUUID, pluralize } from '$utils/misc';
-
-const log = loggers.import;
 
 interface ImportModalProps {
   isOpen: boolean;
@@ -30,218 +19,76 @@ interface ImportModalProps {
 
 export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: ImportModalProps) => {
   const { data: accounts = [] } = useAccounts();
-  const createTaskMutation = useCreateTask('imported');
-
-  // state
   const [step, setStep] = useState<ImportStep>('upload');
-  const [fileName, setFileName] = useState('');
-  const [parsedTasks, setParsedTasks] = useState<ParsedTaskWithStatus[]>([]);
   const [selectedAccountId, setSelectedAccountId] = useState('');
   const [selectedCalendarId, setSelectedCalendarId] = useState('');
-  const [error, setError] = useState('');
-  const [parseErrors, setParseErrors] = useState<string[]>([]);
-  const [isImporting, setIsImporting] = useState(false);
-  const [importProgress, setImportProgress] = useState(0);
-  const [importSuccess, setImportSuccess] = useState(false);
   const [isDraggingInDropZone, setIsDraggingInDropZone] = useState(false);
 
-  // get all calendars and find selected calendar
+  const {
+    fileName,
+    parsedTasks,
+    error,
+    parseErrors,
+    handleFileContent,
+    handleFileSelect,
+    resetFile,
+    setError,
+    setParsedTasks,
+  } = useImportFile();
+
   const allCalendars: Calendar[] = accounts.flatMap((account) => account.calendars);
   const selectedCalendar = allCalendars.find((c) => c.id === selectedCalendarId);
-
-  // reset state when modal closes (including via parent setting isOpen to false)
-  useEffect(() => {
-    if (!isOpen) {
-      // reset all state when modal is closed
-      setStep('upload');
-      setParsedTasks([]);
-      setFileName('');
-      setError('');
-      setParseErrors([]);
-      setImportSuccess(false);
-      setImportProgress(0);
-      setIsImporting(false);
-      setIsDraggingInDropZone(false);
-      setSelectedAccountId('');
-      setSelectedCalendarId('');
-
-      // clear App's drag state if user was dragging when modal closed
-      onFileDrop?.();
-    }
-  }, [isOpen, onFileDrop]);
-
-  const handleFileContent = useCallback((name: string, content: string) => {
-    setFileName(name);
-    setError('');
-    setParseErrors([]);
-    setImportSuccess(false);
-
-    let tasks: Partial<Task>[] = [];
-    const lowerName = name.toLowerCase();
-
-    try {
-      if (lowerName.endsWith('.ics') || lowerName.endsWith('.ical')) {
-        tasks = parseIcsFile(content);
-      } else if (lowerName.endsWith('.json')) {
-        tasks = parseJsonTasksFile(content);
-      } else {
-        // try to detect format by content
-        if (content.trim().startsWith('BEGIN:VCALENDAR')) {
-          tasks = parseIcsFile(content);
-        } else if (content.trim().startsWith('[') || content.trim().startsWith('{')) {
-          tasks = parseJsonTasksFile(content);
-        } else {
-          setError('Unsupported file format. Please use .ics, .ical, or .json files.');
-          return;
-        }
-      }
-    } catch (err) {
-      log.error('Error parsing file:', err);
-      setError('Failed to parse file. The file may be corrupted or in an unsupported format.');
-      return;
-    }
-
-    if (tasks.length === 0) {
-      setError('No tasks found in the file.');
-      return;
-    }
-
-    setParsedTasks(tasks.map((t) => ({ ...t, importStatus: 'pending' })));
-    // stay on upload step - let user click Continue to proceed
-  }, []);
-
-  // handle preloaded file
-  useEffect(() => {
-    if (isOpen && preloadedFile) {
-      handleFileContent(preloadedFile.name, preloadedFile.content);
-    }
-  }, [isOpen, preloadedFile, handleFileContent]);
-
-  const handleFileSelect = useCallback(
-    async (file: File) => {
-      try {
-        const content = await file.text();
-        handleFileContent(file.name, content);
-      } catch (err) {
-        setError('Failed to read file.');
-        log.error('Failed to read file:', err);
-      }
-    },
-    [handleFileContent],
-  );
 
   const handleDestinationSelect = useCallback((accountId: string, calendarId: string) => {
     setSelectedAccountId(accountId);
     setSelectedCalendarId(calendarId);
   }, []);
 
-  const handleImport = async () => {
-    if (!selectedCalendarId || parsedTasks.length === 0) return;
-
-    setIsImporting(true);
-    setImportProgress(0);
-    setError('');
-    setStep('review');
-
-    try {
-      const selectedCal = allCalendars.find((c) => c.id === selectedCalendarId);
-      if (!selectedCal) {
-        setError('Selected calendar not found.');
-        setIsImporting(false);
-        return;
-      }
-
-      // create UID mapping for parent-child relationships
-      const uidMap = new Map<string, string>();
-      for (const task of parsedTasks) {
-        if (task.uid) {
-          uidMap.set(task.uid, `${generateUUID()}@chiri`);
-        }
-      }
-
-      // import tasks with progress tracking
-      const totalTasks = parsedTasks.length;
-      const updatedTasks = [...parsedTasks];
-
-      for (let i = 0; i < parsedTasks.length; i++) {
-        const partialTask = parsedTasks[i];
-
-        // update status to importing
-        updatedTasks[i] = { ...updatedTasks[i], importStatus: 'importing' };
-        setParsedTasks([...updatedTasks]);
-
-        try {
-          const task = createImportedTask(
-            partialTask,
-            uidMap,
-            selectedAccountId,
-            selectedCalendarId,
-          );
-          createTaskMutation.mutate(task);
-
-          // update status to success
-          updatedTasks[i] = { ...updatedTasks[i], importStatus: 'success' };
-        } catch (err) {
-          log.error(`Failed to import task: ${partialTask.title}`, err);
-          updatedTasks[i] = {
-            ...updatedTasks[i],
-            importStatus: 'error',
-            importError: 'Failed to create task',
-          };
-        }
-
-        setParsedTasks([...updatedTasks]);
-        setImportProgress(((i + 1) / totalTasks) * 100);
-
-        // small delay for visual feedback
-        if (totalTasks > 1) {
-          await new Promise((resolve) => setTimeout(resolve, 50));
-        }
-      }
-
-      setImportSuccess(true);
-
-      // auto-close after success
-      setTimeout(() => {
-        handleClose();
-      }, 1500);
-    } catch (err) {
-      setError('Failed to import tasks.');
-      log.error('Failed to import tasks:', err);
-    } finally {
-      setIsImporting(false);
-    }
-  };
-
-  const handleClose = useCallback(() => {
-    // reset all state
+  const resetModal = useCallback(() => {
     setStep('upload');
-    setParsedTasks([]);
-    setFileName('');
-    setError('');
-    setParseErrors([]);
-    setImportSuccess(false);
-    setImportProgress(0);
-    setIsImporting(false);
+    resetFile();
     setIsDraggingInDropZone(false);
     setSelectedAccountId('');
     setSelectedCalendarId('');
-
-    // clear App's drag state if user was dragging when modal closed
     onFileDrop?.();
+  }, [onFileDrop, resetFile]);
 
+  const handleClose = useCallback(() => {
+    resetModal();
     onClose();
-  }, [onClose, onFileDrop]);
+  }, [onClose, resetModal]);
+
+  const { isImporting, importProgress, importSuccess, handleImport, resetImport } =
+    useImportExecution({
+      allCalendars,
+      parsedTasks,
+      selectedAccountId,
+      selectedCalendarId,
+      onImportStart: () => setStep('review'),
+      onClose: handleClose,
+      onError: setError,
+      onTasksChange: setParsedTasks,
+    });
+
+  useEffect(() => {
+    if (!isOpen) {
+      resetModal();
+      resetImport();
+    }
+  }, [isOpen, resetImport, resetModal]);
+
+  useEffect(() => {
+    if (isOpen && preloadedFile) {
+      handleFileContent(preloadedFile.name, preloadedFile.content);
+    }
+  }, [isOpen, preloadedFile, handleFileContent]);
 
   const handleReset = useCallback(() => {
     setStep('upload');
-    setParsedTasks([]);
-    setFileName('');
-    setError('');
-    setParseErrors([]);
+    resetFile();
     setSelectedAccountId('');
     setSelectedCalendarId('');
-  }, []);
+  }, [resetFile]);
 
   const handleBack = useCallback(() => {
     if (step === 'destination') {
@@ -251,22 +98,20 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
     }
   }, [step]);
 
-  const canProceed = () => {
-    if (step === 'upload') return parsedTasks.length > 0;
-    if (step === 'destination') return !!selectedCalendarId;
-    return false;
-  };
+  const canProceed =
+    (step === 'upload' && parsedTasks.length > 0) ||
+    (step === 'destination' && !!selectedCalendarId);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (step === 'upload' && parsedTasks.length > 0) {
       setStep('destination');
     } else if (step === 'destination' && selectedCalendarId) {
       setStep('review');
     }
-  };
+  }, [parsedTasks.length, selectedCalendarId, step]);
 
   // handle drops anywhere on the modal (only for preventing default behavior)
-  const handleModalDrop = useCallback(async (e: DragEvent) => {
+  const handleModalDrop = useCallback((e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -274,19 +119,16 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
     // this just prevents the browser from trying to open the file
   }, []);
 
-  // handle drag over the modal - just prevent default
   const handleModalDragOver = useCallback((e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
   }, []);
 
-  // handle drag leave from modal - just prevent default
   const handleModalDragLeave = useCallback((e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
   }, []);
 
-  // callbacks for drop zone to update drag state
   const handleDropZoneDragEnter = useCallback(() => {
     setIsDraggingInDropZone(true);
   }, []);
@@ -295,7 +137,6 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
     setIsDraggingInDropZone(false);
   }, []);
 
-  // handle drops in the drop zone only
   const handleDropZoneDrop = useCallback(
     async (e: DragEvent) => {
       e.preventDefault();
@@ -304,19 +145,14 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
       const file = e.dataTransfer?.files?.[0];
       if (!file) return;
 
-      // process the file
       await handleFileSelect(file);
 
-      // clear the app's drag state
       onFileDrop?.();
     },
     [handleFileSelect, onFileDrop],
   );
 
   if (!isOpen) return null;
-
-  // show drop zone highlight only when dragging directly over the drop zone
-  const showDropZoneHighlight = isDraggingInDropZone && step === 'upload';
 
   return (
     <ModalWrapper
@@ -345,98 +181,53 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
         ) : undefined
       }
       footerLeft={
-        <div className="text-sm text-surface-500 dark:text-surface-400">
-          {parsedTasks.length > 0 && step !== 'review' && (
-            <span>
-              {parsedTasks.length} {pluralize(parsedTasks.length, 'task')} selected
-            </span>
-          )}
-        </div>
+        <ImportModalFooter
+          placement="left"
+          step={step}
+          taskCount={parsedTasks.length}
+          isImporting={isImporting}
+          importSuccess={importSuccess}
+          canProceed={canProceed}
+          onClose={handleClose}
+          onNext={handleNext}
+          onImport={handleImport}
+        />
       }
       footer={
-        <>
-          {!importSuccess && (
-            <ModalButton variant="ghost" onClick={handleClose} disabled={isImporting}>
-              Cancel
-            </ModalButton>
-          )}
-
-          {step !== 'review' ? (
-            <ModalButton onClick={handleNext} disabled={!canProceed()}>
-              Continue
-            </ModalButton>
-          ) : (
-            <ModalButton
-              onClick={handleImport}
-              disabled={isImporting || importSuccess || parsedTasks.length === 0}
-            >
-              {importSuccess ? (
-                <>
-                  <Check className="h-4 w-4" />
-                  Imported!
-                </>
-              ) : isImporting ? (
-                <>
-                  <Loader2 className="h-4 w-4 motion-safe:animate-spin" />
-                  Importing...
-                </>
-              ) : (
-                <>
-                  <Upload className="h-4 w-4" />
-                  Import {parsedTasks.length} {pluralize(parsedTasks.length, 'Task')}
-                </>
-              )}
-            </ModalButton>
-          )}
-        </>
+        <ImportModalFooter
+          placement="main"
+          step={step}
+          taskCount={parsedTasks.length}
+          isImporting={isImporting}
+          importSuccess={importSuccess}
+          canProceed={canProceed}
+          onClose={handleClose}
+          onNext={handleNext}
+          onImport={handleImport}
+        />
       }
     >
-      <div className="flex h-full min-h-0 flex-col">
-        {/* Step Indicator */}
-        <div className="shrink-0 border-surface-100 border-b px-4 py-3 dark:border-surface-700/50">
-          <StepIndicator
-            currentStep={step}
-            hasFile={parsedTasks.length > 0}
-            hasDestination={!!selectedCalendarId}
-          />
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 space-y-4 overflow-y-auto p-4">
-          {step === 'upload' && (
-            <FileUploadStep
-              fileName={fileName}
-              isDraggingOver={showDropZoneHighlight}
-              onFileSelect={handleFileSelect}
-              onReset={handleReset}
-              onDrop={handleDropZoneDrop}
-              onDragEnter={handleDropZoneDragEnter}
-              onDragLeave={handleDropZoneDragLeave}
-              onFileError={setError}
-              error={error}
-              parseErrors={parseErrors}
-            />
-          )}
-
-          {step === 'destination' && (
-            <DestinationStep
-              accounts={accounts}
-              selectedAccountId={selectedAccountId}
-              selectedCalendarId={selectedCalendarId}
-              onSelect={handleDestinationSelect}
-            />
-          )}
-
-          {step === 'review' && (
-            <ReviewStep
-              tasks={parsedTasks}
-              selectedCalendar={selectedCalendar}
-              isImporting={isImporting}
-              importProgress={importProgress}
-            />
-          )}
-        </div>
-      </div>
+      <ImportModalBody
+        step={step}
+        fileName={fileName}
+        parsedTasks={parsedTasks}
+        accounts={accounts}
+        selectedAccountId={selectedAccountId}
+        selectedCalendarId={selectedCalendarId}
+        selectedCalendar={selectedCalendar}
+        isImporting={isImporting}
+        importProgress={importProgress}
+        isDraggingInDropZone={isDraggingInDropZone && step === 'upload'}
+        error={error}
+        parseErrors={parseErrors}
+        onFileSelect={handleFileSelect}
+        onReset={handleReset}
+        onDrop={handleDropZoneDrop}
+        onDragEnter={handleDropZoneDragEnter}
+        onDragLeave={handleDropZoneDragLeave}
+        onFileError={setError}
+        onDestinationSelect={handleDestinationSelect}
+      />
     </ModalWrapper>
   );
 };
