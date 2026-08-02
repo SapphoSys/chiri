@@ -42,6 +42,7 @@ export interface SettingsState {
   preferCalDAVCalendarForNewTasks: boolean;
   keyboardShortcuts: KeyboardShortcut[];
   enableSystemTray: boolean;
+  simulateBootstrapErrorOnStartup: boolean;
   checkForUpdatesAutomatically: boolean;
   defaultPriority: Priority;
   defaultStatus: Status;
@@ -172,6 +173,7 @@ interface SettingsActions {
   setSidebarSectionOrder: (order: SidebarSectionKey[]) => void;
   setDefaultLaunchView: (view: DefaultLaunchView) => void;
   setEnableSystemTray: (enabled: boolean) => void;
+  setSimulateBootstrapErrorOnStartup: (enabled: boolean) => void;
   setEnableSystemTrayExplicitlySet: (explicitlySet: boolean) => void;
   setSystemTrayAppliedValue: (value: boolean) => void;
   setHideDockIconWhenWindowClosed: (enabled: boolean) => void;

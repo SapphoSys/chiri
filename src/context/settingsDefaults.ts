@@ -62,6 +62,7 @@ export const defaultState: SettingsState = {
   sidebarSectionOrder: ['filters', 'local', 'accounts', 'tags'],
   defaultLaunchView: 'last-view',
   enableSystemTray: true,
+  simulateBootstrapErrorOnStartup: false,
   systemTrayAppliedValue: true,
   hideDockIconWhenWindowClosed: true,
   showWindowOnNormalLaunch: true,

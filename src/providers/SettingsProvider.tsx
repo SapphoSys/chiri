@@ -227,6 +227,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     (enabled: boolean) => settingsStore.setEnableSystemTray(enabled),
     [],
   );
+  const setSimulateBootstrapErrorOnStartup = useCallback(
+    (enabled: boolean) => settingsStore.setSimulateBootstrapErrorOnStartup(enabled),
+    [],
+  );
   const setEnableSystemTrayExplicitlySet = useCallback(
     (explicitlySet: boolean) => settingsStore.setEnableSystemTrayExplicitlySet(explicitlySet),
     [],
@@ -449,6 +453,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     setSidebarSectionOrder,
     setDefaultLaunchView,
     setEnableSystemTray,
+    setSimulateBootstrapErrorOnStartup,
     setEnableSystemTrayExplicitlySet,
     setSystemTrayAppliedValue,
     setHideDockIconWhenWindowClosed,

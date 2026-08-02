@@ -149,17 +149,7 @@ export const initializeApp = async () => {
   // is present on the session bus.
   await applyTrayDefaultForGNOME();
 
-  // initialize system tray based on settings
-  const enableSystemTray = settingsStore.getState().enableSystemTray;
-
-  try {
-    await invoke('initialize_tray', { enabled: enableSystemTray });
-    log.debug(`System tray initialized (enabled: ${enableSystemTray})`);
-    // sync the applied value with the current setting on app start
-    settingsStore.setSystemTrayAppliedValue(enableSystemTray);
-  } catch (error) {
-    log.error('Failed to initialize system tray:', error);
-  }
+  await initializeTray();
 
   log.debug('Getting UI state...');
   const uiState = await db.getUIState();
@@ -188,6 +178,28 @@ export const initializeApp = async () => {
   }
 
   log.info('Application initialization finished');
+};
+
+/**
+ * initialize the tray even when normal app startup has failed. the bootstrap
+ * error screen is still a usable app state and must retain its tray recovery
+ * path on every platform
+ */
+export const initializeTray = async () => {
+  const enableSystemTray = settingsStore.getState().enableSystemTray;
+
+  if (!enableSystemTray) {
+    settingsStore.setSystemTrayAppliedValue(false);
+    return;
+  }
+
+  try {
+    await invoke('initialize_tray', { enabled: true });
+    log.debug('System tray initialized for recovery');
+    settingsStore.setSystemTrayAppliedValue(true);
+  } catch (error) {
+    log.error('Failed to initialize system tray:', error);
+  }
 };
 
 export const showWindow = async (delay: number = 200): Promise<void> => {

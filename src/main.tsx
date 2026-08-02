@@ -4,14 +4,17 @@ import ReactDOM, { type Root } from 'react-dom/client';
 import { BootstrapErrorScreen } from '$components/BootstrapErrorScreen';
 import { ErrorBoundary } from '$components/ErrorBoundary';
 import { GlobalDragRegion } from '$components/GlobalDragRegion';
+import { settingsStore } from '$context/settingsContext';
 import {
   applyHiddenWindowDockIconState,
   deleteDatabase,
   forceShowWindow,
   initializeApp,
+  initializeTray,
   shouldShowWindowOnStartup,
   showWindow,
 } from '$lib/bootstrap';
+import { BOOTSTRAP_ERROR_SIMULATION_EVENT } from '$lib/bootstrapErrorSimulation';
 import { loggers } from '$lib/logger';
 import { queryClient } from '$lib/queryClient';
 import { ConfirmDialogProvider } from '$providers/ConfirmDialogProvider';
@@ -81,7 +84,15 @@ const renderBootstrapError = (error: unknown) => {
 };
 
 const bootstrap = async () => {
+  const simulateBootstrapErrorOnStartup = settingsStore.getState().simulateBootstrapErrorOnStartup;
+
   await initializeApp();
+
+  if (simulateBootstrapErrorOnStartup) {
+    settingsStore.setSimulateBootstrapErrorOnStartup(false);
+    throw new Error('Simulated critical startup error');
+  }
+
   renderApp();
   if (await shouldShowWindowOnStartup()) {
     await showWindow();
@@ -90,8 +101,20 @@ const bootstrap = async () => {
   }
 };
 
+window.addEventListener(BOOTSTRAP_ERROR_SIMULATION_EVENT, () => {
+  log.warn('Simulating critical startup error from diagnostics controls');
+  void (async () => {
+    await initializeTray();
+    renderBootstrapError(new Error('Simulated critical startup error'));
+    await forceShowWindow().catch((error) => {
+      log.error('Failed to show simulated bootstrap error window:', error);
+    });
+  })();
+});
+
 await bootstrap().catch(async (error) => {
   log.error('Failed to initialize app:', error);
+  await initializeTray();
   renderBootstrapError(error);
   // still show window so user can see the error
   await forceShowWindow().catch((windowError) => {

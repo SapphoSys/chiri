@@ -1,5 +1,7 @@
 import { appLogDir } from '@tauri-apps/api/path';
 import { openPath } from '@tauri-apps/plugin-opener';
+import { relaunch } from '@tauri-apps/plugin-process';
+import Bug from 'lucide-react/icons/bug';
 import Check from 'lucide-react/icons/check';
 import Copy from 'lucide-react/icons/copy';
 import Download from 'lucide-react/icons/download';
@@ -10,6 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useConfirmDialog } from '$context/confirmDialogContext';
 import { useSettingsStore } from '$context/settingsContext';
 import { useDatabaseDeletion } from '$hooks/deletion/useDatabaseDeletion';
+import { requestBootstrapErrorSimulation } from '$lib/bootstrapErrorSimulation';
 import { createDiagnosticsReport, createLogExport, getDatabaseDirectory } from '$lib/diagnostics';
 import { setEditorOpen } from '$lib/store/ui';
 import { exportSettingsToFile, importSettingsFromFile } from '$utils/settings';
@@ -19,7 +22,13 @@ interface DataSettingsProps {
 }
 
 export const DataSettings = ({ onClose }: DataSettingsProps) => {
-  const { exportSettings, importSettings, resetSettings } = useSettingsStore();
+  const {
+    exportSettings,
+    importSettings,
+    resetSettings,
+    simulateBootstrapErrorOnStartup,
+    setSimulateBootstrapErrorOnStartup,
+  } = useSettingsStore();
   const { confirm, close } = useConfirmDialog();
   const { deleteLocalDatabase } = useDatabaseDeletion();
   const [diagnosticsMessage, setDiagnosticsMessage] = useState<string | null>(null);
@@ -106,6 +115,14 @@ export const DataSettings = ({ onClose }: DataSettingsProps) => {
       setDiagnosticsMessage('Logs exported.');
     } catch (error) {
       setDiagnosticsMessage(`Could not export logs: ${getErrorMessage(error)}`);
+    }
+  };
+
+  const handleRestart = async () => {
+    try {
+      await relaunch();
+    } catch (error) {
+      setDiagnosticsMessage(`Could not restart the app: ${getErrorMessage(error)}`);
     }
   };
 
@@ -242,6 +259,61 @@ export const DataSettings = ({ onClose }: DataSettingsProps) => {
             <p className="text-surface-500 text-xs dark:text-surface-400">{diagnosticsMessage}</p>
           </div>
         ) : null}
+      </div>
+
+      <div className="overflow-hidden rounded-lg border border-semantic-warning/40 bg-semantic-warning/5 dark:border-semantic-warning/50 dark:bg-semantic-warning/10">
+        <div className="flex items-center justify-between gap-4 p-4">
+          <div className="min-w-0">
+            <p className="text-sm text-surface-700 dark:text-surface-300">
+              Simulate critical startup error
+            </p>
+            <p className="text-surface-500 text-xs dark:text-surface-400">
+              Replace the app with the startup error screen to test tray recovery.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={requestBootstrapErrorSimulation}
+            className="flex shrink-0 items-center gap-2 rounded-lg bg-semantic-warning px-3 py-1.5 font-medium text-sm text-surface-900 outline-hidden transition-colors hover:opacity-90 focus-visible:ring-2 focus-visible:ring-semantic-warning focus-visible:ring-inset"
+          >
+            <Bug className="h-4 w-4" />
+            Simulate now
+          </button>
+        </div>
+
+        <div className="border-semantic-warning/30 border-t dark:border-semantic-warning/40" />
+
+        <label className="flex items-center justify-between gap-4 p-4">
+          <div className="min-w-0">
+            <p className="text-sm text-surface-700 dark:text-surface-300">
+              Simulate on next startup
+            </p>
+            <p className="text-surface-500 text-xs dark:text-surface-400">
+              Runs once after the next restart, then turns itself off automatically.
+            </p>
+          </div>
+          <input
+            type="checkbox"
+            checked={simulateBootstrapErrorOnStartup}
+            onChange={(event) => setSimulateBootstrapErrorOnStartup(event.target.checked)}
+            className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+          />
+        </label>
+
+        {simulateBootstrapErrorOnStartup && (
+          <div className="flex items-center justify-between gap-3 border-semantic-warning/30 border-t px-4 py-3 dark:border-semantic-warning/40">
+            <p className="text-surface-600 text-xs dark:text-surface-400">
+              Restart the app to run the simulation.
+            </p>
+            <button
+              type="button"
+              onClick={() => void handleRestart()}
+              className="shrink-0 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
+            >
+              Restart now
+            </button>
+          </div>
+        )}
       </div>
 
       <h4 className="font-semibold text-sm text-surface-700 dark:text-surface-300">Reset</h4>
