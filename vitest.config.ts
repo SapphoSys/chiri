@@ -60,6 +60,7 @@ export default defineConfig({
             'src/tests/components/AccountModal.test.tsx',
             'src/tests/components/ImportModal.test.tsx',
             'src/tests/components/TaskBatchActionsBar.test.tsx',
+            'src/tests/components/HeaderViewMenu.test.tsx',
             'src/tests/hooks/ui/useTaskEditorActions.test.tsx',
             'src/tests/lib/toastManager.test.tsx',
             'src/tests/hooks/ui/useInitialFocusRef.test.ts',
