@@ -145,7 +145,6 @@ export const importSettings = (json: string, defaultState: SettingsState): Setti
       'showSidebarTaskCounts',
       'defaultLaunchView',
       'enableSystemTray',
-      'simulateBootstrapErrorOnStartup',
       'systemTrayAppliedValue',
       'enableSystemTrayExplicitlySet',
       'hideDockIconWhenWindowClosed',

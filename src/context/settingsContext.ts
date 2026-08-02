@@ -352,8 +352,6 @@ export const settingsStore = {
     setState({ sidebarSectionOrder }),
   setDefaultLaunchView: (defaultLaunchView: DefaultLaunchView) => setState({ defaultLaunchView }),
   setEnableSystemTray: (enableSystemTray: boolean) => setState({ enableSystemTray }),
-  setSimulateBootstrapErrorOnStartup: (simulateBootstrapErrorOnStartup: boolean) =>
-    setState({ simulateBootstrapErrorOnStartup }),
   setSystemTrayAppliedValue: (systemTrayAppliedValue: boolean) =>
     setState({ systemTrayAppliedValue }),
   setHideDockIconWhenWindowClosed: (hideDockIconWhenWindowClosed: boolean) =>
