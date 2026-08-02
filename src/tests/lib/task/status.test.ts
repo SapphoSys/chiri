@@ -55,6 +55,14 @@ describe('buildStatusUpdates', () => {
       completedAt: undefined,
     });
   });
+
+  it('leaves progress unchanged when synchronization is disabled', () => {
+    expect(buildStatusUpdates('completed', current(42), new Date(), false)).toEqual({
+      status: 'completed',
+      completed: true,
+      completedAt: expect.any(Date),
+    });
+  });
 });
 
 describe('buildProgressUpdates', () => {
@@ -80,6 +88,12 @@ describe('buildProgressUpdates', () => {
     expect(buildProgressUpdates(-10, current()).percentComplete).toBe(0);
     expect(buildProgressUpdates(150, current()).percentComplete).toBe(100);
   });
+
+  it('leaves status and completion unchanged when synchronization is disabled', () => {
+    expect(buildProgressUpdates(42, current(), new Date(), false)).toEqual({
+      percentComplete: 42,
+    });
+  });
 });
 
 describe('getNewTaskPercentComplete', () => {
@@ -91,5 +105,9 @@ describe('getNewTaskPercentComplete', () => {
   it('preserves explicit progress and imported task defaults', () => {
     expect(getNewTaskPercentComplete(undefined, 42, 'completed', 0)).toBe(42);
     expect(getNewTaskPercentComplete('completed', undefined, 'needs-action', 0)).toBe(0);
+  });
+
+  it('uses the configured default progress when synchronization is disabled', () => {
+    expect(getNewTaskPercentComplete(undefined, undefined, 'completed', 0, false)).toBe(0);
   });
 });

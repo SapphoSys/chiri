@@ -84,6 +84,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
     editorFieldVisibility,
     editorFieldOrder,
     useAccentColorForCheckboxes,
+    syncStatusProgress,
   } = useSettingsStore();
   const resolvedAccentColor = useResolvedAccentColor();
   const { moveTaskToRecentlyDeleted, deleteTaskPermanently } = useTaskDeletion();
@@ -147,7 +148,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
   const handleStatusChange = (status: Status) => {
     updateTaskMutation.mutate({
       id: task.id,
-      updates: buildStatusUpdates(status, task),
+      updates: buildStatusUpdates(status, task, new Date(), syncStatusProgress),
     });
   };
 
@@ -158,7 +159,10 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
   };
 
   const commitPercentComplete = (value: number) => {
-    updateTaskMutation.mutate({ id: task.id, updates: buildProgressUpdates(value, task) });
+    updateTaskMutation.mutate({
+      id: task.id,
+      updates: buildProgressUpdates(value, task, new Date(), syncStatusProgress),
+    });
   };
 
   const handleCalendarChange = (calendarId: string) => {
@@ -242,6 +246,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
         <TaskEditorProgress
           task={task}
           onCommitPercent={commitPercentComplete}
+          syncStatusProgress={syncStatusProgress}
           readOnly={isReadOnly}
         />
       ) : null,

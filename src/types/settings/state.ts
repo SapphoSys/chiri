@@ -46,6 +46,7 @@ export interface SettingsState {
   defaultPriority: Priority;
   defaultStatus: Status;
   defaultPercentComplete: number;
+  syncStatusProgress: boolean;
   defaultTags: string[];
   defaultStartDate: DefaultDateOffset;
   defaultStartTime: number | null;
@@ -146,6 +147,7 @@ interface SettingsActions {
   setDefaultPriority: (priority: Priority) => void;
   setDefaultStatus: (status: Status) => void;
   setDefaultPercentComplete: (pct: number) => void;
+  setSyncStatusProgress: (enabled: boolean) => void;
   setDefaultTags: (tagIds: string[]) => void;
   setDefaultStartDate: (offset: DefaultDateOffset) => void;
   setDefaultStartTime: (time: number | null) => void;

@@ -4,6 +4,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
+import { settingsStore } from '$context/settingsContext';
 import { db } from '$lib/database';
 import { getFilteredTasks, getSortedTasks } from '$lib/filters';
 import { queryKeys } from '$lib/queryClient';
@@ -266,7 +267,16 @@ export const useToggleTaskComplete = () => {
           ? 'needs-action'
           : 'completed';
       toggleTaskComplete(id);
-      await db.logHistoryForTaskUpdate(task.uid, task, buildStatusUpdates(newStatus, task));
+      await db.logHistoryForTaskUpdate(
+        task.uid,
+        task,
+        buildStatusUpdates(
+          newStatus,
+          task,
+          new Date(),
+          settingsStore.getState().syncStatusProgress,
+        ),
+      );
       return task;
     },
     onSuccess: (task) => {

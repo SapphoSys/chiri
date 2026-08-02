@@ -315,6 +315,7 @@ export const createTask = (taskData: Partial<Task>) => {
       taskData.percentComplete,
       defaultStatus,
       defaultPercentComplete,
+      settingsStore.getState().syncStatusProgress,
     ),
     priority: taskData.priority ?? defaultPriority,
     sortOrder: maxSortOrder + 1,
@@ -647,7 +648,7 @@ export const toggleTaskComplete = (id: string) => {
         : 'completed';
 
   const updates = {
-    ...buildStatusUpdates(newStatus, task),
+    ...buildStatusUpdates(newStatus, task, new Date(), settingsStore.getState().syncStatusProgress),
     modifiedAt: new Date(),
     synced: false,
   };

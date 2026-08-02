@@ -437,5 +437,9 @@ export const toggleTaskComplete = async (conn: DatabasePlugin, id: string) => {
         ? 'needs-action'
         : 'completed';
 
-  await updateTask(conn, id, buildStatusUpdates(newStatus, task));
+  await updateTask(
+    conn,
+    id,
+    buildStatusUpdates(newStatus, task, new Date(), settingsStore.getState().syncStatusProgress),
+  );
 };

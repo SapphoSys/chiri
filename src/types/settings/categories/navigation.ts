@@ -5,6 +5,7 @@ export type SettingsSubtab =
   | 'navigation'
   | 'safety'
   | 'defaults'
+  | 'status-and-progress'
   | 'scheduling'
   | 'list-layout'
   | 'editor'

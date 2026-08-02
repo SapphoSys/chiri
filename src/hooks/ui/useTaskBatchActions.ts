@@ -21,7 +21,7 @@ export const useTaskBatchActions = ({
 }: UseTaskBatchActionsOptions) => {
   const { data: accounts = [] } = useAccounts();
   const { data: tags = [] } = useTags();
-  const { timeFormat } = useSettingsStore();
+  const { timeFormat, syncStatusProgress } = useSettingsStore();
   const batchUpdateTasksMutation = useBatchUpdateTasks();
   const restoreTaskMutation = useRestoreTask();
   const { moveTasksToRecentlyDeleted, deleteTasksPermanently } = useTaskDeletion();
@@ -102,7 +102,12 @@ export const useTaskBatchActions = ({
     (status: Status) => {
       const now = new Date();
       const updates = selectedTasks.flatMap((task) => {
-        const nextUpdates: Partial<Task> = buildStatusUpdates(status, task, now);
+        const nextUpdates: Partial<Task> = buildStatusUpdates(
+          status,
+          task,
+          now,
+          syncStatusProgress,
+        );
 
         const isUnchanged =
           task.status === status &&
@@ -118,7 +123,7 @@ export const useTaskBatchActions = ({
       }
       closeMenu();
     },
-    [batchUpdateTasksMutation, closeMenu, selectedTasks],
+    [batchUpdateTasksMutation, closeMenu, selectedTasks, syncStatusProgress],
   );
 
   const handlePriorityChange = useCallback(

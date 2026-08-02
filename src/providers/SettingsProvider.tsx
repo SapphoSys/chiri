@@ -131,6 +131,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     (pct: number) => settingsStore.setDefaultPercentComplete(pct),
     [],
   );
+  const setSyncStatusProgress = useCallback(
+    (enabled: boolean) => settingsStore.setSyncStatusProgress(enabled),
+    [],
+  );
   const setDefaultTags = useCallback(
     (tagIds: string[]) => settingsStore.setDefaultTags(tagIds),
     [],
@@ -421,6 +425,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     setDefaultPriority,
     setDefaultStatus,
     setDefaultPercentComplete,
+    setSyncStatusProgress,
     setDefaultTags,
     setDefaultStartDate,
     setDefaultStartTime,

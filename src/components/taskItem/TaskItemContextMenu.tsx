@@ -17,6 +17,7 @@ import { BatchTaskTagsModal } from '$components/modals/BatchTaskTagsModal';
 import { ExportModal } from '$components/modals/ExportModal';
 import { MoveToCalendarModal } from '$components/modals/MoveToCalendar/MoveToCalendarModal';
 import { PRIORITIES } from '$constants/priority';
+import { useSettingsStore } from '$context/settingsContext';
 import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useTags } from '$hooks/queries/useTags';
@@ -48,6 +49,7 @@ export const TaskItemContextMenu = ({
   const restoreTaskMutation = useRestoreTask();
   const setSelectedTaskMutation = useSetSelectedTask();
   const { moveTaskToRecentlyDeleted, deleteTaskPermanently } = useTaskDeletion();
+  const { syncStatusProgress } = useSettingsStore();
 
   const [showExportModal, setShowExportModal] = useState(false);
   const [showTagsModal, setShowTagsModal] = useState(false);
@@ -139,7 +141,7 @@ export const TaskItemContextMenu = ({
   const handleChangeStatus = (status: Status) => {
     updateTaskMutation.mutate({
       id: task.id,
-      updates: buildStatusUpdates(status, task),
+      updates: buildStatusUpdates(status, task, new Date(), syncStatusProgress),
     });
     setStatusFlyoutPos(null);
     setContextMenu(null);

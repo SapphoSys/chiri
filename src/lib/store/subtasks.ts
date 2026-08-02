@@ -94,7 +94,7 @@ export const toggleSubtaskComplete = async (taskId: string, subtaskId: string) =
         : 'completed';
 
   await db.updateTask(subtaskId, {
-    ...buildStatusUpdates(newStatus, subtask, now),
+    ...buildStatusUpdates(newStatus, subtask, now, settingsStore.getState().syncStatusProgress),
     modifiedAt: now,
     synced: false,
   });

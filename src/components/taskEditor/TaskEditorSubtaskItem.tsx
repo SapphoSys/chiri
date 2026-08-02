@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useSettingsStore } from '$context/settingsContext';
 import { useChildTasks } from '$hooks/queries/useTasks';
 import { usePrefersReducedMotion } from '$hooks/ui/usePrefersReducedMotion';
 import { buildStatusUpdates } from '$lib/task/status';
@@ -105,6 +106,7 @@ export const TaskEditorSubtaskItem = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const prefersReducedMotion = usePrefersReducedMotion();
+  const { syncStatusProgress } = useSettingsStore();
 
   const sortableId = getSortableItemId(task.id, isOverlay);
   const sortableDisabled = getSortableItemDisabled(isDragEnabled, isOverlay);
@@ -195,7 +197,10 @@ export const TaskEditorSubtaskItem = ({
           onClick={() => {
             if (readOnly) return;
             const newStatus = task.status === 'needs-action' ? 'completed' : 'needs-action';
-            updateTask(task.id, buildStatusUpdates(newStatus, task));
+            updateTask(
+              task.id,
+              buildStatusUpdates(newStatus, task, new Date(), syncStatusProgress),
+            );
           }}
           className={getStatusButtonClassName(task, useAccentColorForCheckboxes, readOnly)}
         >

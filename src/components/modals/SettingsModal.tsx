@@ -1,3 +1,4 @@
+import Activity from 'lucide-react/icons/activity';
 import Bell from 'lucide-react/icons/bell';
 import CalendarClock from 'lucide-react/icons/calendar-clock';
 import ClipboardPlus from 'lucide-react/icons/clipboard-plus';
@@ -35,6 +36,7 @@ import { RegionAndTimeSettings } from '$components/settings/RegionAndTimeSetting
 import { SafetySettings } from '$components/settings/SafetySettings';
 import { SchedulingSettings } from '$components/settings/SchedulingSettings';
 import { ShortcutsSettings } from '$components/settings/ShortcutsSettings/ShortcutsSettings';
+import { StatusProgressSettings } from '$components/settings/StatusProgressSettings';
 import { SyncSettings } from '$components/settings/SyncSettings';
 import { SystemSettings } from '$components/settings/SystemSettings';
 import { TaskDefaultsSettings } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettings';
@@ -118,6 +120,11 @@ export const SettingsModal = ({
         { id: 'list-layout', label: 'List & layout', icon: <LayoutList className="h-4 w-4" /> },
         { id: 'scheduling', label: 'Scheduling', icon: <CalendarClock className="h-4 w-4" /> },
         { id: 'safety', label: 'Safety', icon: <Shield className="h-4 w-4" /> },
+        {
+          id: 'status-and-progress',
+          label: 'Status & progress',
+          icon: <Activity className="h-4 w-4" />,
+        },
       ],
     },
     {
@@ -205,6 +212,9 @@ export const SettingsModal = ({
 
         <div ref={contentRef} className="flex-1 overflow-y-auto overscroll-contain p-6">
           {activeCategory === 'tasks' && currentSubtab === 'defaults' && <TaskDefaultsSettings />}
+          {activeCategory === 'tasks' && currentSubtab === 'status-and-progress' && (
+            <StatusProgressSettings />
+          )}
           {activeCategory === 'tasks' && currentSubtab === 'scheduling' && <SchedulingSettings />}
           {activeCategory === 'tasks' && currentSubtab === 'list-layout' && (
             <TaskListLayoutSettings />

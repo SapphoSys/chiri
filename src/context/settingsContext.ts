@@ -312,6 +312,7 @@ export const settingsStore = {
   setDefaultStatus: (defaultStatus: Status) => setState({ defaultStatus }),
   setDefaultPercentComplete: (defaultPercentComplete: number) =>
     setState({ defaultPercentComplete }),
+  setSyncStatusProgress: (syncStatusProgress: boolean) => setState({ syncStatusProgress }),
   setDefaultTags: (defaultTags: string[]) => setState({ defaultTags }),
   setDefaultStartDate: (defaultStartDate: DefaultDateOffset) => setState({ defaultStartDate }),
   setDefaultStartTime: (defaultStartTime: number | null) => setState({ defaultStartTime }),

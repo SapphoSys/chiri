@@ -66,6 +66,29 @@ describe('enableSystemTrayExplicitlySet round-trip', () => {
   });
 });
 
+describe('status and progress synchronization', () => {
+  it('round-trips the synchronization preference', async () => {
+    const { exportSettings, importSettings } = await import('$context/settingsImportExport');
+    const { defaultState } = await import('$context/settingsDefaults');
+
+    const imported = importSettings(
+      exportSettings({ ...defaultState, syncStatusProgress: false }),
+      defaultState,
+    );
+
+    expect(imported?.syncStatusProgress).toBe(false);
+  });
+
+  it('defaults the preference to enabled when importing older settings', async () => {
+    const { importSettings } = await import('$context/settingsImportExport');
+    const { defaultState } = await import('$context/settingsDefaults');
+
+    const imported = importSettings(JSON.stringify({ version: 1 }), defaultState);
+
+    expect(imported?.syncStatusProgress).toBe(true);
+  });
+});
+
 describe('editor field migration', () => {
   it('keeps legacy grouped visibility settings in sync', async () => {
     const { importSettings } = await import('$context/settingsImportExport');
