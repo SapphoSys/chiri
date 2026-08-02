@@ -70,6 +70,10 @@ export const CALENDAR_SORT_OPTIONS: Array<{ value: CalendarSortMode; label: stri
   { value: 'task-count', label: 'Task Count' },
 ];
 
+export const LOCAL_CALENDAR_SORT_OPTIONS = CALENDAR_SORT_OPTIONS.filter(
+  (option) => option.value !== 'server',
+);
+
 export const DEFAULT_TAG_SORT_CONFIG = {
   mode: 'manual' as const satisfies TagSortMode,
   direction: 'asc' as const satisfies SortDirection,

@@ -3,7 +3,7 @@ import type { RefObject } from 'react';
 import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
 import { HoverFlyout, HoverFlyoutGroup } from '$components/HoverFlyout';
 import { SidebarSortDirectionButton } from '$components/sidebar/SidebarSortDirectionButton';
-import { CALENDAR_SORT_OPTIONS } from '$constants';
+import { LOCAL_CALENDAR_SORT_OPTIONS } from '$constants';
 import { useSetCalendarSortConfig } from '$hooks/queries/useUIState';
 import type { CalendarSortConfig } from '$types/sort';
 
@@ -53,8 +53,9 @@ export const SidebarLocalSortMenu = ({
             <div className="flex min-w-0 items-center gap-2">
               <span className="truncate text-surface-500 text-xs dark:text-surface-400">
                 {
-                  CALENDAR_SORT_OPTIONS.find((option) => option.value === calendarSortConfig.mode)
-                    ?.label
+                  LOCAL_CALENDAR_SORT_OPTIONS.find(
+                    (option) => option.value === calendarSortConfig.mode,
+                  )?.label
                 }
               </span>
               <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
@@ -71,7 +72,7 @@ export const SidebarLocalSortMenu = ({
               />
             </div>
             <div className="space-y-1 px-1">
-              {CALENDAR_SORT_OPTIONS.map((option) => (
+              {LOCAL_CALENDAR_SORT_OPTIONS.map((option) => (
                 <button
                   type="button"
                   key={option.value}
