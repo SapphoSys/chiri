@@ -186,11 +186,13 @@ export const importSettings = (json: string, defaultState: SettingsState): Setti
       newState[key] = data[key] ?? defaultState[key];
     }
 
-    newState.defaultPercentComplete =
-      getPercentCompleteForStatus(
-        newState.defaultStatus ?? defaultState.defaultStatus,
-        newState.defaultPercentComplete ?? defaultState.defaultPercentComplete,
-      ) ?? 0;
+    if (newState.syncStatusProgress) {
+      newState.defaultPercentComplete =
+        getPercentCompleteForStatus(
+          newState.defaultStatus ?? defaultState.defaultStatus,
+          newState.defaultPercentComplete ?? defaultState.defaultPercentComplete,
+        ) ?? 0;
+    }
 
     newState.keyboardShortcuts = data.keyboardShortcuts
       ? mergeShortcuts(data.keyboardShortcuts, DEFAULT_SHORTCUTS)

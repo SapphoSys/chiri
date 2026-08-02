@@ -1,13 +1,11 @@
 import Ban from 'lucide-react/icons/ban';
 import Check from 'lucide-react/icons/check';
-import Info from 'lucide-react/icons/info';
 import RotateCcw from 'lucide-react/icons/rotate-ccw';
 import Timer from 'lucide-react/icons/timer';
-import { useState } from 'react';
 import { PRIORITIES } from '$constants/priority';
 import { useSettingsStore } from '$context/settingsContext';
 import { defaultState } from '$context/settingsDefaults';
-import { getPercentCompleteForStatus } from '$lib/task/status';
+import { buildProgressUpdates, buildStatusUpdates } from '$lib/task/status';
 import type { Status } from '$types/task/model';
 
 const STATUS_OPTIONS = [
@@ -53,22 +51,30 @@ export const TaskDefaultsSettingsTaskValues = () => {
     setDefaultStatus,
     defaultPercentComplete,
     setDefaultPercentComplete,
+    syncStatusProgress,
   } = useSettingsStore();
-  const [savedInProcessPercent, setSavedInProcessPercent] = useState(defaultPercentComplete);
 
   const handleStatusChange = (status: Status) => {
     setDefaultStatus(status);
-    const nextPercent = getPercentCompleteForStatus(status, savedInProcessPercent) ?? 0;
-    setDefaultPercentComplete(nextPercent);
-    if (status === 'in-process') setSavedInProcessPercent(nextPercent);
+    if (syncStatusProgress) {
+      const updates = buildStatusUpdates(status, { percentComplete: defaultPercentComplete });
+      if (updates.percentComplete !== undefined) {
+        setDefaultPercentComplete(updates.percentComplete);
+      }
+    }
   };
 
   const handlePercentChange = (percent: number) => {
-    const nextPercent = defaultStatus === 'in-process' ? Math.max(1, percent) : percent;
-    setDefaultPercentComplete(nextPercent);
-    if (defaultStatus === 'in-process') {
-      setSavedInProcessPercent(nextPercent);
+    const updates = buildProgressUpdates(
+      percent,
+      { percentComplete: defaultPercentComplete },
+      new Date(),
+      syncStatusProgress,
+    );
+    if (updates.status !== undefined) {
+      setDefaultStatus(updates.status);
     }
+    setDefaultPercentComplete(updates.percentComplete ?? percent);
   };
 
   const handleReset = () => {
@@ -76,11 +82,8 @@ export const TaskDefaultsSettingsTaskValues = () => {
     setDefaultPriority(defaultState.defaultPriority);
     const resetPercent = defaultState.defaultPercentComplete;
     setDefaultPercentComplete(resetPercent);
-    setSavedInProcessPercent(resetPercent);
   };
 
-  const showProgress = defaultStatus === 'in-process';
-  const progressForStatus = getPercentCompleteForStatus(defaultStatus, defaultPercentComplete) ?? 0;
   const hasChanged =
     defaultStatus !== defaultState.defaultStatus ||
     defaultPriority !== defaultState.defaultPriority ||
@@ -156,41 +159,28 @@ export const TaskDefaultsSettingsTaskValues = () => {
           <div className="mb-1 flex items-center justify-between">
             <p className="font-medium text-surface-500 text-xs dark:text-surface-400">Progress</p>
             <span className="font-medium text-surface-600 text-xs dark:text-surface-400">
-              {showProgress ? `${progressForStatus}%` : `${progressForStatus}% (auto)`}
+              {defaultPercentComplete}%
             </span>
           </div>
-          {showProgress ? (
-            <input
-              type="range"
-              min={showProgress ? 1 : 0}
-              max={100}
-              step={5}
-              value={progressForStatus}
-              style={{ '--pct': `${progressForStatus}%` } as React.CSSProperties}
-              onChange={(e) => handlePercentChange(Number(e.target.value))}
-              className="w-full"
-            />
-          ) : (
-            <div className="mt-2 h-1.5 w-full rounded-full bg-surface-200 dark:bg-surface-700">
-              <div
-                className="h-1.5 rounded-full bg-primary-500"
-                style={{ width: `${progressForStatus}%` }}
-              />
-            </div>
-          )}
+          <input
+            type="range"
+            min={0}
+            max={100}
+            step={5}
+            value={defaultPercentComplete}
+            style={{ '--pct': `${defaultPercentComplete}%` } as React.CSSProperties}
+            onChange={(e) => handlePercentChange(Number(e.target.value))}
+            className="w-full"
+          />
           <div className="mt-1 flex justify-between">
             <span className="text-surface-400 text-xs">0%</span>
             <span className="text-surface-400 text-xs">100%</span>
           </div>
-          {!showProgress && (
-            <div className="mt-3 flex items-start gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-sm text-surface-700 dark:text-surface-300">
-              <Info className="mt-0.5 size-4 shrink-0 text-semantic-info" />
-              <p>
-                Progress is set automatically for{' '}
-                {STATUS_OPTIONS.find((s) => s.value === defaultStatus)?.label} tasks.
-              </p>
-            </div>
-          )}
+          <p className="mt-2 text-surface-400 text-xs">
+            {syncStatusProgress
+              ? 'Changing progress updates the default status automatically.'
+              : 'Status and progress are configured independently.'}
+          </p>
         </div>
       </div>
     </div>

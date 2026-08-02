@@ -72,11 +72,18 @@ describe('status and progress synchronization', () => {
     const { defaultState } = await import('$context/settingsDefaults');
 
     const imported = importSettings(
-      exportSettings({ ...defaultState, syncStatusProgress: false }),
+      exportSettings({
+        ...defaultState,
+        defaultStatus: 'completed',
+        defaultPercentComplete: 42,
+        syncStatusProgress: false,
+      }),
       defaultState,
     );
 
     expect(imported?.syncStatusProgress).toBe(false);
+    expect(imported?.defaultStatus).toBe('completed');
+    expect(imported?.defaultPercentComplete).toBe(42);
   });
 
   it('defaults the preference to enabled when importing older settings', async () => {

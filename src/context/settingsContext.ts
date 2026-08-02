@@ -66,11 +66,13 @@ const loadFromStorage = (): { state: SettingsState; migrated: boolean } => {
       } = parsed.state ?? {};
       const loadedState = { ...defaultState, ...storedState };
       loadedState.networkProxyPort = normalizeProxyPort(loadedState.networkProxyPort);
-      loadedState.defaultPercentComplete =
-        getPercentCompleteForStatus(
-          loadedState.defaultStatus,
-          loadedState.defaultPercentComplete,
-        ) ?? 0;
+      if (loadedState.syncStatusProgress) {
+        loadedState.defaultPercentComplete =
+          getPercentCompleteForStatus(
+            loadedState.defaultStatus,
+            loadedState.defaultPercentComplete,
+          ) ?? 0;
+      }
 
       // keep built-in WebDAV provider defaults as placeholders instead of persisted values
       const legacyDefaultPushUrls = [

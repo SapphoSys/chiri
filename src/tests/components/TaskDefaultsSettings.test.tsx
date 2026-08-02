@@ -18,6 +18,7 @@ const baseMockStore = {
   setDefaultStatus: mockSetDefaultStatus,
   defaultPercentComplete: 0,
   setDefaultPercentComplete: mockSetDefaultPercentComplete,
+  syncStatusProgress: true,
   defaultTags: [],
   setDefaultTags: vi.fn(),
   defaultCalendarId: null,
@@ -81,7 +82,7 @@ describe('TaskDefaultsSettings', () => {
     root = createRoot(container);
   });
 
-  it('shows the progress slider only when status is in-process', async () => {
+  it('shows a progress slider for every default status', async () => {
     mockStore.defaultStatus = 'in-process';
     mockStore.defaultPercentComplete = 25;
 
@@ -92,9 +93,11 @@ describe('TaskDefaultsSettings', () => {
     const slider = container.querySelector('input[type="range"]');
     expect(slider).not.toBeNull();
     expect(slider?.getAttribute('value')).toBe('25');
+    expect(slider?.getAttribute('min')).toBe('0');
+    expect(slider?.getAttribute('max')).toBe('100');
   });
 
-  it('hides the progress slider when status is completed', async () => {
+  it('keeps the progress slider available for completed defaults', async () => {
     mockStore.defaultStatus = 'completed';
     mockStore.defaultPercentComplete = 100;
 
@@ -103,9 +106,24 @@ describe('TaskDefaultsSettings', () => {
     });
 
     const slider = container.querySelector('input[type="range"]');
-    expect(slider).toBeNull();
-    expect(container.textContent).toContain('Progress is set automatically');
-    expect(container.textContent).toContain('Completed');
+    expect(slider).not.toBeNull();
+    expect(slider?.getAttribute('value')).toBe('100');
+    expect(container.textContent).toContain(
+      'Changing progress updates the default status automatically.',
+    );
+  });
+
+  it('allows independent status and progress defaults when synchronization is disabled', async () => {
+    mockStore.defaultStatus = 'cancelled';
+    mockStore.defaultPercentComplete = 42;
+    mockStore.syncStatusProgress = false;
+
+    await act(async () => {
+      root.render(<TaskDefaultsSettings />);
+    });
+
+    expect(container.querySelector('input[type="range"]')?.getAttribute('value')).toBe('42');
+    expect(container.textContent).toContain('Status and progress are configured independently.');
   });
 
   it('does not render empty account groups in the default calendar select', async () => {
