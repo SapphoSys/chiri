@@ -8,6 +8,7 @@ import { toAppleEpoch } from '$lib/ical/vtodo';
 import type { Status, Task } from '$types/task/model';
 import { generateUUID } from '$utils/misc';
 import { getRecentlyDeletedRetentionCutoff } from '$utils/taskDeletion';
+import { buildStatusUpdates } from '$utils/taskStatus';
 
 export const getAllTasks = async (conn: DatabasePlugin) => {
   const rows = await conn.select<TaskRow[]>('SELECT * FROM tasks');
@@ -436,10 +437,5 @@ export const toggleTaskComplete = async (conn: DatabasePlugin, id: string) => {
         ? 'needs-action'
         : 'completed';
 
-  await updateTask(conn, id, {
-    status: newStatus,
-    completed: newStatus === 'completed',
-    completedAt: newStatus === 'completed' ? new Date() : undefined,
-    percentComplete: newStatus === 'completed' ? 100 : 0,
-  });
+  await updateTask(conn, id, buildStatusUpdates(newStatus, task));
 };

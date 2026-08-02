@@ -8,6 +8,7 @@ import type { KeyboardShortcut } from '$types/shortcuts';
 
 import { isReservedShortcut } from '$utils/keyboard';
 import { normalizeProxyPort } from '$utils/misc';
+import { getPercentCompleteForStatus } from '$utils/taskStatus';
 
 const log = loggers.settings;
 
@@ -184,6 +185,12 @@ export const importSettings = (json: string, defaultState: SettingsState): Setti
     for (const key of simpleSettings) {
       newState[key] = data[key] ?? defaultState[key];
     }
+
+    newState.defaultPercentComplete =
+      getPercentCompleteForStatus(
+        newState.defaultStatus ?? defaultState.defaultStatus,
+        newState.defaultPercentComplete ?? defaultState.defaultPercentComplete,
+      ) ?? 0;
 
     newState.keyboardShortcuts = data.keyboardShortcuts
       ? mergeShortcuts(data.keyboardShortcuts, DEFAULT_SHORTCUTS)

@@ -41,6 +41,7 @@ import { applyColorScheme, getColorSchemeFlavor } from '$utils/color/scheme';
 import { applyTheme, resolveEffectiveTheme } from '$utils/color/theme';
 import { getShortcutSignature } from '$utils/keyboard';
 import { normalizeProxyPort } from '$utils/misc';
+import { getPercentCompleteForStatus } from '$utils/taskStatus';
 import { defaultState } from './settingsDefaults';
 
 const log = loggers.settings;
@@ -65,6 +66,11 @@ const loadFromStorage = (): { state: SettingsState; migrated: boolean } => {
       } = parsed.state ?? {};
       const loadedState = { ...defaultState, ...storedState };
       loadedState.networkProxyPort = normalizeProxyPort(loadedState.networkProxyPort);
+      loadedState.defaultPercentComplete =
+        getPercentCompleteForStatus(
+          loadedState.defaultStatus,
+          loadedState.defaultPercentComplete,
+        ) ?? 0;
 
       // keep built-in WebDAV provider defaults as placeholders instead of persisted values
       const legacyDefaultPushUrls = [

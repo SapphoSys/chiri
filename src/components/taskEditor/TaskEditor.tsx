@@ -45,6 +45,7 @@ import { getTaskByUid } from '$lib/store/tasks';
 import type { EditorFieldKey } from '$types/settings/categories/editor';
 import type { Status, Task } from '$types/task/model';
 import { getContrastTextColor } from '$utils/color';
+import { buildProgressUpdates, buildStatusUpdates } from '$utils/taskStatus';
 
 interface TaskEditorProps {
   task: Task;
@@ -146,11 +147,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
   const handleStatusChange = (status: Status) => {
     updateTaskMutation.mutate({
       id: task.id,
-      updates: {
-        status,
-        completed: status === 'completed',
-        completedAt: status === 'completed' ? (task.completedAt ?? new Date()) : undefined,
-      },
+      updates: buildStatusUpdates(status, task),
     });
   };
 
@@ -161,21 +158,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
   };
 
   const commitPercentComplete = (value: number) => {
-    const updates: Partial<Task> = { percentComplete: value };
-    if (value === 100) {
-      updates.status = 'completed';
-      updates.completed = true;
-      updates.completedAt = task.completedAt ?? new Date();
-    } else if (value === 0) {
-      updates.status = 'needs-action';
-      updates.completed = false;
-      updates.completedAt = undefined;
-    } else {
-      updates.status = 'in-process';
-      updates.completed = false;
-      updates.completedAt = undefined;
-    }
-    updateTaskMutation.mutate({ id: task.id, updates });
+    updateTaskMutation.mutate({ id: task.id, updates: buildProgressUpdates(value, task) });
   };
 
   const handleCalendarChange = (calendarId: string) => {

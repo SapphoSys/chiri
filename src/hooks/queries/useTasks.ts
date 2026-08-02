@@ -26,6 +26,7 @@ import {
 } from '$lib/store/tasks';
 import type { FlattenedTask } from '$types/store/tasks';
 import type { Task } from '$types/task/model';
+import { buildStatusUpdates } from '$utils/taskStatus';
 
 const dateTime = (date: Date | undefined) => date?.getTime();
 
@@ -265,9 +266,7 @@ export const useToggleTaskComplete = () => {
           ? 'needs-action'
           : 'completed';
       toggleTaskComplete(id);
-      await db.logHistoryForTaskUpdate(task.uid, task, {
-        status: newStatus,
-      });
+      await db.logHistoryForTaskUpdate(task.uid, task, buildStatusUpdates(newStatus, task));
       return task;
     },
     onSuccess: (task) => {

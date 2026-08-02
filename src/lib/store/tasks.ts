@@ -12,6 +12,7 @@ import { getNextWorkingDay } from '$utils/calendar';
 import { generateUUID } from '$utils/misc';
 import { getNextOccurrence, parseRRule } from '$utils/recurrence';
 import { isExpiredRecentlyDeletedTask } from '$utils/taskDeletion';
+import { buildStatusUpdates, getNewTaskPercentComplete } from '$utils/taskStatus';
 
 const resolveReminderOffsets = (
   offsets: DefaultReminderOffset[],
@@ -309,7 +310,12 @@ export const createTask = (taskData: Partial<Task>) => {
     description: taskData.description ?? '',
     status: taskData.status ?? defaultStatus,
     completed: (taskData.status ?? defaultStatus) === 'completed',
-    percentComplete: taskData.percentComplete ?? defaultPercentComplete,
+    percentComplete: getNewTaskPercentComplete(
+      taskData.status,
+      taskData.percentComplete,
+      defaultStatus,
+      defaultPercentComplete,
+    ),
     priority: taskData.priority ?? defaultPriority,
     sortOrder: maxSortOrder + 1,
     accountId: accountId ?? '',
@@ -641,10 +647,7 @@ export const toggleTaskComplete = (id: string) => {
         : 'completed';
 
   const updates = {
-    status: newStatus as Task['status'],
-    completed: newStatus === 'completed',
-    completedAt: newStatus === 'completed' ? new Date() : undefined,
-    percentComplete: newStatus === 'completed' ? 100 : 0,
+    ...buildStatusUpdates(newStatus, task),
     modifiedAt: new Date(),
     synced: false,
   };

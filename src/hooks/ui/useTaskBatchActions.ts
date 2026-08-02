@@ -6,6 +6,7 @@ import { useTags } from '$hooks/queries/useTags';
 import { useBatchUpdateTasks, useRestoreTask } from '$hooks/queries/useTasks';
 import { exportTaskAndChildren } from '$lib/store/tasks';
 import type { Priority, Status, Task } from '$types/task/model';
+import { buildStatusUpdates } from '$utils/taskStatus';
 
 export type TaskBatchMenu = 'status' | 'priority' | null;
 
@@ -101,11 +102,7 @@ export const useTaskBatchActions = ({
     (status: Status) => {
       const now = new Date();
       const updates = selectedTasks.flatMap((task) => {
-        const nextUpdates: Partial<Task> = {
-          status,
-          completed: status === 'completed',
-          completedAt: status === 'completed' ? (task.completedAt ?? now) : undefined,
-        };
+        const nextUpdates: Partial<Task> = buildStatusUpdates(status, task, now);
 
         const isUnchanged =
           task.status === status &&

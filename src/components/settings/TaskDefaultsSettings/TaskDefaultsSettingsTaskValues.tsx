@@ -8,6 +8,7 @@ import { PRIORITIES } from '$constants/priority';
 import { useSettingsStore } from '$context/settingsContext';
 import { defaultState } from '$context/settingsDefaults';
 import type { Status } from '$types/task/model';
+import { getPercentCompleteForStatus } from '$utils/taskStatus';
 
 const STATUS_OPTIONS = [
   {
@@ -57,19 +58,16 @@ export const TaskDefaultsSettingsTaskValues = () => {
 
   const handleStatusChange = (status: Status) => {
     setDefaultStatus(status);
-    if (status === 'in-process') {
-      setDefaultPercentComplete(savedInProcessPercent);
-    } else if (status === 'completed') {
-      setDefaultPercentComplete(100);
-    } else {
-      setDefaultPercentComplete(0);
-    }
+    const nextPercent = getPercentCompleteForStatus(status, savedInProcessPercent) ?? 0;
+    setDefaultPercentComplete(nextPercent);
+    if (status === 'in-process') setSavedInProcessPercent(nextPercent);
   };
 
   const handlePercentChange = (percent: number) => {
-    setDefaultPercentComplete(percent);
+    const nextPercent = defaultStatus === 'in-process' ? Math.max(1, percent) : percent;
+    setDefaultPercentComplete(nextPercent);
     if (defaultStatus === 'in-process') {
-      setSavedInProcessPercent(percent);
+      setSavedInProcessPercent(nextPercent);
     }
   };
 
@@ -82,7 +80,7 @@ export const TaskDefaultsSettingsTaskValues = () => {
   };
 
   const showProgress = defaultStatus === 'in-process';
-  const progressForStatus = defaultStatus === 'completed' ? 100 : defaultPercentComplete;
+  const progressForStatus = getPercentCompleteForStatus(defaultStatus, defaultPercentComplete) ?? 0;
   const hasChanged =
     defaultStatus !== defaultState.defaultStatus ||
     defaultPriority !== defaultState.defaultPriority ||
@@ -164,7 +162,7 @@ export const TaskDefaultsSettingsTaskValues = () => {
           {showProgress ? (
             <input
               type="range"
-              min={0}
+              min={showProgress ? 1 : 0}
               max={100}
               step={5}
               value={progressForStatus}

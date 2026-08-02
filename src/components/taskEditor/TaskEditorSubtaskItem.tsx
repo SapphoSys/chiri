@@ -15,6 +15,7 @@ import { useChildTasks } from '$hooks/queries/useTasks';
 import { usePrefersReducedMotion } from '$hooks/ui/usePrefersReducedMotion';
 import type { Task } from '$types/task/model';
 import { getSortableItemDisabled, getSortableItemId } from '$utils/sortable';
+import { buildStatusUpdates } from '$utils/taskStatus';
 
 const createAnimateLayoutChanges =
   (prefersReducedMotion: boolean): AnimateLayoutChanges =>
@@ -194,11 +195,7 @@ export const TaskEditorSubtaskItem = ({
           onClick={() => {
             if (readOnly) return;
             const newStatus = task.status === 'needs-action' ? 'completed' : 'needs-action';
-            updateTask(task.id, {
-              status: newStatus,
-              completed: newStatus === 'completed',
-              completedAt: newStatus === 'completed' ? new Date() : undefined,
-            });
+            updateTask(task.id, buildStatusUpdates(newStatus, task));
           }}
           className={getStatusButtonClassName(task, useAccentColorForCheckboxes, readOnly)}
         >

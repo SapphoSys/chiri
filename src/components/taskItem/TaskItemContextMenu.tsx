@@ -24,6 +24,7 @@ import { useCreateTask, useRestoreTask, useUpdateTask } from '$hooks/queries/use
 import { useSetSelectedTask } from '$hooks/queries/useUIState';
 import { exportTaskAndChildren } from '$lib/store/tasks';
 import type { Priority, Status, Task } from '$types/task/model';
+import { buildStatusUpdates } from '$utils/taskStatus';
 
 interface TaskItemContextMenuProps {
   task: Task;
@@ -138,11 +139,7 @@ export const TaskItemContextMenu = ({
   const handleChangeStatus = (status: Status) => {
     updateTaskMutation.mutate({
       id: task.id,
-      updates: {
-        status,
-        completed: status === 'completed',
-        completedAt: status === 'completed' ? new Date() : undefined,
-      },
+      updates: buildStatusUpdates(status, task),
     });
     setStatusFlyoutPos(null);
     setContextMenu(null);

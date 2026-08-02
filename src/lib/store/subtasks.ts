@@ -2,6 +2,7 @@ import { settingsStore } from '$context/settingsContext';
 import { db } from '$lib/database';
 import type { Task } from '$types/task/model';
 import { generateUUID } from '$utils/misc';
+import { buildStatusUpdates } from '$utils/taskStatus';
 
 /**
  * add a subtask by creating a new child Task
@@ -93,9 +94,7 @@ export const toggleSubtaskComplete = async (taskId: string, subtaskId: string) =
         : 'completed';
 
   await db.updateTask(subtaskId, {
-    status: newStatus,
-    completed: newStatus === 'completed',
-    completedAt: newStatus === 'completed' ? now : undefined,
+    ...buildStatusUpdates(newStatus, subtask, now),
     modifiedAt: now,
     synced: false,
   });
