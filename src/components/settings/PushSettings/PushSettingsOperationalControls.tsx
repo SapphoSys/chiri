@@ -238,7 +238,7 @@ export const PushSettingsOperationalControls = ({
     [pushAccounts],
   );
   const activeSubscriptions = useQuery({
-    queryKey: [...queryKeys.pushSubscriptions.all, providerKey, pushAccountKey],
+    queryKey: queryKeys.pushSubscriptions.byConfig(providerKey, pushAccountKey),
     queryFn: async () => {
       const subscriptions = await getAllPushSubscriptions();
       return subscriptions.filter(
@@ -249,7 +249,7 @@ export const PushSettingsOperationalControls = ({
     refetchInterval: 10_000,
   });
   const pushDiagnostics = useQuery({
-    queryKey: [...queryKeys.pushDiagnostics.all, providerKey, pushAccountKey],
+    queryKey: queryKeys.pushDiagnostics.byConfig(providerKey, pushAccountKey),
     queryFn: async () =>
       Promise.all(
         pushAccounts.map((account) => getWebDAVPushAccountDiagnostics(account, pushProviderConfig)),

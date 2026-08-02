@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
+import { queryKeys } from '$lib/queryClient';
 import { isLinuxPlatform } from '$utils/platform';
 
 export const useTrayHostAvailability = () => {
   const isLinux = isLinuxPlatform();
 
   const query = useQuery({
-    queryKey: ['platform', 'trayHostAvailable'],
+    queryKey: queryKeys.platform.trayHostAvailable,
     enabled: isLinux,
     queryFn: async () => {
       try {

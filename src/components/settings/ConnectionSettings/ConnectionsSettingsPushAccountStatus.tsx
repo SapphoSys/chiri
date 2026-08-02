@@ -93,10 +93,10 @@ export const ConnectionsSettingsPushAccountStatus = ({
     mozillaAutopushEndpointUrl,
   });
   const diagnostics = useQuery({
-    queryKey: [
-      ...queryKeys.pushDiagnostics.byAccount(account.id),
+    queryKey: queryKeys.pushDiagnostics.byAccountAndConfig(
+      account.id,
       getPushProviderConfigKey(pushProviderConfig),
-    ],
+    ),
     queryFn: () => getWebDAVPushAccountDiagnostics(account, pushProviderConfig),
     enabled: enablePush && !isResolvingKUnifiedPush,
     refetchInterval: 10_000,

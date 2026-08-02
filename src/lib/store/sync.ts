@@ -648,7 +648,7 @@ export const syncCalendarsForAccount = async (accountId: string, queryClient: Qu
   if (needsRedirectToAllTasks) {
     syncLog.info('Selected calendar was deleted on server, redirecting to All Tasks');
     setAllTasksView();
-    queryClient.invalidateQueries({ queryKey: ['uiState'] });
+    queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
   }
 
   return updatedCalendars;

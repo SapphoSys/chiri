@@ -11,6 +11,7 @@ import {
   DEFAULT_TAG_SORT_CONFIG,
   DEFAULT_TASK_GROUP_CONFIG,
 } from '$constants';
+import { queryKeys } from '$lib/queryClient';
 import { dataStore } from '$lib/store';
 import {
   getUIState,
@@ -58,12 +59,12 @@ export const useUIState = () => {
 
   useEffect(() => {
     return dataStore.subscribe(() => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     });
   }, [queryClient]);
 
   return useQuery({
-    queryKey: ['uiState'],
+    queryKey: queryKeys.uiState.all,
     queryFn: () => getUIState(),
     staleTime: Infinity,
   });
@@ -158,7 +159,7 @@ export const useSetAccountSortConfig = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -191,7 +192,7 @@ export const useSetActiveAccount = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -208,8 +209,8 @@ export const useSetActiveCalendar = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -226,8 +227,8 @@ export const useSetActiveTag = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -244,8 +245,8 @@ export const useSetActiveFilter = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -262,8 +263,8 @@ export const useSetAllTasksView = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -280,8 +281,8 @@ export const useSetRecentlyDeletedView = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -303,7 +304,7 @@ export const useSetSelectedTask = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -321,7 +322,7 @@ export const useSetEditorOpen = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -338,8 +339,8 @@ export const useSetSearchQuery = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -356,7 +357,7 @@ export const useSetSortConfig = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -370,7 +371,7 @@ export const useSetTaskGroupConfig = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -387,7 +388,7 @@ export const useSetCalendarSortConfig = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -412,7 +413,7 @@ export const useSetTagSortConfig = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -429,8 +430,8 @@ export const useSetShowCompletedTasks = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -447,7 +448,7 @@ export const useSetMoveCompletedTasksToBottom = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -464,8 +465,8 @@ export const useSetShowUnstartedTasks = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };

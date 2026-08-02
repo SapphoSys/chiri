@@ -10,6 +10,7 @@ import {
   getSetupErrorInfo,
 } from '$lib/caldav/setup';
 import { loggers } from '$lib/logger';
+import { queryKeys } from '$lib/queryClient';
 import type { Account, AccountDraft } from '$types/account';
 import type { Calendar } from '$types/calendar';
 
@@ -152,8 +153,8 @@ export const useAccountSetup = ({
         await fetchTasksForCalendar(newAccount.id, calendar);
       }
 
-      await queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      await queryClient.invalidateQueries({ queryKey: ['tags'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.tags.all });
       onClose();
     } catch (error) {
       log.error('Error setting up account:', error);

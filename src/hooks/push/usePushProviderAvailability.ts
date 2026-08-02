@@ -5,6 +5,7 @@ import { isPushProviderAvailable } from '$lib/push';
 import { getPushProviderConfigKey } from '$lib/push/providers';
 import { createMozillaAutopushProviderConfig } from '$lib/push/providers/mozillaAutopush';
 import { createNtfyProviderConfig } from '$lib/push/providers/ntfy';
+import { queryKeys } from '$lib/queryClient';
 import type { PushProviderId } from '$types/push/providers';
 import {
   KUNIFIED_PUSH_PROVIDER_ID,
@@ -100,7 +101,7 @@ export const usePushProviderAvailability = ({
     );
   const providerConfigKey = getPushProviderConfigKey(pushProviderConfig);
   const availability = useQuery({
-    queryKey: ['push-provider-availability', providerConfigKey],
+    queryKey: queryKeys.pushProviderAvailability.byConfig(providerConfigKey),
     queryFn: async () => {
       const startTime = performance.now();
       try {

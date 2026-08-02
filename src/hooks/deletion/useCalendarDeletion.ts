@@ -5,6 +5,7 @@ import { useSetAllTasksView } from '$hooks/queries/useUIState';
 import { CalDAVClient } from '$lib/caldav';
 import { loggers } from '$lib/logger';
 import { disablePushForCalendar } from '$lib/push';
+import { queryKeys } from '$lib/queryClient';
 import { deleteCalendar as storeDeleteCalendar } from '$lib/store/calendars';
 import type { Account } from '$types/account';
 
@@ -82,9 +83,9 @@ export const useCalendarDeletion = () => {
           setAllTasksViewMutation.mutate();
         }
 
-        queryClient.invalidateQueries({ queryKey: ['accounts'] });
-        queryClient.invalidateQueries({ queryKey: ['tasks'] });
-        queryClient.invalidateQueries({ queryKey: ['uiState'] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.accounts.all });
+        queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+        queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
       } catch (error) {
         log.error('Failed to delete calendar:', error);
         const message = error instanceof Error ? error.message : 'An unexpected error occurred.';

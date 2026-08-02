@@ -51,7 +51,7 @@ export const useCreateFilter = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.filters.all });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -66,7 +66,7 @@ export const useUpdateFilter = () => {
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.filters.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.filters.byId(id) });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -101,8 +101,8 @@ export const useDeleteFilter = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.filters.all });
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };

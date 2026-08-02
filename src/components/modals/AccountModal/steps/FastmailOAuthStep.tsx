@@ -15,6 +15,7 @@ import {
 } from '$lib/auth/fastmail';
 import { CalDAVClient } from '$lib/caldav';
 import { loggers } from '$lib/logger';
+import { queryKeys } from '$lib/queryClient';
 import { ensureTagExists } from '$lib/store/sync';
 import { createTask } from '$lib/store/tasks';
 
@@ -128,8 +129,8 @@ export const FastmailOAuthStep = forwardRef<FastmailOAuthStepHandle, FastmailOAu
           }
         }
 
-        queryClient.invalidateQueries({ queryKey: ['tasks'] });
-        queryClient.invalidateQueries({ queryKey: ['tags'] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+        queryClient.invalidateQueries({ queryKey: queryKeys.tags.all });
 
         syncAll({
           source: 'account-setup-fastmail',
