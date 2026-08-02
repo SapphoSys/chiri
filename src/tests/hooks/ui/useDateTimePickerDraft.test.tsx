@@ -1,22 +1,59 @@
-import { act, createElement } from 'react';
+import { act, createElement, useSyncExternalStore } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDateTimePickerDraft } from '$hooks/ui/useDateTimePickerDraft';
 
-vi.mock('$context/settingsContext', () => ({
-  settingsStore: {
-    getState: () => ({
-      dateFormat: 'MMM d, yyyy',
-      startOfWeek: 'monday',
-      quickTimePresets: {
-        morning: 540,
-        afternoon: 720,
-        evening: 1020,
-        night: 1260,
+const mockSettings = vi.hoisted(() => {
+  const initialState = {
+    dateFormat: 'MMM d, yyyy',
+    startOfWeek: 'monday',
+    quickTimePresets: {
+      morning: 540,
+      afternoon: 720,
+      evening: 1020,
+      night: 1260,
+    },
+    workingDays: ['mo', 'tu', 'we', 'th', 'fr'],
+  };
+  let state = initialState;
+  const listeners = new Set<() => void>();
+
+  return {
+    store: {
+      getState: () => state,
+      subscribe: (listener: () => void) => {
+        listeners.add(listener);
+        return () => listeners.delete(listener);
       },
-      workingDays: ['mo', 'tu', 'we', 'th', 'fr'],
-    }),
-  },
+      update: (updates: Record<string, unknown>) => {
+        state = { ...state, ...updates };
+        for (const listener of listeners) listener();
+      },
+      reset: () => {
+        state = {
+          dateFormat: 'MMM d, yyyy',
+          startOfWeek: 'monday',
+          quickTimePresets: {
+            morning: 540,
+            afternoon: 720,
+            evening: 1020,
+            night: 1260,
+          },
+          workingDays: ['mo', 'tu', 'we', 'th', 'fr'],
+        };
+      },
+    },
+  };
+});
+
+vi.mock('$context/settingsContext', () => ({
+  settingsStore: mockSettings.store,
+  useSettingsStore: () =>
+    useSyncExternalStore(
+      mockSettings.store.subscribe,
+      mockSettings.store.getState,
+      mockSettings.store.getState,
+    ),
 }));
 
 vi.mock('$hooks/ui/useDatePickerKeyboardNavigation', () => ({
@@ -33,7 +70,10 @@ const DraftProbe = ({ supportsNoTime }: { supportsNoTime: boolean }) => {
     <>
       <output
         data-state={JSON.stringify({
+          daysOfWeek: draft.daysOfWeek,
           localNoTime: draft.localNoTime,
+          nextWorkingDay: draft.nextWorkingDay.getDay(),
+          quickTimePresets: draft.quickTimePresets,
           timeSelected: draft.timeSelected,
           selectedMinutes: draft.selectedMinutes,
           localHour: draft.localValue?.getHours() ?? null,
@@ -53,6 +93,7 @@ describe('useDateTimePickerDraft', () => {
   let root: Root;
 
   beforeEach(() => {
+    mockSettings.store.reset();
     (
       globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }
     ).IS_REACT_ACT_ENVIRONMENT = true;
@@ -99,6 +140,36 @@ describe('useDateTimePickerDraft', () => {
     expect(JSON.parse(output?.dataset.state ?? '{}')).toMatchObject({
       localNoTime: false,
       localHour: 12,
+    });
+  });
+
+  it('updates derived calendar settings while the picker is open', () => {
+    act(() => root.render(createElement(DraftProbe, { supportsNoTime: true })));
+
+    const output = container.querySelector('output');
+    expect(JSON.parse(output?.dataset.state ?? '{}')).toMatchObject({
+      daysOfWeek: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
+      nextWorkingDay: expect.any(Number),
+      quickTimePresets: expect.objectContaining({ morning: 540 }),
+    });
+
+    act(() => {
+      mockSettings.store.update({
+        startOfWeek: 'sunday',
+        quickTimePresets: {
+          morning: 600,
+          afternoon: 780,
+          evening: 1080,
+          night: 1320,
+        },
+        workingDays: ['sa'],
+      });
+    });
+
+    expect(JSON.parse(output?.dataset.state ?? '{}')).toMatchObject({
+      daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+      nextWorkingDay: 6,
+      quickTimePresets: expect.objectContaining({ morning: 600 }),
     });
   });
 });

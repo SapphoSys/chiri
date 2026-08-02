@@ -1,6 +1,6 @@
 import { addDays, eachDayOfInterval, endOfMonth, format, isSameDay, startOfMonth } from 'date-fns';
 import { useMemo } from 'react';
-import { settingsStore } from '$context/settingsContext';
+import { useSettingsStore } from '$context/settingsContext';
 import { type DateTimePickerState, useDateTimePickerState } from '$hooks/ui/useDateTimePickerState';
 import type { QuickTimePresets } from '$types/settings/categories/scheduling';
 import {
@@ -81,7 +81,7 @@ export const useDateTimePickerDraft = ({
     startOfWeek: weekStartsSetting,
     quickTimePresets: storedPresets,
     workingDays,
-  } = settingsStore.getState();
+  } = useSettingsStore();
   const quickTimePresets =
     storedPresets && !Array.isArray(storedPresets) ? storedPresets : DEFAULT_QUICK_TIME_PRESETS;
   const weekStartsOn = getWeekStartValue(weekStartsSetting);
