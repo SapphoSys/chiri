@@ -411,13 +411,19 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
         return;
       }
 
-      // don't trigger shortcuts when typing in inputs
       const target = e.target as HTMLElement;
-      if (isInputElement(target)) {
+      const match = findMatchingShortcut(e, keyboardShortcuts, actionHandlers, isAnyModalOpen);
+
+      // keep Ctrl/Cmd+F inside Chiri's search field. if the input guard runs
+      // first, WebView2 handles the second press with its native Find on Page
+      // accelerator instead of letting Chiri toggle the search field
+      if (isInputElement(target) && target.matches('[data-search-input]')) {
+        if (match?.shortcut.id !== 'search') return;
+      } else if (isInputElement(target)) {
+        // don't trigger other shortcuts when typing in inputs
         return;
       }
 
-      const match = findMatchingShortcut(e, keyboardShortcuts, actionHandlers, isAnyModalOpen);
       if (match) {
         e.preventDefault();
         match.handler();
