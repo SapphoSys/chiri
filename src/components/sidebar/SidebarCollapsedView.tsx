@@ -221,7 +221,7 @@ export const SidebarCollapsedView = ({
         />
       </div>
 
-      <div className="relative flex w-full shrink-0 flex-col items-center gap-1 bg-surface-100 px-1 py-2 dark:bg-surface-900">
+      <div className="app-sidebar-footer relative flex w-full shrink-0 flex-col items-center gap-1 bg-surface-100 px-1 py-2 dark:bg-surface-900">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 -top-8 h-8 bg-linear-to-t from-surface-100 to-transparent dark:from-surface-900"
