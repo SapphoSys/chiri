@@ -5,8 +5,8 @@ import {
   getRecentlyDeletedExpirationDate,
   isDiscardableUntitledLocalDraft,
   isExpiredRecentlyDeletedTask,
-} from '$utils/taskDeletion';
-import { makeTask } from '../fixtures';
+} from '$lib/task/deletion';
+import { makeTask } from '../../fixtures';
 
 const createdAt = new Date('2025-01-01T00:00:00.000Z');
 const modifiedAt = new Date('2025-01-01T00:00:01.000Z');

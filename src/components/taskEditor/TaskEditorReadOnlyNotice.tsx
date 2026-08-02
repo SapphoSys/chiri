@@ -1,8 +1,8 @@
 import Info from 'lucide-react/icons/info';
 import { useSettingsStore } from '$context/settingsContext';
+import { getRecentlyDeletedExpirationDate } from '$lib/task/deletion';
 import type { Task } from '$types/task/model';
 import { formatDate } from '$utils/date';
-import { getRecentlyDeletedExpirationDate } from '$utils/taskDeletion';
 
 interface TaskEditorReadOnlyNoticeProps {
   task: Task;

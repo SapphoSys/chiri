@@ -7,14 +7,14 @@ import { useRef, useState } from 'react';
 import { TaskEditorEmptyState } from '$components/taskEditor/TaskEditorEmptyState';
 import { TaskEditorRepeatPresetMenu } from '$components/taskEditor/TaskEditorRepeatPresetMenu';
 import { useSettingsStore } from '$context/settingsContext';
-import type { Task } from '$types/task/model';
-import { formatDate } from '$utils/date';
 import {
   getNextOccurrence,
   getRepeatPresets,
   rruleToDisplaySummary,
   rruleToText,
-} from '$utils/recurrence';
+} from '$lib/task/recurrence';
+import type { Task } from '$types/task/model';
+import { formatDate } from '$utils/date';
 
 interface TaskEditorRepeatProps {
   task: Task;

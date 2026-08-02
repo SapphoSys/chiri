@@ -1,14 +1,13 @@
 import { DEFAULT_SHORTCUTS, MAX_NOTIFICATION_ACTIONS } from '$constants';
 import { loggers } from '$lib/logger';
+import { getPercentCompleteForStatus } from '$lib/task/status';
 import type { NotificationActionSettings } from '$types/notifications/settings';
 import type { EditorFieldKey, EditorFieldVisibility } from '$types/settings/categories/editor';
 import type { WorkingDay } from '$types/settings/categories/scheduling';
 import type { SettingsState } from '$types/settings/state';
 import type { KeyboardShortcut } from '$types/shortcuts';
-
 import { isReservedShortcut } from '$utils/keyboard';
 import { normalizeProxyPort } from '$utils/misc';
-import { getPercentCompleteForStatus } from '$utils/taskStatus';
 
 const log = loggers.settings;
 

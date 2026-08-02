@@ -4,15 +4,15 @@ import { db } from '$lib/database';
 import { toAppleEpoch } from '$lib/ical/vtodo';
 import { loggers } from '$lib/logger';
 import { dataStore } from '$lib/store';
+import { isExpiredRecentlyDeletedTask } from '$lib/task/deletion';
+import { getNextOccurrence, parseRRule } from '$lib/task/recurrence';
+import { buildStatusUpdates, getNewTaskPercentComplete } from '$lib/task/status';
 import { toastManager } from '$lib/toastManager';
 import type { DefaultDateOffset, DefaultReminderOffset } from '$types/settings/categories/defaults';
 import type { WorkingDay } from '$types/settings/categories/scheduling';
 import type { Reminder, Task } from '$types/task/model';
 import { getNextWorkingDay } from '$utils/calendar';
 import { generateUUID } from '$utils/misc';
-import { getNextOccurrence, parseRRule } from '$utils/recurrence';
-import { isExpiredRecentlyDeletedTask } from '$utils/taskDeletion';
-import { buildStatusUpdates, getNewTaskPercentComplete } from '$utils/taskStatus';
 
 const resolveReminderOffsets = (
   offsets: DefaultReminderOffset[],

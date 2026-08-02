@@ -23,8 +23,8 @@ import { useTags } from '$hooks/queries/useTags';
 import { useCreateTask, useRestoreTask, useUpdateTask } from '$hooks/queries/useTasks';
 import { useSetSelectedTask } from '$hooks/queries/useUIState';
 import { exportTaskAndChildren } from '$lib/store/tasks';
+import { buildStatusUpdates } from '$lib/task/status';
 import type { Priority, Status, Task } from '$types/task/model';
-import { buildStatusUpdates } from '$utils/taskStatus';
 
 interface TaskItemContextMenuProps {
   task: Task;

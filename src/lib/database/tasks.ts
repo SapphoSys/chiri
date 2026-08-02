@@ -5,10 +5,10 @@ import { rowToTask } from '$lib/database/converters';
 import type { TaskRow } from '$lib/database/types';
 import { getUIState, setSelectedTask } from '$lib/database/ui';
 import { toAppleEpoch } from '$lib/ical/vtodo';
+import { getRecentlyDeletedRetentionCutoff } from '$lib/task/deletion';
+import { buildStatusUpdates } from '$lib/task/status';
 import type { Status, Task } from '$types/task/model';
 import { generateUUID } from '$utils/misc';
-import { getRecentlyDeletedRetentionCutoff } from '$utils/taskDeletion';
-import { buildStatusUpdates } from '$utils/taskStatus';
 
 export const getAllTasks = async (conn: DatabasePlugin) => {
   const rows = await conn.select<TaskRow[]>('SELECT * FROM tasks');

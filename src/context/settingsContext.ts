@@ -16,6 +16,7 @@ import {
   DEFAULT_MOZILLA_AUTOPUSH_WEBSOCKET_URL,
 } from '$lib/push/providers/mozillaAutopush';
 import { DEFAULT_NTFY_SERVER_URL } from '$lib/push/providers/ntfy';
+import { getPercentCompleteForStatus } from '$lib/task/status';
 import type { AccentColor, Theme } from '$types/color';
 import type { NotificationActionSettings } from '$types/notifications/settings';
 import type { PushProviderId } from '$types/push/providers';
@@ -41,7 +42,6 @@ import { applyColorScheme, getColorSchemeFlavor } from '$utils/color/scheme';
 import { applyTheme, resolveEffectiveTheme } from '$utils/color/theme';
 import { getShortcutSignature } from '$utils/keyboard';
 import { normalizeProxyPort } from '$utils/misc';
-import { getPercentCompleteForStatus } from '$utils/taskStatus';
 import { defaultState } from './settingsDefaults';
 
 const log = loggers.settings;

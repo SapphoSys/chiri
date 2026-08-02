@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { StartOfWeek } from '$types/settings/categories/region';
-import { classifyRRule } from '$utils/recurrence';
+import { classifyRRule } from '$lib/task/recurrence';
 import {
   buildRepeatRRule,
   PRESET_PERIOD_LABEL,
   parseRepeatUIState,
   type RepeatUIState,
   WEEKDAY_OPTIONS,
-} from '$utils/recurrence/editor';
+} from '$lib/task/recurrence/editor';
+import type { StartOfWeek } from '$types/settings/categories/region';
 
 interface UseRepeatDraftOptions {
   isOpen: boolean;

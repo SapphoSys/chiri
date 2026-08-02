@@ -21,7 +21,7 @@ import {
   rruleToDisplaySummary,
   rruleToFrequency,
   rruleToText,
-} from '$utils/recurrence';
+} from '$lib/task/recurrence';
 
 describe('parseRRule', () => {
   it('parses a simple rrule', () => {

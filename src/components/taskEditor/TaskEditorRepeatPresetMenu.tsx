@@ -1,7 +1,7 @@
 import SlidersHorizontal from 'lucide-react/icons/sliders-horizontal';
 import type { RefObject } from 'react';
 import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
-import type { RepeatPreset } from '$utils/recurrence';
+import type { RepeatPreset } from '$lib/task/recurrence';
 
 interface TaskEditorRepeatPresetMenuProps {
   anchorRef: RefObject<HTMLElement | null>;

@@ -42,10 +42,10 @@ import {
   useResetStaleCursorOnLayerOpen,
 } from '$hooks/ui/useStaleCursorReset';
 import { getTaskByUid } from '$lib/store/tasks';
+import { buildProgressUpdates, buildStatusUpdates } from '$lib/task/status';
 import type { EditorFieldKey } from '$types/settings/categories/editor';
 import type { Status, Task } from '$types/task/model';
 import { getContrastTextColor } from '$utils/color';
-import { buildProgressUpdates, buildStatusUpdates } from '$utils/taskStatus';
 
 interface TaskEditorProps {
   task: Task;

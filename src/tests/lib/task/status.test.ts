@@ -3,7 +3,7 @@ import {
   buildProgressUpdates,
   buildStatusUpdates,
   getNewTaskPercentComplete,
-} from '$utils/taskStatus';
+} from '$lib/task/status';
 
 const current = (percentComplete?: number, completedAt?: Date) => ({
   percentComplete,

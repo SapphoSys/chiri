@@ -5,8 +5,8 @@ import { useAccounts } from '$hooks/queries/useAccounts';
 import { useTags } from '$hooks/queries/useTags';
 import { useBatchUpdateTasks, useRestoreTask } from '$hooks/queries/useTasks';
 import { exportTaskAndChildren } from '$lib/store/tasks';
+import { buildStatusUpdates } from '$lib/task/status';
 import type { Priority, Status, Task } from '$types/task/model';
-import { buildStatusUpdates } from '$utils/taskStatus';
 
 export type TaskBatchMenu = 'status' | 'priority' | null;
 

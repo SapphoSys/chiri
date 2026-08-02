@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildRepeatRRule, parseRepeatUIState } from '$utils/recurrence/editor';
+import { buildRepeatRRule, parseRepeatUIState } from '$lib/task/recurrence/editor';
 
 describe('repeat rule editor conversions', () => {
   it('parses ordinal monthly rules into the visual editor state', () => {

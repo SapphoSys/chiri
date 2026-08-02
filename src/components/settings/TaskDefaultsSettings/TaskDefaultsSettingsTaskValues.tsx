@@ -7,8 +7,8 @@ import { useState } from 'react';
 import { PRIORITIES } from '$constants/priority';
 import { useSettingsStore } from '$context/settingsContext';
 import { defaultState } from '$context/settingsDefaults';
+import { getPercentCompleteForStatus } from '$lib/task/status';
 import type { Status } from '$types/task/model';
-import { getPercentCompleteForStatus } from '$utils/taskStatus';
 
 const STATUS_OPTIONS = [
   {

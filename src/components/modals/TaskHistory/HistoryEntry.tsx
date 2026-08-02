@@ -18,10 +18,10 @@ import Timer from 'lucide-react/icons/timer';
 import Type from 'lucide-react/icons/type';
 import Upload from 'lucide-react/icons/upload';
 import type { ReactNode } from 'react';
+import { rruleToText } from '$lib/task/recurrence';
 import type { LucideIcon } from '$types/lucide';
 import type { TaskHistoryEntry } from '$types/task/history';
 import { formatDate, formatTime } from '$utils/date';
-import { rruleToText } from '$utils/recurrence';
 
 const FIELD_LABELS: Record<string, string> = {
   created: 'Created',

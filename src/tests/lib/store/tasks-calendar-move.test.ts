@@ -59,7 +59,7 @@ vi.mock('$lib/ical/vtodo', () => ({
   toAppleEpoch: vi.fn((ms: number) => ms),
 }));
 
-vi.mock('$utils/recurrence', () => ({
+vi.mock('$lib/task/recurrence', () => ({
   getNextOccurrence: vi.fn(),
   parseRRule: vi.fn(() => ({})),
 }));

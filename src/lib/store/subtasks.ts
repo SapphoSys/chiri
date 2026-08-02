@@ -1,8 +1,8 @@
 import { settingsStore } from '$context/settingsContext';
 import { db } from '$lib/database';
+import { buildStatusUpdates } from '$lib/task/status';
 import type { Task } from '$types/task/model';
 import { generateUUID } from '$utils/misc';
-import { buildStatusUpdates } from '$utils/taskStatus';
 
 /**
  * add a subtask by creating a new child Task

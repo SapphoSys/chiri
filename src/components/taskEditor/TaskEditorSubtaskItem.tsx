@@ -13,9 +13,9 @@ import {
 } from 'react';
 import { useChildTasks } from '$hooks/queries/useTasks';
 import { usePrefersReducedMotion } from '$hooks/ui/usePrefersReducedMotion';
+import { buildStatusUpdates } from '$lib/task/status';
 import type { Task } from '$types/task/model';
 import { getSortableItemDisabled, getSortableItemId } from '$utils/sortable';
-import { buildStatusUpdates } from '$utils/taskStatus';
 
 const createAnimateLayoutChanges =
   (prefersReducedMotion: boolean): AnimateLayoutChanges =>

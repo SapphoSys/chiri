@@ -5,10 +5,10 @@ import { RepeatRuleAlerts } from '$components/modals/RepeatModal/RepeatRuleAlert
 import { RepeatRuleSummary } from '$components/modals/RepeatModal/RepeatRuleSummary';
 import { Select } from '$components/Select';
 import type { RepeatDraft } from '$hooks/ui/useRepeatDraft';
+import type { CustomPeriod, EndMode, MonthlyMode } from '$lib/task/recurrence/editor';
+import { CUSTOM_PERIOD_OPTIONS, WEEKDAY_OPTIONS } from '$lib/task/recurrence/editor';
 import type { DateFormat } from '$types/settings/categories/region';
 import { formatDate } from '$utils/date';
-import type { CustomPeriod, EndMode, MonthlyMode } from '$utils/recurrence/editor';
-import { CUSTOM_PERIOD_OPTIONS, WEEKDAY_OPTIONS } from '$utils/recurrence/editor';
 
 interface RepeatRuleEditorProps {
   draft: RepeatDraft;

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { RepeatModal } from '$components/modals/RepeatModal/RepeatModal';
 import { useSettingsStore } from '$context/settingsContext';
 import { defaultState } from '$context/settingsDefaults';
-import { rruleToText } from '$utils/recurrence';
+import { rruleToText } from '$lib/task/recurrence';
 
 export const TaskDefaultsSettingsRecurrenceSection = () => {
   const { defaultRrule, setDefaultRrule, defaultRepeatFrom, setDefaultRepeatFrom, dateFormat } =
