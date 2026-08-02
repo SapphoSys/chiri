@@ -154,4 +154,30 @@ describe('SidebarOverlays', () => {
       container.querySelector('[data-overlay="context-menu"]')?.getAttribute('data-type'),
     ).toBe('account');
   });
+
+  it('renders no modal overlays when their owning state is closed', async () => {
+    await act(async () => {
+      root.render(
+        <SidebarOverlays
+          contextMenuOverlay={{
+            ...contextMenuOverlay,
+            contextMenu: { type: 'calendar', id: 'calendar-1', x: 10, y: 20 },
+          }}
+          modalOverlays={{
+            ...modalOverlays,
+            modals: {
+              ...modalOverlays.modals,
+              showAccountModal: false,
+              editingAccountId: null,
+              mobileConfigAccountId: null,
+            },
+          }}
+        />,
+      );
+    });
+
+    expect(container.querySelector('[data-overlay="context-menu"]')).not.toBeNull();
+    expect(container.querySelector('[data-overlay="account-modal"]')).toBeNull();
+    expect(container.querySelector('[data-overlay="mobile-config-modal"]')).toBeNull();
+  });
 });
