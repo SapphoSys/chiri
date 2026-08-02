@@ -15,7 +15,7 @@ import { TaskEditor } from '$components/taskEditor/TaskEditor';
 import { useSettingsStore } from '$context/settingsContext';
 import { useWindowFullscreen } from '$hooks/system/useWindowFullscreen';
 import type { Task } from '$types/task/model';
-import { isMacPlatform, isWindowsPlatform } from '$utils/platform';
+import { isMacPlatform } from '$utils/platform';
 
 interface AppShellProps {
   children: ReactNode;
@@ -84,11 +84,10 @@ export const AppShell = ({
   onOpenNotificationSettings,
 }: AppShellProps) => {
   const isMac = isMacPlatform();
-  const isWindows = isWindowsPlatform();
   const isFullscreen = useWindowFullscreen();
   const { windowDecorationStyle } = useSettingsStore();
   const usesIntegratedTitlebar = isMac && windowDecorationStyle === 'integrated';
-  const platform = usesIntegratedTitlebar ? 'macos' : isWindows ? 'windows' : undefined;
+  const platform = usesIntegratedTitlebar ? 'macos' : undefined;
   const appliedWindowDecorationStyle = useRef(windowDecorationStyle);
 
   useEffect(() => {
@@ -138,7 +137,7 @@ export const AppShell = ({
         onUpdateClick={onUpdateClick}
       />
 
-      <main className="flex min-w-0 flex-1 flex-col bg-surface-50 dark:bg-surface-900">
+      <main className="flex min-w-0 flex-1 flex-col">
         {usesIntegratedTitlebar ? (
           <div data-tauri-drag-region className="pointer-events-auto flex h-13 shrink-0 flex-col">
             <Header

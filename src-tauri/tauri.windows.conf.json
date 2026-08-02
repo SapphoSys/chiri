@@ -1,25 +1,4 @@
 {
-  "app": {
-    "windows": [
-      {
-        "fullscreen": false,
-        "resizable": true,
-        "title": "Chiri",
-        "width": 1200,
-        "height": 800,
-        "minWidth": 800,
-        "minHeight": 600,
-        "dragDropEnabled": false,
-        "backgroundColor": "#00000000",
-        "visible": false,
-        "focus": true,
-        "transparent": true,
-        "windowEffects": {
-          "effects": ["acrylic"]
-        }
-      }
-    ]
-  },
   "bundle": {
     "targets": ["nsis", "msi"],
     "icon": ["icons/icon.ico"],

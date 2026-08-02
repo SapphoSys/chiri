@@ -29,26 +29,6 @@
   pointer-events: none;
 }
 
-/* Tauri's Windows backdrop is applied to the native window, so keep the
-   content pane opaque and let only the sidebar reveal the acrylic surface */
-.app-shell[data-platform="windows"] {
-  background-color: transparent;
-}
-
-.app-shell[data-platform="windows"] .app-sidebar,
-.app-shell[data-platform="windows"] .app-sidebar-footer {
-  background-color: color-mix(in srgb, var(--surface-100, #f4f4f5) 78%, transparent);
-}
-
-.app-shell[data-platform="windows"] .app-sidebar-footer {
-  background-image: none;
-}
-
-.dark .app-shell[data-platform="windows"] .app-sidebar,
-.dark .app-shell[data-platform="windows"] .app-sidebar-footer {
-  background-color: color-mix(in srgb, var(--surface-900, #18181b) 78%, transparent);
-}
-
 .app-shell[data-platform="macos"] {
   --app-traffic-light-offset: 90px;
 }
