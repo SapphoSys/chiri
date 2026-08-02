@@ -6,7 +6,11 @@ import { loggers } from '$lib/logger';
 import { dataStore } from '$lib/store';
 import { isExpiredRecentlyDeletedTask } from '$lib/task/deletion';
 import { getNextOccurrence, parseRRule } from '$lib/task/recurrence';
-import { buildStatusUpdates, getNewTaskPercentComplete } from '$lib/task/status';
+import {
+  buildStatusUpdates,
+  getNewTaskPercentComplete,
+  getTaskStatusAfterCompletionToggle,
+} from '$lib/task/status';
 import { toastManager } from '$lib/toastManager';
 import type { DefaultDateOffset, DefaultReminderOffset } from '$types/settings/categories/defaults';
 import type { WorkingDay } from '$types/settings/categories/scheduling';
@@ -627,7 +631,7 @@ export const removeLocalTask = (id: string) => {
 };
 
 // task toggles
-export const toggleTaskComplete = (id: string) => {
+export const toggleTaskComplete = (id: string, completeInProcess = false) => {
   const data = dataStore.load();
   const task = data.tasks.find((t) => t.id === id);
   if (!task) return;
@@ -640,12 +644,7 @@ export const toggleTaskComplete = (id: string) => {
     if (handled) return;
   }
 
-  const newStatus =
-    task.status === 'completed'
-      ? 'needs-action'
-      : task.status === 'cancelled' || task.status === 'in-process'
-        ? 'needs-action'
-        : 'completed';
+  const newStatus = getTaskStatusAfterCompletionToggle(task.status, completeInProcess);
 
   const updates = {
     ...buildStatusUpdates(newStatus, task, new Date(), settingsStore.getState().syncStatusProgress),

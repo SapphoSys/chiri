@@ -25,7 +25,7 @@ import {
   toggleTaskComplete,
   updateTask,
 } from '$lib/store/tasks';
-import { buildStatusUpdates } from '$lib/task/status';
+import { buildStatusUpdates, getTaskStatusAfterCompletionToggle } from '$lib/task/status';
 import type { FlattenedTask } from '$types/store/tasks';
 import type { Task } from '$types/task/model';
 
@@ -255,18 +255,16 @@ export const usePermanentDeleteTask = () => {
 /**
  * hook to toggle task completion
  */
-export const useToggleTaskComplete = () => {
+export const useToggleTaskComplete = (options: { completeInProcess?: boolean } = {}) => {
   const queryClient = useQueryClient();
+  const { completeInProcess = false } = options;
 
   return useMutation({
     mutationFn: async (id: string) => {
       const task = getTaskById(id);
       if (!task) return task;
-      const newStatus =
-        task.status === 'completed' || task.status === 'cancelled' || task.status === 'in-process'
-          ? 'needs-action'
-          : 'completed';
-      toggleTaskComplete(id);
+      const newStatus = getTaskStatusAfterCompletionToggle(task.status, completeInProcess);
+      toggleTaskComplete(id, completeInProcess);
       await db.logHistoryForTaskUpdate(
         task.uid,
         task,

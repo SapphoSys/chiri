@@ -3,6 +3,7 @@ import {
   buildProgressUpdates,
   buildStatusUpdates,
   getNewTaskPercentComplete,
+  getTaskStatusAfterCompletionToggle,
 } from '$lib/task/status';
 
 const current = (percentComplete?: number, completedAt?: Date) => ({
@@ -62,6 +63,18 @@ describe('buildStatusUpdates', () => {
       completed: true,
       completedAt: expect.any(Date),
     });
+  });
+});
+
+describe('getTaskStatusAfterCompletionToggle', () => {
+  it('completes in-process tasks when requested by the task editor', () => {
+    expect(getTaskStatusAfterCompletionToggle('in-process', true)).toBe('completed');
+  });
+
+  it('keeps the existing toggle behavior by default', () => {
+    expect(getTaskStatusAfterCompletionToggle('in-process')).toBe('needs-action');
+    expect(getTaskStatusAfterCompletionToggle('completed')).toBe('needs-action');
+    expect(getTaskStatusAfterCompletionToggle('needs-action')).toBe('completed');
   });
 });
 

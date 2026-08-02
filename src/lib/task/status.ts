@@ -18,6 +18,17 @@ export const getPercentCompleteForStatus = (
   return 0;
 };
 
+export const getTaskStatusAfterCompletionToggle = (
+  status: Status,
+  completeInProcess = false,
+): Status => {
+  if (status === 'completed') return 'needs-action';
+  if (status === 'cancelled' || (status === 'in-process' && !completeInProcess)) {
+    return 'needs-action';
+  }
+  return 'completed';
+};
+
 export const getNewTaskPercentComplete = (
   taskStatus: Status | undefined,
   taskPercentComplete: number | undefined,

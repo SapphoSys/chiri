@@ -49,7 +49,7 @@ export const TaskEditorTitle = ({
   readOnly = false,
 }: TaskEditorTitleProps) => {
   const [pendingTitle, updatePendingTitle] = useDebouncedTaskUpdate(task.id, 'title', task.title);
-  const toggleTaskCompleteMutation = useToggleTaskComplete();
+  const toggleTaskCompleteMutation = useToggleTaskComplete({ completeInProcess: true });
   const titleRef = useRef<HTMLTextAreaElement>(null);
 
   // focus newly-created blank tasks once, without stealing focus on later visits
