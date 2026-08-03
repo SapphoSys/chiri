@@ -8,7 +8,7 @@ import { TaskEditorEmptyState } from '$components/taskEditor/TaskEditorEmptyStat
 import { TaskEditorSubtaskItem } from '$components/taskEditor/TaskEditorSubtaskItem';
 import { useChildTasks, useCreateTask, useTasks } from '$hooks/queries/useTasks';
 import { truncateName, useSortableDrag } from '$hooks/ui/useSortableDrag';
-import { getSortedTasks } from '$lib/filters';
+import { getSortedTasks } from '$lib/store/tasks';
 import type { FlattenedTask } from '$types/store/tasks';
 import type { Task } from '$types/task/model';
 import { getSortableItemKey } from '$utils/sortable';

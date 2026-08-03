@@ -2,10 +2,10 @@ import { useMemo } from 'react';
 import { DEFAULT_SORT_CONFIG, DEFAULT_TASK_GROUP_CONFIG } from '$constants';
 import { useFilteredTasks } from '$hooks/queries/useTasks';
 import { useUIState } from '$hooks/queries/useUIState';
-import { getSortedTasks } from '$lib/filters';
-import { groupTasks, type TaskGroup } from '$lib/grouping';
 import { dataStore } from '$lib/store';
 import { getChildTasks } from '$lib/store/tasks';
+import { groupTasks, type TaskGroup } from '$lib/task/grouping';
+import { sortTasks } from '$lib/task/sorting';
 import type { SortConfig, TaskGroupConfig } from '$types/sort';
 import type { UIState } from '$types/store/state';
 import type { FlattenedTask } from '$types/store/tasks';
@@ -37,7 +37,7 @@ export const getVisibleTaskGroups = ({
   const topLevelTasks = filteredTasks.filter(
     (task) => !task.parentUid || !visibleTaskUids.has(task.parentUid),
   );
-  const sortedTopLevel = getSortedTasks(topLevelTasks, sortConfig, moveCompletedTasksToBottom);
+  const sortedTopLevel = sortTasks(topLevelTasks, sortConfig, moveCompletedTasksToBottom);
 
   const getFilteredChildTasks = (parentUid: string) => {
     const children = getChildTasks(
@@ -59,7 +59,7 @@ export const getVisibleTaskGroups = ({
   ).map((group) => ({
     ...group,
     tasks: flattenTasks(group.tasks, getFilteredChildTasks, (tasks) =>
-      getSortedTasks(tasks, sortConfig, moveCompletedTasksToBottom),
+      sortTasks(tasks, sortConfig, moveCompletedTasksToBottom),
     ),
   }));
 };

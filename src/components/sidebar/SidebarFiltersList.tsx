@@ -14,7 +14,7 @@ import { type MouseEvent, useCallback, useRef, useState } from 'react';
 import { SidebarFilterItem } from '$components/sidebar/SidebarFilterItem';
 import { Tooltip } from '$components/Tooltip';
 import { useReorderFilters } from '$hooks/queries/useFilters';
-import { matchesFilter } from '$lib/filters';
+import { matchesFilter } from '$lib/task/filtering';
 import type { Filter } from '$types/filter';
 import type { Task } from '$types/task/model';
 

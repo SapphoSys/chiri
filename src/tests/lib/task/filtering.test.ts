@@ -1,16 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { matchesFilter } from '$lib/task/filtering';
 import type { Filter } from '$types/filter';
 import { makeTask } from '../../fixtures';
-
-vi.mock('@tauri-apps/plugin-sql', () => ({ default: { load: vi.fn() } }));
-vi.mock('$lib/database', () => ({
-  db: {
-    subscribe: vi.fn(() => vi.fn()),
-    getIsInitialized: vi.fn(() => false),
-  },
-}));
-
-import { matchesFilter } from '$lib/filters';
 
 const makeFilter = (overrides: Partial<Filter>): Filter => ({
   id: 'filter-1',

@@ -5,7 +5,9 @@ import { toAppleEpoch } from '$lib/ical/vtodo';
 import { loggers } from '$lib/logger';
 import { dataStore } from '$lib/store';
 import { isExpiredRecentlyDeletedTask } from '$lib/task/deletion';
+import { isCompletedTask, matchesFilter } from '$lib/task/filtering';
 import { getNextOccurrence, parseRRule } from '$lib/task/recurrence';
+import { sortTasks } from '$lib/task/sorting';
 import {
   buildStatusUpdates,
   getNewTaskPercentComplete,
@@ -14,6 +16,7 @@ import {
 import { toastManager } from '$lib/toastManager';
 import type { DefaultDateOffset, DefaultReminderOffset } from '$types/settings/categories/defaults';
 import type { WorkingDay } from '$types/settings/categories/scheduling';
+import type { SortConfig } from '$types/sort';
 import type { Reminder, Task } from '$types/task/model';
 import { getNextWorkingDay } from '$utils/calendar';
 import { generateUUID } from '$utils/misc';
@@ -702,3 +705,89 @@ export const exportTaskAndChildren = (taskId: string) => {
   // appear in the export modal count or the exported file
   return { task, descendants: getAllDescendants(task.uid, 'active') };
 };
+
+const matchesDeletionVisibility = (task: Task, activeView: string) => {
+  return activeView === 'recently-deleted' ? !!task.deletedAt : !task.deletedAt;
+};
+
+const matchesActiveScope = (
+  task: Task,
+  activeView: string,
+  activeTagId: string | null,
+  activeCalendarId: string | null,
+) => {
+  if (activeView === 'recently-deleted') return true;
+  if (activeTagId !== null) return (task.tags ?? []).includes(activeTagId);
+  if (activeCalendarId !== null) return task.calendarId === activeCalendarId;
+  return true;
+};
+
+const matchesSearchQuery = (task: Task, tasks: Task[], activeView: string, searchQuery: string) => {
+  const query = searchQuery.toLowerCase();
+
+  if (
+    task.title.toLowerCase().includes(query) ||
+    task.description.toLowerCase().includes(query) ||
+    task.url?.toLowerCase().includes(query)
+  ) {
+    return true;
+  }
+
+  const childTasks = tasks.filter((candidate) => {
+    if (candidate.parentUid !== task.uid) return false;
+    return activeView === 'recently-deleted' ? !!candidate.deletedAt : !candidate.deletedAt;
+  });
+
+  return childTasks.some((child) => child.title.toLowerCase().includes(query));
+};
+
+export const getFilteredTasks = () => {
+  const data = dataStore.load();
+  const {
+    activeView,
+    searchQuery,
+    showCompletedTasks,
+    showUnstartedTasks,
+    activeCalendarId,
+    activeTagId,
+    activeFilterId,
+  } = data.ui;
+  const activeFilter =
+    activeView === 'filter' && activeFilterId
+      ? data.filters.find((filter) => filter.id === activeFilterId)
+      : undefined;
+  const activeFilterControlsStatus = activeFilter?.criteria.some((c) => c.field === 'status');
+  const activeFilterControlsStartDate = activeFilter?.criteria.some((c) => c.field === 'startDate');
+
+  return data.tasks.filter((task) => {
+    if (!matchesDeletionVisibility(task, activeView)) return false;
+    if (!matchesActiveScope(task, activeView, activeTagId, activeCalendarId)) return false;
+
+    if (activeFilter && !matchesFilter(task, activeFilter)) {
+      return false;
+    }
+
+    // filter by completion status (completed and cancelled are both "done")
+    if (!activeFilterControlsStatus && !showCompletedTasks && isCompletedTask(task)) {
+      return false;
+    }
+
+    // filter by start date (hide unstarted tasks with future start dates)
+    if (!activeFilterControlsStartDate && !showUnstartedTasks && task.startDate) {
+      if (new Date(task.startDate) > new Date()) {
+        return false;
+      }
+    }
+
+    // filter by search query
+    if (searchQuery) return matchesSearchQuery(task, data.tasks, activeView, searchQuery);
+
+    return true;
+  });
+};
+
+export const getSortedTasks = (
+  tasks: Task[],
+  sortConfig?: SortConfig,
+  moveCompletedTasksToBottom = false,
+) => sortTasks(tasks, sortConfig ?? dataStore.load().ui.sortConfig, moveCompletedTasksToBottom);
