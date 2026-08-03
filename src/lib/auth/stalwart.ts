@@ -384,16 +384,16 @@ const exchangeStalwartCode = async (
 export const refreshStalwartToken = async (
   serverUrl: string,
   refreshToken: string,
-  clientId: string,
+  clientId?: string,
   { acceptInvalidCerts = false }: { acceptInvalidCerts?: boolean } = {},
 ): Promise<OAuthTokens> => {
   const metadata = await discoverStalwartOAuthEndpoints(serverUrl, acceptInvalidCerts);
   const body = new URLSearchParams({
     grant_type: 'refresh_token',
-    client_id: clientId,
     refresh_token: refreshToken,
     scope: STALWART_SCOPE,
   });
+  if (clientId) body.set('client_id', clientId);
 
   const res = await invoke<HttpResponse>('http_request', {
     url: metadata.token_endpoint,

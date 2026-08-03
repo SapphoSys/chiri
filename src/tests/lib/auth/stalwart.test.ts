@@ -125,6 +125,36 @@ describe('refreshStalwartToken', () => {
     expect(tokens.refreshToken).toBe('refresh-token');
     expect(tokens.tokenExpiry).toBeDefined();
   });
+
+  it('refreshes without a client id', async () => {
+    mocks.invoke
+      .mockResolvedValueOnce({
+        status: 200,
+        body: JSON.stringify({
+          issuer: 'http://localhost:8083',
+          authorization_endpoint: 'http://localhost:8083/login',
+          token_endpoint: 'http://localhost:8083/auth/token',
+        }),
+      })
+      .mockResolvedValueOnce({
+        status: 200,
+        body: JSON.stringify({
+          access_token: 'new-access-token-without-client-id',
+          token_type: 'bearer',
+          expires_in: 3600,
+        }),
+      });
+
+    const tokens = await refreshStalwartToken('http://localhost:8083', 'refresh-token');
+
+    expect(tokens.accessToken).toBe('new-access-token-without-client-id');
+    expect(mocks.invoke).toHaveBeenLastCalledWith(
+      'http_request',
+      expect.objectContaining({
+        body: expect.not.stringContaining('client_id='),
+      }),
+    );
+  });
 });
 
 describe('usernameFromPrincipalUrl', () => {

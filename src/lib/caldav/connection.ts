@@ -526,11 +526,6 @@ export const reconnect = async (
           if (caldav.serverType === 'fastmail') {
             fresh = await refreshFastmailToken(caldav.refreshToken);
           } else if (caldav.serverType === 'stalwart') {
-            if (!caldav.oauthClientId) {
-              throw new Error(
-                'Missing Stalwart OAuth client id; re-add the account to refresh the token.',
-              );
-            }
             fresh = await refreshStalwartToken(
               caldav.serverUrl,
               caldav.refreshToken,

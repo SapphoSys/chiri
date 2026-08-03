@@ -156,4 +156,24 @@ integration('Stalwart OAuth CalDAV end-to-end', () => {
     expect(tokens.access_token).toBeTruthy();
     expect(tokens.access_token).not.toBe(accessToken);
   }, 60_000);
+
+  it('refresh token works without a client id', async () => {
+    const refreshBody = new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+    });
+
+    const metadataRes = await fetch(`${serverUrl}/.well-known/oauth-authorization-server`);
+    const metadata = (await metadataRes.json()) as { token_endpoint: string };
+
+    const tokenRes = await fetch(metadata.token_endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: refreshBody.toString(),
+    });
+    expect(tokenRes.status).toBe(200);
+    const tokens = (await tokenRes.json()) as { access_token: string };
+    expect(tokens.access_token).toBeTruthy();
+    expect(tokens.access_token).not.toBe(accessToken);
+  }, 60_000);
 });
