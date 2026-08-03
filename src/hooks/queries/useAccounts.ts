@@ -29,6 +29,7 @@ export const useAccounts = () => {
   return useQuery({
     queryKey: queryKeys.accounts.all,
     queryFn: () => getAllAccounts(),
+    initialData: getAllAccounts,
     staleTime: Infinity,
   });
 };

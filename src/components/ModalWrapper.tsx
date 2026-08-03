@@ -40,6 +40,7 @@ interface ModalWrapperProps {
   escapeLayerType?: DismissableLayerType;
   backdropProps?: ModalWrapperBackdropProps;
   backdropClassName?: string;
+  animateBackdrop?: boolean;
   dialogAnimationDelayMs?: number;
   className?: string;
 }
@@ -70,6 +71,7 @@ export const ModalWrapper = ({
   escapeLayerType = 'modal',
   backdropProps,
   backdropClassName,
+  animateBackdrop = true,
   dialogAnimationDelayMs = 0,
   className,
 }: ModalWrapperProps) => {
@@ -119,6 +121,7 @@ export const ModalWrapper = ({
       className="cursor-default p-4"
       backdropClassName={backdropClassName}
       zIndex={zIndex}
+      animate={animateBackdrop}
       {...backdropProps}
     >
       <div

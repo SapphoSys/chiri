@@ -71,6 +71,7 @@ export const useTasks = () => {
   return useQuery({
     queryKey: queryKeys.tasks.all,
     queryFn: () => getAllTasks(),
+    initialData: getAllTasks,
     staleTime: Infinity, // Data is managed by our data layer
   });
 };

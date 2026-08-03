@@ -35,6 +35,7 @@ const STEP_IDS = [
   'startup-window',
   'ready',
 ] as const;
+const FINISH_ANIMATION_MS = 200;
 
 export const OnboardingModal = ({
   hasCalDAVAccount,
@@ -43,7 +44,9 @@ export const OnboardingModal = ({
 }: OnboardingModalProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [taskHome, setTaskHome] = useState<TaskHome>('caldav');
+  const [isFinishing, setIsFinishing] = useState(false);
   const appliedMacNotificationDefaultsRef = useRef(false);
+  const finishTimeoutRef = useRef<number | null>(null);
   const {
     setOnboardingCompleted,
     notifications,
@@ -81,12 +84,23 @@ export const OnboardingModal = ({
     setNotifyOverdue(false);
   }, [currentStep, isMac, setNotifications, setNotifyOverdue, setNotifyReminders]);
 
+  useEffect(() => {
+    return () => {
+      if (finishTimeoutRef.current !== null) {
+        window.clearTimeout(finishTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const completeOnboarding = () => {
     setOnboardingCompleted(true);
   };
 
   const finishOnboarding = () => {
-    completeOnboarding();
+    if (isFinishing) return;
+
+    setIsFinishing(true);
+    finishTimeoutRef.current = window.setTimeout(completeOnboarding, FINISH_ANIMATION_MS);
   };
 
   const handleNext = () => {
@@ -138,8 +152,9 @@ export const OnboardingModal = ({
       onClose={() => {}}
       preventClose
       zIndex="z-60"
-      className="max-w-2xl"
-      backdropClassName="bg-black/35 backdrop-blur-md"
+      className={`max-w-2xl transition-[opacity,transform] duration-200 ease-out ${isFinishing ? 'pointer-events-none scale-[0.98] opacity-0' : ''}`}
+      backdropClassName={`bg-surface-50 transition-opacity duration-200 ease-out dark:bg-surface-900 ${isFinishing ? 'opacity-0' : 'opacity-100'}`}
+      animateBackdrop={false}
       dialogAnimationDelayMs={0}
       footerLeft={footerLeft}
       footer={
