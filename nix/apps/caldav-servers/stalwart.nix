@@ -6,6 +6,7 @@
 #   - test user: unit-tests / unit-tests
 #
 # override with CALDAV_DATA_DIR, CALDAV_PORT, CALDAV_USERNAME, CALDAV_PASSWORD
+# set CALDAV_RESET=1 to recreate an existing disposable fixture
 #
 # auto-seeded on first run: starts Stalwart in recovery mode, provisions an
 # internal domain, HTTP listener, test account, and a CalDAV-capable role via
@@ -23,6 +24,8 @@ let
     runtimeInputs = [
       pkgs.stalwart_0_16
       pkgs.stalwart-cli
+      pkgs.coreutils
+      pkgs.lsof
       pkgs.python3
     ];
     text = ''
@@ -30,8 +33,11 @@ let
       PORT="''${CALDAV_PORT:-8082}"
       USERNAME="''${CALDAV_USERNAME:-unit-tests}"
       PASSWORD="''${CALDAV_PASSWORD:-unit-tests}"
+      RESET="''${CALDAV_RESET:-0}"
       export STALWART_PUBLIC_URL="''${STALWART_PUBLIC_URL:-http://localhost:$PORT}"
       RECOVERY_PORT=$((PORT + 10000))
+      SEED_MARKER="$DATA_DIR/.seeded"
+      SEED_SIGNATURE="$(printf '%s\0%s\0%s' "$PORT" "$USERNAME" "$PASSWORD" | sha256sum | cut -d' ' -f1)"
 
       if [ "$RECOVERY_PORT" -gt 65535 ]; then
         echo "error: recovery port $RECOVERY_PORT is out of range; use a CALDAV_PORT below 55535" >&2
@@ -47,8 +53,23 @@ let
       # Seed the datastore on first run. Recovery mode exposes the management API
       # on a separate port so we can declaratively provision the domain, listener,
       # role, and test account without going through the WebUI bootstrap wizard.
-      if [ ! -f "$DATA_DIR/.seeded" ] || [ ! -d "$DATA_DIR/db" ]; then
-        python3 - "$DATA_DIR" "$PORT" "$RECOVERY_PORT" "$USERNAME" "$PASSWORD" <<'PY'
+      NEEDS_SEED=0
+      if [ "$RESET" = "1" ] || [ ! -f "$SEED_MARKER" ] || [ ! -d "$DATA_DIR/db" ]; then
+        NEEDS_SEED=1
+      elif [ "$(<"$SEED_MARKER")" != "$SEED_SIGNATURE" ]; then
+        echo "error: $DATA_DIR was seeded with different CalDAV test settings" >&2
+        echo "       use a new CALDAV_DATA_DIR or set CALDAV_RESET=1 to recreate it" >&2
+        exit 1
+      fi
+
+      if [ "$NEEDS_SEED" = "1" ]; then
+        if [ -f "$DATA_DIR/db/LOCK" ] && lsof "$DATA_DIR/db/LOCK" >/dev/null 2>&1; then
+          echo "error: $DATA_DIR is already in use by a running Stalwart process" >&2
+          echo "       stop that process before using CALDAV_RESET=1" >&2
+          exit 1
+        fi
+
+        python3 - "$DATA_DIR" "$PORT" "$RECOVERY_PORT" "$USERNAME" "$PASSWORD" "$SEED_SIGNATURE" <<'PY'
       import json
       import os
       import shutil
@@ -251,7 +272,7 @@ let
               proc.wait()
 
       with open(os.path.join(data_dir, ".seeded"), "w") as f:
-          f.write("")
+          f.write(sys.argv[6])
       print("Stalwart seeded successfully")
       PY
       fi
