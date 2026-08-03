@@ -44,10 +44,17 @@ import type {
 type SetSelectedTaskInput = string | null | { id: string | null; focusTitle?: boolean };
 
 let pendingTitleAutofocusTaskId: string | null = null;
+let pendingTaskListScrollTaskId: string | null = null;
 
 export const consumeSelectedTaskTitleAutofocus = (taskId: string) => {
   if (pendingTitleAutofocusTaskId !== taskId) return false;
   pendingTitleAutofocusTaskId = null;
+  return true;
+};
+
+export const consumeSelectedTaskListScroll = (taskId: string) => {
+  if (pendingTaskListScrollTaskId !== taskId) return false;
+  pendingTaskListScrollTaskId = null;
   return true;
 };
 
@@ -300,6 +307,7 @@ export const useSetSelectedTask = () => {
         typeof input === 'object' && input !== null ? (input.focusTitle ?? false) : false;
 
       pendingTitleAutofocusTaskId = focusTitle && id !== null ? id : null;
+      pendingTaskListScrollTaskId = focusTitle && id !== null ? id : null;
       setSelectedTask(id);
       return Promise.resolve();
     },
@@ -317,7 +325,10 @@ export const useSetEditorOpen = () => {
 
   return useMutation({
     mutationFn: (open: boolean) => {
-      if (!open) pendingTitleAutofocusTaskId = null;
+      if (!open) {
+        pendingTitleAutofocusTaskId = null;
+        pendingTaskListScrollTaskId = null;
+      }
       setEditorOpen(open);
       return Promise.resolve();
     },

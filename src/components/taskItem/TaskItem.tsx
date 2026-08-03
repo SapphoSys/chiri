@@ -13,6 +13,7 @@ import { useTaskHighlight } from '$context/taskHighlightContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useToggleTaskComplete, useUpdateTask } from '$hooks/queries/useTasks';
 import {
+  consumeSelectedTaskListScroll,
   useSetActiveAccount,
   useSetActiveCalendar,
   useSetActiveTag,
@@ -143,6 +144,24 @@ export const TaskItem = ({
       taskElementRef.current?.focus();
     }
   }, [isSelected, isMultiSelected, isOverlay]);
+
+  // scroll newly-created tasks into view when they are selected
+  useEffect(() => {
+    if (
+      !isSelected ||
+      isMultiSelected ||
+      isOverlay ||
+      !taskElementRef.current ||
+      !consumeSelectedTaskListScroll(task.id)
+    ) {
+      return;
+    }
+
+    taskElementRef.current.scrollIntoView({
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      block: 'nearest',
+    });
+  }, [isSelected, isMultiSelected, isOverlay, prefersReducedMotion, task.id]);
 
   // scroll the task into view when it is highlighted from a notification click
   useEffect(() => {
