@@ -56,8 +56,6 @@ export const OnboardingModal = ({
     showAppIconBadge,
     enableSystemTray,
     setEnableSystemTray,
-    showWindowOnNormalLaunch,
-    setShowWindowOnNormalLaunch,
     showWindowOnLoginLaunch,
     setShowWindowOnLoginLaunch,
   } = useSettingsStore();
@@ -245,8 +243,6 @@ export const OnboardingModal = ({
             startHiddenOptionsDisabled={startHiddenOptionsDisabled}
             showWindowOnLoginLaunch={showWindowOnLoginLaunch}
             onShowWindowOnLoginLaunchChange={(checked) => setShowWindowOnLoginLaunch(!checked)}
-            showWindowOnNormalLaunch={showWindowOnNormalLaunch}
-            onShowWindowOnNormalLaunchChange={(checked) => setShowWindowOnNormalLaunch(!checked)}
             enableSystemTray={enableSystemTray}
             onEnableSystemTrayChange={setEnableSystemTray}
           />

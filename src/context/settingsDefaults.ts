@@ -64,7 +64,6 @@ export const defaultState: SettingsState = {
   enableSystemTray: true,
   systemTrayAppliedValue: true,
   hideDockIconWhenWindowClosed: true,
-  showWindowOnNormalLaunch: true,
   showWindowOnLoginLaunch: false,
   enableSystemTrayExplicitlySet: false,
   windowDecorationStyle: 'integrated',

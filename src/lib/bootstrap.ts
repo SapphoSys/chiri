@@ -227,30 +227,14 @@ export const shouldShowWindowOnStartup = async () => {
         return false;
       });
 
+  if (!launchedAtLogin) {
+    log.debug('Showing window for normal app launch');
+    return true;
+  }
+
   const enableSystemTray = settingsStore.getState().enableSystemTray;
   const trayHostAvailable =
     isLinuxPlatform() && enableSystemTray ? await getTrayHostAvailable() : true;
-
-  if (!launchedAtLogin) {
-    if (!enableSystemTray) {
-      log.debug('Showing window for normal app launch because system tray is disabled');
-      return true;
-    }
-
-    if (!trayHostAvailable) {
-      log.info('Showing window for normal app launch because no tray host is available');
-      return true;
-    }
-
-    const showWindowOnNormalLaunch = settingsStore.getState().showWindowOnNormalLaunch;
-    if (showWindowOnNormalLaunch) {
-      log.debug('Showing window for normal app launch');
-      return true;
-    }
-
-    log.info('Keeping window hidden for normal app launch');
-    return false;
-  }
 
   if (!enableSystemTray) {
     log.info('Showing window for login/autostart launch because system tray is disabled');

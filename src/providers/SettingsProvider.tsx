@@ -239,10 +239,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     (enabled: boolean) => settingsStore.setHideDockIconWhenWindowClosed(enabled),
     [],
   );
-  const setShowWindowOnNormalLaunch = useCallback(
-    (show: boolean) => settingsStore.setShowWindowOnNormalLaunch(show),
-    [],
-  );
   const setShowWindowOnLoginLaunch = useCallback(
     (show: boolean) => settingsStore.setShowWindowOnLoginLaunch(show),
     [],
@@ -452,7 +448,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     setEnableSystemTrayExplicitlySet,
     setSystemTrayAppliedValue,
     setHideDockIconWhenWindowClosed,
-    setShowWindowOnNormalLaunch,
     setShowWindowOnLoginLaunch,
     setWindowDecorationStyle,
     setCheckForUpdatesAutomatically,

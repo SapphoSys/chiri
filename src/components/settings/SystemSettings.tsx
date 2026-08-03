@@ -37,8 +37,6 @@ export const SystemSettings = () => {
     setEnableSystemTray,
     enableSystemTrayExplicitlySet,
     setEnableSystemTrayExplicitlySet,
-    showWindowOnNormalLaunch,
-    setShowWindowOnNormalLaunch,
     showWindowOnLoginLaunch,
     setShowWindowOnLoginLaunch,
     hideDockIconWhenWindowClosed,
@@ -69,7 +67,6 @@ export const SystemSettings = () => {
   const { isAvailable: isTrayHostAvailable } = useTrayHostAvailability();
   const startHiddenOptionsDisabled = !enableSystemTray || isTrayHostAvailable === false;
   const startQuietlyAtLoginDisabled = autostart.enabled !== true || startHiddenOptionsDisabled;
-  const startHiddenOnNormalLaunchDisabled = startHiddenOptionsDisabled;
 
   useEffect(() => {
     if (!isLinux) {
@@ -215,28 +212,6 @@ export const SystemSettings = () => {
       </div>
 
       <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
-        <label
-          className={`flex items-center justify-between gap-4 ${startHiddenOnNormalLaunchDisabled ? 'cursor-not-allowed opacity-50' : ''} p-4`}
-        >
-          <div className="min-w-0">
-            <p className="text-sm text-surface-700 dark:text-surface-300">
-              Start hidden on normal launch
-            </p>
-            <p className="text-surface-500 text-xs dark:text-surface-400">
-              Hide the main window when Chiri starts manually. Requires system tray.
-            </p>
-          </div>
-          <input
-            type="checkbox"
-            checked={!showWindowOnNormalLaunch}
-            disabled={startHiddenOnNormalLaunchDisabled}
-            onChange={(e) => setShowWindowOnNormalLaunch(!e.target.checked)}
-            className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          />
-        </label>
-
-        <div className="border-surface-200 border-t dark:border-surface-700" />
-
         <label className="flex items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Enable system tray</p>

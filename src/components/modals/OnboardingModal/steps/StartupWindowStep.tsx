@@ -1,5 +1,4 @@
 import AlertTriangle from 'lucide-react/icons/alert-triangle';
-import EyeOff from 'lucide-react/icons/eye-off';
 import Loader2 from 'lucide-react/icons/loader-2';
 import LogIn from 'lucide-react/icons/log-in';
 import PanelTop from 'lucide-react/icons/panel-top';
@@ -15,8 +14,6 @@ interface StartupWindowStepProps {
   startHiddenOptionsDisabled: boolean;
   showWindowOnLoginLaunch: boolean;
   onShowWindowOnLoginLaunchChange: (enabled: boolean) => void;
-  showWindowOnNormalLaunch: boolean;
-  onShowWindowOnNormalLaunchChange: (enabled: boolean) => void;
   enableSystemTray: boolean;
   onEnableSystemTrayChange: (enabled: boolean) => void;
 }
@@ -29,8 +26,6 @@ export const StartupWindowStep = ({
   startHiddenOptionsDisabled,
   showWindowOnLoginLaunch,
   onShowWindowOnLoginLaunchChange,
-  showWindowOnNormalLaunch,
-  onShowWindowOnNormalLaunchChange,
   enableSystemTray,
   onEnableSystemTrayChange,
 }: StartupWindowStepProps) => (
@@ -69,14 +64,6 @@ export const StartupWindowStep = ({
           onChange={onShowWindowOnLoginLaunchChange}
         />
       </div>
-      <ToggleRow
-        icon={<EyeOff className="h-4 w-4" />}
-        label="Start hidden on normal launch"
-        description="Hide the main window when Chiri starts manually. Requires system tray."
-        checked={!showWindowOnNormalLaunch}
-        disabled={startHiddenOptionsDisabled}
-        onChange={onShowWindowOnNormalLaunchChange}
-      />
       <ToggleRow
         icon={<PanelTop className="h-4 w-4" />}
         label="Enable system tray"
