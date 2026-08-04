@@ -8,7 +8,6 @@ import { SYNC_INTERVAL_OPTIONS } from '$constants/settings';
 import { useSettingsStore } from '$context/settingsContext';
 import { useSyncStore } from '$context/syncContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
-import { useTasks } from '$hooks/queries/useTasks';
 import type { DateFormat, TimeFormat } from '$types/settings/categories/region';
 import { formatDate, formatTime } from '$utils/date';
 
@@ -77,9 +76,7 @@ export const SyncSettings = () => {
     requestSync,
   } = useSyncStore();
   const { data: accounts = [] } = useAccounts();
-  const { data: tasks = [] } = useTasks();
   const caldavAccounts = accounts.filter((account) => account.caldav);
-  const caldavAccountIds = new Set(caldavAccounts.map((account) => account.id));
   const hasCalDAVAccounts = caldavAccounts.length > 0;
   const isSyncInProgress = isSyncing || syncingCalendarId !== null;
   const syncingCalendarName = syncingCalendarId
@@ -87,9 +84,6 @@ export const SyncSettings = () => {
         .flatMap((account) => account.calendars)
         .find((calendar) => calendar.id === syncingCalendarId)?.displayName ?? null)
     : null;
-  const unsyncedTaskCount = tasks.filter(
-    (task) => caldavAccountIds.has(task.accountId) && !task.localOnly && !task.synced,
-  ).length;
   const lastSyncSourceLabel = lastSyncSource ? SYNC_SOURCE_LABELS[lastSyncSource] : null;
 
   return (
@@ -165,22 +159,6 @@ export const SyncSettings = () => {
             ) : (
               <SyncEmptyState hasCalDAVAccounts={hasCalDAVAccounts} />
             )}
-          </div>
-
-          <div className="border-surface-200 border-t dark:border-surface-700" />
-
-          <div className="flex items-center justify-between gap-4 p-4">
-            <div className="min-w-0">
-              <p className="text-sm text-surface-700 dark:text-surface-300">
-                Unsynced local changes
-              </p>
-              <p className="text-surface-500 text-xs dark:text-surface-400">
-                CalDAV tasks waiting to be sent to the server
-              </p>
-            </div>
-            <p className="shrink-0 text-sm text-surface-700 dark:text-surface-300">
-              {unsyncedTaskCount}
-            </p>
           </div>
         </div>
       </section>
