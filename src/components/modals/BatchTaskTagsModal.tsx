@@ -268,12 +268,12 @@ export const BatchTaskTagsModal = ({
             )}
 
             {tags.length === 0 && !trimmedSearchQuery && (
-              <div className="px-3 py-2 text-sm text-surface-500 dark:text-surface-400">
+              <div className="px-3 py-2.5 text-sm text-surface-500 dark:text-surface-400">
                 No tags available.
               </div>
             )}
 
-            {(canCreateTag || tags.length === 0) && (
+            {canCreateTag && (
               <button type="button" onClick={openCreateTagModal} className={tagRowButtonClass}>
                 <span className={`${tagRowContentClass} text-surface-700 dark:text-surface-300`}>
                   <Plus className="h-4 w-4 shrink-0 text-surface-400" />
