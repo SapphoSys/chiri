@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Account } from '$types/account';
 import type { Task } from '$types/task/model';
 import { shouldShowOnboarding } from '$utils/onboarding';
@@ -40,5 +40,9 @@ export const useOnboardingVisibility = ({
     }
   }, [onboardingCompleted, onboardingSessionActive, showOnboarding]);
 
-  return showOnboarding;
+  const requestOnboarding = useCallback(() => {
+    setOnboardingSessionActive(true);
+  }, []);
+
+  return { showOnboarding, requestOnboarding };
 };

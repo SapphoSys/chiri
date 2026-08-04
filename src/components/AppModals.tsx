@@ -23,6 +23,7 @@ interface AppModalsOnboarding {
   show: boolean;
   hasCalDAVAccounts: boolean;
   calDAVAccountCount: number;
+  isRerun: boolean;
 }
 
 interface AppModalsAppImageIntegration {
@@ -66,6 +67,7 @@ interface AppModalsProps {
   appImageIntegration: AppModalsAppImageIntegration;
   modals: AppModalState;
   modalActions: AppModalActions;
+  onRunOnboarding: () => void;
   fileDrop: AppModalsFileDrop;
   updates: AppModalsUpdates;
 }
@@ -76,6 +78,7 @@ export const AppModals = ({
   appImageIntegration,
   modals,
   modalActions,
+  onRunOnboarding,
   fileDrop,
   updates,
 }: AppModalsProps) => {
@@ -151,6 +154,7 @@ export const AppModals = ({
           onClose={closeSettings}
           onAddAccount={() => openAccountAboveModal()}
           onEditAccount={openAccountAboveModal}
+          onRunOnboarding={onRunOnboarding}
           initialCategory={settingsInitialTab.category}
           initialSubtab={settingsInitialTab.subtab}
         />
@@ -219,6 +223,7 @@ export const AppModals = ({
         <OnboardingModal
           hasCalDAVAccount={onboarding.hasCalDAVAccounts}
           calDAVAccountCount={onboarding.calDAVAccountCount}
+          isRerun={onboarding.isRerun}
           onAddAccount={() => openAccountAboveModal()}
         />
       )}

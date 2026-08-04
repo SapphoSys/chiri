@@ -10,6 +10,7 @@ interface OnboardingModalFooterProps {
   footerButtonClassName: string;
   onAddAccount: () => void;
   onNext: () => void;
+  onSkip: () => void;
 }
 
 export const OnboardingModalFooter = ({
@@ -20,6 +21,7 @@ export const OnboardingModalFooter = ({
   footerButtonClassName,
   onAddAccount,
   onNext,
+  onSkip,
 }: OnboardingModalFooterProps) => (
   <div className="flex items-center gap-2">
     {hasConnectedCalDAVHome && isHomeStep && (
@@ -28,6 +30,9 @@ export const OnboardingModalFooter = ({
         <Plus className="h-4 w-4" />
       </ModalButton>
     )}
+    <ModalButton variant="ghost" onClick={onSkip} className={footerButtonClassName}>
+      Set up later
+    </ModalButton>
     <ModalButton
       onClick={needsCalDAVConnection ? onAddAccount : onNext}
       className={footerButtonClassName}

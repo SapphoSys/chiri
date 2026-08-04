@@ -21,11 +21,13 @@ import { useNotificationContext } from '$context/notificationContext';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAutostart } from '$hooks/system/useAutostart';
 import { useTrayHostAvailability } from '$hooks/system/useTrayHostAvailability';
+import { toastManager } from '$lib/toastManager';
 import { isMacPlatform } from '$utils/platform';
 
 interface OnboardingModalProps {
   hasCalDAVAccount: boolean;
   calDAVAccountCount: number;
+  isRerun: boolean;
   onAddAccount: () => void;
 }
 
@@ -118,6 +120,7 @@ const renderOnboardingStepHeader = (
 export const OnboardingModal = ({
   hasCalDAVAccount,
   calDAVAccountCount,
+  isRerun,
   onAddAccount,
 }: OnboardingModalProps) => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -182,11 +185,22 @@ export const OnboardingModal = ({
     setOnboardingCompleted(true);
   };
 
-  const finishOnboarding = () => {
+  const finishOnboarding = (onComplete = completeOnboarding) => {
     if (isFinishing) return;
 
     setIsFinishing(true);
-    finishTimeoutRef.current = window.setTimeout(completeOnboarding, FINISH_ANIMATION_MS);
+    finishTimeoutRef.current = window.setTimeout(onComplete, FINISH_ANIMATION_MS);
+  };
+
+  const handleSkip = () => {
+    finishOnboarding(() => {
+      completeOnboarding();
+      if (!isRerun) {
+        toastManager.info('Setup skipped', 'You can revisit these options in Settings.', {
+          groupKey: 'onboarding-skipped',
+        });
+      }
+    });
   };
 
   const handleNext = () => {
@@ -254,6 +268,7 @@ export const OnboardingModal = ({
           footerButtonClassName={footerButtonClassName}
           onAddAccount={onAddAccount}
           onNext={handleNext}
+          onSkip={handleSkip}
         />
       }
     >

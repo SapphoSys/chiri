@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { AppModals } from '$components/AppModals';
 import { AppShell } from '$components/AppShell';
 import { useConnectionStore } from '$context/connectionContext';
@@ -19,6 +20,7 @@ import { useOnboardingVisibility } from '$hooks/useOnboardingVisibility';
 const App = () => {
   const { data: accounts = [], isPending: accountsPending } = useAccounts();
   const { data: tasks = [], isPending: tasksPending } = useTasks();
+  const [isOnboardingRerun, setIsOnboardingRerun] = useState(false);
   const {
     isSyncing,
     syncingCalendarId,
@@ -38,6 +40,7 @@ const App = () => {
     taskEditorWidth,
     setTaskEditorWidth,
     onboardingCompleted,
+    setOnboardingCompleted,
     syncOnReconnect,
   } = useSettingsStore();
   const { isAnyTesting } = useConnectionStore();
@@ -49,13 +52,20 @@ const App = () => {
     useAppSyncActions({ syncAll, syncCalendar });
   const { handleResizeStart: handleEditorResizeStart } = useTaskEditorResize(setTaskEditorWidth);
 
-  const showOnboarding = useOnboardingVisibility({
+  const { showOnboarding, requestOnboarding } = useOnboardingVisibility({
     onboardingCompleted,
     accountsPending,
     tasksPending,
     accounts,
     tasks,
   });
+
+  const runOnboarding = () => {
+    closeSettings();
+    setIsOnboardingRerun(true);
+    setOnboardingCompleted(false);
+    requestOnboarding();
+  };
   const appImageIntegration = useAppImageIntegration();
 
   // derived app state used by the shell and global integrations
@@ -72,7 +82,8 @@ const App = () => {
     syncCalendarFromMenu,
   );
   const { showImport } = modals;
-  const { openSettings, toggleSettings, openImport, closeImport, openAccount } = modalActions;
+  const { openSettings, toggleSettings, openImport, closeImport, closeSettings, openAccount } =
+    modalActions;
 
   const { isAnyModalOpen } = useModalState();
 
@@ -134,7 +145,13 @@ const App = () => {
         fileDrop={fileDrop}
         modals={modals}
         modalActions={modalActions}
-        onboarding={{ show: showOnboarding, hasCalDAVAccounts, calDAVAccountCount }}
+        onRunOnboarding={runOnboarding}
+        onboarding={{
+          show: showOnboarding,
+          hasCalDAVAccounts,
+          calDAVAccountCount,
+          isRerun: isOnboardingRerun,
+        }}
         appImageIntegration={{
           show: appImageIntegration.showPrompt && !showOnboarding,
           isIntegrating: appImageIntegration.isIntegrating,

@@ -47,6 +47,7 @@ import type { SettingsCategory, SettingsSubtab } from '$types/settings/categorie
 
 interface SettingsModalProps {
   onClose: () => void;
+  onRunOnboarding: () => void;
   onAddAccount: () => void;
   onEditAccount: (accountId: string) => void;
   initialCategory?: SettingsCategory;
@@ -61,6 +62,7 @@ type SettingsSubtabInfo = {
 
 export const SettingsModal = ({
   onClose,
+  onRunOnboarding,
   onAddAccount,
   onEditAccount,
   initialCategory,
@@ -232,7 +234,9 @@ export const SettingsModal = ({
               {currentSubtab === 'notifications' && <NotificationSettings />}
               {currentSubtab === 'region-and-time' && <RegionAndTimeSettings />}
               {currentSubtab === 'startup-window' && <SystemSettings />}
-              {currentSubtab === 'data-diagnostics' && <DataSettings onClose={onClose} />}
+              {currentSubtab === 'data-diagnostics' && (
+                <DataSettings onClose={onClose} onRunOnboarding={onRunOnboarding} />
+              )}
             </>
           )}
 
