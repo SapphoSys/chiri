@@ -107,9 +107,6 @@ export const usePreserveScrollOnWindowFocus = <T extends HTMLElement>(
     };
 
     const subscribeToNativeWindowFocus = async () => {
-      const tauriWindow = window as Window & { __TAURI_INTERNALS__?: unknown };
-      if (!tauriWindow.__TAURI_INTERNALS__) return;
-
       const { getCurrentWindow }: TauriWindowApi = await import('@tauri-apps/api/window');
       if (didCancel) return;
 
