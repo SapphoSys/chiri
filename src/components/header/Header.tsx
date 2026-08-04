@@ -87,7 +87,7 @@ const getSyncButtonClass = (
   const base =
     'w-9 h-9 rounded-lg border text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset flex items-center justify-center';
   if (isSyncing) {
-    return `${base} text-primary-500 bg-surface-100 dark:bg-surface-800 border-surface-200 dark:border-surface-600 cursor-not-allowed`;
+    return `${base} text-primary-500 border-transparent cursor-not-allowed`;
   }
   if (isOffline || disableSync) {
     return `${base} text-surface-300 dark:text-surface-600 border-transparent cursor-not-allowed`;
@@ -238,7 +238,7 @@ export const Header = ({
   if (selectedTasks.length > 0) {
     return (
       <header
-        className={`app-main-header flex h-13 items-center bg-white px-4 dark:bg-surface-900 ${className}`}
+        className={`app-main-header flex h-13 items-center bg-white pr-4.25 pl-4 dark:bg-surface-900 ${className}`}
       >
         <TaskBatchActionsBar
           data-drag-region-pass-through
@@ -252,7 +252,7 @@ export const Header = ({
 
   return (
     <header
-      className={`app-main-header flex h-13 items-center bg-white px-4 dark:bg-surface-900 ${className}`}
+      className={`app-main-header flex h-13 items-center bg-white pr-4.25 pl-4 dark:bg-surface-900 ${className}`}
     >
       <div data-drag-region-pass-through className="flex flex-1 items-center justify-between gap-4">
         <div data-drag-region-pass-through className="relative max-w-lg flex-1">
