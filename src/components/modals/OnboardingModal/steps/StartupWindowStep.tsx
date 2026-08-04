@@ -54,16 +54,18 @@ export const StartupWindowStep = ({
         disabled={autostartEnabled === null || autostartPending}
         onChange={onAutostartChange}
       />
-      <div className="border-surface-200 border-l-2 pl-4 dark:border-surface-600">
-        <ToggleRow
-          icon={<LogIn className="h-4 w-4" />}
-          label="Start quietly in tray at login"
-          description="Hide the main window when Chiri starts automatically. Requires system tray."
-          checked={!showWindowOnLoginLaunch}
-          disabled={autostartEnabled !== true || startHiddenOptionsDisabled}
-          onChange={onShowWindowOnLoginLaunchChange}
-        />
-      </div>
+      {autostartEnabled === true && (
+        <div className="border-surface-200 border-l-2 pl-4 dark:border-surface-600">
+          <ToggleRow
+            icon={<LogIn className="h-4 w-4" />}
+            label="Start quietly in tray at login"
+            description="Hide the main window when Chiri starts automatically. Requires system tray."
+            checked={!showWindowOnLoginLaunch}
+            disabled={startHiddenOptionsDisabled}
+            onChange={onShowWindowOnLoginLaunchChange}
+          />
+        </div>
+      )}
       <ToggleRow
         icon={<PanelTop className="h-4 w-4" />}
         label="Enable system tray"
