@@ -29,16 +29,7 @@ export const StartupWindowStep = ({
   enableSystemTray,
   onEnableSystemTrayChange,
 }: StartupWindowStepProps) => (
-  <div className="flex flex-1 flex-col justify-between gap-5">
-    <div>
-      <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
-        Startup & window
-      </h2>
-      <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
-        Choose how Chiri starts up and behaves in the background.
-      </p>
-    </div>
-
+  <div className="flex flex-col gap-5">
     <section className="space-y-2 rounded-lg border border-surface-200 p-3 dark:border-surface-700">
       <ToggleRow
         icon={

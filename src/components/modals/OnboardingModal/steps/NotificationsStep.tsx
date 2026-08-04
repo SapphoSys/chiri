@@ -42,15 +42,6 @@ export const NotificationsStep = ({
   onShowAppIconBadgeChange,
 }: NotificationsStepProps) => (
   <div className="flex flex-1 flex-col justify-between gap-5">
-    <div>
-      <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
-        Notifications
-      </h2>
-      <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
-        Choose how Chiri nudges you about due tasks.
-      </p>
-    </div>
-
     {isMac && permissionStatus !== null && (
       <MacNotificationCard
         permissionStatus={permissionStatus}

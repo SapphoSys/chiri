@@ -17,22 +17,7 @@ export const SyncSetupStep = ({
   calDAVAccountCount,
   onTaskHomeChange,
 }: SyncSetupStepProps) => (
-  <div className="flex flex-1 flex-col justify-between gap-5">
-    <div>
-      {hasConnectedCalDAVHome && (
-        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary-500 text-primary-contrast">
-          <Cloud className="h-8 w-8" />
-        </div>
-      )}
-      <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
-        {hasConnectedCalDAVHome ? 'Connected' : 'Choose where tasks live'}
-      </h2>
-      <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
-        {hasConnectedCalDAVHome
-          ? `Your CalDAV ${calDAVAccountCount === 1 ? 'account has' : 'accounts have'} been added. You can add more accounts, or continue with onboarding.`
-          : 'Connect your CalDAV account now, or keep tasks local and add sync later.'}
-      </p>
-    </div>
+  <div className="flex flex-1 flex-col justify-end gap-5">
     {hasConnectedCalDAVHome ? (
       <div className="space-y-2">
         <p className="text-surface-500 text-xs dark:text-surface-400">Summary</p>

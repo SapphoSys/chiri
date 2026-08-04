@@ -1,8 +1,12 @@
 import ArrowLeft from 'lucide-react/icons/arrow-left';
-import { useEffect, useRef, useState } from 'react';
+import Check from 'lucide-react/icons/check';
+import Cloud from 'lucide-react/icons/cloud';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import AppIcon from '$components/AppIcon';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { OnboardingModalFooter } from '$components/modals/OnboardingModal/OnboardingModalFooter';
+import { OnboardingStepHeader } from '$components/modals/OnboardingModal/OnboardingStepHeader';
 import { NotificationsStep } from '$components/modals/OnboardingModal/steps/NotificationsStep';
 import { ReadyStep } from '$components/modals/OnboardingModal/steps/ReadyStep';
 import { RegionTimeStep } from '$components/modals/OnboardingModal/steps/RegionTimeStep';
@@ -37,6 +41,80 @@ const STEP_IDS = [
 ] as const;
 const FINISH_ANIMATION_MS = 200;
 
+const renderOnboardingStepHeader = (
+  currentStep: number,
+  hasConnectedCalDAVHome: boolean,
+  calDAVAccountCount: number,
+) => {
+  switch (currentStep) {
+    case 0:
+      return (
+        <OnboardingStepHeader
+          icon={<AppIcon className="h-8 w-8" />}
+          title="Welcome to Chiri"
+          description="A cross-platform CalDAV task management app for desktop"
+          titleClassName="font-semibold text-3xl text-surface-950 dark:text-surface-50"
+          descriptionClassName="mt-3 max-w-xl text-sm text-surface-600 leading-6 dark:text-surface-400"
+          iconWrapperClassName="mb-5 flex h-14 w-14 items-center justify-center rounded-lg bg-primary-500 text-primary-contrast shadow-sm"
+        />
+      );
+    case 1:
+      return (
+        <OnboardingStepHeader
+          icon={hasConnectedCalDAVHome ? <Cloud className="h-8 w-8" /> : undefined}
+          title={hasConnectedCalDAVHome ? 'Connected' : 'Choose where tasks live'}
+          description={
+            hasConnectedCalDAVHome
+              ? `Your CalDAV ${calDAVAccountCount === 1 ? 'account has' : 'accounts have'} been added. You can add more accounts, or continue with onboarding.`
+              : 'Connect your CalDAV account now, or keep tasks local and add sync later.'
+          }
+        />
+      );
+    case 2:
+      return (
+        <OnboardingStepHeader
+          title="Set the vibe"
+          description="Pick the default theme and colors before Chiri opens."
+        />
+      );
+    case 3:
+      return (
+        <OnboardingStepHeader
+          title="Set your defaults"
+          description="Review the date and time defaults Chiri picked up from your system."
+        />
+      );
+    case 4:
+      return (
+        <OnboardingStepHeader
+          title="Notifications"
+          description="Choose how Chiri nudges you about due tasks."
+        />
+      );
+    case 5:
+      return (
+        <OnboardingStepHeader
+          title="Startup & window"
+          description="Choose how Chiri starts up and behaves in the background."
+        />
+      );
+    case 6:
+      return (
+        <OnboardingStepHeader
+          icon={<Check className="h-8 w-8" />}
+          title="Ready when you are"
+          description={
+            hasConnectedCalDAVHome
+              ? 'Finish setup and Chiri will open with your synced task lists.'
+              : 'Finish setup and Chiri will open straight into your local task list.'
+          }
+        />
+      );
+    default:
+      return null;
+  }
+};
+
 export const OnboardingModal = ({
   hasCalDAVAccount,
   calDAVAccountCount,
@@ -47,6 +125,7 @@ export const OnboardingModal = ({
   const [isFinishing, setIsFinishing] = useState(false);
   const appliedMacNotificationDefaultsRef = useRef(false);
   const finishTimeoutRef = useRef<number | null>(null);
+  const stepContentRef = useRef<HTMLDivElement>(null);
   const {
     setOnboardingCompleted,
     notifications,
@@ -91,6 +170,13 @@ export const OnboardingModal = ({
       }
     };
   }, []);
+
+  useLayoutEffect(() => {
+    const content = stepContentRef.current;
+    if (currentStep >= 0 && content) {
+      content.scrollTop = 0;
+    }
+  }, [currentStep]);
 
   const completeOnboarding = () => {
     setOnboardingCompleted(true);
@@ -153,6 +239,8 @@ export const OnboardingModal = ({
       preventClose
       zIndex="z-60"
       className={`max-w-2xl transition-[opacity,transform] duration-200 ease-out ${isFinishing ? 'pointer-events-none scale-[0.98] opacity-0' : ''}`}
+      contentPadding={false}
+      contentOverflow="hidden"
       backdropClassName={`bg-surface-50 transition-opacity duration-200 ease-out dark:bg-surface-900 ${isFinishing ? 'opacity-0' : 'opacity-100'}`}
       animateBackdrop={false}
       dialogAnimationDelayMs={0}
@@ -169,7 +257,7 @@ export const OnboardingModal = ({
         />
       }
     >
-      <div className="mx-auto flex min-h-90 w-full max-w-2xl flex-col gap-5">
+      <div className="mx-auto flex h-120 w-full max-w-2xl flex-col gap-5 px-4 pt-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             {STEP_IDS.map((stepId, index) => (
@@ -190,80 +278,64 @@ export const OnboardingModal = ({
           </div>
         </div>
 
-        {currentStep === 0 && <WelcomeStep />}
+        {renderOnboardingStepHeader(currentStep, hasConnectedCalDAVHome, calDAVAccountCount)}
 
-        {currentStep === 1 && (
-          <SyncSetupStep
-            taskHome={taskHome}
-            hasConnectedCalDAVHome={hasConnectedCalDAVHome}
-            calDAVAccountCount={calDAVAccountCount}
-            onTaskHomeChange={setTaskHome}
-          />
-        )}
+        <div
+          key={currentStep}
+          ref={stepContentRef}
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+        >
+          <div className="flex min-h-full flex-col justify-end pb-4">
+            {currentStep === 0 && <WelcomeStep />}
 
-        {currentStep === 2 && (
-          <div className="flex flex-1 flex-col justify-between gap-5">
-            <div>
-              <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
-                Set the vibe
-              </h2>
-              <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
-                Pick the default theme and colors before Chiri opens.
-              </p>
-            </div>
+            {currentStep === 1 && (
+              <SyncSetupStep
+                taskHome={taskHome}
+                hasConnectedCalDAVHome={hasConnectedCalDAVHome}
+                calDAVAccountCount={calDAVAccountCount}
+                onTaskHomeChange={setTaskHome}
+              />
+            )}
 
-            <ThemeStep />
+            {currentStep === 2 && <ThemeStep />}
+
+            {currentStep === 3 && <RegionTimeStep />}
+
+            {currentStep === 4 && (
+              <NotificationsStep
+                isMac={isMac}
+                permissionStatus={permissionStatus}
+                isCheckingPermission={isCheckingPermission}
+                requestPermission={requestPermission}
+                macPermissionPending={macPermissionPending}
+                notifications={notifications}
+                onNotificationsChange={handleNotificationsChange}
+                notifyReminders={notifyReminders}
+                onNotifyRemindersChange={setNotifyReminders}
+                notifyOverdue={notifyOverdue}
+                onNotifyOverdueChange={setNotifyOverdue}
+                showAppIconBadge={showAppIconBadge}
+                onShowAppIconBadgeChange={setShowAppIconBadge}
+              />
+            )}
+
+            {currentStep === 5 && (
+              <StartupWindowStep
+                autostartEnabled={autostart.enabled}
+                autostartPending={autostart.pending}
+                autostartError={autostart.error}
+                onAutostartChange={(checked) => autostart.setEnabled(checked)}
+                startHiddenOptionsDisabled={startHiddenOptionsDisabled}
+                showWindowOnLoginLaunch={showWindowOnLoginLaunch}
+                onShowWindowOnLoginLaunchChange={(checked) => setShowWindowOnLoginLaunch(!checked)}
+                enableSystemTray={enableSystemTray}
+                onEnableSystemTrayChange={setEnableSystemTray}
+              />
+            )}
+
+            {currentStep === 6 && <ReadyStep />}
           </div>
-        )}
-
-        {currentStep === 3 && (
-          <div className="flex flex-1 flex-col justify-between gap-5">
-            <div>
-              <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
-                Set your defaults
-              </h2>
-              <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
-                Review the date and time defaults Chiri picked up from your system.
-              </p>
-            </div>
-
-            <RegionTimeStep />
-          </div>
-        )}
-
-        {currentStep === 4 && (
-          <NotificationsStep
-            isMac={isMac}
-            permissionStatus={permissionStatus}
-            isCheckingPermission={isCheckingPermission}
-            requestPermission={requestPermission}
-            macPermissionPending={macPermissionPending}
-            notifications={notifications}
-            onNotificationsChange={handleNotificationsChange}
-            notifyReminders={notifyReminders}
-            onNotifyRemindersChange={setNotifyReminders}
-            notifyOverdue={notifyOverdue}
-            onNotifyOverdueChange={setNotifyOverdue}
-            showAppIconBadge={showAppIconBadge}
-            onShowAppIconBadgeChange={setShowAppIconBadge}
-          />
-        )}
-
-        {currentStep === 5 && (
-          <StartupWindowStep
-            autostartEnabled={autostart.enabled}
-            autostartPending={autostart.pending}
-            autostartError={autostart.error}
-            onAutostartChange={(checked) => autostart.setEnabled(checked)}
-            startHiddenOptionsDisabled={startHiddenOptionsDisabled}
-            showWindowOnLoginLaunch={showWindowOnLoginLaunch}
-            onShowWindowOnLoginLaunchChange={(checked) => setShowWindowOnLoginLaunch(!checked)}
-            enableSystemTray={enableSystemTray}
-            onEnableSystemTrayChange={setEnableSystemTray}
-          />
-        )}
-
-        {currentStep === 6 && <ReadyStep hasConnectedCalDAVHome={hasConnectedCalDAVHome} />}
+        </div>
       </div>
     </ModalWrapper>
   );
