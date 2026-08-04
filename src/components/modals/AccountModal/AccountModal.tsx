@@ -290,8 +290,8 @@ export const AccountModal = ({
 
   const browserLoginDescription =
     draft.serverType === 'stalwart' || QUICK_CONNECT_SERVER_TYPES[draft.serverType]
-      ? 'Enter your server URL and authenticate through your browser'
-      : 'Authenticate through your browser';
+      ? `Enter your ${serverTypeLabel} server URL to get started`
+      : `Sign in to your ${serverTypeLabel} account`;
   const credentialsDescription =
     draft.serverType === 'stalwart' ||
     OAUTH_SERVER_TYPES[draft.serverType] ||
