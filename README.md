@@ -61,9 +61,9 @@ Pick this if you don't have UAC permissions.
 
 ### Method 3: via Scoop
 ```powershell
-scoop bucket add chiri https://github.com/chiriapp/chiri-scoop
+scoop bucket add extras
 
-scoop install chiri/chiri
+scoop install extras/chiri
 ```
 
 ### Method 4: via winget
