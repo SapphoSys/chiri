@@ -50,6 +50,7 @@ export default defineConfig({
             'src/tests/components/TaskLayoutSettings.test.tsx',
             'src/tests/components/RepeatModal.test.tsx',
             'src/tests/components/TaskEditorRepeat.test.tsx',
+            'src/tests/components/TaskEditorCalendar.test.tsx',
             'src/tests/components/TaskItemRepeatBadge.test.tsx',
             'src/tests/hooks/system/useNotifications.test.ts',
             'src/tests/hooks/system/useFileDrop.test.ts',
