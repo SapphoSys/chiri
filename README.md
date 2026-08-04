@@ -66,6 +66,11 @@ scoop bucket add chiri https://github.com/chiriapp/chiri-scoop
 scoop install chiri/chiri
 ```
 
+### Method 4: via winget
+```powershell
+winget install SapphicAngels.Chiri
+```
+
 ## macOS
 ### Method 1: via .dmg
 [<img src="./.github/assets/download/macos_dmg_applesilicon.png" width="200">][release-macos-dmg-applesilicon]
