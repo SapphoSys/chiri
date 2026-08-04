@@ -4,7 +4,9 @@ import { useSettingsStore } from '$context/settingsContext';
 import { useListNavigationCommands } from '$hooks/commands/useListNavigationCommands';
 import {
   useSetActiveAccount,
+  useSetActiveCalendar,
   useSetActiveFilter,
+  useSetActiveTag,
   useSetAllTasksView,
   useSetMoveCompletedTasksToBottom,
   useSetRecentlyDeletedView,
@@ -26,6 +28,8 @@ export const useViewCommands = ({ modals }: UseViewCommandsOptions) => {
   const setSortConfigMutation = useSetSortConfig();
   const setActiveFilterMutation = useSetActiveFilter();
   const setActiveAccountMutation = useSetActiveAccount();
+  const setActiveCalendarMutation = useSetActiveCalendar();
+  const setActiveTagMutation = useSetActiveTag();
   const setAllTasksViewMutation = useSetAllTasksView();
   const setRecentlyDeletedViewMutation = useSetRecentlyDeletedView();
   const { toggleSidebarCollapsed } = useSettingsStore();
@@ -112,6 +116,23 @@ export const useViewCommands = ({ modals }: UseViewCommandsOptions) => {
     [isAnyModalOpen, setActiveFilterMutation],
   );
 
+  const selectCalendar = useCallback(
+    (accountId: string, calendarId: string) => {
+      if (isAnyModalOpen) return;
+      setActiveAccountMutation.mutate(accountId);
+      setActiveCalendarMutation.mutate(calendarId);
+    },
+    [isAnyModalOpen, setActiveAccountMutation, setActiveCalendarMutation],
+  );
+
+  const selectTag = useCallback(
+    (tagId: string) => {
+      if (isAnyModalOpen) return;
+      setActiveTagMutation.mutate(tagId);
+    },
+    [isAnyModalOpen, setActiveTagMutation],
+  );
+
   const allTasks = useCallback(() => {
     if (isAnyModalOpen) return;
     setAllTasksViewMutation.mutate();
@@ -137,6 +158,8 @@ export const useViewCommands = ({ modals }: UseViewCommandsOptions) => {
     allTasks,
     recentlyDeleted,
     selectFilter,
+    selectCalendar,
+    selectTag,
     toggleSidebar,
     navPrevList,
     navNextList,

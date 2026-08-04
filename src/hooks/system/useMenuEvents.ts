@@ -32,6 +32,8 @@ interface MenuCallbacks {
     ((direction: SortDirection, currentMode: SortMode) => void) | null
   >;
   onSelectFilter?: RefObject<((filterId: string) => void) | null>;
+  onSelectCalendar?: RefObject<((accountId: string, calendarId: string) => void) | null>;
+  onSelectTag?: RefObject<((tagId: string) => void) | null>;
   onToggleSidebar?: RefObject<(() => void) | null>;
   onSelectAllTasks?: RefObject<(() => void) | null>;
   onNavPrevList?: RefObject<(() => void) | null>;
@@ -95,6 +97,17 @@ const PARAM_EVENTS: ParamEventConfig[] = [
     event: MENU_EVENTS.SELECT_FILTER,
     label: 'Select Filter',
     handler: (cb, p) => cb.onSelectFilter?.current?.(p.filterId as string),
+  },
+  {
+    event: MENU_EVENTS.SELECT_CALENDAR,
+    label: 'Select Calendar',
+    handler: (cb, p) =>
+      cb.onSelectCalendar?.current?.(p.accountId as string, p.calendarId as string),
+  },
+  {
+    event: MENU_EVENTS.SELECT_TAG,
+    label: 'Select Tag',
+    handler: (cb, p) => cb.onSelectTag?.current?.(p.tagId as string),
   },
   {
     event: MENU_EVENTS.EDIT_ACCOUNT,
@@ -172,6 +185,8 @@ const MODAL_BLOCKED_MENU_EVENTS = new Set<string>([
   MENU_EVENTS.SORT_DIRECTION_ASC,
   MENU_EVENTS.SORT_DIRECTION_DESC,
   MENU_EVENTS.SELECT_FILTER,
+  MENU_EVENTS.SELECT_CALENDAR,
+  MENU_EVENTS.SELECT_TAG,
   MENU_EVENTS.TOGGLE_SIDEBAR,
   MENU_EVENTS.SELECT_ALL,
   MENU_EVENTS.NAV_PREV_LIST,

@@ -8,6 +8,8 @@ export const MENU_EVENTS = {
   ALL_TASKS: 'menu:all-tasks',
   RECENTLY_DELETED: 'menu:recently-deleted',
   SELECT_FILTER: 'menu:select-filter',
+  SELECT_CALENDAR: 'menu:select-calendar',
+  SELECT_TAG: 'menu:select-tag',
   PREFERENCES: 'menu:preferences',
   ADD_ACCOUNT: 'menu:add-account',
   EDIT_ACCOUNT: 'menu:edit-account',

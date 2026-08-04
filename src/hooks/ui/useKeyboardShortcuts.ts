@@ -31,6 +31,7 @@ import {
   getShiftKeyLabel,
   getSuperKeyLabel,
 } from '$utils/keyboard';
+import { getCurrentListIndex, getOrderedListItems, type ListItem } from '$utils/navigation';
 import { isMacPlatform } from '$utils/platform';
 
 // shortcuts that should NOT work when a modal is open
@@ -117,9 +118,6 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   const { selectedTaskIds, setSelection, clearSelection } = useTaskSelection();
 
   const selectedTaskId = uiState?.selectedTaskId ?? null;
-  const activeCalendarId = uiState?.activeCalendarId ?? null;
-  const activeTagId = uiState?.activeTagId ?? null;
-  const activeFilterId = uiState?.activeFilterId ?? null;
   const activeView = uiState?.activeView ?? 'tasks';
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
   const showUnstartedTasks = uiState?.showUnstartedTasks ?? true;
@@ -244,48 +242,15 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
     }
   }, [selectedTaskId, flattenedTasks, setSelectedTaskMutation]);
 
-  type ListItem =
-    | { type: 'all' }
-    | { type: 'calendar'; accountId: string; calendarId: string }
-    | { type: 'tag'; tagId: string }
-    | { type: 'filter'; filterId: string }
-    | { type: 'recently-deleted' };
+  const orderedLists = useMemo(
+    () => getOrderedListItems(accounts, filters, tags),
+    [accounts, filters, tags],
+  );
 
-  const orderedLists = useMemo((): ListItem[] => {
-    const items: ListItem[] = [{ type: 'all' }, { type: 'recently-deleted' }];
-    for (const filter of filters) {
-      items.push({ type: 'filter', filterId: filter.id });
-    }
-    for (const account of accounts) {
-      for (const cal of account.calendars) {
-        items.push({ type: 'calendar', accountId: account.id, calendarId: cal.id });
-      }
-    }
-    for (const tag of tags) {
-      items.push({ type: 'tag', tagId: tag.id });
-    }
-    return items;
-  }, [accounts, filters, tags]);
-
-  const currentListIndex = useMemo(() => {
-    if (activeView === 'recently-deleted') {
-      return orderedLists.findIndex((item) => item.type === 'recently-deleted');
-    }
-    if (activeView === 'filter' && activeFilterId !== null) {
-      return orderedLists.findIndex(
-        (item) => item.type === 'filter' && item.filterId === activeFilterId,
-      );
-    }
-    if (activeTagId !== null) {
-      return orderedLists.findIndex((item) => item.type === 'tag' && item.tagId === activeTagId);
-    }
-    if (activeCalendarId !== null) {
-      return orderedLists.findIndex(
-        (item) => item.type === 'calendar' && item.calendarId === activeCalendarId,
-      );
-    }
-    return 0;
-  }, [orderedLists, activeCalendarId, activeFilterId, activeTagId, activeView]);
+  const currentListIndex = useMemo(
+    () => getCurrentListIndex(orderedLists, uiState),
+    [orderedLists, uiState],
+  );
 
   const activateListItem = useCallback(
     (item: ListItem) => {

@@ -44,6 +44,8 @@ export const useNativeMenuCommands = ({
   const onSetSortMode = useLatestRef(commands.setSortMode);
   const onSetSortDirection = useLatestRef(commands.setSortDirection);
   const onSelectFilter = useLatestRef(commands.selectFilter);
+  const onSelectCalendar = useLatestRef(commands.selectCalendar);
+  const onSelectTag = useLatestRef(commands.selectTag);
   const onToggleSidebar = useLatestRef(commands.toggleSidebar);
   const onSelectAllTasks = useLatestRef(commands.selectAll);
   const onNavPrevList = useLatestRef(commands.navPrevList);
@@ -76,6 +78,8 @@ export const useNativeMenuCommands = ({
       onSetSortMode,
       onSetSortDirection,
       onSelectFilter,
+      onSelectCalendar,
+      onSelectTag,
       onToggleSidebar,
       onSelectAllTasks,
       onNavPrevList,
@@ -107,6 +111,8 @@ export const useNativeMenuCommands = ({
       onSetSortMode,
       onSetSortDirection,
       onSelectFilter,
+      onSelectCalendar,
+      onSelectTag,
       onToggleSidebar,
       onSelectAllTasks,
       onNavPrevList,
