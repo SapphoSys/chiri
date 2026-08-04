@@ -55,7 +55,7 @@ export const SyncSetupStep = ({
         <ActionCard
           icon={<Cloud className="h-6 w-6" />}
           title="CalDAV sync"
-          description="Sync tasks with Nextcloud, Fastmail, Radicale, Baikal, RustiCal, or another CalDAV server."
+          description="Sync tasks with CalDAV servers like Nextcloud, Fastmail, Radicale, and more."
           selected={taskHome === 'caldav'}
           onClick={() => onTaskHomeChange('caldav')}
         />
