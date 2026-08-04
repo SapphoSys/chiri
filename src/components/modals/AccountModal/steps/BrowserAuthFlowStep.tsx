@@ -229,5 +229,3 @@ export const BrowserAuthFlowStep = forwardRef<BrowserAuthFlowStepHandle, Browser
     );
   },
 );
-
-BrowserAuthFlowStep.displayName = 'BrowserAuthFlowStep';

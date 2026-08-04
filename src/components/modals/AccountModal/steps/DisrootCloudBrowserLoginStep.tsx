@@ -145,5 +145,3 @@ export const DisrootCloudBrowserLoginStep = forwardRef<
     />
   );
 });
-
-DisrootCloudBrowserLoginStep.displayName = 'DisrootCloudBrowserLoginStep';

@@ -225,5 +225,3 @@ export const StalwartOAuthStep = forwardRef<StalwartOAuthStepHandle, StalwartOAu
     );
   },
 );
-
-StalwartOAuthStep.displayName = 'StalwartOAuthStep';

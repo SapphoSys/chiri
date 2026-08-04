@@ -217,5 +217,3 @@ export const QuickConnectFlowStep = forwardRef<
     />
   );
 });
-
-QuickConnectFlowStep.displayName = 'QuickConnectFlowStep';

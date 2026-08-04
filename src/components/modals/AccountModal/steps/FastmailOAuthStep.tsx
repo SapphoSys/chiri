@@ -171,5 +171,3 @@ export const FastmailOAuthStep = forwardRef<FastmailOAuthStepHandle, FastmailOAu
     );
   },
 );
-
-FastmailOAuthStep.displayName = 'FastmailOAuthStep';
