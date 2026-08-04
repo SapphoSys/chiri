@@ -176,6 +176,40 @@ export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
 
           <div className="flex items-center gap-3 px-4 py-3">
             <span className="shrink-0 text-surface-400 dark:text-surface-500">
+              <HandHeart className="h-5 w-5 text-[#25CCFF]" />
+            </span>
+            <p className="text-sm text-surface-800 dark:text-surface-200">
+              Special thanks to the{' '}
+              <button
+                type="button"
+                onClick={link('https://signpath.org/')}
+                className="font-medium outline-hidden hover:underline focus-visible:underline"
+              >
+                SignPath Foundation
+              </button>{' '}
+              for Windows code signing
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 px-4 py-3">
+            <span className="shrink-0 text-surface-400 dark:text-surface-500">
+              <Heart className="h-5 w-5 text-[#FF218C]" />
+            </span>
+            <p className="text-sm text-surface-800 dark:text-surface-200">
+              Special thanks to{' '}
+              <button
+                type="button"
+                onClick={link('https://wamwoowam.co.uk')}
+                className="font-medium outline-hidden hover:underline focus-visible:underline"
+              >
+                WamWooWam
+              </button>{' '}
+              for macOS code signing and notarization
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 px-4 py-3">
+            <span className="shrink-0 text-surface-400 dark:text-surface-500">
               <Heart className="h-5 w-5 text-[#F5C2E7]" />
             </span>
             <p className="text-sm text-surface-800 dark:text-surface-200">
