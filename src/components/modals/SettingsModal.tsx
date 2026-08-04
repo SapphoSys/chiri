@@ -145,8 +145,8 @@ export const SettingsModal = ({
       label: 'Help',
       icon: <HelpCircle className="h-4 w-4" />,
       subtabs: [
-        { id: 'about', label: 'About', icon: <Info className="h-4 w-4" /> },
         { id: 'updates', label: 'Updates', icon: <Download className="h-4 w-4" /> },
+        { id: 'about', label: 'About', icon: <Info className="h-4 w-4" /> },
       ],
     },
   ];
