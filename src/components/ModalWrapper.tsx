@@ -1,9 +1,11 @@
 import X from 'lucide-react/icons/x';
 import type { CSSProperties, DragEventHandler, ReactNode } from 'react';
+import { useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { ModalBackdrop } from '$components/ModalBackdrop';
 import { MODAL_SIZE_CLASSES } from '$constants';
 import type { DismissableLayerType } from '$context/dismissableLayerContext';
+import { useModalState } from '$context/modalStateContext';
 import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
 import { useFocusTrap } from '$hooks/ui/useFocusTrap';
 import {
@@ -75,6 +77,20 @@ export const ModalWrapper = ({
   dialogAnimationDelayMs = 0,
   className,
 }: ModalWrapperProps) => {
+  const { isAnyModalOpen } = useModalState();
+  const previousIsOpenRef = useRef(false);
+  const animateBackdropRef = useRef(false);
+
+  // keep the backdrop opaque when replacing one modal with another. the old
+  // modal is removed before the new portal can finish its fade-in animation,
+  // which briefly exposes the app behind it
+  if (isOpen && !previousIsOpenRef.current) {
+    previousIsOpenRef.current = true;
+    animateBackdropRef.current = animateBackdrop && !isAnyModalOpen;
+  } else if (!isOpen) {
+    previousIsOpenRef.current = false;
+  }
+
   const focusTrapRef = useFocusTrap(
     isOpen,
     initialFocus === 'dialog' ? 'container' : 'first-focusable',
@@ -121,7 +137,8 @@ export const ModalWrapper = ({
       className="cursor-default p-4"
       backdropClassName={backdropClassName}
       zIndex={zIndex}
-      animate={animateBackdrop}
+      animate={animateBackdropRef.current}
+      animateFromDimmed={animateBackdrop && !animateBackdropRef.current}
       {...backdropProps}
     >
       <div

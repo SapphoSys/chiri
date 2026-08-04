@@ -10,6 +10,7 @@ interface ModalBackdropProps {
   backdropClassName?: string;
   zIndex?: string;
   animate?: boolean;
+  animateFromDimmed?: boolean;
   /** whether clicking the backdrop closes the modal. Default: false */
   closeOnBackdropClick?: boolean;
 }
@@ -29,12 +30,13 @@ export const ModalBackdrop = ({
   backdropClassName = 'bg-black/50',
   zIndex = 'z-60',
   animate = true,
+  animateFromDimmed = false,
   closeOnBackdropClick = false,
 }: ModalBackdropProps) => (
   // biome-ignore lint/a11y/noStaticElementInteractions: Import modals need drag handlers on the backdrop to prevent browser file navigation
   <div
     role="presentation"
-    className={`modal-backdrop-layer pointer-events-none fixed inset-0 ${zIndex} flex items-center justify-center ${animate ? 'motion-safe:animate-fade-in' : ''} ${className}`}
+    className={`modal-backdrop-layer pointer-events-none fixed inset-0 ${zIndex} flex items-center justify-center ${animate ? 'motion-safe:animate-fade-in' : animateFromDimmed ? 'motion-safe:animate-fade-in-from-dimmed' : ''} ${className}`}
     onDrop={onDrop}
     onDragOver={onDragOver}
     onDragLeave={onDragLeave}
