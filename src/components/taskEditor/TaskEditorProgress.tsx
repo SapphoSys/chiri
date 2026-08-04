@@ -5,14 +5,12 @@ import type { Task } from '$types/task/model';
 interface TaskEditorProgressProps {
   task: Task;
   onCommitPercent: (value: number) => void;
-  syncStatusProgress: boolean;
   readOnly?: boolean;
 }
 
 export const TaskEditorProgress = ({
   task,
   onCommitPercent,
-  syncStatusProgress,
   readOnly = false,
 }: TaskEditorProgressProps) => {
   const [draftPercent, setDraftPercent] = useState<number | undefined>(undefined);
@@ -58,13 +56,6 @@ export const TaskEditorProgress = ({
         <span>0%</span>
         <span>100%</span>
       </div>
-      {!readOnly && (
-        <p className="mt-2 text-surface-400 text-xs">
-          {syncStatusProgress
-            ? 'Changing progress updates the task status automatically.'
-            : 'Changing progress only updates the progress value.'}
-        </p>
-      )}
     </div>
   );
 };

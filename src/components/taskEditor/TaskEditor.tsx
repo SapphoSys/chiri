@@ -114,7 +114,6 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
             timeFormat={timeFormat}
             notifications={notifications}
             notifyReminders={notifyReminders}
-            syncStatusProgress={syncStatusProgress}
             checkmarkColor={checkmarkColor}
             useAccentColorForCheckboxes={useAccentColorForCheckboxes}
             isReadOnly={isReadOnly}

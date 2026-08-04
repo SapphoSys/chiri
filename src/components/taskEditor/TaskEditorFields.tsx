@@ -42,7 +42,6 @@ interface TaskEditorFieldsProps {
   timeFormat: TimeFormat;
   notifications: boolean;
   notifyReminders: boolean;
-  syncStatusProgress: boolean;
   checkmarkColor: string;
   useAccentColorForCheckboxes: boolean;
   isReadOnly: boolean;
@@ -60,7 +59,6 @@ export const TaskEditorFields = ({
   timeFormat,
   notifications,
   notifyReminders,
-  syncStatusProgress,
   checkmarkColor,
   useAccentColorForCheckboxes,
   isReadOnly,
@@ -89,7 +87,6 @@ export const TaskEditorFields = ({
         <TaskEditorProgress
           task={task}
           onCommitPercent={actions.commitPercentComplete}
-          syncStatusProgress={syncStatusProgress}
           readOnly={isReadOnly}
         />
       ) : null,
