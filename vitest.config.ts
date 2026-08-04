@@ -18,6 +18,7 @@ export default defineConfig({
           exclude: [
             'src/tests/lib/tauri-http.test.ts',
             'src/tests/components/TaskDefaultsSettings.test.tsx',
+            'src/tests/components/TaskLayoutSettings.test.tsx',
             'src/tests/components/RepeatModal.test.tsx',
             'src/tests/components/TaskEditorRepeat.test.tsx',
             'src/tests/components/TaskItemRepeatBadge.test.tsx',
@@ -46,6 +47,7 @@ export default defineConfig({
             'src/tests/components/MobileConfigSignatureWarning.test.tsx',
             'src/tests/components/ToastTitle.test.tsx',
             'src/tests/components/TaskDefaultsSettings.test.tsx',
+            'src/tests/components/TaskLayoutSettings.test.tsx',
             'src/tests/components/RepeatModal.test.tsx',
             'src/tests/components/TaskEditorRepeat.test.tsx',
             'src/tests/components/TaskItemRepeatBadge.test.tsx',
