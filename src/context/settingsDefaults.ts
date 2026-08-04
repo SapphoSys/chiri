@@ -152,7 +152,7 @@ export const defaultState: SettingsState = {
     complete: true,
     snooze: true,
     snoozeDurations: [
-      { id: '15m', value: 15, unit: 'minutes' },
+      { id: '30m', value: 30, unit: 'minutes' },
       { id: '1h', value: 1, unit: 'hours' },
     ],
     order: ['complete', 'snooze'],
