@@ -12,16 +12,16 @@ export const StatusProgressSettings = () => {
       </h3>
 
       <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
-        <div className="flex items-start justify-between gap-4 p-4">
+        <label
+          htmlFor="sync-status-progress"
+          className="flex cursor-pointer items-start justify-between gap-4 p-4"
+        >
           <div className="min-w-0">
             <div className="min-w-0">
               <div className="flex items-center gap-1">
-                <label
-                  htmlFor="sync-status-progress"
-                  className="text-sm text-surface-700 dark:text-surface-300"
-                >
+                <span className="text-sm text-surface-700 dark:text-surface-300">
                   Keep status, progress, and completion in sync
-                </label>
+                </span>
                 <Tooltip
                   content="0% means Needs Action, 1–99% means In Process, and 100% means Completed."
                   position="top"
@@ -30,6 +30,7 @@ export const StatusProgressSettings = () => {
                   <button
                     type="button"
                     aria-label="Status and progress synchronization rules"
+                    onClick={(event) => event.preventDefault()}
                     className="flex size-5 shrink-0 items-center justify-center rounded-md p-0 text-surface-400 leading-none outline-hidden transition-colors hover:text-surface-600 focus-visible:bg-primary-500/15 focus-visible:text-primary-500 dark:text-surface-500 dark:focus-visible:bg-primary-400/15 dark:focus-visible:text-primary-400 dark:hover:text-surface-300"
                   >
                     <HelpCircle className="h-4 w-4" />
@@ -48,7 +49,7 @@ export const StatusProgressSettings = () => {
             onChange={(event) => setSyncStatusProgress(event.target.checked)}
             className="mt-0.5 shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           />
-        </div>
+        </label>
       </div>
     </div>
   );
