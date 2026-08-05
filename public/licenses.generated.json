@@ -75,7 +75,7 @@
       "ecosystem": "cargo",
       "direct": true,
       "name": "ammonia",
-      "version": "4.1.3",
+      "version": "4.1.4",
       "license": "MIT OR Apache-2.0",
       "url": "https://github.com/rust-ammonia/ammonia",
       "licenseTextId": "license-8"
@@ -4230,7 +4230,7 @@
       "ecosystem": "cargo",
       "direct": true,
       "name": "serde_json",
-      "version": "1.0.150",
+      "version": "1.0.151",
       "license": "MIT OR Apache-2.0",
       "url": "https://github.com/serde-rs/json",
       "licenseTextId": "license-7"
@@ -5011,7 +5011,7 @@
       "ecosystem": "cargo",
       "direct": true,
       "name": "tokio",
-      "version": "1.53.0",
+      "version": "1.53.1",
       "license": "MIT",
       "url": "https://github.com/tokio-rs/tokio",
       "licenseTextId": "license-268"
