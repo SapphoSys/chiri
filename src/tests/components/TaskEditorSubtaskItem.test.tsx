@@ -93,8 +93,9 @@ describe('TaskEditorSubtaskItem', () => {
     expect(moveTaskToRecentlyDeleted).not.toHaveBeenCalled();
   });
 
-  it('does not move a titled subtask to Recently Deleted when its title is cleared on blur', async () => {
+  it('persists an empty title instead of deleting the subtask when cleared and submitted', async () => {
     const moveTaskToRecentlyDeleted = vi.fn(async () => true);
+    const updateTask = vi.fn();
     const task = makeTask({ id: 'subtask-2', title: 'Existing title', parentUid: 'parent-uid' });
 
     await act(async () => {
@@ -106,7 +107,7 @@ describe('TaskEditorSubtaskItem', () => {
           useAccentColorForCheckboxes: false,
           expandedSubtasks: new Set<string>(),
           setExpandedSubtasks: vi.fn(),
-          updateTask: vi.fn(),
+          updateTask,
           moveTaskToRecentlyDeleted,
           isDragEnabled: false,
         }),
@@ -133,11 +134,11 @@ describe('TaskEditorSubtaskItem', () => {
       input.dispatchEvent(new Event('input', { bubbles: true }));
     });
 
-    await act(async () => {
-      input?.blur();
-    });
+    await act(async () =>
+      input?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })),
+    );
 
     expect(moveTaskToRecentlyDeleted).not.toHaveBeenCalled();
-    expect(container.textContent).toContain(task.title);
+    expect(updateTask).toHaveBeenCalledWith(task.id, { title: '' });
   });
 });

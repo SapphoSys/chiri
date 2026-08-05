@@ -146,10 +146,6 @@ export const TaskEditorSubtaskItem = ({
 
   const handleCommitEdit = () => {
     const trimmed = editValue.trim();
-    if (!trimmed) {
-      setIsEditing(false);
-      return;
-    }
     if (trimmed !== task.title) {
       updateTask(task.id, { title: trimmed });
     }
