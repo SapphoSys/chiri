@@ -148,7 +148,6 @@ export const TaskEditorSubtaskItem = ({
     const trimmed = editValue.trim();
     if (!trimmed) {
       setIsEditing(false);
-      moveTaskToRecentlyDeleted(task.id);
       return;
     }
     if (trimmed !== task.title) {
