@@ -1,25 +1,23 @@
 import ChevronRight from 'lucide-react/icons/chevron-right';
 import Clock from 'lucide-react/icons/clock';
 import Tag from 'lucide-react/icons/tag';
+import { TaskItemBadge } from '$components/taskItem/badges/TaskItemBadge';
 import type { TaskListDensity } from '$types/settings/categories/layout';
 
 interface TaskListLayoutSettingsDensityPreviewProps {
   density: TaskListDensity;
 }
 
-const previewBadgeClass =
-  'inline-flex items-center gap-1 rounded-sm border border-surface-200 bg-surface-100 px-2 py-0.5 text-xs font-medium text-surface-600 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-300 shrink-0';
-
 const renderPreviewBadges = () => (
   <>
-    <span className={previewBadgeClass}>
-      <Clock className="h-3 w-3 text-primary-500" aria-hidden="true" />
+    <TaskItemBadge tone="due-today" className="shrink-0">
+      <Clock className="h-3 w-3" aria-hidden="true" />
       Today
-    </span>
-    <span className={previewBadgeClass}>
-      <Tag className="h-3 w-3 text-primary-500" aria-hidden="true" />
+    </TaskItemBadge>
+    <TaskItemBadge color="#3b82f6" className="shrink-0">
+      <Tag className="h-3 w-3" aria-hidden="true" />
       Home
-    </span>
+    </TaskItemBadge>
   </>
 );
 

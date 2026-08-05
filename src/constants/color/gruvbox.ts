@@ -33,6 +33,7 @@ export const gruvboxColorScheme: ColorSchemeDefinition = {
       defaultAccent: 'Yellow',
       semanticColors: {
         info: '#83a598',
+        dueToday: '#d65d0e',
         warning: '#fabd2f',
         success: '#b8bb26',
         error: '#fb4934',
@@ -74,6 +75,7 @@ export const gruvboxColorScheme: ColorSchemeDefinition = {
       defaultAccent: 'Yellow',
       semanticColors: {
         info: '#458588',
+        dueToday: '#fe8019',
         warning: '#d79921',
         success: '#98971a',
         error: '#cc241d',

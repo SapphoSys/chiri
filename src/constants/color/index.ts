@@ -60,6 +60,7 @@ export const defaultColorScheme: ColorSchemeDefinition = {
       defaultAccent: defaultAccentColor,
       semanticColors: {
         info: '#2563eb',
+        dueToday: '#ea580c',
         warning: '#d97706',
         success: '#16a34a',
         error: '#dc2626',
@@ -81,6 +82,7 @@ export const defaultColorScheme: ColorSchemeDefinition = {
       defaultAccent: defaultAccentColor,
       semanticColors: {
         info: '#60a5fa',
+        dueToday: '#fb923c',
         warning: '#fbbf24',
         success: '#4ade80',
         error: '#f87171',
@@ -102,6 +104,7 @@ export const defaultColorScheme: ColorSchemeDefinition = {
       defaultAccent: defaultAccentColor,
       semanticColors: {
         info: '#60a5fa',
+        dueToday: '#fb923c',
         warning: '#fbbf24',
         success: '#4ade80',
         error: '#f87171',

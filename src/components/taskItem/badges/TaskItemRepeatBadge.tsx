@@ -1,5 +1,6 @@
 import RefreshCw from 'lucide-react/icons/refresh-cw';
 import type { MouseEvent } from 'react';
+import { TaskItemBadge } from '$components/taskItem/badges/TaskItemBadge';
 import { rruleToDisplaySummary, rruleToText } from '$lib/task/recurrence';
 import type { DateFormat } from '$types/settings/categories/region';
 
@@ -17,8 +18,6 @@ export const TaskItemRepeatBadge = ({
   const fullSummary = rruleToText(rrule, repeatFrom, dateFormat);
   const { short } = rruleToDisplaySummary(rrule, repeatFrom, dateFormat);
 
-  const className =
-    'inline-flex max-w-36 items-center gap-1 rounded-sm border border-surface-300 bg-surface-50 px-2 py-0.5 font-medium text-surface-600 text-xs dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400';
   const content = (
     <>
       <RefreshCw className="h-3 w-3 shrink-0" />
@@ -28,24 +27,23 @@ export const TaskItemRepeatBadge = ({
 
   if (!onClick) {
     return (
-      <span title={`Repeat: ${fullSummary}`} className={className}>
+      <TaskItemBadge title={`Repeat: ${fullSummary}`} className="max-w-36">
         {content}
-      </span>
+      </TaskItemBadge>
     );
   }
 
   return (
-    <button
-      type="button"
+    <TaskItemBadge
+      title={`Repeat: ${fullSummary}`}
+      ariaLabel={`Edit repeat rule: ${fullSummary}`}
+      className="max-w-36"
       onClick={(event) => {
         event.stopPropagation();
         onClick(event);
       }}
-      title={`Repeat: ${fullSummary}`}
-      aria-label={`Edit repeat rule: ${fullSummary}`}
-      className={`${className} outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-700`}
     >
       {content}
-    </button>
+    </TaskItemBadge>
   );
 };
