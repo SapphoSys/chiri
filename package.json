@@ -67,7 +67,7 @@
     "vitest-canvas-mock": "^1.1.4"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,json,jsonc}": "biome check --write",
+    "*.{ts,tsx,js,jsx,json,jsonc}": "biome check --write --no-errors-on-unmatched",
     "*.rs": "cargo fmt --manifest-path src-tauri/Cargo.toml --"
   }
 }
