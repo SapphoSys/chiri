@@ -7,6 +7,7 @@ import { type KeyboardEvent, useMemo, useState } from 'react';
 import { TaskEditorEmptyState } from '$components/taskEditor/TaskEditorEmptyState';
 import { TaskEditorSubtaskItem } from '$components/taskEditor/TaskEditorSubtaskItem';
 import { useChildTasks, useCreateTask, useTasks } from '$hooks/queries/useTasks';
+import { useSortConfig } from '$hooks/queries/useUIState';
 import { truncateName, useSortableDrag } from '$hooks/ui/useSortableDrag';
 import { getSortedTasks } from '$lib/store/tasks';
 import type { FlattenedTask } from '$types/store/tasks';
@@ -35,6 +36,7 @@ export const TaskEditorSubtasks = ({
   const { data: childTasks = [] } = useChildTasks(task.uid, childTaskFilter);
   const childCount = childTasks.length;
   const { data: allTasks = [] } = useTasks();
+  const sortConfig = useSortConfig();
 
   const [showAddSubtask, setShowAddSubtask] = useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
@@ -47,6 +49,7 @@ export const TaskEditorSubtasks = ({
           if (t.parentUid !== uid) return false;
           return childTaskFilter === 'deleted' ? !!t.deletedAt : !t.deletedAt;
         }),
+        sortConfig,
       );
 
     const flatten = (tasks: Task[], ancestorIds: string[]) => {
@@ -60,9 +63,10 @@ export const TaskEditorSubtasks = ({
       return result;
     };
     return [{ ...task, depth: 0, ancestorIds: [] }, ...flatten(getChildren(task.uid), [task.id])];
-  }, [task, allTasks, childTaskFilter, expandedSubtasks]);
+  }, [task, allTasks, childTaskFilter, expandedSubtasks, sortConfig]);
 
-  const anySubtaskDragEnabled = !readOnly && flattenedSubtasks.length > 2;
+  const anySubtaskDragEnabled =
+    sortConfig.mode === 'manual' && !readOnly && flattenedSubtasks.length > 2;
 
   const {
     activeItem: activeDragSubtask,
