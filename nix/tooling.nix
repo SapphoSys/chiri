@@ -24,6 +24,9 @@ let
     CXXFLAGS_aarch64_apple_darwin = "-isysroot ${darwinSdkRoot}";
     CFLAGS_x86_64_apple_darwin = "-isysroot ${darwinSdkRoot}";
     CXXFLAGS_x86_64_apple_darwin = "-isysroot ${darwinSdkRoot}";
+    MACOSX_DEPLOYMENT_TARGET = "12.0";
+    CARGO_TARGET_AARCH64_APPLE_DARWIN_RUSTFLAGS = "-C link-arg=-mmacosx-version-min=12.0";
+    CARGO_TARGET_X86_64_APPLE_DARWIN_RUSTFLAGS = "-C link-arg=-mmacosx-version-min=12.0";
   };
   darwinCcExports = lib.concatStringsSep "\n" (
     lib.mapAttrsToList (name: value: "export ${name}=${lib.escapeShellArg value}") darwinCcEnv
