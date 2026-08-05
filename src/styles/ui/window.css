@@ -131,6 +131,13 @@
   padding-right: 17px;
 }
 
+/* the non-fullscreen macOS window border consumes one CSS pixel at the bottom
+   edge, so compensate the expanded sidebar footer to keep its visible edge
+   padding aligned with the navigation's 8px top padding */
+.app-shell[data-platform="macos"]:not([data-window-fullscreen="true"]) .app-sidebar-footer {
+  padding-bottom: calc(0.5rem + 1px);
+}
+
 .app-shell[data-platform="macos"][data-window-fullscreen="true"] .app-sidebar-header {
   padding-left: 0;
 }
