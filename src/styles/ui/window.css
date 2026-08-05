@@ -38,6 +38,11 @@
   padding-left: var(--app-traffic-light-offset);
   position: relative;
   z-index: 20;
+  background: #fff;
+}
+
+.dark .app-shell[data-platform="macos"] .app-sidebar-header {
+  background: var(--surface-900, #18181b);
 }
 
 .app-sidebar-header-layers {
