@@ -5,8 +5,10 @@ import { rowToTask } from '$lib/database/converters';
 import type { TaskRow } from '$lib/database/types';
 import { getUIState, setSelectedTask } from '$lib/database/ui';
 import { toAppleEpoch } from '$lib/ical/vtodo';
+import { resolveTaskTags } from '$lib/task/creation';
 import { getRecentlyDeletedRetentionCutoff } from '$lib/task/deletion';
 import { buildStatusUpdates } from '$lib/task/status';
+import type { TaskCreationOptions } from '$types/task/creation';
 import type { Status, Task } from '$types/task/model';
 import { generateUUID } from '$utils/misc';
 
@@ -52,24 +54,6 @@ export const countChildren = async (conn: DatabasePlugin, parentUid: string) => 
     [parentUid],
   );
   return rows[0]?.count || 0;
-};
-
-/**
- * resolve tags for a new task, applying active tag and defaults
- */
-const resolveTaskTags = (
-  taskTags: string[] | undefined,
-  activeTagId: string | null,
-  defaultTags: string[],
-) => {
-  let tags = taskTags ?? [];
-  if (activeTagId && !tags.includes(activeTagId)) {
-    tags = [activeTagId, ...tags];
-  }
-  if (tags.length === 0 && defaultTags.length > 0) {
-    tags = [...defaultTags];
-  }
-  return tags;
 };
 
 /**
@@ -143,12 +127,16 @@ const buildTaskInsertParams = (task: Task): unknown[] => [
   task.repeatFrom ?? 0,
 ];
 
-export const createTask = async (conn: DatabasePlugin, taskData: Partial<Task>) => {
+export const createTask = async (
+  conn: DatabasePlugin,
+  taskData: Partial<Task>,
+  options: TaskCreationOptions = {},
+) => {
   const now = new Date();
   const { defaultCalendarId, defaultPriority, defaultTags } = settingsStore.getState();
   const uiState = await getUIState(conn);
 
-  const tags = resolveTaskTags(taskData.tags, uiState.activeTagId, defaultTags);
+  const tags = resolveTaskTags(taskData.tags, uiState.activeTagId, defaultTags, options);
 
   const { calendarId, accountId } = await resolveCalendarAndAccount(
     conn,

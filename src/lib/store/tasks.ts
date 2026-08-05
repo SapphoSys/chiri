@@ -4,6 +4,7 @@ import { db } from '$lib/database';
 import { toAppleEpoch } from '$lib/ical/vtodo';
 import { loggers } from '$lib/logger';
 import { dataStore } from '$lib/store';
+import { resolveTaskTags } from '$lib/task/creation';
 import { isExpiredRecentlyDeletedTask } from '$lib/task/deletion';
 import { isCompletedTask, matchesFilter } from '$lib/task/filtering';
 import { getNextOccurrence, parseRRule } from '$lib/task/recurrence';
@@ -17,6 +18,7 @@ import { toastManager } from '$lib/toastManager';
 import type { DefaultDateOffset, DefaultReminderOffset } from '$types/settings/categories/defaults';
 import type { WorkingDay } from '$types/settings/categories/scheduling';
 import type { SortConfig } from '$types/sort';
+import type { TaskCreationOptions } from '$types/task/creation';
 import type { Reminder, Task } from '$types/task/model';
 import { getNextWorkingDay } from '$utils/calendar';
 import { generateUUID } from '$utils/misc';
@@ -76,22 +78,6 @@ const resolveDateOffset = (
 };
 
 const log = loggers.dataStore;
-
-// helper: resolve tags including active tag and defaults
-const resolveTaskTags = (
-  providedTags: string[] | undefined,
-  activeTagId: string | null,
-  defaultTags: string[],
-) => {
-  let tags = providedTags ?? [];
-  if (activeTagId && !tags.includes(activeTagId)) {
-    tags = [activeTagId, ...tags];
-  }
-  if (tags.length === 0 && defaultTags.length > 0) {
-    tags = [...defaultTags];
-  }
-  return tags;
-};
 
 // helper: find calendar and account to use for new task
 const resolveCalendarAndAccount = (
@@ -244,7 +230,7 @@ export const getAllDescendants = (parentUid: string, filter: ChildTaskFilter = '
 };
 
 // task create
-export const createTask = (taskData: Partial<Task>) => {
+export const createTask = (taskData: Partial<Task>, options: TaskCreationOptions = {}) => {
   const data = dataStore.load();
   const now = new Date();
 
@@ -266,7 +252,7 @@ export const createTask = (taskData: Partial<Task>) => {
   } = settingsStore.getState();
 
   // resolve tags using helper
-  const tags = resolveTaskTags(taskData.tags, data.ui.activeTagId, defaultTags);
+  const tags = resolveTaskTags(taskData.tags, data.ui.activeTagId, defaultTags, options);
 
   // resolve calendar and account using helper
   const { calendarId, accountId } = resolveCalendarAndAccount(
@@ -355,7 +341,7 @@ export const createTask = (taskData: Partial<Task>) => {
 
   // persist to SQLite including local-only tasks
   if (dataStore.getIsInitialized()) {
-    db.createTask(task).catch((e) => log.error('Failed to sync task to database:', e));
+    db.createTask(task, options).catch((e) => log.error('Failed to sync task to database:', e));
   }
 
   return task;

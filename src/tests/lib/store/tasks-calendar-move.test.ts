@@ -434,6 +434,55 @@ describe('createTask: all-day reminder notifications', () => {
   });
 });
 
+describe('createTask: tag source handling', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    seedStore([]);
+  });
+
+  it('applies the active tag to user-created tasks', () => {
+    const activeTag = { id: 'tag-b', name: 'tag-b', color: '#fff', sortOrder: 0 };
+    dataStore.save({
+      ...defaultDataStore,
+      tags: [activeTag],
+      ui: { ...defaultUIState, activeTagId: activeTag.id },
+    });
+
+    const task = createTask({ title: 'User task' });
+
+    expect(task.tags).toEqual(['tag-b']);
+  });
+
+  it('preserves remote tags while a tag view is active', () => {
+    dataStore.save({
+      ...defaultDataStore,
+      ui: { ...defaultUIState, activeTagId: 'tag-b' },
+    });
+
+    const task = createTask(
+      { title: 'Remote task', tags: ['tag-a'], synced: true },
+      { source: 'remote' },
+    );
+
+    expect(task.tags).toEqual(['tag-a']);
+  });
+
+  it('does not apply active or default tags to an untagged remote task', () => {
+    mockGetSettingsState.mockReturnValue({
+      ...mockSettingsState,
+      defaultTags: ['default-tag'],
+    });
+    dataStore.save({
+      ...defaultDataStore,
+      ui: { ...defaultUIState, activeTagId: 'tag-b' },
+    });
+
+    const task = createTask({ title: 'Untagged remote task', synced: true }, { source: 'remote' });
+
+    expect(task.tags).toEqual([]);
+  });
+});
+
 describe('createTask: default start/due times', () => {
   beforeEach(() => {
     vi.clearAllMocks();

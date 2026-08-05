@@ -122,7 +122,7 @@ export const FastmailOAuthStep = forwardRef<FastmailOAuthStepHandle, FastmailOAu
                   .filter(Boolean);
                 tagIds = names.map((name: string) => ensureTagExists(name));
               }
-              createTask({ ...remoteTask, tags: tagIds });
+              createTask({ ...remoteTask, tags: tagIds }, { source: 'remote' });
             }
           } catch (e) {
             log.error(`[FastmailOAuth] Failed to fetch tasks for ${calendar.displayName}:`, e);

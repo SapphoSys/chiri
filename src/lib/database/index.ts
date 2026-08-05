@@ -26,6 +26,7 @@ import type {
 import type { DataChangeListener } from '$types/store/state';
 import type { PendingDeletion } from '$types/store/sync';
 import type { Tag } from '$types/tag';
+import type { TaskCreationOptions } from '$types/task/creation';
 import type { Task } from '$types/task/model';
 
 const DB_NAME = 'sqlite:chiri.db';
@@ -133,8 +134,8 @@ class Database {
     return taskOps.countChildren(await this.conn(), parentUid);
   }
 
-  async createTask(data: Partial<Task>) {
-    const result = await taskOps.createTask(await this.conn(), data);
+  async createTask(data: Partial<Task>, options: TaskCreationOptions = {}) {
+    const result = await taskOps.createTask(await this.conn(), data, options);
     this.notify();
     return result;
   }

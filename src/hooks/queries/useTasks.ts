@@ -28,6 +28,7 @@ import {
 } from '$lib/store/tasks';
 import { buildStatusUpdates, getTaskStatusAfterCompletionToggle } from '$lib/task/status';
 import type { FlattenedTask } from '$types/store/tasks';
+import type { TaskCreationOptions } from '$types/task/creation';
 import type { Task } from '$types/task/model';
 
 const dateTime = (date: Date | undefined) => date?.getTime();
@@ -99,12 +100,15 @@ export const useFilteredTasks = () => {
 /**
  * hook to create a task
  */
-export const useCreateTask = (historyField: 'created' | 'imported' = 'created') => {
+export const useCreateTask = (
+  historyField: 'created' | 'imported' = 'created',
+  creationOptions: TaskCreationOptions = {},
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (taskInput: Partial<Task>) => {
-      const task = createTask(taskInput);
+      const task = createTask(taskInput, creationOptions);
       await db.logTaskChange(task.uid, historyField, null, task.title);
       if (task.parentUid) {
         await db.logTaskChange(task.parentUid, 'subtask', null, task.title);

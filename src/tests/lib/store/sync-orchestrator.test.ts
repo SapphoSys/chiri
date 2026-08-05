@@ -473,6 +473,7 @@ describe('syncCalendarTasks orchestrator', () => {
 
     expect(mocks.localCreateTask).toHaveBeenCalledWith(
       expect.objectContaining({ uid: 'remote-only' }),
+      { source: 'remote' },
     );
   });
 

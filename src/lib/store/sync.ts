@@ -236,12 +236,15 @@ const processNewRemoteTask = async (remoteTask: TaskWithCalDAVObject) => {
   const tagIds = categoryNames.map((name: string) => ensureTagExists(name));
   applyRemoteTagColors(remoteTask, categoryNames);
 
-  createTask({
-    ...remoteTaskData,
-    href: remoteTask.href ?? remoteTask.caldavObject?.href,
-    etag: remoteTask.etag ?? remoteTask.caldavObject?.etag,
-    tags: tagIds,
-  });
+  createTask(
+    {
+      ...remoteTaskData,
+      href: remoteTask.href ?? remoteTask.caldavObject?.href,
+      etag: remoteTask.etag ?? remoteTask.caldavObject?.etag,
+      tags: tagIds,
+    },
+    { source: 'remote' },
+  );
   if (remoteTask.caldavObject) {
     await persistTaskObject(remoteTask.caldavObject);
   }

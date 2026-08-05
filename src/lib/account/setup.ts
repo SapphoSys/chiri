@@ -28,10 +28,13 @@ export const fetchTasksForCalendar = async (accountId: string, calendar: Calenda
         .filter(Boolean);
       const tagIds = categoryNames?.map((name: string) => ensureTagExists(name));
 
-      createTask({
-        ...remoteTask,
-        ...(tagIds ? { tags: tagIds } : {}),
-      });
+      createTask(
+        {
+          ...remoteTask,
+          ...(tagIds ? { tags: tagIds } : {}),
+        },
+        { source: 'remote' },
+      );
     }
   } catch (error) {
     log.error(`Failed to fetch tasks for calendar ${calendar.displayName}:`, error);

@@ -29,7 +29,7 @@ export const useImportExecution = ({
   onError,
   onTasksChange,
 }: UseImportExecutionOptions) => {
-  const createTaskMutation = useCreateTask('imported');
+  const createTaskMutation = useCreateTask('imported', { source: 'import' });
   const [isImporting, setIsImporting] = useState(false);
   const [importProgress, setImportProgress] = useState(0);
   const [importSuccess, setImportSuccess] = useState(false);

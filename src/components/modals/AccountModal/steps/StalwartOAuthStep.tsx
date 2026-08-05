@@ -112,7 +112,7 @@ export const StalwartOAuthStep = forwardRef<StalwartOAuthStepHandle, StalwartOAu
                 .filter(Boolean);
               tagIds = names.map((name: string) => ensureTagExists(name));
             }
-            createTask({ ...remoteTask, tags: tagIds });
+            createTask({ ...remoteTask, tags: tagIds }, { source: 'remote' });
           }
         } catch (e) {
           log.error(`[StalwartOAuth] Failed to fetch tasks for ${calendar.displayName}:`, e);
