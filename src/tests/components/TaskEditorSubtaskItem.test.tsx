@@ -79,12 +79,10 @@ describe('TaskEditorSubtaskItem', () => {
       );
     });
 
-    const titleButton = Array.from(container.querySelectorAll('button')).find((button) =>
-      button.textContent?.includes('Untitled subtask'),
-    );
-    expect(titleButton).toBeDefined();
+    const row = container.querySelector<HTMLElement>('[role="button"]');
+    expect(row).toBeDefined();
 
-    await act(async () => titleButton?.click());
+    await act(async () => row?.click());
     const input = container.querySelector<HTMLInputElement>('input');
     expect(input).toBeTruthy();
 
@@ -114,12 +112,10 @@ describe('TaskEditorSubtaskItem', () => {
       );
     });
 
-    const titleButton = Array.from(container.querySelectorAll('button')).find((button) =>
-      button.textContent?.includes(task.title),
-    );
-    expect(titleButton).toBeDefined();
+    const row = container.querySelector<HTMLElement>('[role="button"]');
+    expect(row).toBeDefined();
 
-    await act(async () => titleButton?.click());
+    await act(async () => row?.click());
     const input = container.querySelector<HTMLInputElement>('input');
     expect(input).toBeTruthy();
 
@@ -140,5 +136,34 @@ describe('TaskEditorSubtaskItem', () => {
 
     expect(moveTaskToRecentlyDeleted).not.toHaveBeenCalled();
     expect(updateTask).toHaveBeenCalledWith(task.id, { title: '' });
+  });
+
+  it('does not start editing when a subtask control is clicked', async () => {
+    const updateTask = vi.fn();
+    const task = makeTask({ id: 'subtask-3', title: 'Existing title', parentUid: 'parent-uid' });
+
+    await act(async () => {
+      root.render(
+        createElement(TaskEditorSubtaskItem, {
+          task,
+          depth: 0,
+          checkmarkColor: '#fff',
+          useAccentColorForCheckboxes: false,
+          expandedSubtasks: new Set<string>(),
+          setExpandedSubtasks: vi.fn(),
+          updateTask,
+          moveTaskToRecentlyDeleted: vi.fn(async () => true),
+          isDragEnabled: false,
+        }),
+      );
+    });
+
+    const statusButton = container.querySelector('button');
+    expect(statusButton).toBeDefined();
+
+    await act(async () => statusButton?.click());
+
+    expect(container.querySelector('input')).toBeNull();
+    expect(updateTask).toHaveBeenCalledWith(task.id, {});
   });
 });

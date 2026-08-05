@@ -7,6 +7,7 @@ import {
   type CSSProperties,
   type Dispatch,
   type KeyboardEvent,
+  type MouseEvent,
   type SetStateAction,
   useRef,
   useState,
@@ -29,9 +30,12 @@ const createAnimateLayoutChanges =
 // is always shown before the checkbox so all levels align consistently
 const getPaddingLeft = (depth: number) => 8 + depth * 20;
 
-const getRowClassName = (isDragEnabled: boolean, isOverlay: boolean) => `
-  group/row flex items-center gap-1.5 py-1.5 pr-2 rounded-md transition-colors
+const getRowClassName = (isDragEnabled: boolean, isOverlay: boolean, readOnly: boolean) => `
+  group/row flex items-center gap-1.5 rounded-md py-1.5 pr-2 outline-hidden transition-colors
   ${isDragEnabled ? 'cursor-grab active:cursor-grabbing' : ''}
+  ${!isDragEnabled && !readOnly ? 'cursor-pointer' : ''}
+  ${readOnly ? 'cursor-not-allowed' : ''}
+  focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-surface-900
   ${isOverlay ? 'bg-surface-50 dark:bg-surface-800 shadow-lg' : 'hover:bg-surface-50 dark:hover:bg-surface-800/60'}
 `;
 
@@ -144,6 +148,28 @@ export const TaskEditorSubtaskItem = ({
     requestAnimationFrame(() => inputRef.current?.focus());
   };
 
+  const isInteractiveTarget = (target: EventTarget | null) =>
+    target instanceof Element && !!target.closest('button, input');
+
+  const handleRowClick = (event: MouseEvent<HTMLDivElement>) => {
+    if (readOnly || isEditing || isInteractiveTarget(event.target)) return;
+    handleStartEdit();
+  };
+
+  const handleRowKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (
+      readOnly ||
+      isEditing ||
+      isInteractiveTarget(event.target) ||
+      (event.key !== 'Enter' && event.key !== ' ')
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    handleStartEdit();
+  };
+
   const handleCommitEdit = () => {
     const trimmed = editValue.trim();
     if (trimmed !== task.title) {
@@ -166,9 +192,14 @@ export const TaskEditorSubtaskItem = ({
 
   return (
     <div ref={setNodeRef} style={style}>
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: Subtask rows contain nested controls, so a button cannot represent the full editable row. */}
       <div
         {...(isDragEnabled ? listeners : {})}
-        className={getRowClassName(isDragEnabled, isOverlay)}
+        role={readOnly ? undefined : 'button'}
+        tabIndex={readOnly ? undefined : 0}
+        onClick={handleRowClick}
+        onKeyDown={handleRowKeyDown}
+        className={getRowClassName(isDragEnabled, isOverlay, readOnly)}
         style={{ paddingLeft: `${getPaddingLeft(depth)}px` }}
       >
         {hasChildren ? (
@@ -218,18 +249,12 @@ export const TaskEditorSubtaskItem = ({
             onBlur={handleCommitEdit}
             className="min-w-0 flex-1 bg-transparent pl-0.5 text-sm text-surface-700 outline-hidden dark:text-surface-300"
           />
-        ) : readOnly ? (
-          <span className={`${getTitleClassName(task, false)} cursor-not-allowed`}>
-            <SubtaskTitleContent task={task} />
-          </span>
         ) : (
-          <button
-            type="button"
-            onClick={handleStartEdit}
-            className={`${getTitleClassName(task, true)} outline-hidden focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-primary-500`}
+          <span
+            className={`${getTitleClassName(task, !readOnly)} ${readOnly ? 'cursor-not-allowed' : ''}`}
           >
             <SubtaskTitleContent task={task} />
-          </button>
+          </span>
         )}
 
         {!isEditing && !readOnly && (
