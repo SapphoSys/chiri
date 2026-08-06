@@ -188,6 +188,18 @@ export const Header = ({
     );
   };
 
+  const newTaskButton = (
+    <button
+      type="button"
+      onClick={handleNewTask}
+      disabled={activeView === 'recently-deleted'}
+      className={`ml-2 flex items-center gap-2 rounded-lg border border-transparent bg-primary-500 px-4 py-1.5 font-medium text-primary-contrast text-sm transition-colors ${!isAnyModalOpen ? 'hover:bg-primary-600' : ''} shadow-xs outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50`}
+    >
+      <Plus className="h-4 w-4" />
+      New Task
+    </button>
+  );
+
   const toggleSortDirection = () => {
     const newDirection = sortConfig.direction === 'asc' ? 'desc' : 'asc';
     // save direction preference for non-manual modes
@@ -327,14 +339,16 @@ export const Header = ({
             onTaskGroupChange={handleTaskGroupChange}
           />
 
-          <button
-            type="button"
-            onClick={handleNewTask}
-            className={`ml-2 flex items-center gap-2 rounded-lg border border-transparent bg-primary-500 px-4 py-1.5 font-medium text-primary-contrast text-sm transition-colors ${!isAnyModalOpen ? 'hover:bg-primary-600' : ''} shadow-xs outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
-          >
-            <Plus className="h-4 w-4" />
-            New Task
-          </button>
+          {activeView === 'recently-deleted' ? (
+            <Tooltip
+              content="Creating new tasks in Recently Deleted is not allowed"
+              position="bottom"
+            >
+              {newTaskButton}
+            </Tooltip>
+          ) : (
+            newTaskButton
+          )}
         </div>
       </div>
     </header>
