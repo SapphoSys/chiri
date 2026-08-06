@@ -15,7 +15,7 @@ jobs:
   # first job: generate changelog and create the release
   prepare-release:
     name: Prepare
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: write
     outputs:
@@ -369,7 +369,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: 'windows-latest'
+          - platform: 'blacksmith-4vcpu-windows-2025'
             label: 'Windows'
             arch: 'x64'
           - platform: 'windows-11-arm'
@@ -579,7 +579,7 @@ jobs:
         include:
           - platform: 'ubuntu-24.04'
             label: 'AppImage (x86_64)'
-          - platform: 'ubuntu-24.04-arm'
+          - platform: 'blacksmith-4vcpu-ubuntu-2404-arm'
             label: 'AppImage (ARM64)'
 
     runs-on: ${{ matrix.platform }}
@@ -648,7 +648,7 @@ jobs:
       - publish-tauri
       - publish-appimage
       - publish-windows
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: write
     steps:
@@ -718,7 +718,7 @@ jobs:
       - publish-windows
       - refresh-updater-metadata
     if: always() && needs.prepare-release.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
     steps:
