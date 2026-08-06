@@ -35,7 +35,7 @@ export const TaskEditorStatus = ({
               icon: RotateCcw,
               color: 'text-status-needs-action',
               borderColor: 'border-status-needs-action',
-              bgColor: 'bg-surface-200 dark:bg-surface-700',
+              bgColor: 'bg-status-needs-action/15',
             },
             {
               value: 'in-process',
@@ -43,7 +43,7 @@ export const TaskEditorStatus = ({
               icon: Timer,
               color: 'text-status-in-process',
               borderColor: 'border-status-in-process',
-              bgColor: 'bg-surface-200 dark:bg-surface-700',
+              bgColor: 'bg-status-in-process/15',
             },
             {
               value: 'completed',
@@ -51,7 +51,7 @@ export const TaskEditorStatus = ({
               icon: Check,
               color: 'text-status-completed',
               borderColor: 'border-status-completed',
-              bgColor: 'bg-surface-200 dark:bg-surface-700',
+              bgColor: 'bg-status-completed/15',
             },
             {
               value: 'cancelled',
@@ -59,7 +59,7 @@ export const TaskEditorStatus = ({
               icon: Ban,
               color: 'text-status-cancelled',
               borderColor: 'border-status-cancelled',
-              bgColor: 'bg-surface-200 dark:bg-surface-700',
+              bgColor: 'bg-status-cancelled/15',
             },
           ] as const
         ).map((s) => {
