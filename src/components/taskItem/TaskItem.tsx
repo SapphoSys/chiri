@@ -52,6 +52,7 @@ interface TaskItemProps {
   isSelectionMode?: boolean;
   hideDueDateBadge?: boolean;
   hideStartDateBadge?: boolean;
+  hideCalendarBadge?: boolean;
   onTaskClick?: (task: Task, e: MouseEvent) => void;
   onSelectionCheckboxClick?: (task: Task, e: MouseEvent) => void;
   onTaskContextMenu?: (task: Task, e: MouseEvent) => void;
@@ -103,6 +104,7 @@ export const TaskItem = ({
   isSelectionMode = false,
   hideDueDateBadge = false,
   hideStartDateBadge = false,
+  hideCalendarBadge = false,
   onTaskClick,
   onSelectionCheckboxClick,
   onTaskContextMenu,
@@ -306,6 +308,7 @@ export const TaskItem = ({
     badgeOrder: taskBadgeOrder,
     hideDueDateBadge,
     hideStartDateBadge,
+    hideCalendarBadge,
   };
 
   return (

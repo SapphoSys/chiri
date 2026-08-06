@@ -36,6 +36,7 @@ interface TaskItemBadgesProps {
   badgeOrder: TaskBadgeKey[];
   hideDueDateBadge?: boolean;
   hideStartDateBadge?: boolean;
+  hideCalendarBadge?: boolean;
 }
 
 export const TaskItemBadges = ({
@@ -53,6 +54,7 @@ export const TaskItemBadges = ({
   badgeOrder,
   hideDueDateBadge = false,
   hideStartDateBadge = false,
+  hideCalendarBadge = false,
 }: TaskItemBadgesProps) => {
   const { dateFormat } = useSettingsStore();
   const resolveAccent = useAccentColorResolver();
@@ -70,7 +72,7 @@ export const TaskItemBadges = ({
   const allCalendars = accounts.flatMap((a) => a.calendars);
   const calendar = allCalendars.find((c) => c.id === task.calendarId);
   const calendarColor = calendar?.color ? resolveAccent(calendar.color) : resolvedAccentColor;
-  const showCalendar = activeCalendarId === null && calendar;
+  const showCalendar = activeCalendarId === null && calendar && !hideCalendarBadge;
   const isUnstarted = task.startDate && new Date(task.startDate) > new Date();
   const startDateDisplay = isUnstarted && task.startDate ? formatStartDate(task.startDate) : null;
   const taskTags = (task.tags || [])

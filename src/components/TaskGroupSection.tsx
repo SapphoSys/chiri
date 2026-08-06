@@ -83,6 +83,7 @@ export const TaskGroupSection = ({
                   !task.parentUid
                 }
                 hideStartDateBadge={group.key.startsWith('start-date:') && !task.parentUid}
+                hideCalendarBadge={group.key.startsWith('calendar:')}
                 onTaskClick={onTaskClick}
                 onSelectionCheckboxClick={onSelectionCheckboxClick}
                 onTaskContextMenu={onTaskContextMenu}
