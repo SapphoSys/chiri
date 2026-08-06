@@ -73,6 +73,7 @@ export const useUIState = () => {
   return useQuery({
     queryKey: queryKeys.uiState.all,
     queryFn: () => getUIState(),
+    initialData: getUIState,
     staleTime: Infinity,
   });
 };
