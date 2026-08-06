@@ -8,6 +8,7 @@ import { makeTask } from '../fixtures';
 const SNOOZED_UNTIL = Date.now() + 60 * 60 * 1000;
 
 const badgeState = vi.hoisted(() => ({ snoozedUntil: undefined as number | undefined }));
+const childTaskState = vi.hoisted(() => ({ tasks: [] as Array<{ status: string }> }));
 
 const badgeMocks = vi.hoisted(() => ({
   getSnoozedUntil: vi.fn(() => badgeState.snoozedUntil),
@@ -23,6 +24,9 @@ const badgeMocks = vi.hoisted(() => ({
 vi.mock('$lib/notifications/snoozes', () => badgeMocks);
 
 vi.mock('$context/settingsContext', () => ({
+  settingsStore: {
+    getState: () => ({ timeFormat: '12', dateFormat: 'MMM d, yyyy' }),
+  },
   useSettingsStore: () => ({
     dateFormat: 'MMM d, yyyy',
   }),
@@ -38,7 +42,7 @@ vi.mock('$lib/store/tags', () => ({
 }));
 
 vi.mock('$lib/store/tasks', () => ({
-  getChildTasks: () => [],
+  getChildTasks: () => childTaskState.tasks,
 }));
 
 (
@@ -68,6 +72,7 @@ describe('TaskItemBadges snooze badge', () => {
     document.body.append(container);
     root = createRoot(container);
     badgeState.snoozedUntil = undefined;
+    childTaskState.tasks = [];
   });
 
   afterEach(async () => {
@@ -75,11 +80,16 @@ describe('TaskItemBadges snooze badge', () => {
     container.remove();
   });
 
-  const renderBadges = async (visibility: TaskBadgeVisibility) => {
+  const renderBadges = async (
+    visibility: TaskBadgeVisibility,
+    order: TaskBadgeKey[] = badgeOrder,
+    onToggleCollapsed = vi.fn(),
+    taskOverrides = {},
+  ) => {
     await act(async () => {
       root.render(
         createElement(TaskItemBadges, {
-          task: makeTask({ id: 'task-1' }),
+          task: makeTask({ id: 'task-1', ...taskOverrides }),
           accounts: [],
           activeCalendarId: null,
           activeTagId: null,
@@ -87,13 +97,15 @@ describe('TaskItemBadges snooze badge', () => {
           onTagClick: vi.fn(),
           onCalendarClick: vi.fn(),
           onRepeatClick: vi.fn(),
-          onToggleCollapsed: vi.fn(),
+          onToggleCollapsed,
           compact: false,
           badgeVisibility: visibility,
-          badgeOrder,
+          badgeOrder: order,
         }),
       );
     });
+
+    return onToggleCollapsed;
   };
 
   it('renders the snooze badge when the task is snoozed and snooze visibility is enabled', async () => {
@@ -115,5 +127,32 @@ describe('TaskItemBadges snooze badge', () => {
     await renderBadges(baseVisibility);
 
     expect(container.textContent).not.toContain('Snoozed');
+  });
+
+  it('combines subtask progress and collapse into one badge', async () => {
+    childTaskState.tasks = [{ status: 'needs-action' }, { status: 'completed' }];
+    const onToggleCollapsed = vi.fn();
+    const subtasksVisibility = { ...baseVisibility, snooze: false, subtasks: true };
+
+    await renderBadges(subtasksVisibility, ['subtasks'], onToggleCollapsed);
+
+    const badge = container.querySelector('button');
+    expect(badge?.textContent).toBe('1/2 subtasks');
+    expect(badge?.getAttribute('aria-label')).toBe('Collapse subtasks');
+
+    await act(async () => badge?.click());
+
+    expect(onToggleCollapsed).toHaveBeenCalledOnce();
+  });
+
+  it('shows the expand action on a collapsed subtask badge', async () => {
+    childTaskState.tasks = [{ status: 'needs-action' }];
+    const subtasksVisibility = { ...baseVisibility, snooze: false, subtasks: true };
+
+    await renderBadges(subtasksVisibility, ['subtasks'], vi.fn(), { isCollapsed: true });
+
+    const badge = container.querySelector('button');
+    expect(badge?.textContent).toBe('0/1 subtask');
+    expect(badge?.getAttribute('aria-label')).toBe('Expand subtasks');
   });
 });

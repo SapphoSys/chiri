@@ -1,13 +1,12 @@
 import { Fragment, type MouseEvent, type ReactNode, useSyncExternalStore } from 'react';
 import { TaskItemCalendarBadge } from '$components/taskItem/badges/TaskItemCalendarBadge';
-import { TaskItemCollapseButtonBadge } from '$components/taskItem/badges/TaskItemCollapseButtonBadge';
 import { TaskItemDueDateBadge } from '$components/taskItem/badges/TaskItemDueDateBadge';
 import { TaskItemHiddenSubtasksBadge } from '$components/taskItem/badges/TaskItemHiddenSubtasksBadge';
 import { TaskItemInProgressBadge } from '$components/taskItem/badges/TaskItemInProgressBadge';
 import { TaskItemRepeatBadge } from '$components/taskItem/badges/TaskItemRepeatBadge';
 import { TaskItemSnoozedBadge } from '$components/taskItem/badges/TaskItemSnoozedBadge';
 import { TaskItemStartDateBadge } from '$components/taskItem/badges/TaskItemStartDateBadge';
-import { TaskItemSubtaskProgressBadge } from '$components/taskItem/badges/TaskItemSubtaskProgressBadge';
+import { TaskItemSubtaskBadge } from '$components/taskItem/badges/TaskItemSubtaskBadge';
 import { TaskItemTagBadge } from '$components/taskItem/badges/TaskItemTagBadge';
 import { TaskItemURLBadge } from '$components/taskItem/badges/TaskItemURLBadge';
 import { useSettingsStore } from '$context/settingsContext';
@@ -68,7 +67,6 @@ export const TaskItemBadges = ({
     (s) => s.status === 'completed' || s.status === 'cancelled',
   ).length;
   const totalSubtasks = allChildTasks.length;
-  const childCount = allChildTasks.length;
   const allCalendars = accounts.flatMap((a) => a.calendars);
   const calendar = allCalendars.find((c) => c.id === task.calendarId);
   const calendarColor = calendar?.color ? resolveAccent(calendar.color) : resolvedAccentColor;
@@ -92,7 +90,7 @@ export const TaskItemBadges = ({
     (badgeVisibility.url && task.url) ||
     (badgeVisibility.status && task.status === 'in-process') ||
     (badgeVisibility.repeat && task.rrule) ||
-    (badgeVisibility.subtasks && (totalSubtasks > 0 || childCount > 0)) ||
+    (badgeVisibility.subtasks && totalSubtasks > 0) ||
     (badgeVisibility.snooze && isSnoozed);
 
   if (!hasAnyVisibleBadge) {
@@ -140,12 +138,10 @@ export const TaskItemBadges = ({
       badgeVisibility.subtasks ? (
         <>
           {totalSubtasks > 0 && (
-            <TaskItemSubtaskProgressBadge completed={completedSubtasks} total={totalSubtasks} />
-          )}
-          {childCount > 0 && (
-            <TaskItemCollapseButtonBadge
+            <TaskItemSubtaskBadge
+              completed={completedSubtasks}
+              total={totalSubtasks}
               isCollapsed={!!task.isCollapsed}
-              childCount={childCount}
               onToggleCollapsed={onToggleCollapsed}
             />
           )}

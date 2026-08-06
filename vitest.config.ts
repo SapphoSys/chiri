@@ -55,6 +55,7 @@ export default defineConfig({
             'src/tests/components/TaskEditorSubtaskItem.test.tsx',
             'src/tests/components/TaskEditorSubtasks.test.tsx',
             'src/tests/components/TaskItemBadge.test.tsx',
+            'src/tests/components/TaskItemBadges.test.tsx',
             'src/tests/components/TaskItemRepeatBadge.test.tsx',
             'src/tests/hooks/system/useNotifications.test.ts',
             'src/tests/hooks/system/useFileDrop.test.ts',
