@@ -223,19 +223,23 @@ jobs:
       matrix:
         include:
           - platform: 'macos-26'
+            runner: 'blacksmith-6vcpu-macos-26'
             label: 'macOS (Apple Silicon)'
             args: '--target aarch64-apple-darwin'
           - platform: 'macos-26-intel'
+            runner: 'macos-26-intel'
             label: 'macOS (Intel)'
             args: '--target x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
+            runner: 'blacksmith-4vcpu-ubuntu-2204'
             label: 'Ubuntu'
             args: '--bundles deb,rpm'
           - platform: 'ubuntu-22.04-arm'
+            runner: 'blacksmith-4vcpu-ubuntu-2204-arm'
             label: 'Ubuntu (ARM)'
             args: '--bundles deb,rpm'
 
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -359,7 +363,7 @@ jobs:
   publish-windows:
     name: ${{ matrix.label }}
     needs: prepare-release
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: write
       actions: read
@@ -369,10 +373,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: 'blacksmith-4vcpu-windows-2025'
+          - platform: 'windows-2025'
+            runner: 'blacksmith-4vcpu-windows-2025'
             label: 'Windows'
             arch: 'x64'
           - platform: 'windows-11-arm'
+            runner: 'windows-11-arm'
             label: 'Windows (ARM)'
             arch: 'arm64'
     steps:
@@ -578,11 +584,13 @@ jobs:
       matrix:
         include:
           - platform: 'ubuntu-24.04'
+            runner: 'blacksmith-4vcpu-ubuntu-2404'
             label: 'AppImage (x86_64)'
-          - platform: 'blacksmith-4vcpu-ubuntu-2404-arm'
+          - platform: 'ubuntu-24.04-arm'
+            runner: 'blacksmith-4vcpu-ubuntu-2404-arm'
             label: 'AppImage (ARM64)'
 
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.runner }}
     container: ghcr.io/pkgforge-dev/archlinux@sha256:f6fc7e14b0612a355d7ab50efb3cc40010ba28e4766860bd238d313b308f190b
     timeout-minutes: 60
     steps:

@@ -3,7 +3,7 @@ description: 'Install the shared toolchain and dependencies for Chiri Tauri buil
 
 inputs:
   platform:
-    description: 'GitHub Actions runner label from the workflow matrix.'
+    description: 'Target platform identifier from the workflow matrix.'
     required: true
   rust-targets:
     description: 'Additional Rust targets to install.'

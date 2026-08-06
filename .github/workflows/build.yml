@@ -51,35 +51,41 @@ jobs:
       matrix:
         include:
           - platform: 'macos-26'
+            runner: 'blacksmith-6vcpu-macos-26'
             label: 'macOS (Apple Silicon)'
             artifact: 'macos-apple-silicon'
             args: '--target aarch64-apple-darwin'
           - platform: 'macos-26-intel'
+            runner: 'macos-26-intel'
             label: 'macOS (Intel)'
             artifact: 'macos-intel'
             args: '--target x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
+            runner: 'blacksmith-4vcpu-ubuntu-2204'
             label: 'Ubuntu'
             artifact: 'linux-ubuntu'
             rpm_artifact: 'linux-fedora'
             args: '--bundles deb,rpm'
           - platform: 'ubuntu-22.04-arm'
+            runner: 'blacksmith-4vcpu-ubuntu-2204-arm'
             label: 'Ubuntu (ARM)'
             artifact: 'linux-ubuntu-arm'
             rpm_artifact: 'linux-fedora-arm'
             args: '--bundles deb,rpm'
           - platform: 'windows-latest'
+            runner: 'blacksmith-4vcpu-windows-2025'
             label: 'Windows'
             nsis_artifact: 'windows-nsis'
             msi_artifact: 'windows-msi'
             args: ''
           - platform: 'windows-11-arm'
+            runner: 'windows-11-arm'
             label: 'Windows (ARM)'
             nsis_artifact: 'windows-arm-nsis'
             msi_artifact: 'windows-arm-msi'
             args: ''
 
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.runner }}
     name: ${{ matrix.label }}
     timeout-minutes: 45
     steps:
@@ -156,13 +162,15 @@ jobs:
       matrix:
         include:
           - platform: 'ubuntu-24.04'
+            runner: 'blacksmith-4vcpu-ubuntu-2404'
             label: 'AppImage (x86_64)'
             artifact: 'linux-appimage'
           - platform: 'ubuntu-24.04-arm'
+            runner: 'blacksmith-4vcpu-ubuntu-2404-arm'
             label: 'AppImage (ARM64)'
             artifact: 'linux-appimage-arm'
 
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.runner }}
     container: ghcr.io/pkgforge-dev/archlinux@sha256:f6fc7e14b0612a355d7ab50efb3cc40010ba28e4766860bd238d313b308f190b
     name: ${{ matrix.label }}
     timeout-minutes: 60
