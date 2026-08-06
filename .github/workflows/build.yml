@@ -73,7 +73,7 @@ jobs:
             rpm_artifact: 'linux-fedora-arm'
             args: '--bundles deb,rpm'
           - platform: 'windows-latest'
-            runner: 'blacksmith-4vcpu-windows-2025'
+            runner: 'blacksmith-8vcpu-windows-2025'
             label: 'Windows'
             nsis_artifact: 'windows-nsis'
             msi_artifact: 'windows-msi'
@@ -162,11 +162,11 @@ jobs:
       matrix:
         include:
           - platform: 'ubuntu-24.04'
-            runner: 'blacksmith-4vcpu-ubuntu-2404'
+            runner: 'blacksmith-8vcpu-ubuntu-2404'
             label: 'AppImage (x86_64)'
             artifact: 'linux-appimage'
           - platform: 'ubuntu-24.04-arm'
-            runner: 'blacksmith-4vcpu-ubuntu-2404-arm'
+            runner: 'blacksmith-8vcpu-ubuntu-2404-arm'
             label: 'AppImage (ARM64)'
             artifact: 'linux-appimage-arm'
 
