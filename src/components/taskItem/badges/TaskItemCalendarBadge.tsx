@@ -28,7 +28,11 @@ export const TaskItemCalendarBadge = ({
 
   if (readOnly) {
     return (
-      <TaskItemBadge color={calendarColor} className="cursor-not-allowed">
+      <TaskItemBadge
+        color={calendarColor}
+        className="cursor-not-allowed"
+        tooltip={`Calendar: ${calendar.displayName || 'Calendar'}`}
+      >
         {content}
       </TaskItemBadge>
     );
@@ -37,6 +41,7 @@ export const TaskItemCalendarBadge = ({
   return (
     <TaskItemBadge
       color={calendarColor}
+      tooltip={`Open calendar: ${calendar.displayName || 'Calendar'}`}
       onClick={(e) => {
         e.stopPropagation();
         onCalendarClick(calendar.id, e);

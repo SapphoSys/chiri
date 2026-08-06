@@ -20,7 +20,7 @@ export const TaskItemSubtaskBadge = ({
     className="gap-0.5"
     onClick={onToggleCollapsed}
     ariaLabel={isCollapsed ? 'Expand subtasks' : 'Collapse subtasks'}
-    title={isCollapsed ? 'Expand subtasks' : 'Collapse subtasks'}
+    tooltip={`${completed} of ${total} ${pluralize(total, 'subtask')} complete, click to ${isCollapsed ? 'expand' : 'collapse'}`}
   >
     <CheckCircle2 className="h-3 w-3" />
     <span>

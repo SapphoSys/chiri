@@ -7,7 +7,7 @@ export const TaskItemStartDateBadge = ({
 }: {
   startDateDisplay: ReturnType<typeof formatStartDate>;
 }) => (
-  <TaskItemBadge color={startDateDisplay.color}>
+  <TaskItemBadge color={startDateDisplay.color} tooltip={`Starts: ${startDateDisplay.text}`}>
     <CalendarClock className="h-3 w-3" />
     {startDateDisplay.text}
   </TaskItemBadge>

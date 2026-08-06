@@ -10,7 +10,10 @@ export const TaskItemSnoozedBadge = ({ taskId }: { taskId: string }) => {
   if (!until || until <= Date.now()) return null;
 
   return (
-    <TaskItemBadge tone="info">
+    <TaskItemBadge
+      tone="info"
+      tooltip={`Snoozed until ${formatTime(new Date(until))}. Use the close button to cancel.`}
+    >
       <BellOff className="h-3 w-3" />
       Snoozed until {formatTime(new Date(until))}
       <button

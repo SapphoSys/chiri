@@ -1,4 +1,5 @@
 import type { CSSProperties, MouseEvent, ReactNode } from 'react';
+import { Tooltip } from '$components/Tooltip';
 import type { BadgeTone } from '$types/badge';
 
 interface TaskItemBadgeProps {
@@ -7,6 +8,8 @@ interface TaskItemBadgeProps {
   tone?: BadgeTone;
   className?: string;
   title?: string;
+  tooltip?: ReactNode;
+  tooltipDelay?: number;
   ariaLabel?: string;
   onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
 }
@@ -36,6 +39,8 @@ export const TaskItemBadge = ({
   tone = 'neutral',
   className,
   title,
+  tooltip,
+  tooltipDelay = 350,
   ariaLabel,
   onClick,
 }: TaskItemBadgeProps) => {
@@ -45,14 +50,10 @@ export const TaskItemBadge = ({
   const sharedProps = {
     className: getClassName(color, tone, className),
     style,
-    title,
+    title: tooltip ? undefined : title,
   };
 
-  if (!onClick) {
-    return <span {...sharedProps}>{children}</span>;
-  }
-
-  return (
+  const badge = onClick ? (
     <button
       type="button"
       {...sharedProps}
@@ -62,5 +63,17 @@ export const TaskItemBadge = ({
     >
       {children}
     </button>
+  ) : (
+    <span {...sharedProps}>{children}</span>
   );
+
+  if (tooltip) {
+    return (
+      <Tooltip content={tooltip} delay={tooltipDelay}>
+        {badge}
+      </Tooltip>
+    );
+  }
+
+  return badge;
 };

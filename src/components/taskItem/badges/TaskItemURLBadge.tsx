@@ -5,11 +5,11 @@ import { TaskItemBadge } from '$components/taskItem/badges/TaskItemBadge';
 export const TaskItemURLBadge = ({ url }: { url: string }) => (
   <TaskItemBadge
     tone="primary"
+    tooltip={`Open link: ${url}`}
     onClick={(e) => {
       e.stopPropagation();
       openUrl(url);
     }}
-    title={url}
   >
     <Link className="h-3 w-3" />
     URL

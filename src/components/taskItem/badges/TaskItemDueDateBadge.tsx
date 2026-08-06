@@ -12,7 +12,7 @@ export const TaskItemDueDateBadge = ({ dueDate }: TaskItemDueDateBadgeProps) => 
   if (!display) return null;
 
   return (
-    <TaskItemBadge tone={display.tone}>
+    <TaskItemBadge tone={display.tone} tooltip={`Due: ${display.text}`}>
       <Clock className="h-3 w-3" />
       {display.text}
     </TaskItemBadge>

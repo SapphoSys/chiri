@@ -80,4 +80,16 @@ describe('TaskItemBadge', () => {
     await act(async () => badge?.click());
     expect(onClick).toHaveBeenCalledOnce();
   });
+
+  it('uses the shared tooltip instead of a native title when provided', async () => {
+    await act(async () => {
+      root.render(
+        createElement(TaskItemBadge, { title: 'Native title', tooltip: 'Open link' }, 'URL'),
+      );
+    });
+
+    const badge = container.querySelector('[data-tooltip-trigger] > span');
+    expect(badge?.getAttribute('title')).toBeNull();
+    expect(badge?.getAttribute('aria-describedby')).toBeTruthy();
+  });
 });
