@@ -15,6 +15,7 @@ interface HeaderViewMenuProps {
   isAnyModalOpen: boolean;
   sortConfig: SortConfig;
   taskGroupConfig: TaskGroupConfig;
+  activeCalendarId?: string | null;
   showCompletedTasks: boolean;
   showUnstartedTasks: boolean;
   moveCompletedTasksToBottom: boolean;
@@ -31,6 +32,7 @@ export const HeaderViewMenu = ({
   isAnyModalOpen,
   sortConfig,
   taskGroupConfig,
+  activeCalendarId = null,
   showCompletedTasks,
   showUnstartedTasks,
   moveCompletedTasksToBottom,
@@ -44,7 +46,6 @@ export const HeaderViewMenu = ({
 }: HeaderViewMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
-
   return (
     <div className="relative">
       <Tooltip content="View options" position="bottom">
@@ -153,8 +154,12 @@ export const HeaderViewMenu = ({
                   Group By
                   <SortDirectionButton
                     direction={taskGroupConfig.direction}
-                    disabled={taskGroupConfig.mode === 'none'}
-                    disabledLabel="Grouping is off"
+                    disabled={taskGroupConfig.mode === 'none' || activeCalendarId !== null}
+                    disabledLabel={
+                      activeCalendarId !== null
+                        ? 'Unavailable while viewing a calendar'
+                        : 'Grouping is off'
+                    }
                     onToggle={onTaskGroupDirectionToggle}
                   />
                 </div>
@@ -164,6 +169,8 @@ export const HeaderViewMenu = ({
                       key={option.value}
                       option={option}
                       isActive={taskGroupConfig.mode === option.value}
+                      disabled={option.value === 'calendar' && activeCalendarId !== null}
+                      disabledReason="Unavailable while viewing a calendar"
                       onClick={() => onTaskGroupChange(option.value)}
                     />
                   ))}

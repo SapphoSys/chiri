@@ -14,6 +14,7 @@ import { useSetSelectedTask, useUIState } from '$hooks/queries/useUIState';
 import { useVisibleTaskGroups } from '$hooks/queries/useVisibleTasks';
 import { truncateName, useSortableDrag } from '$hooks/ui/useSortableDrag';
 import { useTaskListSelection } from '$hooks/ui/useTaskListSelection';
+import { getEffectiveTaskGroupConfig } from '$lib/task/grouping';
 import type { LucideIcon } from '$types/lucide';
 import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
 
@@ -97,6 +98,8 @@ export const TaskList = () => {
 
   const sortConfig = uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
   const taskGroupConfig = uiState?.taskGroupConfig ?? DEFAULT_TASK_GROUP_CONFIG;
+  const activeCalendarId = uiState?.activeCalendarId ?? null;
+  const effectiveTaskGroupConfig = getEffectiveTaskGroupConfig(taskGroupConfig, activeCalendarId);
   const searchQuery = uiState?.searchQuery ?? '';
   const activeView = uiState?.activeView ?? 'tasks';
   const taskGroupKeys = useMemo(
@@ -119,8 +122,8 @@ export const TaskList = () => {
   );
   const getDragScope = useCallback(
     (task: (typeof flattenedTasks)[number]) =>
-      taskGroupConfig.mode === 'none' ? 'all' : (taskGroupKeys.get(task.id) ?? task.id),
-    [taskGroupConfig.mode, taskGroupKeys],
+      effectiveTaskGroupConfig.mode === 'none' ? 'all' : (taskGroupKeys.get(task.id) ?? task.id),
+    [effectiveTaskGroupConfig.mode, taskGroupKeys],
   );
 
   const {
@@ -234,7 +237,7 @@ export const TaskList = () => {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
-        modifiers={taskGroupConfig.mode === 'none' ? undefined : [restrictTaskDragToGroup]}
+        modifiers={effectiveTaskGroupConfig.mode === 'none' ? undefined : [restrictTaskDragToGroup]}
         onDragStart={handleDragStart}
         onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
@@ -247,7 +250,7 @@ export const TaskList = () => {
               group={group}
               visibleTaskIds={visibleTaskIds}
               dragBoundsRef={setTaskGroupDragBounds(group.key)}
-              showHeader={taskGroupConfig.mode !== 'none'}
+              showHeader={effectiveTaskGroupConfig.mode !== 'none'}
               isCollapsed={collapsedGroupKeys.has(group.key)}
               isDragEnabled={isDragEnabled}
               isSelectionMode={isSelectionMode}

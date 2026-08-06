@@ -1,5 +1,5 @@
 import { format, isToday, isTomorrow, startOfDay } from 'date-fns';
-import type { SortDirection, TaskGroupMode } from '$types/sort';
+import type { SortDirection, TaskGroupConfig, TaskGroupMode } from '$types/sort';
 import type { Task } from '$types/task/model';
 
 export interface TaskGroup<T extends Task = Task> {
@@ -21,6 +21,14 @@ const getTerminalGroupLabel = (hasCompleted: boolean, hasCancelled: boolean) => 
   if (hasCancelled) return 'Cancelled';
   return 'Completed';
 };
+
+export const getEffectiveTaskGroupConfig = (
+  config: TaskGroupConfig,
+  activeCalendarId: string | null | undefined,
+): TaskGroupConfig =>
+  activeCalendarId !== null && activeCalendarId !== undefined && config.mode === 'calendar'
+    ? { ...config, mode: 'none' }
+    : config;
 
 const STATUS_GROUPS: Record<Task['status'], GroupDetails> = {
   'needs-action': { key: 'status:needs-action', label: 'Needs Action', order: 0 },

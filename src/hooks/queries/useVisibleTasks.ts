@@ -4,7 +4,7 @@ import { useFilteredTasks } from '$hooks/queries/useTasks';
 import { useUIState } from '$hooks/queries/useUIState';
 import { dataStore } from '$lib/store';
 import { getChildTasks } from '$lib/store/tasks';
-import { groupTasks, type TaskGroup } from '$lib/task/grouping';
+import { getEffectiveTaskGroupConfig, groupTasks, type TaskGroup } from '$lib/task/grouping';
 import { sortTasks } from '$lib/task/sorting';
 import type { SortConfig, TaskGroupConfig } from '$types/sort';
 import type { UIState } from '$types/store/state';
@@ -19,6 +19,7 @@ interface VisibleTasksOptions {
   moveCompletedTasksToBottom: boolean;
   sortConfig: SortConfig;
   taskGroupConfig?: TaskGroupConfig;
+  activeCalendarId?: string | null;
   calendarNames?: ReadonlyMap<string, string>;
 }
 
@@ -31,6 +32,7 @@ export const getVisibleTaskGroups = ({
   moveCompletedTasksToBottom,
   sortConfig,
   taskGroupConfig = DEFAULT_TASK_GROUP_CONFIG,
+  activeCalendarId,
   calendarNames,
 }: VisibleTasksOptions) => {
   const visibleTaskUids = new Set(filteredTasks.map((task) => task.uid));
@@ -50,12 +52,14 @@ export const getVisibleTaskGroups = ({
     return children;
   };
 
+  const effectiveTaskGroupConfig = getEffectiveTaskGroupConfig(taskGroupConfig, activeCalendarId);
+
   return groupTasks(
     sortedTopLevel,
-    taskGroupConfig.mode,
+    effectiveTaskGroupConfig.mode,
     calendarNames,
     moveCompletedTasksToBottom,
-    taskGroupConfig.direction,
+    effectiveTaskGroupConfig.direction,
   ).map((group) => ({
     ...group,
     tasks: flattenTasks(group.tasks, getFilteredChildTasks, (tasks) =>
@@ -84,6 +88,7 @@ export const useVisibleTaskGroups = () => {
 
   const sortConfig = uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
   const taskGroupConfig = uiState?.taskGroupConfig ?? DEFAULT_TASK_GROUP_CONFIG;
+  const activeCalendarId = uiState?.activeCalendarId ?? null;
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
   const moveCompletedTasksToBottom = uiState?.moveCompletedTasksToBottom ?? false;
   const activeView = uiState?.activeView ?? 'tasks';
@@ -96,6 +101,7 @@ export const useVisibleTaskGroups = () => {
       moveCompletedTasksToBottom,
       sortConfig,
       taskGroupConfig,
+      activeCalendarId,
       calendarNames: getCalendarNames(),
     });
   }, [
@@ -105,6 +111,7 @@ export const useVisibleTaskGroups = () => {
     showCompletedTasks,
     sortConfig,
     taskGroupConfig,
+    activeCalendarId,
   ]);
 };
 
