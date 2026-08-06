@@ -1,10 +1,20 @@
 import { closestCenter, DndContext, DragOverlay, type Modifier } from '@dnd-kit/core';
+import ArrowRight from 'lucide-react/icons/arrow-right';
 import ClipboardPlus from 'lucide-react/icons/clipboard-plus';
 import FunnelX from 'lucide-react/icons/funnel-x';
 import Plus from 'lucide-react/icons/plus';
 import SearchX from 'lucide-react/icons/search-x';
 import Trash2 from 'lucide-react/icons/trash-2';
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type KeyboardEvent,
+  type MouseEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { RecentlyDeletedNoticeBanner } from '$components/banners/RecentlyDeletedNoticeBanner';
 import { TaskGroupSection } from '$components/TaskGroupSection';
 import { TaskItem } from '$components/taskItem/TaskItem';
@@ -95,6 +105,9 @@ export const TaskList = () => {
   );
   const createTaskMutation = useCreateTask();
   const setSelectedTaskMutation = useSetSelectedTask();
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const newTaskInputRef = useRef<HTMLInputElement>(null);
+  const hasNewTaskTitle = newTaskTitle.trim().length > 0;
 
   const sortConfig = uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
   const taskGroupConfig = uiState?.taskGroupConfig ?? DEFAULT_TASK_GROUP_CONFIG;
@@ -182,6 +195,25 @@ export const TaskList = () => {
         },
       },
     );
+  };
+
+  const handleCreateTaskFromInput = () => {
+    const title = newTaskTitle.trim();
+    if (!title) return;
+
+    clearSelection();
+    createTaskMutation.mutate({ title });
+    setNewTaskTitle('');
+  };
+
+  const handleTaskKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleCreateTaskFromInput();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      setNewTaskTitle('');
+    }
   };
 
   const metaKey = getMetaKeyLabel();
@@ -295,14 +327,46 @@ export const TaskList = () => {
       </DndContext>
 
       {!isRecentlyDeleted && !isSelectionMode && !isDraggingTask && (
-        <button
-          type="button"
-          onClick={handleQuickAdd}
-          className="mt-4 flex w-full items-center gap-3 rounded-lg border border-surface-200 p-3 text-surface-500 outline-hidden transition-colors hover:border-surface-300 hover:bg-surface-100 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:text-surface-400 dark:hover:border-surface-500 dark:hover:bg-surface-700 dark:hover:text-surface-300"
+        // biome-ignore lint/a11y/noStaticElementInteractions: wrapper focuses the nested input when clicking its non-interactive area
+        <div
+          onMouseDown={(event: MouseEvent<HTMLDivElement>) => {
+            const target = event.target as HTMLElement;
+            if (target.closest('button') || target === newTaskInputRef.current) return;
+            event.preventDefault();
+            newTaskInputRef.current?.focus();
+          }}
+          className="mt-4 flex w-full cursor-text items-center gap-3 rounded-lg border border-surface-200 px-3 py-2.5 text-surface-500 outline-hidden transition-colors focus-within:bg-surface-50 dark:border-surface-700 dark:text-surface-400 dark:focus-within:bg-surface-800/50"
         >
-          <Plus className="h-5 w-5" />
-          <span>Add a task...</span>
-        </button>
+          <label
+            htmlFor="add-task-input"
+            className="flex min-w-0 flex-1 cursor-text items-center gap-3"
+          >
+            <Plus className="h-5 w-5" />
+            <input
+              ref={newTaskInputRef}
+              id="add-task-input"
+              type="text"
+              value={newTaskTitle}
+              onChange={(event) => setNewTaskTitle(event.target.value)}
+              onKeyDown={handleTaskKeyDown}
+              placeholder="Add a task..."
+              aria-label="Add a task"
+              className="min-w-0 flex-1 bg-transparent text-surface-700 outline-hidden placeholder:text-surface-500 dark:text-surface-300 dark:placeholder:text-surface-400"
+            />
+          </label>
+          {hasNewTaskTitle ? (
+            <button
+              type="button"
+              onClick={handleCreateTaskFromInput}
+              aria-label="Add task"
+              className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md text-surface-400 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-500 dark:hover:bg-surface-700 dark:hover:text-surface-300"
+            >
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          ) : (
+            <span className="h-6 w-6 shrink-0" aria-hidden="true" />
+          )}
+        </div>
       )}
     </div>
   );
