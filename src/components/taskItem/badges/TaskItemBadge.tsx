@@ -27,8 +27,7 @@ const TONE_CLASS_NAMES: Record<BadgeTone, string> = {
   'in-process': 'border-status-in-process bg-status-in-process/15',
 };
 
-const getColorTint = (color: string) =>
-  /^#[\da-f]{6}$/i.test(color) ? `${color}15` : `color-mix(in srgb, ${color} 10%, transparent)`;
+const getColorTint = (color: string) => `color-mix(in oklab, ${color} 15%, transparent)`;
 
 const getClassName = (color: string | undefined, tone: BadgeTone, className: string | undefined) =>
   [BASE_CLASS_NAME, color ? '' : TONE_CLASS_NAMES[tone], className ?? ''].filter(Boolean).join(' ');

@@ -32,7 +32,9 @@ describe('TaskItemBadge', () => {
     expect(badge.className).toContain('dark:text-surface-300');
     expect(badge.className).not.toContain('text-primary');
     expect(badge.style.borderColor).toBe('rgb(59, 130, 246)');
-    expect(badge.style.backgroundColor).not.toBe('');
+    expect(badge.style.backgroundColor).toBe(
+      'color-mix(in oklab, rgb(59, 130, 246) 15%, transparent)',
+    );
   });
 
   it('uses the shared tone classes for semantic badges', async () => {
