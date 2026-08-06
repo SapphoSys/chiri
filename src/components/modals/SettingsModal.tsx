@@ -169,7 +169,7 @@ export const SettingsModal = ({
       contentPadding={false}
     >
       <div className="flex h-[calc(85vh-12rem)] max-h-[75vh] overflow-hidden [@media(max-height:900px)]:h-[calc(100vh-10rem)] [@media(max-height:900px)]:max-h-[calc(100vh-10rem)]">
-        <div className="w-56 space-y-4 overflow-y-auto overscroll-contain rounded-l-xl border-surface-200 border-r bg-white p-3 pr-5 dark:border-surface-700 dark:bg-surface-800">
+        <div className="w-56 space-y-4 overflow-y-auto overscroll-contain rounded-l-xl border-surface-200 border-r bg-white p-3 dark:border-surface-700 dark:bg-surface-800">
           {categories.map((category) => (
             <div key={category.id} className="space-y-2">
               <p className="px-2 font-semibold text-surface-500 text-xs uppercase tracking-wide dark:text-surface-400">
