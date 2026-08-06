@@ -59,7 +59,7 @@ export const TaskItemBadge = ({
       {...sharedProps}
       onClick={onClick}
       aria-label={ariaLabel}
-      className={`${sharedProps.className} outline-hidden transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
+      className={`${sharedProps.className} cursor-pointer outline-hidden transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
     >
       {children}
     </button>

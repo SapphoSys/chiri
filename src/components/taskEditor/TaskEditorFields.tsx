@@ -48,6 +48,8 @@ interface TaskEditorFieldsProps {
   onOpenNotificationSettings?: () => void;
   actions: TaskEditorActions;
   modals: TaskEditorModalsState;
+  highlightProgress?: boolean;
+  progressFocusRequest?: number;
 }
 
 export const TaskEditorFields = ({
@@ -65,6 +67,8 @@ export const TaskEditorFields = ({
   onOpenNotificationSettings,
   actions,
   modals,
+  highlightProgress = false,
+  progressFocusRequest = 0,
 }: TaskEditorFieldsProps) => {
   const renderedEditorFieldOrder = isReadOnly
     ? [
@@ -83,11 +87,13 @@ export const TaskEditorFields = ({
         />
       ) : null,
     progress: () =>
-      isReadOnly || editorFieldVisibility.progress ? (
+      isReadOnly || editorFieldVisibility.progress || highlightProgress ? (
         <TaskEditorProgress
           task={task}
           onCommitPercent={actions.commitPercentComplete}
           readOnly={isReadOnly}
+          highlighted={highlightProgress}
+          highlightRequest={progressFocusRequest}
         />
       ) : null,
     description: () =>

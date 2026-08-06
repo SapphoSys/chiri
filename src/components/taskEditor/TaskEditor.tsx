@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { TaskEditorFields } from '$components/taskEditor/TaskEditorFields';
 import { TaskEditorFooter } from '$components/taskEditor/TaskEditorFooter';
 import { TaskEditorHeader } from '$components/taskEditor/TaskEditorHeader';
@@ -8,7 +8,14 @@ import { TaskEditorTitle } from '$components/taskEditor/TaskEditorTitle';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useTags } from '$hooks/queries/useTags';
-import { useSetEditorOpen, useSetSelectedTask } from '$hooks/queries/useUIState';
+import {
+  consumeSelectedTaskEditorFocus,
+  getTaskEditorFocusRequestVersion,
+  subscribeToTaskEditorFocus,
+  useSetEditorOpen,
+  useSetSelectedTask,
+  useUIState,
+} from '$hooks/queries/useUIState';
 import { useVisibleTasks } from '$hooks/queries/useVisibleTasks';
 import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
 import { usePreserveScrollOnWindowFocus } from '$hooks/ui/usePreserveScrollOnWindowFocus';
@@ -28,6 +35,12 @@ interface TaskEditorProps {
 export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps) => {
   const setSelectedTaskMutation = useSetSelectedTask();
   const setEditorOpenMutation = useSetEditorOpen();
+  const { data: uiState } = useUIState();
+  const focusRequestVersion = useSyncExternalStore(
+    subscribeToTaskEditorFocus,
+    getTaskEditorFocusRequestVersion,
+    getTaskEditorFocusRequestVersion,
+  );
   const { data: tags = [] } = useTags();
   const { data: accounts = [] } = useAccounts();
   const {
@@ -42,6 +55,28 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
   const resolvedAccentColor = useResolvedAccentColor();
   const actions = useTaskEditorActions({ task, accounts, syncStatusProgress });
   const modals = useTaskEditorModals();
+  const [focusEditorField, setFocusEditorField] = useState<'progress' | null>(null);
+  const [progressFocusRequest, setProgressFocusRequest] = useState(0);
+  const previousTaskIdRef = useRef(task.id);
+
+  useEffect(() => {
+    if (uiState?.selectedTaskId !== task.id) return;
+    if (focusRequestVersion !== getTaskEditorFocusRequestVersion()) return;
+
+    const taskChanged = previousTaskIdRef.current !== task.id;
+    const requestedField = consumeSelectedTaskEditorFocus(task.id);
+
+    if (requestedField) {
+      setFocusEditorField(requestedField);
+      if (requestedField === 'progress') {
+        setProgressFocusRequest((request) => request + 1);
+      }
+    } else if (taskChanged) {
+      setFocusEditorField(null);
+    }
+
+    previousTaskIdRef.current = task.id;
+  }, [focusRequestVersion, task.id, uiState]);
 
   const visibleTasks = useVisibleTasks();
   const visibleTaskUids = new Set(visibleTasks.map((visibleTask) => visibleTask.uid));
@@ -120,6 +155,8 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
             onOpenNotificationSettings={onOpenNotificationSettings}
             actions={actions}
             modals={modals}
+            highlightProgress={focusEditorField === 'progress'}
+            progressFocusRequest={progressFocusRequest}
           />
         </div>
 

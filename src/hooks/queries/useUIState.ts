@@ -41,10 +41,18 @@ import type {
   TaskGroupConfig,
 } from '$types/sort';
 
-type SetSelectedTaskInput = string | null | { id: string | null; focusTitle?: boolean };
+export type TaskEditorFocusField = 'progress';
+
+type SetSelectedTaskInput =
+  | string
+  | null
+  | { id: string | null; focusTitle?: boolean; focusEditorField?: TaskEditorFocusField };
 
 let pendingTitleAutofocusTaskId: string | null = null;
 let pendingTaskListScrollTaskId: string | null = null;
+let pendingEditorFocus: { taskId: string; field: TaskEditorFocusField } | null = null;
+let editorFocusRequestVersion = 0;
+const editorFocusListeners = new Set<() => void>();
 
 export const consumeSelectedTaskTitleAutofocus = (taskId: string) => {
   if (pendingTitleAutofocusTaskId !== taskId) return false;
@@ -57,6 +65,22 @@ export const consumeSelectedTaskListScroll = (taskId: string) => {
   pendingTaskListScrollTaskId = null;
   return true;
 };
+
+export const consumeSelectedTaskEditorFocus = (taskId: string) => {
+  if (pendingEditorFocus?.taskId !== taskId) return null;
+  const field = pendingEditorFocus.field;
+  pendingEditorFocus = null;
+  return field;
+};
+
+export const subscribeToTaskEditorFocus = (listener: () => void) => {
+  editorFocusListeners.add(listener);
+  return () => {
+    editorFocusListeners.delete(listener);
+  };
+};
+
+export const getTaskEditorFocusRequestVersion = () => editorFocusRequestVersion;
 
 /**
  * hook to get the full UI state
@@ -306,9 +330,17 @@ export const useSetSelectedTask = () => {
       const id = typeof input === 'object' && input !== null ? input.id : input;
       const focusTitle =
         typeof input === 'object' && input !== null ? (input.focusTitle ?? false) : false;
+      const focusEditorField =
+        typeof input === 'object' && input !== null ? input.focusEditorField : undefined;
 
       pendingTitleAutofocusTaskId = focusTitle && id !== null ? id : null;
       pendingTaskListScrollTaskId = focusTitle && id !== null ? id : null;
+      pendingEditorFocus =
+        focusEditorField && id !== null ? { taskId: id, field: focusEditorField } : null;
+      if (pendingEditorFocus) {
+        editorFocusRequestVersion += 1;
+        for (const listener of editorFocusListeners) listener();
+      }
       setSelectedTask(id);
       return Promise.resolve();
     },
@@ -329,6 +361,7 @@ export const useSetEditorOpen = () => {
       if (!open) {
         pendingTitleAutofocusTaskId = null;
         pendingTaskListScrollTaskId = null;
+        pendingEditorFocus = null;
       }
       setEditorOpen(open);
       return Promise.resolve();

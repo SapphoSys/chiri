@@ -28,6 +28,9 @@ interface TaskItemBadgesProps {
   showCompletedTasks: boolean;
   onTagClick: (tagId: string, event: MouseEvent) => void;
   onCalendarClick: (calendarId: string, event: MouseEvent) => void;
+  onStartDateClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+  onDueDateClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+  onProgressClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   onRepeatClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   onToggleCollapsed: (e: MouseEvent) => void;
   compact: boolean;
@@ -46,6 +49,9 @@ export const TaskItemBadges = ({
   showCompletedTasks,
   onTagClick,
   onCalendarClick,
+  onStartDateClick,
+  onDueDateClick,
+  onProgressClick,
   onRepeatClick,
   onToggleCollapsed,
   compact,
@@ -100,11 +106,11 @@ export const TaskItemBadges = ({
   const badgeRenderers: Record<TaskBadgeKey, () => ReactNode> = {
     startDate: () =>
       badgeVisibility.startDate && startDateDisplay && !hideStartDateBadge ? (
-        <TaskItemStartDateBadge startDateDisplay={startDateDisplay} />
+        <TaskItemStartDateBadge startDateDisplay={startDateDisplay} onClick={onStartDateClick} />
       ) : null,
     dueDate: () =>
       badgeVisibility.dueDate && !hideDueDateBadge ? (
-        <TaskItemDueDateBadge dueDate={task.dueDate} />
+        <TaskItemDueDateBadge dueDate={task.dueDate} onClick={onDueDateClick} />
       ) : null,
     tags: () =>
       badgeVisibility.tags
@@ -122,7 +128,7 @@ export const TaskItemBadges = ({
     url: () => (badgeVisibility.url && task.url ? <TaskItemURLBadge url={task.url} /> : null),
     status: () =>
       badgeVisibility.status && task.status === 'in-process' ? (
-        <TaskItemInProgressBadge percentComplete={task.percentComplete} />
+        <TaskItemInProgressBadge percentComplete={task.percentComplete} onClick={onProgressClick} />
       ) : null,
     snooze: () => (badgeVisibility.snooze ? <TaskItemSnoozedBadge taskId={task.id} /> : null),
     repeat: () =>

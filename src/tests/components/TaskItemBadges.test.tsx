@@ -85,6 +85,7 @@ describe('TaskItemBadges snooze badge', () => {
     order: TaskBadgeKey[] = badgeOrder,
     onToggleCollapsed = vi.fn(),
     taskOverrides = {},
+    extraProps: Record<string, unknown> = {},
   ) => {
     await act(async () => {
       root.render(
@@ -101,6 +102,7 @@ describe('TaskItemBadges snooze badge', () => {
           compact: false,
           badgeVisibility: visibility,
           badgeOrder: order,
+          ...extraProps,
         }),
       );
     });
@@ -154,5 +156,58 @@ describe('TaskItemBadges snooze badge', () => {
     const badge = container.querySelector('button');
     expect(badge?.textContent).toBe('0/1 subtask');
     expect(badge?.getAttribute('aria-label')).toBe('Expand subtasks');
+  });
+
+  it('makes date badges shortcuts when handlers are provided', async () => {
+    const onStartDateClick = vi.fn();
+    const onDueDateClick = vi.fn();
+    const dateVisibility = {
+      ...baseVisibility,
+      snooze: false,
+      startDate: true,
+      dueDate: true,
+    };
+
+    await renderBadges(
+      dateVisibility,
+      ['startDate', 'dueDate'],
+      vi.fn(),
+      {
+        startDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+      },
+      { onStartDateClick, onDueDateClick },
+    );
+
+    const badges = container.querySelectorAll('button');
+    expect(badges).toHaveLength(2);
+
+    await act(async () => {
+      badges[0]?.click();
+      badges[1]?.click();
+    });
+
+    expect(onStartDateClick).toHaveBeenCalledOnce();
+    expect(onDueDateClick).toHaveBeenCalledOnce();
+  });
+
+  it('makes progress a shortcut when a handler is provided', async () => {
+    const onProgressClick = vi.fn();
+    const progressVisibility = { ...baseVisibility, snooze: false, status: true };
+
+    await renderBadges(
+      progressVisibility,
+      ['status'],
+      vi.fn(),
+      { status: 'in-process', percentComplete: 50 },
+      { onProgressClick },
+    );
+
+    const badge = container.querySelector('button');
+    expect(badge?.getAttribute('aria-label')).toBe('Edit progress: 50%');
+
+    await act(async () => badge?.click());
+
+    expect(onProgressClick).toHaveBeenCalledOnce();
   });
 });

@@ -1,20 +1,48 @@
 import Timer from 'lucide-react/icons/timer';
-import { type CSSProperties, useState } from 'react';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
+import { usePrefersReducedMotion } from '$hooks/ui/usePrefersReducedMotion';
 import type { Task } from '$types/task/model';
 
 interface TaskEditorProgressProps {
   task: Task;
   onCommitPercent: (value: number) => void;
   readOnly?: boolean;
+  highlighted?: boolean;
+  highlightRequest?: number;
 }
 
 export const TaskEditorProgress = ({
   task,
   onCommitPercent,
   readOnly = false,
+  highlighted = false,
+  highlightRequest = 0,
 }: TaskEditorProgressProps) => {
   const [draftPercent, setDraftPercent] = useState<number | undefined>(undefined);
+  const [isHighlightVisible, setIsHighlightVisible] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
   const percent = draftPercent ?? task.percentComplete ?? 0;
+
+  useEffect(() => {
+    if (!highlighted || highlightRequest === 0) return;
+
+    const frameId = requestAnimationFrame(() => {
+      containerRef.current?.scrollIntoView({
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        block: 'center',
+      });
+      inputRef.current?.focus({ preventScroll: true });
+      setIsHighlightVisible(true);
+    });
+    const timeoutId = setTimeout(() => setIsHighlightVisible(false), 1600);
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      clearTimeout(timeoutId);
+    };
+  }, [highlighted, highlightRequest, prefersReducedMotion]);
 
   const commitPercent = (value: number) => {
     setDraftPercent(undefined);
@@ -22,7 +50,10 @@ export const TaskEditorProgress = ({
   };
 
   return (
-    <div>
+    <div
+      ref={containerRef}
+      className={`rounded-lg ring-2 ring-transparent transition-colors ${isHighlightVisible ? 'bg-primary-50/60 ring-primary-500 dark:bg-primary-900/20' : ''}`}
+    >
       <label
         htmlFor="task-percent-complete"
         className="mb-1 flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
@@ -32,6 +63,7 @@ export const TaskEditorProgress = ({
       </label>
       <div className={readOnly ? 'cursor-not-allowed' : undefined}>
         <input
+          ref={inputRef}
           id="task-percent-complete"
           type="range"
           min={0}
