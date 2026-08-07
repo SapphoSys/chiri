@@ -134,6 +134,7 @@ describe('TaskEditorRepeat', () => {
     });
 
     expect(container.textContent).toContain('Next date depends on completion');
+    expect(container.textContent).not.toContain('from completion');
     expect(container.textContent).not.toContain('Then:');
     const description = Array.from(container.querySelectorAll('span')).find(
       (element) => element.textContent === 'Next date depends on completion',

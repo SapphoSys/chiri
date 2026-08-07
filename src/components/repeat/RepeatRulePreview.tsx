@@ -1,8 +1,22 @@
+import CalendarCheck from 'lucide-react/icons/calendar-check';
+import CalendarDays from 'lucide-react/icons/calendar-days';
+import CalendarHeart from 'lucide-react/icons/calendar-heart';
+import CalendarRange from 'lucide-react/icons/calendar-range';
 import ChevronRight from 'lucide-react/icons/chevron-right';
-import RefreshCw from 'lucide-react/icons/refresh-cw';
+import SlidersHorizontal from 'lucide-react/icons/sliders-horizontal';
+import Sun from 'lucide-react/icons/sun';
 import { useSettingsStore } from '$context/settingsContext';
 import { getNextOccurrence, rruleToDisplaySummary, rruleToText } from '$lib/task/recurrence';
+import type { LucideIcon } from '$types/lucide';
 import { formatDate } from '$utils/date';
+
+const REPEAT_PREVIEW_ICONS: Record<string, LucideIcon> = {
+  Daily: Sun,
+  Weekdays: CalendarCheck,
+  Weekly: CalendarDays,
+  Monthly: CalendarRange,
+  Yearly: CalendarHeart,
+};
 
 interface RepeatRulePreviewProps {
   rrule: string;
@@ -26,9 +40,12 @@ export const RepeatRulePreview = ({
   const { dateFormat } = useSettingsStore();
   const summary = rruleToDisplaySummary(rrule, repeatFrom, dateFormat);
   const fullSummary = rruleToText(rrule, repeatFrom, dateFormat);
+  const RepeatIcon = REPEAT_PREVIEW_ICONS[summary.primary] ?? SlidersHorizontal;
   const followingOccurrence =
     dueDate && repeatFrom !== 1 ? getNextOccurrence(rrule, dueDate, dueDate) : null;
-  const visibleDetails = summary.details.filter((detail) => detail !== 'from due date');
+  const visibleDetails = summary.details.filter(
+    (detail) => detail !== 'from due date' && detail !== 'from completion',
+  );
 
   return (
     <div
@@ -40,30 +57,28 @@ export const RepeatRulePreview = ({
         disabled={readOnly}
         aria-labelledby={labelId}
         title={`Repeat: ${fullSummary}`}
-        className={`flex min-w-0 flex-1 items-center gap-3 px-3 py-2.5 text-left outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${readOnly ? 'cursor-not-allowed' : ''}`}
+        className={`flex min-w-0 flex-1 items-center gap-3 px-3 py-2 text-left outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${readOnly ? 'cursor-not-allowed' : ''}`}
       >
-        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-200 text-surface-500 dark:bg-surface-700 dark:text-surface-300">
-          <RefreshCw className="h-4 w-4" />
-        </span>
+        <RepeatIcon className="h-5 w-5 shrink-0 text-surface-500 dark:text-surface-300" />
         <span className="min-w-0 flex-1">
           <span className="block truncate font-medium text-sm text-surface-800 dark:text-surface-100">
             {summary.primary}
           </span>
           {visibleDetails.length > 0 && (
-            <span className="mt-0.5 block whitespace-nowrap text-surface-500 text-xs leading-snug group-hover:truncate dark:text-surface-400">
+            <span className="block whitespace-nowrap text-surface-500 text-xs group-hover:truncate dark:text-surface-400">
               {visibleDetails.join(' · ')}
             </span>
           )}
           {followingOccurrence ? (
-            <span className="mt-0.5 block whitespace-nowrap text-surface-400 text-xs leading-snug group-hover:truncate dark:text-surface-500">
+            <span className="block whitespace-nowrap text-surface-500 text-xs group-hover:truncate dark:text-surface-400">
               Then: {formatDate(followingOccurrence, true, dateFormat)}
             </span>
           ) : repeatFrom === 1 ? (
-            <span className="mt-0.5 block whitespace-nowrap text-surface-400 text-xs leading-snug group-hover:truncate dark:text-surface-500">
+            <span className="block whitespace-nowrap text-surface-500 text-xs group-hover:truncate dark:text-surface-400">
               Next date depends on completion
             </span>
           ) : !dueDate ? (
-            <span className="mt-0.5 block whitespace-nowrap text-surface-400 text-xs leading-snug group-hover:truncate dark:text-surface-500">
+            <span className="block whitespace-nowrap text-surface-500 text-xs group-hover:truncate dark:text-surface-400">
               First date is set when the task completes
             </span>
           ) : null}
