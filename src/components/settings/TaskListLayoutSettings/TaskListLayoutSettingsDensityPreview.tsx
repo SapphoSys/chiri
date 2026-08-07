@@ -38,14 +38,12 @@ export const TaskListLayoutSettingsDensityPreview = ({
 
         <div className="min-w-0 flex-1">
           {isCompact ? (
-            <div className="flex min-w-0 items-center gap-2 overflow-hidden">
-              <span className="min-w-0 shrink truncate font-medium text-sm text-surface-800 dark:text-surface-200">
+            <>
+              <div className="truncate font-medium text-sm text-surface-800 leading-5 dark:text-surface-200">
                 Plan weekend errands
-              </span>
-              <span className="flex shrink-0 items-center gap-2 overflow-hidden">
-                {renderPreviewBadges()}
-              </span>
-            </div>
+              </div>
+              <div className="mt-1 flex flex-wrap items-center gap-1">{renderPreviewBadges()}</div>
+            </>
           ) : (
             <>
               <div className="truncate font-medium text-sm text-surface-800 leading-5 dark:text-surface-200">

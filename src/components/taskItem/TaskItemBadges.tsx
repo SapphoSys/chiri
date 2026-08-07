@@ -157,9 +157,7 @@ export const TaskItemBadges = ({
   };
 
   return (
-    <div
-      className={`flex items-center gap-2 ${compact ? 'shrink-0 overflow-hidden' : 'mt-2 flex-wrap'}`}
-    >
+    <div className={`${compact ? 'mt-1 gap-1' : 'mt-2 gap-2'} flex flex-wrap items-center`}>
       {badgeOrder.map((badgeKey) => (
         <Fragment key={badgeKey}>{badgeRenderers[badgeKey]()}</Fragment>
       ))}

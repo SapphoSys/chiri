@@ -78,15 +78,15 @@ export const BadgesSettingsPreview = () => {
 
   const hasAnyVisible = (taskBadgeOrder as TaskBadgeKey[]).some((key) => taskBadgeVisibility[key]);
 
+  const visibleBadges = (taskBadgeOrder as TaskBadgeKey[]).map((key) =>
+    taskBadgeVisibility[key] ? (
+      <Fragment key={key}>{PREVIEW_BADGE_RENDERERS[key]()}</Fragment>
+    ) : null,
+  );
+
   const badgeRow = hasAnyVisible ? (
-    <div
-      className={`flex items-center gap-2 ${isCompact ? 'shrink-0 overflow-hidden' : 'mt-2 flex-wrap'}`}
-    >
-      {(taskBadgeOrder as TaskBadgeKey[]).map((key) =>
-        taskBadgeVisibility[key] ? (
-          <Fragment key={key}>{PREVIEW_BADGE_RENDERERS[key]()}</Fragment>
-        ) : null,
-      )}
+    <div className={`${isCompact ? 'mt-1 gap-1' : 'mt-2 gap-2'} flex flex-wrap items-center`}>
+      {visibleBadges}
     </div>
   ) : null;
 
@@ -106,12 +106,12 @@ export const BadgesSettingsPreview = () => {
         {/* Content */}
         <div className="min-w-0 flex-1">
           {isCompact ? (
-            <div className="flex min-w-0 items-center gap-2 overflow-hidden">
-              <span className="min-w-0 shrink truncate font-medium text-sm text-surface-800 dark:text-surface-200">
+            <>
+              <div className="truncate font-medium text-sm text-surface-800 leading-5 dark:text-surface-200">
                 Plan weekend errands
-              </span>
+              </div>
               {badgeRow}
-            </div>
+            </>
           ) : (
             <>
               <div className="truncate font-medium text-sm text-surface-800 leading-5 dark:text-surface-200">

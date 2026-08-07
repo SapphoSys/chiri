@@ -378,18 +378,16 @@ export const TaskItem = ({
 
         <div className="min-w-0 flex-1">
           {taskListDensity === 'compact' ? (
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-                <TaskItemTitle
-                  title={task.title}
-                  status={task.status}
-                  isUnstarted={isUnstarted}
-                  isSubtask={!!task.parentUid}
-                  className="min-w-0 shrink truncate font-medium text-sm"
-                />
-                <TaskItemBadges {...badgesProps} compact={true} />
-              </div>
-            </div>
+            <>
+              <TaskItemTitle
+                title={task.title}
+                status={task.status}
+                isUnstarted={isUnstarted}
+                isSubtask={!!task.parentUid}
+                className="truncate font-medium text-sm leading-5"
+              />
+              <TaskItemBadges {...badgesProps} compact={true} />
+            </>
           ) : (
             <>
               <div className="flex items-start justify-between gap-2">
