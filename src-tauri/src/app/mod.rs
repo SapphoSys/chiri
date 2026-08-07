@@ -131,6 +131,15 @@ pub fn run() {
             window::set_hide_dock_icon_when_window_closed,
         ])
         .setup(setup::setup_app)
+        .on_menu_event(|app, event| {
+            #[cfg(target_os = "macos")]
+            if event.id.as_ref() == "quit" {
+                app.exit(0);
+            }
+
+            #[cfg(not(target_os = "macos"))]
+            let _ = (app, event);
+        })
         .on_window_event(|window, event| {
             window::handle_window_event(window, event);
         })
