@@ -21,7 +21,7 @@ jobs:
   version-metadata:
     name: Version metadata
     if: github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'app-v')
-    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
+    runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.version.outputs.tag }}
       version: ${{ steps.version.outputs.version }}
@@ -77,7 +77,7 @@ jobs:
   finalize:
     name: Finalize
     needs: version-metadata
-    runs-on: blacksmith-8vcpu-ubuntu-2404-arm
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
@@ -323,7 +323,7 @@ jobs:
       - version-metadata
       - finalize
     if: github.event_name == 'release' && vars.WINGET_ENABLED == 'true'
-    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
+    runs-on: ubuntu-latest
     steps:
       - uses: vedantmgoyal9/winget-releaser@4ffc7888bffd451b357355dc214d43bb9f23917e # v2
         with:
