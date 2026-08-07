@@ -15,7 +15,7 @@ const STATUS_OPTIONS = [
     Icon: RotateCcw,
     iconClass: 'text-status-needs-action',
     activeClass:
-      'border-status-needs-action bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100',
+      'border-status-needs-action bg-status-needs-action/15 text-surface-900 dark:text-surface-100',
   },
   {
     value: 'in-process',
@@ -23,7 +23,7 @@ const STATUS_OPTIONS = [
     Icon: Timer,
     iconClass: 'text-status-in-process',
     activeClass:
-      'border-status-in-process bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100',
+      'border-status-in-process bg-status-in-process/15 text-surface-900 dark:text-surface-100',
   },
   {
     value: 'completed',
@@ -31,7 +31,7 @@ const STATUS_OPTIONS = [
     Icon: Check,
     iconClass: 'text-status-completed',
     activeClass:
-      'border-status-completed bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100',
+      'border-status-completed bg-status-completed/15 text-surface-900 dark:text-surface-100',
   },
   {
     value: 'cancelled',
@@ -39,7 +39,7 @@ const STATUS_OPTIONS = [
     Icon: Ban,
     iconClass: 'text-status-cancelled',
     activeClass:
-      'border-status-cancelled bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100',
+      'border-status-cancelled bg-status-cancelled/15 text-surface-900 dark:text-surface-100',
   },
 ] as const;
 
@@ -168,11 +168,17 @@ export const TaskDefaultsSettingsTaskValues = () => {
                 onClick={() => setDefaultPriority(p.value)}
                 className={`flex-1 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                   defaultPriority === p.value
-                    ? `${p.borderColor} bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100`
+                    ? `${p.borderColor} ${p.bgColor} text-surface-900 dark:text-surface-100`
                     : 'border-surface-200 text-surface-600 hover:border-surface-300 hover:bg-surface-50 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700'
                 }`}
               >
-                <span className={p.color}>{p.label}</span>
+                <span
+                  className={
+                    defaultPriority === p.value ? 'text-surface-900 dark:text-surface-100' : p.color
+                  }
+                >
+                  {p.label}
+                </span>
               </button>
             ))}
           </div>
