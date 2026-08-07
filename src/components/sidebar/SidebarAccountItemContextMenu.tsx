@@ -76,7 +76,7 @@ export const SidebarAccountItemContextMenu = ({
               }
             }}
             disabled={isAccountSyncing}
-            className={`flex w-full items-center gap-2 px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+            className={`flex w-full items-center gap-2 rounded-t-md px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
               isAccountSyncing
                 ? 'cursor-not-allowed text-surface-400 dark:text-surface-500'
                 : 'text-surface-700 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-surface-700'
@@ -123,7 +123,7 @@ export const SidebarAccountItemContextMenu = ({
           onCreateCalendar(accountId);
           onClose();
         }}
-        className="flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+        className={`flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700 ${isLocal ? 'rounded-t-md' : ''}`}
       >
         <Plus className="h-4 w-4" />
         New Calendar
@@ -185,7 +185,7 @@ export const SidebarAccountItemContextMenu = ({
           onClose();
           await onDeleteAccount(accountId);
         }}
-        className="flex w-full items-center gap-2 px-3 py-2 text-semantic-error text-sm outline-hidden hover:bg-semantic-error/15 focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
+        className="flex w-full items-center gap-2 rounded-b-md px-3 py-2 text-semantic-error text-sm outline-hidden hover:bg-semantic-error/15 focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
       >
         <Trash2 className="h-4 w-4" />
         Remove
