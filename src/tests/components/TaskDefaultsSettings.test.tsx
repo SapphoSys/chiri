@@ -108,9 +108,6 @@ describe('TaskDefaultsSettings', () => {
     const slider = container.querySelector('input[type="range"]');
     expect(slider).not.toBeNull();
     expect(slider?.getAttribute('value')).toBe('100');
-    expect(container.textContent).toContain(
-      'Changing progress updates the default status automatically.',
-    );
   });
 
   it('allows independent status and progress defaults when synchronization is disabled', async () => {

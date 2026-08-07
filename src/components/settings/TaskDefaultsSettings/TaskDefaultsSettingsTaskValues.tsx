@@ -176,11 +176,6 @@ export const TaskDefaultsSettingsTaskValues = () => {
             <span className="text-surface-400 text-xs">0%</span>
             <span className="text-surface-400 text-xs">100%</span>
           </div>
-          <p className="mt-2 text-surface-400 text-xs">
-            {syncStatusProgress
-              ? 'Changing progress updates the default status automatically.'
-              : 'Status and progress are configured independently.'}
-          </p>
         </div>
       </div>
     </div>
