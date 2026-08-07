@@ -44,9 +44,6 @@ export const TaskListLayoutSettings = () => {
               </button>
             ))}
           </div>
-          <p className="mt-4 mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
-            Preview
-          </p>
           <TaskListLayoutSettingsDensityPreview density={taskListDensity} />
         </div>
       </div>

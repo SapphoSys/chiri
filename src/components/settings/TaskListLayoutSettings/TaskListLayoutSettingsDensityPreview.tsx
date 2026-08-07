@@ -28,6 +28,7 @@ export const TaskListLayoutSettingsDensityPreview = ({
 
   return (
     <div className="mt-4 rounded-lg bg-surface-50 p-3 dark:bg-surface-900/30" aria-hidden="true">
+      <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">Preview</p>
       <div
         className={`flex items-start gap-3 rounded-lg border border-surface-200 bg-white pr-3 pl-3 shadow-xs dark:border-surface-700 dark:bg-surface-800 ${
           isCompact ? 'py-2' : 'py-3'
