@@ -8,6 +8,7 @@ export type SettingsSubtab =
   | 'status-and-progress'
   | 'scheduling'
   | 'list-layout'
+  | 'badges'
   | 'editor'
   | 'notifications'
   | 'region-and-time'

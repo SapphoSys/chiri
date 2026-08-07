@@ -1,4 +1,5 @@
 import Activity from 'lucide-react/icons/activity';
+import Badge from 'lucide-react/icons/badge';
 import Bell from 'lucide-react/icons/bell';
 import CalendarClock from 'lucide-react/icons/calendar-clock';
 import ClipboardPlus from 'lucide-react/icons/clipboard-plus';
@@ -25,6 +26,7 @@ import { type ReactNode, useRef, useState } from 'react';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { AboutSettings } from '$components/settings/AboutSettings/AboutSettings';
 import { AppearanceSettings } from '$components/settings/AppearanceSettings';
+import { BadgesSettings } from '$components/settings/BadgesSettings/BadgesSettings';
 import { ConnectionsSettings } from '$components/settings/ConnectionSettings/ConnectionsSettings';
 import { DataSettings } from '$components/settings/DataSettings';
 import { EditorSettings } from '$components/settings/EditorSettings/EditorSettings';
@@ -117,11 +119,12 @@ export const SettingsModal = ({
       label: 'Tasks',
       icon: <ListTodo className="h-4 w-4" />,
       subtabs: [
+        { id: 'badges', label: 'Badges', icon: <Badge className="h-4 w-4" /> },
         { id: 'defaults', label: 'Defaults', icon: <ClipboardPlus className="h-4 w-4" /> },
         { id: 'editor', label: 'Editor', icon: <SquarePen className="h-4 w-4" /> },
         { id: 'list-layout', label: 'List & layout', icon: <LayoutList className="h-4 w-4" /> },
-        { id: 'scheduling', label: 'Scheduling', icon: <CalendarClock className="h-4 w-4" /> },
         { id: 'safety', label: 'Safety', icon: <Shield className="h-4 w-4" /> },
+        { id: 'scheduling', label: 'Scheduling', icon: <CalendarClock className="h-4 w-4" /> },
         {
           id: 'status-and-progress',
           label: 'Status & progress',
@@ -145,8 +148,8 @@ export const SettingsModal = ({
       label: 'Help',
       icon: <HelpCircle className="h-4 w-4" />,
       subtabs: [
-        { id: 'updates', label: 'Updates', icon: <Download className="h-4 w-4" /> },
         { id: 'about', label: 'About', icon: <Info className="h-4 w-4" /> },
+        { id: 'updates', label: 'Updates', icon: <Download className="h-4 w-4" /> },
       ],
     },
   ];
@@ -221,6 +224,7 @@ export const SettingsModal = ({
           {activeCategory === 'tasks' && currentSubtab === 'list-layout' && (
             <TaskListLayoutSettings />
           )}
+          {activeCategory === 'tasks' && currentSubtab === 'badges' && <BadgesSettings />}
           {activeCategory === 'tasks' && currentSubtab === 'editor' && <EditorSettings />}
           {activeCategory === 'tasks' && currentSubtab === 'safety' && <SafetySettings />}
 
