@@ -37,7 +37,7 @@ const baseMockStore = {
   setDefaultDueTime: vi.fn(),
   defaultReminders: [],
   setDefaultReminders: vi.fn(),
-  defaultRrule: null,
+  defaultRrule: undefined as string | undefined,
   setDefaultRrule: vi.fn(),
   defaultRepeatFrom: 0,
   setDefaultRepeatFrom: vi.fn(),
@@ -198,6 +198,36 @@ describe('TaskDefaultsSettings', () => {
       'default-start-date-description',
     );
     expect(dueDateSelect?.getAttribute('aria-describedby')).toBe('default-due-date-description');
+  });
+
+  it('uses the shared add repeat rule control for empty defaults', async () => {
+    await act(async () => {
+      root.render(<TaskDefaultsSettings />);
+    });
+
+    const addRepeatButton = Array.from(container.querySelectorAll('button')).find(
+      (button) => button.textContent?.trim() === 'Add repeat rule',
+    );
+
+    expect(container.textContent).toContain('Default repeat rule');
+    expect(addRepeatButton?.getAttribute('aria-haspopup')).toBe('menu');
+    expect(addRepeatButton?.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('uses the task editor repeat preview for configured defaults', async () => {
+    mockStore.defaultRrule = 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR';
+
+    await act(async () => {
+      root.render(<TaskDefaultsSettings />);
+    });
+
+    expect(container.textContent).toContain('Weekdays');
+    expect(container.textContent).toContain('First date is set when the task completes');
+    const repeatPreviewButton = container.querySelector<HTMLButtonElement>(
+      'button[title^="Repeat:"]',
+    );
+    expect(repeatPreviewButton).not.toBeNull();
+    expect(repeatPreviewButton?.parentElement?.className).toContain('dark:bg-surface-700/50');
   });
 
   it('disables default times until their matching default dates are configured', async () => {

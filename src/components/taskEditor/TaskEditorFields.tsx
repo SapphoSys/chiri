@@ -121,7 +121,6 @@ export const TaskEditorFields = ({
           onOpen={() => modals.openRepeatModal()}
           onOpenCustom={() => modals.openRepeatModal(true)}
           onSetPreset={(rrule) => actions.handleRepeatChange(rrule, 0)}
-          onClear={() => actions.handleRepeatChange(undefined, 0)}
           readOnly={isReadOnly}
         />
       ) : null,

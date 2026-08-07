@@ -3,7 +3,7 @@ import type { RefObject } from 'react';
 import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
 import type { RepeatPreset } from '$lib/task/recurrence';
 
-interface TaskEditorRepeatPresetMenuProps {
+interface RepeatPresetMenuProps {
   anchorRef: RefObject<HTMLElement | null>;
   presets: RepeatPreset[];
   onSelect: (rrule: string) => void;
@@ -14,20 +14,21 @@ interface TaskEditorRepeatPresetMenuProps {
 const menuItemClass =
   'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:bg-surface-100 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 dark:text-surface-300 dark:hover:bg-surface-700 dark:focus-visible:bg-surface-700';
 
-export const TaskEditorRepeatPresetMenu = ({
+export const RepeatPresetMenu = ({
   anchorRef,
   presets,
   onSelect,
   onCustom,
   onClose,
-}: TaskEditorRepeatPresetMenuProps) => (
+}: RepeatPresetMenuProps) => (
   <FloatingDropdownFrame
     anchorRef={anchorRef}
     onClose={onClose}
     align="start"
     fallbackWidth={240}
     fallbackHeight={280}
-    dropdownClassName="z-50 min-w-60 overflow-hidden py-2"
+    backdropClassName="fixed inset-0 z-60"
+    dropdownClassName="z-70 min-w-60 overflow-hidden py-2"
   >
     <div role="menu" aria-label="Repeat presets">
       <div className="px-3 pb-1 font-medium text-sm text-surface-500 dark:text-surface-400">
