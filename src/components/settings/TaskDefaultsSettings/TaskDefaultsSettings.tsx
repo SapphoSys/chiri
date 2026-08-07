@@ -1,9 +1,10 @@
 import { TaskDefaultsSettingsCalendarSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsCalendarSection';
 import { TaskDefaultsSettingsDateSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsDateSection';
+import { TaskDefaultsSettingsPrioritySection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsPrioritySection';
 import { TaskDefaultsSettingsRecurrenceSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsRecurrenceSection';
 import { TaskDefaultsSettingsRemindersSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsRemindersSection';
+import { TaskDefaultsSettingsStatusSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsStatusSection';
 import { TaskDefaultsSettingsTagsSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsTagsSection';
-import { TaskDefaultsSettingsTaskValues } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsTaskValues';
 import { TaskDefaultsSettingsTimeSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsTimeSection';
 
 export const TaskDefaultsSettings = () => {
@@ -11,7 +12,9 @@ export const TaskDefaultsSettings = () => {
     <div className="space-y-5">
       <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Defaults</h3>
 
-      <TaskDefaultsSettingsTaskValues />
+      <TaskDefaultsSettingsStatusSection />
+
+      <TaskDefaultsSettingsPrioritySection />
 
       <div className="grid gap-5">
         <TaskDefaultsSettingsDateSection />

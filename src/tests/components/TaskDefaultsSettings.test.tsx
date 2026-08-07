@@ -110,6 +110,19 @@ describe('TaskDefaultsSettings', () => {
     expect(slider?.getAttribute('value')).toBe('100');
   });
 
+  it('separates priority from status and progress defaults', async () => {
+    await act(async () => {
+      root.render(<TaskDefaultsSettings />);
+    });
+
+    const headings = Array.from(container.querySelectorAll('h4')).map((heading) =>
+      heading.textContent?.trim(),
+    );
+
+    expect(headings.slice(0, 2)).toEqual(['Status & progress', 'Priority']);
+    expect(container.textContent).toContain('Default priority');
+  });
+
   it('allows independent status and progress defaults when synchronization is disabled', async () => {
     mockStore.defaultStatus = 'cancelled';
     mockStore.defaultPercentComplete = 42;
