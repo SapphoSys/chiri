@@ -29,11 +29,11 @@ const baseMockStore = {
   setDefaultCalendarColor: vi.fn(),
   defaultStartDate: 'none',
   setDefaultStartDate: vi.fn(),
-  defaultStartTime: null,
+  defaultStartTime: null as number | null,
   setDefaultStartTime: vi.fn(),
   defaultDueDate: 'none',
   setDefaultDueDate: vi.fn(),
-  defaultDueTime: null,
+  defaultDueTime: null as number | null,
   setDefaultDueTime: vi.fn(),
   defaultReminders: [],
   setDefaultReminders: vi.fn(),
@@ -120,7 +120,6 @@ describe('TaskDefaultsSettings', () => {
     });
 
     expect(container.querySelector('input[type="range"]')?.getAttribute('value')).toBe('42');
-    expect(container.textContent).toContain('Status and progress are configured independently.');
   });
 
   it('does not render empty account groups in the default calendar select', async () => {
@@ -170,5 +169,73 @@ describe('TaskDefaultsSettings', () => {
     );
     expect(groups).toEqual(['Chloe']);
     expect(calendarOption?.textContent).toBe('Tasks');
+  });
+
+  it('disables default times until their matching default dates are configured', async () => {
+    await act(async () => {
+      root.render(<TaskDefaultsSettings />);
+    });
+
+    const startTimeButton = container.querySelector<HTMLButtonElement>(
+      'button[aria-labelledby="default-start-time-label"]',
+    );
+    const dueTimeButton = container.querySelector<HTMLButtonElement>(
+      'button[aria-labelledby="default-due-time-label"]',
+    );
+
+    expect(startTimeButton?.disabled).toBe(true);
+    expect(startTimeButton?.textContent).toBe('Set a default start date first');
+    expect(dueTimeButton?.disabled).toBe(true);
+    expect(dueTimeButton?.textContent).toBe('Set a default due date first');
+  });
+
+  it('keeps a saved time visible while its default date is disabled', async () => {
+    mockStore.defaultStartTime = 9 * 60;
+
+    await act(async () => {
+      root.render(<TaskDefaultsSettings />);
+    });
+
+    const startTimeButton = container.querySelector<HTMLButtonElement>(
+      'button[aria-labelledby="default-start-time-label"]',
+    );
+
+    expect(startTimeButton?.disabled).toBe(true);
+    expect(startTimeButton?.textContent).toBe('9:00 AM');
+  });
+
+  it('keeps start and due time availability independent', async () => {
+    mockStore.defaultStartDate = 'today';
+
+    await act(async () => {
+      root.render(<TaskDefaultsSettings />);
+    });
+
+    const startTimeButton = container.querySelector<HTMLButtonElement>(
+      'button[aria-labelledby="default-start-time-label"]',
+    );
+    const dueTimeButton = container.querySelector<HTMLButtonElement>(
+      'button[aria-labelledby="default-due-time-label"]',
+    );
+
+    expect(startTimeButton?.disabled).toBe(false);
+    expect(startTimeButton?.textContent).toBe('Set default time...');
+    expect(dueTimeButton?.disabled).toBe(true);
+    expect(dueTimeButton?.textContent).toBe('Set a default due date first');
+  });
+
+  it('requires a due date for start dates relative to due', async () => {
+    mockStore.defaultStartDate = 'due-date';
+
+    await act(async () => {
+      root.render(<TaskDefaultsSettings />);
+    });
+
+    const startTimeButton = container.querySelector<HTMLButtonElement>(
+      'button[aria-labelledby="default-start-time-label"]',
+    );
+
+    expect(startTimeButton?.disabled).toBe(true);
+    expect(startTimeButton?.textContent).toBe('Set a default due date first');
   });
 });

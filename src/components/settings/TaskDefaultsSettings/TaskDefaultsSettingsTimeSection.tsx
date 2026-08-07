@@ -3,9 +3,17 @@ import { useState } from 'react';
 import { TimePickerModal } from '$components/modals/TimePickerModal';
 import { useSettingsStore } from '$context/settingsContext';
 import { defaultState } from '$context/settingsDefaults';
+import type { DefaultDateOffset } from '$types/settings/categories/defaults';
+
+const START_DATE_OFFSETS_REQUIRING_DUE_DATE: readonly DefaultDateOffset[] = [
+  'due-date',
+  'due-time',
+  '1day-before-due',
+  '1week-before-due',
+];
 
 const formatTimeLabel = (minutes: number | null, use24h: boolean) => {
-  if (minutes === null) return 'No default time';
+  if (minutes === null) return 'Set default time...';
   const hour = Math.floor(minutes / 60);
   const minute = minutes % 60;
   if (use24h) return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
@@ -15,10 +23,38 @@ const formatTimeLabel = (minutes: number | null, use24h: boolean) => {
   return `${hour - 12}:${String(minute).padStart(2, '0')} PM`;
 };
 
+const getStartTimeUnavailableReason = (
+  defaultStartDate: DefaultDateOffset,
+  defaultDueDate: DefaultDateOffset,
+) => {
+  if (defaultStartDate === 'none') return 'Set a default start date first';
+  if (
+    START_DATE_OFFSETS_REQUIRING_DUE_DATE.includes(defaultStartDate) &&
+    defaultDueDate === 'none'
+  ) {
+    return 'Set a default due date first';
+  }
+  return null;
+};
+
 export const TaskDefaultsSettingsTimeSection = () => {
-  const { defaultStartTime, setDefaultStartTime, defaultDueTime, setDefaultDueTime, timeFormat } =
-    useSettingsStore();
+  const {
+    defaultStartDate,
+    defaultStartTime,
+    setDefaultStartTime,
+    defaultDueDate,
+    defaultDueTime,
+    setDefaultDueTime,
+    timeFormat,
+  } = useSettingsStore();
   const use24h = timeFormat === '24';
+
+  const startTimeUnavailableReason = getStartTimeUnavailableReason(
+    defaultStartDate,
+    defaultDueDate,
+  );
+  const dueTimeUnavailableReason =
+    defaultDueDate === 'none' ? 'Set a default due date first' : null;
 
   const [editingStartTime, setEditingStartTime] = useState(false);
   const [editingDueTime, setEditingDueTime] = useState(false);
@@ -51,17 +87,30 @@ export const TaskDefaultsSettingsTimeSection = () => {
       <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between gap-4 p-4">
           <div>
-            <p className="text-sm text-surface-700 dark:text-surface-300">Default start time</p>
-            <p className="text-surface-500 text-xs dark:text-surface-400">
-              Time applied when a new task has a start date
+            <p
+              id="default-start-time-label"
+              className="text-sm text-surface-700 dark:text-surface-300"
+            >
+              Default start time
+            </p>
+            <p
+              id="default-start-time-description"
+              className="text-surface-500 text-xs dark:text-surface-400"
+            >
+              {startTimeUnavailableReason ?? 'Applied to new tasks with a default start date'}
             </p>
           </div>
           <button
             type="button"
             onClick={() => setEditingStartTime(true)}
-            className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-500 focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600"
+            disabled={startTimeUnavailableReason !== null}
+            aria-labelledby="default-start-time-label"
+            aria-describedby="default-start-time-description"
+            className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-surface-100 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600 dark:disabled:hover:bg-surface-700"
           >
-            {formatTimeLabel(defaultStartTime, use24h)}
+            {startTimeUnavailableReason && defaultStartTime === null
+              ? startTimeUnavailableReason
+              : formatTimeLabel(defaultStartTime, use24h)}
           </button>
         </div>
 
@@ -69,17 +118,30 @@ export const TaskDefaultsSettingsTimeSection = () => {
 
         <div className="flex items-center justify-between gap-4 p-4">
           <div>
-            <p className="text-sm text-surface-700 dark:text-surface-300">Default due time</p>
-            <p className="text-surface-500 text-xs dark:text-surface-400">
-              Time applied when a new task has a due date
+            <p
+              id="default-due-time-label"
+              className="text-sm text-surface-700 dark:text-surface-300"
+            >
+              Default due time
+            </p>
+            <p
+              id="default-due-time-description"
+              className="text-surface-500 text-xs dark:text-surface-400"
+            >
+              {dueTimeUnavailableReason ?? 'Applied to new tasks with a default due date'}
             </p>
           </div>
           <button
             type="button"
             onClick={() => setEditingDueTime(true)}
-            className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-500 focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600"
+            disabled={dueTimeUnavailableReason !== null}
+            aria-labelledby="default-due-time-label"
+            aria-describedby="default-due-time-description"
+            className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-surface-100 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600"
           >
-            {formatTimeLabel(defaultDueTime, use24h)}
+            {dueTimeUnavailableReason && defaultDueTime === null
+              ? dueTimeUnavailableReason
+              : formatTimeLabel(defaultDueTime, use24h)}
           </button>
         </div>
       </div>
