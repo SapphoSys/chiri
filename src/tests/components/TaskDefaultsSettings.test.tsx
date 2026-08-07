@@ -171,6 +171,35 @@ describe('TaskDefaultsSettings', () => {
     expect(calendarOption?.textContent).toBe('Tasks');
   });
 
+  it('describes the date defaults and associates each select with its description', async () => {
+    await act(async () => {
+      root.render(<TaskDefaultsSettings />);
+    });
+
+    const startDateSelect = container.querySelector<HTMLSelectElement>(
+      'select[aria-labelledby="default-start-date-label"]',
+    );
+    const dueDateSelect = container.querySelector<HTMLSelectElement>(
+      'select[aria-labelledby="default-due-date-label"]',
+    );
+
+    const getElementByIdInContainer = (id: string) =>
+      Array.from(container.querySelectorAll<HTMLElement>('[id]')).find(
+        (element) => element.id === id,
+      );
+
+    expect(getElementByIdInContainer('default-start-date-description')?.textContent).toBe(
+      'Applied when creating a new task',
+    );
+    expect(getElementByIdInContainer('default-due-date-description')?.textContent).toBe(
+      'Applied when creating a new task',
+    );
+    expect(startDateSelect?.getAttribute('aria-describedby')).toBe(
+      'default-start-date-description',
+    );
+    expect(dueDateSelect?.getAttribute('aria-describedby')).toBe('default-due-date-description');
+  });
+
   it('disables default times until their matching default dates are configured', async () => {
     await act(async () => {
       root.render(<TaskDefaultsSettings />);

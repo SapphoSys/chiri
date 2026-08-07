@@ -69,10 +69,25 @@ export const TaskDefaultsSettingsDateSection = () => {
 
       <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between gap-4 p-4">
-          <p className="text-sm text-surface-700 dark:text-surface-300">Start date</p>
+          <div>
+            <p
+              id="default-start-date-label"
+              className="text-sm text-surface-700 dark:text-surface-300"
+            >
+              Start date
+            </p>
+            <p
+              id="default-start-date-description"
+              className="text-surface-500 text-xs dark:text-surface-400"
+            >
+              Applied when creating a new task
+            </p>
+          </div>
           <Select
             value={defaultStartDate}
             onChange={(e) => setDefaultStartDate(e.target.value as DefaultDateOffset)}
+            aria-labelledby="default-start-date-label"
+            aria-describedby="default-start-date-description"
             className={selectClassName}
           >
             <option value="none">None</option>
@@ -91,10 +106,25 @@ export const TaskDefaultsSettingsDateSection = () => {
         <div className="border-surface-200 border-t dark:border-surface-700" />
 
         <div className="flex items-center justify-between gap-4 p-4">
-          <p className="text-sm text-surface-700 dark:text-surface-300">Due date</p>
+          <div>
+            <p
+              id="default-due-date-label"
+              className="text-sm text-surface-700 dark:text-surface-300"
+            >
+              Due date
+            </p>
+            <p
+              id="default-due-date-description"
+              className="text-surface-500 text-xs dark:text-surface-400"
+            >
+              Applied when creating a new task
+            </p>
+          </div>
           <Select
             value={defaultDueDate}
             onChange={(e) => setDefaultDueDate(e.target.value as typeof defaultDueDate)}
+            aria-labelledby="default-due-date-label"
+            aria-describedby="default-due-date-description"
             className={selectClassName}
           >
             {DUE_DATE_OPTIONS.map((opt) => (
