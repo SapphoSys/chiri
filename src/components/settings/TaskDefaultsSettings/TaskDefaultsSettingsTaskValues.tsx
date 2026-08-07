@@ -132,30 +132,6 @@ export const TaskDefaultsSettingsTaskValues = () => {
         <div className="border-surface-200 border-t dark:border-surface-700" />
 
         <div className="p-4">
-          <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
-            Priority
-          </p>
-          <div className="flex gap-2">
-            {PRIORITIES.map((p) => (
-              <button
-                type="button"
-                key={p.value}
-                onClick={() => setDefaultPriority(p.value)}
-                className={`flex-1 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
-                  defaultPriority === p.value
-                    ? `${p.borderColor} bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100`
-                    : 'border-surface-200 text-surface-600 hover:border-surface-300 hover:bg-surface-50 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700'
-                }`}
-              >
-                <span className={p.color}>{p.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="border-surface-200 border-t dark:border-surface-700" />
-
-        <div className="p-4">
           <div className="mb-1 flex items-center justify-between">
             <p className="font-medium text-surface-500 text-xs dark:text-surface-400">Progress</p>
             <span className="font-medium text-surface-600 text-xs dark:text-surface-400">
@@ -175,6 +151,30 @@ export const TaskDefaultsSettingsTaskValues = () => {
           <div className="mt-1 flex justify-between">
             <span className="text-surface-400 text-xs">0%</span>
             <span className="text-surface-400 text-xs">100%</span>
+          </div>
+        </div>
+
+        <div className="border-surface-200 border-t dark:border-surface-700" />
+
+        <div className="p-4">
+          <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
+            Priority
+          </p>
+          <div className="flex gap-2">
+            {PRIORITIES.map((p) => (
+              <button
+                type="button"
+                key={p.value}
+                onClick={() => setDefaultPriority(p.value)}
+                className={`flex-1 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                  defaultPriority === p.value
+                    ? `${p.borderColor} bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100`
+                    : 'border-surface-200 text-surface-600 hover:border-surface-300 hover:bg-surface-50 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700'
+                }`}
+              >
+                <span className={p.color}>{p.label}</span>
+              </button>
+            ))}
           </div>
         </div>
       </div>
