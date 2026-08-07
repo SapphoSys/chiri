@@ -12,7 +12,7 @@ const STATUS_OPTIONS = [
     value: 'needs-action',
     label: 'Needs Action',
     Icon: RotateCcw,
-    iconClass: 'text-status-needs-action',
+    hoverBorderColor: 'hover:border-status-needs-action/70',
     activeClass:
       'border-status-needs-action bg-status-needs-action/15 text-surface-900 dark:text-surface-100',
   },
@@ -20,7 +20,7 @@ const STATUS_OPTIONS = [
     value: 'in-process',
     label: 'In Process',
     Icon: Timer,
-    iconClass: 'text-status-in-process',
+    hoverBorderColor: 'hover:border-status-in-process/70',
     activeClass:
       'border-status-in-process bg-status-in-process/15 text-surface-900 dark:text-surface-100',
   },
@@ -28,7 +28,7 @@ const STATUS_OPTIONS = [
     value: 'completed',
     label: 'Completed',
     Icon: Check,
-    iconClass: 'text-status-completed',
+    hoverBorderColor: 'hover:border-status-completed/70',
     activeClass:
       'border-status-completed bg-status-completed/15 text-surface-900 dark:text-surface-100',
   },
@@ -36,7 +36,7 @@ const STATUS_OPTIONS = [
     value: 'cancelled',
     label: 'Cancelled',
     Icon: Ban,
-    iconClass: 'text-status-cancelled',
+    hoverBorderColor: 'hover:border-status-cancelled/70',
     activeClass:
       'border-status-cancelled bg-status-cancelled/15 text-surface-900 dark:text-surface-100',
   },
@@ -105,7 +105,7 @@ export const TaskDefaultsSettingsStatusSection = () => {
         <div className="p-4">
           <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">Status</p>
           <div className="grid grid-cols-2 gap-2">
-            {STATUS_OPTIONS.map(({ value, label, Icon, iconClass, activeClass }) => (
+            {STATUS_OPTIONS.map(({ value, label, Icon, hoverBorderColor, activeClass }) => (
               <button
                 key={value}
                 type="button"
@@ -113,10 +113,10 @@ export const TaskDefaultsSettingsStatusSection = () => {
                 className={`flex items-center gap-2 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                   defaultStatus === value
                     ? activeClass
-                    : 'border-surface-200 text-surface-600 hover:border-surface-300 hover:bg-surface-50 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700'
+                    : `border-surface-200 text-surface-600 ${hoverBorderColor} hover:bg-surface-50 hover:text-surface-700 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-300`
                 }`}
               >
-                <Icon className={`h-4 w-4 shrink-0 ${defaultStatus === value ? iconClass : ''}`} />
+                <Icon className="h-4 w-4 shrink-0" />
                 {label}
               </button>
             ))}

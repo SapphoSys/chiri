@@ -62,6 +62,7 @@ vi.mock('$hooks/ui/useColorPresets', () => ({
 }));
 
 vi.mock('$hooks/ui/useResolvedAccentColor', () => ({
+  useAccentColorResolver: () => (color: string) => color,
   useResolvedAccentColor: () => '#7dd3fc',
 }));
 

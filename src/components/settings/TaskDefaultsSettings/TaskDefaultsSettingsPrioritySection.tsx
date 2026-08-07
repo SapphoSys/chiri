@@ -42,18 +42,10 @@ export const TaskDefaultsSettingsPrioritySection = () => {
                 className={`flex-1 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                   defaultPriority === priority.value
                     ? `${priority.borderColor} ${priority.bgColor} text-surface-900 dark:text-surface-100`
-                    : 'border-surface-200 text-surface-600 hover:border-surface-300 hover:bg-surface-50 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700'
+                    : `border-surface-200 text-surface-600 ${priority.hoverBorderColor} hover:bg-surface-50 hover:text-surface-700 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-300`
                 }`}
               >
-                <span
-                  className={
-                    defaultPriority === priority.value
-                      ? 'text-surface-900 dark:text-surface-100'
-                      : priority.color
-                  }
-                >
-                  {priority.label}
-                </span>
+                {priority.label}
               </button>
             ))}
           </div>

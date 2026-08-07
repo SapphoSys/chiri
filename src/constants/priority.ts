@@ -10,6 +10,7 @@ export const PRIORITY_CONFIG: Record<
     label: string;
     color: string;
     borderColor: string;
+    hoverBorderColor: string;
     bgColor: string;
   }
 > = {
@@ -18,6 +19,7 @@ export const PRIORITY_CONFIG: Record<
     label: 'High',
     color: 'text-priority-high',
     borderColor: 'border-priority-high',
+    hoverBorderColor: 'hover:border-priority-high/70',
     bgColor: 'bg-priority-high/15',
   },
   medium: {
@@ -25,6 +27,7 @@ export const PRIORITY_CONFIG: Record<
     label: 'Medium',
     color: 'text-priority-medium',
     borderColor: 'border-priority-medium',
+    hoverBorderColor: 'hover:border-priority-medium/70',
     bgColor: 'bg-priority-medium/15',
   },
   low: {
@@ -32,13 +35,15 @@ export const PRIORITY_CONFIG: Record<
     label: 'Low',
     color: 'text-priority-low',
     borderColor: 'border-priority-low',
+    hoverBorderColor: 'hover:border-priority-low/70',
     bgColor: 'bg-priority-low/15',
   },
   none: {
     value: 'none',
     label: 'None',
     color: 'text-surface-600 dark:text-surface-300',
-    borderColor: 'border-surface-300',
+    borderColor: 'border-surface-300 dark:border-surface-500',
+    hoverBorderColor: 'hover:border-surface-300/70 dark:hover:border-surface-500/70',
     bgColor: 'bg-surface-50 dark:bg-surface-700',
   },
 };

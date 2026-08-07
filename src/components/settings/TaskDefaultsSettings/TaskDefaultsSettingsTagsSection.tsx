@@ -4,16 +4,18 @@ import X from 'lucide-react/icons/x';
 import { useState } from 'react';
 import { BatchTaskTagsModal } from '$components/modals/BatchTaskTagsModal';
 import { TaskDefaultsSettingsColorPicker } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsColorPicker';
+import { TaskItemBadge } from '$components/taskItem/badges/TaskItemBadge';
 import { getIconByName } from '$constants/icons';
 import { useSettingsStore } from '$context/settingsContext';
 import { defaultState } from '$context/settingsDefaults';
 import { useTags } from '$hooks/queries/useTags';
 import { useColorPresets } from '$hooks/ui/useColorPresets';
-import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
+import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 
 export const TaskDefaultsSettingsTagsSection = () => {
   const { defaultTags, setDefaultTags, defaultTagColor, setDefaultTagColor } = useSettingsStore();
   const colorPresets = useColorPresets();
+  const resolveAccent = useAccentColorResolver();
   const resolvedAccentColor = useResolvedAccentColor();
   const { data: tags = [] } = useTags();
   const [showTagsModal, setShowTagsModal] = useState(false);
@@ -59,18 +61,15 @@ export const TaskDefaultsSettingsTagsSection = () => {
             {selectedTags.map((tag) => {
               if (!tag) return null;
               const TagIcon = getIconByName(tag.icon || 'tag');
+              const tagColor = tag.color ? resolveAccent(tag.color) : resolvedAccentColor;
               return (
-                <span
+                <TaskItemBadge
                   key={tag.id}
-                  className="group inline-flex items-center gap-1.5 rounded-sm border py-1 pr-1 pl-2 font-medium text-xs leading-none"
-                  style={{
-                    borderColor: tag.color,
-                    backgroundColor: `${tag.color}15`,
-                    color: tag.color,
-                  }}
+                  color={tagColor}
+                  className="h-6.5 gap-1.5 pr-1 leading-none"
                 >
                   {tag.emoji ? (
-                    <span className="text-sm">{tag.emoji}</span>
+                    <span className="text-xs leading-none">{tag.emoji}</span>
                   ) : (
                     <TagIcon className="h-3 w-3" />
                   )}
@@ -82,7 +81,7 @@ export const TaskDefaultsSettingsTagsSection = () => {
                   >
                     <X className="h-3 w-3" />
                   </button>
-                </span>
+                </TaskItemBadge>
               );
             })}
             <button

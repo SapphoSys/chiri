@@ -33,32 +33,32 @@ export const TaskEditorStatus = ({
               value: 'needs-action',
               label: 'Needs Action',
               icon: RotateCcw,
-              color: 'text-status-needs-action',
               borderColor: 'border-status-needs-action',
+              hoverBorderColor: 'hover:border-status-needs-action/70',
               bgColor: 'bg-status-needs-action/15',
             },
             {
               value: 'in-process',
               label: 'In Process',
               icon: Timer,
-              color: 'text-status-in-process',
               borderColor: 'border-status-in-process',
+              hoverBorderColor: 'hover:border-status-in-process/70',
               bgColor: 'bg-status-in-process/15',
             },
             {
               value: 'completed',
               label: 'Completed',
               icon: Check,
-              color: 'text-status-completed',
               borderColor: 'border-status-completed',
+              hoverBorderColor: 'hover:border-status-completed/70',
               bgColor: 'bg-status-completed/15',
             },
             {
               value: 'cancelled',
               label: 'Cancelled',
               icon: Ban,
-              color: 'text-status-cancelled',
               borderColor: 'border-status-cancelled',
+              hoverBorderColor: 'hover:border-status-cancelled/70',
               bgColor: 'bg-status-cancelled/15',
             },
           ] as const
@@ -72,10 +72,10 @@ export const TaskEditorStatus = ({
               onClick={() => onStatusChange(s.value)}
               disabled={readOnly}
               className={`flex items-center gap-2 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${readOnly ? 'disabled:cursor-not-allowed' : ''}
-                  ${isActive ? `${s.borderColor} ${s.bgColor} text-surface-900 dark:text-surface-100` : `border-surface-200 text-surface-600 dark:border-surface-700 dark:text-surface-400 ${readOnly ? 'opacity-60' : 'hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800'}`}
+                  ${isActive ? `${s.borderColor} ${s.bgColor} text-surface-900 dark:text-surface-100` : `border-surface-200 text-surface-600 dark:border-surface-700 dark:text-surface-400 ${readOnly ? 'opacity-60' : `${s.hoverBorderColor} hover:bg-surface-50 hover:text-surface-700 dark:hover:bg-surface-800 dark:hover:text-surface-300`}`}
                 `}
             >
-              <Icon className={`h-4 w-4 shrink-0 ${isActive ? s.color : ''}`} />
+              <Icon className="h-4 w-4 shrink-0" />
               <span>{s.label}</span>
             </button>
           );
