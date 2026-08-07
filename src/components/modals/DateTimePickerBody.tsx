@@ -39,6 +39,15 @@ const btnClass = (active: boolean) =>
       : 'text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600'
   }`;
 
+const quickDateBtnClass = (matches: boolean, active: boolean, multipleMatches: boolean) =>
+  `w-full flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset data-[keyboard-navigation-focus=true]:ring-2 data-[keyboard-navigation-focus=true]:ring-primary-500 data-[keyboard-navigation-focus=true]:ring-inset ${
+    matches && (active || !multipleMatches)
+      ? 'bg-primary-500 text-primary-contrast'
+      : matches && multipleMatches
+        ? 'bg-primary-500/15 text-primary-500 dark:bg-primary-500/20 dark:text-primary-400'
+        : 'text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600'
+  }`;
+
 const minutesToTimeLabel = (minutes: number) => {
   const date = new Date();
   date.setHours(Math.floor(minutes / 60), minutes % 60, 0, 0);
@@ -52,6 +61,14 @@ const getDayButtonClass = (selected: boolean, today: boolean, currentMonth: bool
     return 'text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700';
   return 'text-surface-400 dark:text-surface-600';
 };
+
+const hasMultipleQuickDateMatches = (draft: DateTimePickerDraft) =>
+  [
+    draft.isQuickToday,
+    draft.isQuickTomorrow,
+    draft.isQuickNextWorkingDay,
+    draft.isQuickNextWeek,
+  ].filter(Boolean).length > 1;
 
 export const DateTimePickerBody = ({
   draft,
@@ -115,8 +132,12 @@ export const DateTimePickerBody = ({
           <button
             type="button"
             data-vertical-list-item
-            onClick={() => draft.handleQuickSelect(draft.today)}
-            className={btnClass(draft.isQuickToday)}
+            onClick={() => draft.handleQuickSelect(draft.today, 'today')}
+            className={quickDateBtnClass(
+              draft.isQuickToday,
+              draft.selectedQuickDatePreset === 'today',
+              hasMultipleQuickDateMatches(draft),
+            )}
           >
             <CalendarDays className="h-3 w-3" />
             Today
@@ -124,8 +145,12 @@ export const DateTimePickerBody = ({
           <button
             type="button"
             data-vertical-list-item
-            onClick={() => draft.handleQuickSelect(addDays(draft.today, 1))}
-            className={btnClass(draft.isQuickTomorrow)}
+            onClick={() => draft.handleQuickSelect(addDays(draft.today, 1), 'tomorrow')}
+            className={quickDateBtnClass(
+              draft.isQuickTomorrow,
+              draft.selectedQuickDatePreset === 'tomorrow',
+              hasMultipleQuickDateMatches(draft),
+            )}
           >
             <ArrowRight className="h-3 w-3" />
             Tomorrow
@@ -133,8 +158,12 @@ export const DateTimePickerBody = ({
           <button
             type="button"
             data-vertical-list-item
-            onClick={() => draft.handleQuickSelect(draft.nextWorkingDay)}
-            className={btnClass(draft.isQuickNextWorkingDay)}
+            onClick={() => draft.handleQuickSelect(draft.nextWorkingDay, 'next-working-day')}
+            className={quickDateBtnClass(
+              draft.isQuickNextWorkingDay,
+              draft.selectedQuickDatePreset === 'next-working-day',
+              hasMultipleQuickDateMatches(draft),
+            )}
           >
             <Briefcase className="h-3 w-3" />
             Next working day
@@ -142,8 +171,12 @@ export const DateTimePickerBody = ({
           <button
             type="button"
             data-vertical-list-item
-            onClick={() => draft.handleQuickSelect(addDays(draft.today, 7))}
-            className={btnClass(draft.isQuickNextWeek)}
+            onClick={() => draft.handleQuickSelect(addDays(draft.today, 7), 'next-week')}
+            className={quickDateBtnClass(
+              draft.isQuickNextWeek,
+              draft.selectedQuickDatePreset === 'next-week',
+              hasMultipleQuickDateMatches(draft),
+            )}
           >
             <ChevronsRight className="h-3 w-3" />
             Next week

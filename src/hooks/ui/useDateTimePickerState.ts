@@ -10,6 +10,8 @@ export interface PickerTime {
   minutes: number;
 }
 
+export type QuickDatePreset = 'today' | 'tomorrow' | 'next-working-day' | 'next-week';
+
 export interface DateTimePickerState {
   currentMonth: Date;
   localValue: Date | undefined;
@@ -28,7 +30,8 @@ export interface DateTimePickerState {
   handleCalendarGridAreaPointerDown: (event: PointerEvent<HTMLDivElement>) => void;
   handlePresetTimeSelect: (minutes: number) => void;
   handleNoTimeToggle: () => void;
-  handleQuickSelect: (date: Date) => void;
+  handleQuickSelect: (date: Date, preset: QuickDatePreset) => void;
+  selectedQuickDatePreset: QuickDatePreset | undefined;
   handleOpenCustomModal: () => void;
   handleCustomTimeConfirm: (hour: number, minute: number) => void;
   clearLocalValue: () => void;
@@ -69,6 +72,9 @@ export const useDateTimePickerState = ({
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [customHour, setCustomHour] = useState(0);
   const [customMinute, setCustomMinute] = useState(0);
+  const [selectedQuickDatePreset, setSelectedQuickDatePreset] = useState<
+    QuickDatePreset | undefined
+  >();
   const presetListRef = useRef<HTMLDivElement>(null);
   const calendarGridAreaRef = useRef<HTMLDivElement>(null);
   const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
@@ -82,6 +88,7 @@ export const useDateTimePickerState = ({
       setTimeSelected(supportsNoTime ? !!value && !allDay : true);
       setSelectedTime(getSelectedTime(value, supportsNoTime, allDay));
       setShowCustomModal(false);
+      setSelectedQuickDatePreset(undefined);
       if (resetMonthOnOpen) {
         setCurrentMonth(value ? new Date(value) : new Date());
       }
@@ -100,6 +107,7 @@ export const useDateTimePickerState = ({
   });
 
   const handleDayClick = (day: Date) => {
+    setSelectedQuickDatePreset(undefined);
     setLocalValue(
       localNoTime
         ? createAllDayDate(day)
@@ -136,7 +144,8 @@ export const useDateTimePickerState = ({
     }
   };
 
-  const handleQuickSelect = (date: Date) => {
+  const handleQuickSelect = (date: Date, preset: QuickDatePreset) => {
+    setSelectedQuickDatePreset(preset);
     setLocalValue(
       localNoTime
         ? createAllDayDate(date)
@@ -182,9 +191,13 @@ export const useDateTimePickerState = ({
     handlePresetTimeSelect,
     handleNoTimeToggle,
     handleQuickSelect,
+    selectedQuickDatePreset,
     handleOpenCustomModal,
     handleCustomTimeConfirm,
-    clearLocalValue: () => setLocalValue(undefined),
+    clearLocalValue: () => {
+      setSelectedQuickDatePreset(undefined);
+      setLocalValue(undefined);
+    },
     handlePreviousMonth: () => setCurrentMonth((month) => subMonths(month, 1)),
     handleNextMonth: () => setCurrentMonth((month) => addMonths(month, 1)),
   };

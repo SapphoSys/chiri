@@ -77,12 +77,23 @@ const DraftProbe = ({ supportsNoTime }: { supportsNoTime: boolean }) => {
           timeSelected: draft.timeSelected,
           selectedMinutes: draft.selectedMinutes,
           localHour: draft.localValue?.getHours() ?? null,
+          selectedQuickDatePreset: draft.selectedQuickDatePreset ?? null,
         })}
       />
       <button
         type="button"
         data-action="select-day"
         onClick={() => draft.handleDayClick(new Date(2025, 0, 2))}
+      />
+      <button
+        type="button"
+        data-action="select-tomorrow"
+        onClick={() => draft.handleQuickSelect(new Date(2025, 0, 2), 'tomorrow')}
+      />
+      <button
+        type="button"
+        data-action="select-next-working-day"
+        onClick={() => draft.handleQuickSelect(new Date(2025, 0, 2), 'next-working-day')}
       />
     </>
   );
@@ -141,6 +152,30 @@ describe('useDateTimePickerDraft', () => {
       localNoTime: false,
       localHour: 12,
     });
+  });
+
+  it('tracks which matching quick date shortcut was explicitly selected', () => {
+    act(() => root.render(createElement(DraftProbe, { supportsNoTime: true })));
+
+    const output = container.querySelector('output');
+    const getState = () => JSON.parse(output?.dataset.state ?? '{}');
+
+    expect(getState()).toMatchObject({ selectedQuickDatePreset: null });
+
+    act(() =>
+      container.querySelector<HTMLButtonElement>('[data-action="select-tomorrow"]')?.click(),
+    );
+    expect(getState()).toMatchObject({ selectedQuickDatePreset: 'tomorrow' });
+
+    act(() =>
+      container
+        .querySelector<HTMLButtonElement>('[data-action="select-next-working-day"]')
+        ?.click(),
+    );
+    expect(getState()).toMatchObject({ selectedQuickDatePreset: 'next-working-day' });
+
+    act(() => container.querySelector<HTMLButtonElement>('[data-action="select-day"]')?.click());
+    expect(getState()).toMatchObject({ selectedQuickDatePreset: null });
   });
 
   it('updates derived calendar settings while the picker is open', () => {
