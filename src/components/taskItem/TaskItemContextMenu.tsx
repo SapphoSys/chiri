@@ -45,7 +45,7 @@ export const TaskItemContextMenu = ({
   const { data: accounts = [] } = useAccounts();
   const { data: tags = [] } = useTags();
   const updateTaskMutation = useUpdateTask();
-  const createTaskMutation = useCreateTask();
+  const createTaskMutation = useCreateTask('created', { selectCreatedTask: true });
   const restoreTaskMutation = useRestoreTask();
   const setSelectedTaskMutation = useSetSelectedTask();
   const { moveTaskToRecentlyDeleted, deleteTaskPermanently } = useTaskDeletion();
@@ -291,12 +291,7 @@ export const TaskItemContextMenu = ({
                       calendarId: task.calendarId,
                     },
                     {
-                      onSuccess: (newTask) => {
-                        setSelectedTaskMutation.mutate(
-                          { id: newTask.id, focusTitle: true },
-                          { onSuccess: () => setContextMenu(null) },
-                        );
-                      },
+                      onSuccess: () => setContextMenu(null),
                     },
                   );
                 }}

@@ -20,7 +20,7 @@ import { TaskGroupSection } from '$components/TaskGroupSection';
 import { TaskItem } from '$components/taskItem/TaskItem';
 import { DEFAULT_SORT_CONFIG, DEFAULT_TASK_GROUP_CONFIG } from '$constants';
 import { useCreateTask } from '$hooks/queries/useTasks';
-import { useSetSelectedTask, useUIState } from '$hooks/queries/useUIState';
+import { useUIState } from '$hooks/queries/useUIState';
 import { useVisibleTaskGroups } from '$hooks/queries/useVisibleTasks';
 import { truncateName, useSortableDrag } from '$hooks/ui/useSortableDrag';
 import { useTaskListSelection } from '$hooks/ui/useTaskListSelection';
@@ -104,7 +104,7 @@ export const TaskList = () => {
     [displayedTaskGroups],
   );
   const createTaskMutation = useCreateTask();
-  const setSelectedTaskMutation = useSetSelectedTask();
+  const createAndSelectTaskMutation = useCreateTask('created', { selectCreatedTask: true });
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const newTaskInputRef = useRef<HTMLInputElement>(null);
   const hasNewTaskTitle = newTaskTitle.trim().length > 0;
@@ -187,14 +187,7 @@ export const TaskList = () => {
 
   const handleQuickAdd = () => {
     clearSelection();
-    createTaskMutation.mutate(
-      { title: '' },
-      {
-        onSuccess: (task) => {
-          setSelectedTaskMutation.mutate({ id: task.id, focusTitle: true });
-        },
-      },
-    );
+    createAndSelectTaskMutation.mutate({ title: '' });
   };
 
   const handleCreateTaskFromInput = () => {

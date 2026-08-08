@@ -230,8 +230,13 @@ export const getAllDescendants = (parentUid: string, filter: ChildTaskFilter = '
 };
 
 // task create
-export const createTask = (taskData: Partial<Task>, options: TaskCreationOptions = {}) => {
+export const createTask = (
+  taskData: Partial<Task>,
+  options: TaskCreationOptions = {},
+  onBeforePublish?: (task: Task) => void,
+) => {
   const data = dataStore.load();
+  const { selectCreatedTask = false, ...databaseCreationOptions } = options;
   const now = new Date();
 
   // get default calendar and task defaults from settings
@@ -334,14 +339,27 @@ export const createTask = (taskData: Partial<Task>, options: TaskCreationOptions
         : undefined),
   } satisfies Task;
 
+  onBeforePublish?.(task);
+
   dataStore.save({
     ...data,
     tasks: [...data.tasks, task],
+    ...(selectCreatedTask
+      ? {
+          ui: {
+            ...data.ui,
+            selectedTaskId: task.id,
+            isEditorOpen: true,
+          },
+        }
+      : {}),
   });
 
   // persist to SQLite including local-only tasks
   if (dataStore.getIsInitialized()) {
-    db.createTask(task, options).catch((e) => log.error('Failed to sync task to database:', e));
+    db.createTask(task, databaseCreationOptions).catch((e) =>
+      log.error('Failed to sync task to database:', e),
+    );
   }
 
   return task;

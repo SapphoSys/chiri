@@ -483,6 +483,35 @@ describe('createTask: tag source handling', () => {
   });
 });
 
+describe('createTask: selected task publication', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    seedStore([]);
+  });
+
+  it('publishes the new task and its selection together', () => {
+    const previousTask = makeTask({ id: 'previous-task', uid: 'previous-uid' });
+    seedStore([previousTask], []);
+
+    let publishedState: { taskIds: string[]; selectedTaskId: string | null } | undefined;
+    const unsubscribe = dataStore.subscribe(() => {
+      const state = dataStore.load();
+      publishedState = {
+        taskIds: state.tasks.map((task) => task.id),
+        selectedTaskId: state.ui.selectedTaskId,
+      };
+    });
+
+    const createdTask = createTask({ title: 'New task' }, { selectCreatedTask: true });
+
+    unsubscribe();
+    expect(publishedState).toEqual({
+      taskIds: ['previous-task', createdTask.id],
+      selectedTaskId: createdTask.id,
+    });
+  });
+});
+
 describe('createTask: default start/due times', () => {
   beforeEach(() => {
     vi.clearAllMocks();

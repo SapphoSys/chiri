@@ -99,6 +99,19 @@ const getSelectionClass = (
 const isTaskEditable = (task: Task, isOverlay: boolean | undefined) =>
   !task.deletedAt && !isOverlay;
 
+const shouldFocusSelectedTask = (
+  isSelected: boolean,
+  isEditorOpen: boolean,
+  isMultiSelected: boolean,
+  isOverlay: boolean | undefined,
+  taskElement: HTMLDivElement | null,
+) =>
+  isSelected &&
+  !isEditorOpen &&
+  !isMultiSelected &&
+  !isOverlay &&
+  document.activeElement !== taskElement;
+
 export const TaskItem = ({
   task,
   depth,
@@ -134,6 +147,7 @@ export const TaskItem = ({
   const taskElementRef = useRef<HTMLDivElement>(null);
 
   const selectedTaskId = uiState?.selectedTaskId ?? null;
+  const isEditorOpen = uiState?.isEditorOpen === true;
   const activeCalendarId = uiState?.activeCalendarId ?? null;
   const activeTagId = uiState?.activeTagId ?? null;
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
@@ -144,14 +158,17 @@ export const TaskItem = ({
   // focus the task element when it becomes selected via keyboard navigation
   useEffect(() => {
     if (
-      isSelected &&
-      !isMultiSelected &&
-      !isOverlay &&
-      document.activeElement !== taskElementRef.current
-    ) {
-      taskElementRef.current?.focus();
-    }
-  }, [isSelected, isMultiSelected, isOverlay]);
+      !shouldFocusSelectedTask(
+        isSelected,
+        isEditorOpen,
+        isMultiSelected,
+        isOverlay,
+        taskElementRef.current,
+      )
+    )
+      return;
+    taskElementRef.current?.focus();
+  }, [isEditorOpen, isSelected, isMultiSelected, isOverlay]);
 
   // scroll newly-created tasks into view when they are selected
   useEffect(() => {

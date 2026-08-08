@@ -20,7 +20,6 @@ import { useCreateTask } from '$hooks/queries/useTasks';
 import {
   useSetMoveCompletedTasksToBottom,
   useSetSearchQuery,
-  useSetSelectedTask,
   useSetShowCompletedTasks,
   useSetShowUnstartedTasks,
   useSetSortConfig,
@@ -128,8 +127,7 @@ export const Header = ({
   const setShowCompletedTasksMutation = useSetShowCompletedTasks();
   const setMoveCompletedTasksToBottomMutation = useSetMoveCompletedTasksToBottom();
   const setShowUnstartedTasksMutation = useSetShowUnstartedTasks();
-  const createTaskMutation = useCreateTask();
-  const setSelectedTaskMutation = useSetSelectedTask();
+  const createTaskMutation = useCreateTask('created', { selectCreatedTask: true });
   const visibleTasks = useVisibleTasks();
   const { selectedTaskIdSet, clearSelection } = useTaskSelection();
 
@@ -178,14 +176,7 @@ export const Header = ({
   }, [isSyncing]);
 
   const handleNewTask = () => {
-    createTaskMutation.mutate(
-      { title: '' },
-      {
-        onSuccess: (task) => {
-          setSelectedTaskMutation.mutate({ id: task.id, focusTitle: true });
-        },
-      },
-    );
+    createTaskMutation.mutate({ title: '' });
   };
 
   const newTaskButton = (

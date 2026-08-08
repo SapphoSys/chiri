@@ -54,6 +54,10 @@ let pendingEditorFocus: { taskId: string; field: TaskEditorFocusField } | null =
 let editorFocusRequestVersion = 0;
 const editorFocusListeners = new Set<() => void>();
 
+export const requestSelectedTaskTitleAutofocus = (taskId: string) => {
+  pendingTitleAutofocusTaskId = taskId;
+};
+
 export const consumeSelectedTaskTitleAutofocus = (taskId: string) => {
   if (pendingTitleAutofocusTaskId !== taskId) return false;
   pendingTitleAutofocusTaskId = null;

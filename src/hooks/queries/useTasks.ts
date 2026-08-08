@@ -5,6 +5,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { settingsStore } from '$context/settingsContext';
+import { requestSelectedTaskTitleAutofocus } from '$hooks/queries/useUIState';
 import { db } from '$lib/database';
 import { queryKeys } from '$lib/queryClient';
 import { dataStore } from '$lib/store';
@@ -108,7 +109,13 @@ export const useCreateTask = (
 
   return useMutation({
     mutationFn: async (taskInput: Partial<Task>) => {
-      const task = createTask(taskInput, creationOptions);
+      const task = createTask(
+        taskInput,
+        creationOptions,
+        creationOptions.selectCreatedTask
+          ? (createdTask) => requestSelectedTaskTitleAutofocus(createdTask.id)
+          : undefined,
+      );
       await db.logTaskChange(task.uid, historyField, null, task.title);
       if (task.parentUid) {
         await db.logTaskChange(task.parentUid, 'subtask', null, task.title);

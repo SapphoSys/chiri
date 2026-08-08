@@ -108,7 +108,7 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   const { onOpenSettings, onOpenKeyboardShortcuts, onOpenImport, onSync } = options;
   const { data: uiState } = useUIState();
   const flattenedTasks = useVisibleTasks();
-  const createTaskMutation = useCreateTask();
+  const createTaskMutation = useCreateTask('created', { selectCreatedTask: true });
   const setSearchQueryMutation = useSetSearchQuery();
   const toggleTaskCompleteMutation = useToggleTaskComplete();
   const setSelectedTaskMutation = useSetSelectedTask();
@@ -137,15 +137,8 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   const { isAnyModalOpen } = useModalState();
 
   const handleNewTask = useCallback(() => {
-    createTaskMutation.mutate(
-      { title: '' },
-      {
-        onSuccess: (task) => {
-          setSelectedTaskMutation.mutate({ id: task.id, focusTitle: true });
-        },
-      },
-    );
-  }, [createTaskMutation, setSelectedTaskMutation]);
+    createTaskMutation.mutate({ title: '' });
+  }, [createTaskMutation]);
 
   const handleSearch = useCallback(() => {
     const searchInput = document.querySelector<HTMLInputElement>('[data-search-input]');
