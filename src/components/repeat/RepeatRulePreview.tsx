@@ -37,9 +37,9 @@ export const RepeatRulePreview = ({
   readOnly = false,
   surface = 'default',
 }: RepeatRulePreviewProps) => {
-  const { dateFormat } = useSettingsStore();
-  const summary = rruleToDisplaySummary(rrule, repeatFrom, dateFormat);
-  const fullSummary = rruleToText(rrule, repeatFrom, dateFormat);
+  const { dateFormat, workingDays } = useSettingsStore();
+  const summary = rruleToDisplaySummary(rrule, repeatFrom, dateFormat, workingDays);
+  const fullSummary = rruleToText(rrule, repeatFrom, dateFormat, workingDays);
   const RepeatIcon = REPEAT_PREVIEW_ICONS[summary.primary] ?? SlidersHorizontal;
   const followingOccurrence =
     dueDate && repeatFrom !== 1 ? getNextOccurrence(rrule, dueDate, dueDate) : null;

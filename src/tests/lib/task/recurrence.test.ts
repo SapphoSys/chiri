@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import type { WorkingDay } from '$types/settings/categories/scheduling';
 
 // recurrence imports formatDate from $utils/date, which depends on the
 // settings store. mock formatDate to a deterministic ISO-ish format
@@ -246,10 +247,9 @@ describe('rruleToFrequency', () => {
     expect(rruleToFrequency('FREQ=DAILY')).toBe('daily');
   });
 
-  it('detects weekdays preset (partial weekdays too)', () => {
+  it('detects weekdays preset for multi-day working-day patterns', () => {
     expect(rruleToFrequency('FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR')).toBe('weekdays');
     expect(rruleToFrequency('FREQ=WEEKLY;BYDAY=MO,TU,WE,TH')).toBe('weekdays');
-    expect(rruleToFrequency('FREQ=WEEKLY;BYDAY=FR')).toBe('weekdays');
   });
 
   it('detects weekly preset (no byday)', () => {
@@ -257,7 +257,29 @@ describe('rruleToFrequency', () => {
   });
 
   it('detects weekly preset (single byday)', () => {
+    expect(rruleToFrequency('FREQ=WEEKLY;BYDAY=FR')).toBe('weekly');
     expect(rruleToFrequency('FREQ=WEEKLY;BYDAY=SA')).toBe('weekly');
+  });
+
+  it('uses configured working days for weekdays rules', () => {
+    const workingDays: WorkingDay[] = ['mo', 'tu', 'we', 'th', 'fr', 'su'];
+    const rrule = 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SU';
+
+    expect(rruleToFrequency(rrule, workingDays)).toBe('weekdays');
+    expect(rruleToDisplaySummary(rrule, undefined, undefined, workingDays).primary).toBe(
+      'Weekdays',
+    );
+    expect(rruleToText(rrule, undefined, undefined, workingDays)).toBe('Weekdays');
+  });
+
+  it('does not relabel interval-based weekly rules as weekdays', () => {
+    const workingDays: WorkingDay[] = ['mo', 'tu', 'we', 'th', 'fr', 'su'];
+    const rrule = 'FREQ=WEEKLY;INTERVAL=2;BYDAY=MO,TU,WE,TH,FR,SU';
+
+    expect(rruleToDisplaySummary(rrule, undefined, undefined, workingDays).primary).toBe(
+      'Every 2 weeks',
+    );
+    expect(rruleToText(rrule, undefined, undefined, workingDays)).toContain('Every 2 weeks');
   });
 
   it('falls back to custom for multi-byday non-weekdays patterns', () => {

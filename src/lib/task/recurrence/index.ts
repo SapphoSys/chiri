@@ -13,7 +13,7 @@ import type { RecurrenceFrequency } from '$types/task/recurrence';
 import { WORKING_DAY_META } from '$utils/calendar';
 import { formatDate } from '$utils/date';
 
-const DEFAULT_WORKING_DAYS: WorkingDay[] = ['mo', 'tu', 'we', 'th', 'fr'];
+export const DEFAULT_WORKING_DAYS: WorkingDay[] = ['mo', 'tu', 'we', 'th', 'fr'];
 
 const BYDAY_LABEL: Record<string, string> = Object.fromEntries(
   Object.values(WORKING_DAY_META).map((meta) => [meta.rruleByday, meta.shortLabel]),
@@ -300,13 +300,25 @@ export interface RRuleDisplaySummary {
   details: string[];
 }
 
-const WEEKDAYS = 'MO,TU,WE,TH,FR';
-
 export interface RepeatPreset {
   id: 'daily' | 'weekdays' | 'weekly' | 'monthly' | 'yearly';
   label: string;
   rrule: string;
 }
+
+const getWorkingDayBydays = (workingDays: WorkingDay[]) =>
+  workingDays.map((day) => WORKING_DAY_META[day].rruleByday);
+
+const isWorkingDaysByday = (byday: string, workingDays: WorkingDay[]) => {
+  const configuredDays = new Set(getWorkingDayBydays(workingDays));
+  const days = byday.split(',').filter(Boolean);
+
+  return (
+    days.length > 1 &&
+    days.length === configuredDays.size &&
+    days.every((day) => configuredDays.has(day))
+  );
+};
 
 const getOrdinal = (day: number) => {
   const mod100 = day % 100;
@@ -356,6 +368,7 @@ export const rruleToDisplaySummary = (
   rruleValue: string,
   repeatFrom?: number,
   dateFormat?: DateFormat,
+  workingDays: WorkingDay[] = DEFAULT_WORKING_DAYS,
 ): RRuleDisplaySummary => {
   try {
     const parts = parseRRule(rruleValue);
@@ -368,7 +381,7 @@ export const rruleToDisplaySummary = (
     let primary = interval > 1 ? getIntervalLabel(freq, interval) : (FREQ_LABEL[freq] ?? freq);
 
     if (freq === 'WEEKLY' && byday) {
-      if (byday === WEEKDAYS) {
+      if (interval === 1 && isWorkingDaysByday(byday, workingDays)) {
         primary = 'Weekdays';
       } else {
         details.push(formatWeeklyDays(byday));
@@ -415,7 +428,12 @@ export const rruleToDisplaySummary = (
  * @param repeatFrom  0 = advance from due date (default), 1 = advance from completion date
  * @param dateFormat  User's preferred date format for the UNTIL date display
  */
-export const rruleToText = (rruleValue: string, repeatFrom?: number, dateFormat?: DateFormat) => {
+export const rruleToText = (
+  rruleValue: string,
+  repeatFrom?: number,
+  dateFormat?: DateFormat,
+  workingDays: WorkingDay[] = DEFAULT_WORKING_DAYS,
+) => {
   try {
     const parts = parseRRule(rruleValue);
     const freq = parts.FREQ ?? '';
@@ -428,7 +446,10 @@ export const rruleToText = (rruleValue: string, repeatFrom?: number, dateFormat?
 
     // day list for weekly
     if (freq === 'WEEKLY' && byday) {
-      label += ` on ${formatWeeklyDays(byday)}`;
+      label =
+        interval === 1 && isWorkingDaysByday(byday, workingDays)
+          ? 'Weekdays'
+          : `${label} on ${formatWeeklyDays(byday)}`;
     }
 
     // monthly with specific weekday (e.g. 1MO = first Monday)
@@ -490,7 +511,10 @@ export const frequencyToRRule = (
 };
 
 /** infer a preset frequency label from a RRULE value string, or "custom" if it doesn't match a preset */
-export const rruleToFrequency = (rruleValue: string): RecurrenceFrequency => {
+export const rruleToFrequency = (
+  rruleValue: string,
+  workingDays: WorkingDay[] = DEFAULT_WORKING_DAYS,
+): RecurrenceFrequency => {
   const parts = parseRRule(rruleValue);
   const freq = parts.FREQ;
   const byday = parts.BYDAY ?? '';
@@ -503,9 +527,11 @@ export const rruleToFrequency = (rruleValue: string): RecurrenceFrequency => {
   if (freq === 'DAILY') return 'daily';
   if (freq === 'WEEKLY') {
     const days = byday.split(',').filter(Boolean);
-    const weekdayDays = ['MO', 'TU', 'WE', 'TH', 'FR'];
-    if (days.length > 0 && days.every((day) => weekdayDays.includes(day))) return 'weekdays';
-    // single-day weekly with no extras = weekly preset
+    if (days.length > 1) {
+      const configuredDays = new Set(getWorkingDayBydays(workingDays));
+      if (days.every((day) => configuredDays.has(day))) return 'weekdays';
+    }
+    // A single-day rule is the weekly preset, even when that day is configured as a working day.
     if (!byday || days.length === 1) return 'weekly';
     return 'custom';
   }

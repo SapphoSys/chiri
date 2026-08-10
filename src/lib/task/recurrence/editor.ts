@@ -1,9 +1,11 @@
 import {
+  DEFAULT_WORKING_DAYS,
   frequencyToRRule,
   mergeRRuleParts,
   parseRRule,
   rruleToFrequency,
 } from '$lib/task/recurrence';
+import type { WorkingDay } from '$types/settings/categories/scheduling';
 import type { RecurrenceFrequency } from '$types/task/recurrence';
 import { WORKING_DAY_META } from '$utils/calendar';
 
@@ -70,6 +72,7 @@ export const parseRepeatUIState = (
   rrule: string | undefined,
   dueDate?: Date,
   initialCustom = false,
+  workingDays: WorkingDay[] = DEFAULT_WORKING_DAYS,
 ): RepeatUIState => {
   const defaults: RepeatUIState = {
     freq: initialCustom ? 'custom' : 'daily',
@@ -90,7 +93,7 @@ export const parseRepeatUIState = (
   if (!rrule) return defaults;
 
   const parts = parseRRule(rrule);
-  const freq = rruleToFrequency(rrule);
+  const freq = rruleToFrequency(rrule, workingDays);
   const interval = parseInt(parts.INTERVAL ?? '1', 10);
   const byday = parts.BYDAY ? parts.BYDAY.split(',') : [];
   const endMode: EndMode = parts.COUNT ? 'count' : parts.UNTIL ? 'until' : 'never';
@@ -142,6 +145,7 @@ export const buildRepeatRRule = (
   state: RepeatUIState,
   originalRrule?: string,
   initialState?: RepeatUIState,
+  workingDays: WorkingDay[] = DEFAULT_WORKING_DAYS,
 ) => {
   if (state.freq === 'none') return undefined;
 
@@ -153,7 +157,7 @@ export const buildRepeatRRule = (
       base.BYDAY = state.byday.join(',');
     }
   } else {
-    base = parseRRule(frequencyToRRule(state.freq));
+    base = parseRRule(frequencyToRRule(state.freq, undefined, workingDays));
     if ((state.freq === 'weekly' || state.freq === 'weekdays') && state.byday.length > 0) {
       base.BYDAY = state.byday.join(',');
     }

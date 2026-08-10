@@ -56,11 +56,7 @@ export const RepeatRuleEditor = ({
 
   return (
     <div className="flex min-h-100">
-      <RepeatFrequencyList
-        value={ui.freq}
-        dueDate={dueDate}
-        onChange={(freq, byday) => draft.update({ freq, byday })}
-      />
+      <RepeatFrequencyList value={ui.freq} dueDate={dueDate} onChange={draft.selectFrequency} />
       <div className="flex min-w-0 flex-1 flex-col space-y-4 p-4">
         <RepeatRuleAlerts
           preservedKeys={draft.capability.preservedKeys}

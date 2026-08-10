@@ -30,7 +30,7 @@ export const RepeatModal = ({
   initialCustom = false,
   onSave,
 }: RepeatModalProps) => {
-  const { dateFormat, startOfWeek } = useSettingsStore();
+  const { dateFormat, startOfWeek, workingDays } = useSettingsStore();
   const draft = useRepeatDraft({
     isOpen,
     rrule,
@@ -38,6 +38,7 @@ export const RepeatModal = ({
     dueDate,
     initialCustom,
     startOfWeek,
+    workingDays,
   });
 
   if (!isOpen) return null;
