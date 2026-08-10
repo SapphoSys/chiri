@@ -3,11 +3,12 @@ import {
   DEFAULT_CALENDAR_SORT_CONFIG,
   DEFAULT_SORT_CONFIG,
   DEFAULT_TAG_SORT_CONFIG,
+  DEFAULT_TASK_GROUP_CONFIG,
 } from '$constants';
 import { settingsStore } from '$context/settingsContext';
 import { db } from '$lib/database';
 import { loggers } from '$lib/logger';
-import type { DataChangeListener, DataStore, UIState } from '$types/store';
+import type { DataChangeListener, DataStore, UIState } from '$types/store/state';
 
 const log = loggers.dataStore;
 
@@ -20,10 +21,12 @@ export const defaultUIState: UIState = {
   selectedTaskId: null,
   searchQuery: '',
   sortConfig: DEFAULT_SORT_CONFIG,
+  taskGroupConfig: DEFAULT_TASK_GROUP_CONFIG,
   accountSortConfig: DEFAULT_ACCOUNT_SORT_CONFIG,
   calendarSortConfig: DEFAULT_CALENDAR_SORT_CONFIG,
   tagSortConfig: DEFAULT_TAG_SORT_CONFIG,
   showCompletedTasks: true,
+  moveCompletedTasksToBottom: false,
   showUnstartedTasks: true,
   isEditorOpen: false,
 };

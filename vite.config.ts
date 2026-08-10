@@ -1,5 +1,4 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
@@ -21,20 +20,21 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      '~': path.resolve(__dirname, './src'),
-      $components: path.resolve(__dirname, './src/components'),
-      $context: path.resolve(__dirname, './src/context'),
-      $constants: path.resolve(__dirname, './src/constants'),
-      $hooks: path.resolve(__dirname, './src/hooks'),
-      $lib: path.resolve(__dirname, './src/lib'),
-      $providers: path.resolve(__dirname, './src/providers'),
-      $styles: path.resolve(__dirname, './src/styles'),
-      $types: path.resolve(__dirname, './src/types'),
-      $utils: path.resolve(__dirname, './src/utils'),
+      '~': path.resolve(import.meta.dirname, './src'),
+      $components: path.resolve(import.meta.dirname, './src/components'),
+      $context: path.resolve(import.meta.dirname, './src/context'),
+      $constants: path.resolve(import.meta.dirname, './src/constants'),
+      $hooks: path.resolve(import.meta.dirname, './src/hooks'),
+      $lib: path.resolve(import.meta.dirname, './src/lib'),
+      $providers: path.resolve(import.meta.dirname, './src/providers'),
+      $styles: path.resolve(import.meta.dirname, './src/styles'),
+      $types: path.resolve(import.meta.dirname, './src/types'),
+      $utils: path.resolve(import.meta.dirname, './src/utils'),
 
       // tree-shake lucide-react by resolving icons/* to individual ESM files
-      'lucide-react/icons': fileURLToPath(
-        new URL('./node_modules/lucide-react/dist/esm/icons', import.meta.url),
+      'lucide-react/icons': path.resolve(
+        import.meta.dirname,
+        './node_modules/lucide-react/dist/esm/icons',
       ),
     },
   },

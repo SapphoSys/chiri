@@ -5,7 +5,13 @@
 import { db } from '$lib/database';
 import { loggers } from '$lib/logger';
 import { dataStore } from '$lib/store';
-import type { AccountSortConfig, CalendarSortConfig, SortConfig, TagSortConfig } from '$types/sort';
+import type {
+  AccountSortConfig,
+  CalendarSortConfig,
+  SortConfig,
+  TagSortConfig,
+  TaskGroupConfig,
+} from '$types/sort';
 
 const log = loggers.dataStore;
 
@@ -229,6 +235,17 @@ export const setSortConfig = (config: SortConfig) => {
   });
 };
 
+export const setTaskGroupConfig = (config: TaskGroupConfig) => {
+  const data = dataStore.load();
+
+  db.setTaskGroupConfig(config).catch((e) => log.error('Failed to persist task group config:', e));
+
+  dataStore.save({
+    ...data,
+    ui: { ...data.ui, taskGroupConfig: config },
+  });
+};
+
 export const setAccountSortConfig = (config: AccountSortConfig) => {
   const data = dataStore.load();
 
@@ -274,6 +291,19 @@ export const setShowCompletedTasks = (show: boolean) => {
   dataStore.save({
     ...data,
     ui: { ...data.ui, showCompletedTasks: show },
+  });
+};
+
+export const setMoveCompletedTasksToBottom = (moveToBottom: boolean) => {
+  const data = dataStore.load();
+
+  db.setMoveCompletedTasksToBottom(moveToBottom).catch((e) =>
+    log.error('Failed to persist completed task placement:', e),
+  );
+
+  dataStore.save({
+    ...data,
+    ui: { ...data.ui, moveCompletedTasksToBottom: moveToBottom },
   });
 };
 

@@ -1,9 +1,9 @@
 import type DatabasePlugin from '@tauri-apps/plugin-sql';
 import { rowToTag } from '$lib/database/converters';
 import { getTasksByTag, updateTask } from '$lib/database/tasks';
+import type { TagRow } from '$lib/database/types';
 import { setActiveTag } from '$lib/database/ui';
-import type { Tag } from '$types';
-import type { TagRow } from '$types/database';
+import type { Tag } from '$types/tag';
 import { getFallbackItemColor } from '$utils/color/scheme';
 import { generateUUID } from '$utils/misc';
 

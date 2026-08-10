@@ -11,13 +11,7 @@ import {
   useSetRecentlyDeletedView,
   useUIState,
 } from '$hooks/queries/useUIState';
-
-type ListItem =
-  | { type: 'all' }
-  | { type: 'recently-deleted' }
-  | { type: 'filter'; filterId: string }
-  | { type: 'calendar'; accountId: string; calendarId: string }
-  | { type: 'tag'; tagId: string };
+import { getCurrentListIndex, getOrderedListItems, type ListItem } from '$utils/navigation';
 
 export const useListNavigationCommands = () => {
   const { data: accounts = [] } = useAccounts();
@@ -31,54 +25,15 @@ export const useListNavigationCommands = () => {
   const setAllTasksViewMutation = useSetAllTasksView();
   const setRecentlyDeletedViewMutation = useSetRecentlyDeletedView();
 
-  const orderedLists = useMemo((): ListItem[] => {
-    const items: ListItem[] = [{ type: 'all' }, { type: 'recently-deleted' }];
+  const orderedLists = useMemo(
+    () => getOrderedListItems(accounts, filters, tags),
+    [accounts, filters, tags],
+  );
 
-    for (const filter of filters) {
-      items.push({ type: 'filter', filterId: filter.id });
-    }
-
-    for (const account of accounts) {
-      for (const cal of account.calendars) {
-        items.push({ type: 'calendar', accountId: account.id, calendarId: cal.id });
-      }
-    }
-
-    for (const tag of tags) {
-      items.push({ type: 'tag', tagId: tag.id });
-    }
-
-    return items;
-  }, [accounts, filters, tags]);
-
-  const activeCalendarId = uiState?.activeCalendarId ?? null;
-  const activeTagId = uiState?.activeTagId ?? null;
-  const activeFilterId = uiState?.activeFilterId ?? null;
-  const activeView = uiState?.activeView ?? 'tasks';
-
-  const currentListIndex = useMemo(() => {
-    if (activeView === 'recently-deleted') {
-      return orderedLists.findIndex((item) => item.type === 'recently-deleted');
-    }
-
-    if (activeView === 'filter' && activeFilterId !== null) {
-      return orderedLists.findIndex(
-        (item) => item.type === 'filter' && item.filterId === activeFilterId,
-      );
-    }
-
-    if (activeTagId !== null) {
-      return orderedLists.findIndex((item) => item.type === 'tag' && item.tagId === activeTagId);
-    }
-
-    if (activeCalendarId !== null) {
-      return orderedLists.findIndex(
-        (item) => item.type === 'calendar' && item.calendarId === activeCalendarId,
-      );
-    }
-
-    return 0;
-  }, [orderedLists, activeCalendarId, activeFilterId, activeTagId, activeView]);
+  const currentListIndex = useMemo(
+    () => getCurrentListIndex(orderedLists, uiState),
+    [orderedLists, uiState],
+  );
 
   const activateListItem = useCallback(
     (item: ListItem) => {

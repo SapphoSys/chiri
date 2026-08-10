@@ -1,10 +1,9 @@
 import AlignJustify from 'lucide-react/icons/align-justify';
 import LayoutList from 'lucide-react/icons/layout-list';
 import type { ReactNode } from 'react';
-import { BadgesSettings } from '$components/settings/BadgesSettings/BadgesSettings';
-import { TaskListDensityPreview } from '$components/settings/TaskListLayoutSettings/TaskListDensityPreview';
+import { TaskListLayoutSettingsDensityPreview } from '$components/settings/TaskListLayoutSettings/TaskListLayoutSettingsDensityPreview';
 import { useSettingsStore } from '$context/settingsContext';
-import type { TaskListDensity } from '$types/settings';
+import type { TaskListDensity } from '$types/settings/categories/layout';
 
 const DENSITY_OPTIONS: { value: TaskListDensity; label: string; icon: ReactNode }[] = [
   { value: 'comfortable', label: 'Comfortable', icon: <LayoutList className="h-4 w-4" /> },
@@ -45,14 +44,9 @@ export const TaskListLayoutSettings = () => {
               </button>
             ))}
           </div>
-          <p className="mt-4 mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
-            Preview
-          </p>
-          <TaskListDensityPreview density={taskListDensity} />
+          <TaskListLayoutSettingsDensityPreview density={taskListDensity} />
         </div>
       </div>
-
-      <BadgesSettings />
     </div>
   );
 };

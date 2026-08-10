@@ -17,13 +17,15 @@ import { BatchTaskTagsModal } from '$components/modals/BatchTaskTagsModal';
 import { ExportModal } from '$components/modals/ExportModal';
 import { MoveToCalendarModal } from '$components/modals/MoveToCalendar/MoveToCalendarModal';
 import { PRIORITIES } from '$constants/priority';
+import { useSettingsStore } from '$context/settingsContext';
 import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useTags } from '$hooks/queries/useTags';
 import { useCreateTask, useRestoreTask, useUpdateTask } from '$hooks/queries/useTasks';
 import { useSetSelectedTask } from '$hooks/queries/useUIState';
 import { exportTaskAndChildren } from '$lib/store/tasks';
-import type { Priority, Task, TaskStatus } from '$types';
+import { buildStatusUpdates } from '$lib/task/status';
+import type { Priority, Status, Task } from '$types/task/model';
 
 interface TaskItemContextMenuProps {
   task: Task;
@@ -43,10 +45,11 @@ export const TaskItemContextMenu = ({
   const { data: accounts = [] } = useAccounts();
   const { data: tags = [] } = useTags();
   const updateTaskMutation = useUpdateTask();
-  const createTaskMutation = useCreateTask();
+  const createTaskMutation = useCreateTask('created', { selectCreatedTask: true });
   const restoreTaskMutation = useRestoreTask();
   const setSelectedTaskMutation = useSetSelectedTask();
   const { moveTaskToRecentlyDeleted, deleteTaskPermanently } = useTaskDeletion();
+  const { syncStatusProgress } = useSettingsStore();
 
   const [showExportModal, setShowExportModal] = useState(false);
   const [showTagsModal, setShowTagsModal] = useState(false);
@@ -135,14 +138,10 @@ export const TaskItemContextMenu = ({
     priorityHideTimer.current = setTimeout(() => setPriorityFlyoutPos(null), FLYOUT_HIDE_DELAY_MS);
   };
 
-  const handleChangeStatus = (status: TaskStatus) => {
+  const handleChangeStatus = (status: Status) => {
     updateTaskMutation.mutate({
       id: task.id,
-      updates: {
-        status,
-        completed: status === 'completed',
-        completedAt: status === 'completed' ? new Date() : undefined,
-      },
+      updates: buildStatusUpdates(status, task, new Date(), syncStatusProgress),
     });
     setStatusFlyoutPos(null);
     setContextMenu(null);
@@ -292,12 +291,7 @@ export const TaskItemContextMenu = ({
                       calendarId: task.calendarId,
                     },
                     {
-                      onSuccess: (newTask) => {
-                        setSelectedTaskMutation.mutate(
-                          { id: newTask.id, focusTitle: true },
-                          { onSuccess: () => setContextMenu(null) },
-                        );
-                      },
+                      onSuccess: () => setContextMenu(null),
                     },
                   );
                 }}

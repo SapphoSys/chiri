@@ -2,7 +2,7 @@ import { act, createElement } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useNotifications } from '$hooks/system/useNotifications';
-import type { NotificationActionEvent } from '$types/notification';
+import type { NotificationActionEvent } from '$types/notifications/events';
 
 const tauriMocks = vi.hoisted(() => {
   const handlers = new Map<string, (event: { payload: NotificationActionEvent }) => void>();
@@ -57,7 +57,7 @@ const settingsMock = vi.hoisted(() => ({
     complete: true,
     snooze: true,
     snoozeDurations: [
-      { id: '15m', value: 15, unit: 'minutes' },
+      { id: '30m', value: 30, unit: 'minutes' },
       { id: '1h', value: 1, unit: 'hours' },
     ],
     order: ['complete', 'snooze'],
@@ -149,7 +149,7 @@ describe('useNotifications notification-action listener', () => {
       complete: true,
       snooze: true,
       snoozeDurations: [
-        { id: '15m', value: 15, unit: 'minutes' },
+        { id: '30m', value: 30, unit: 'minutes' },
         { id: '1h', value: 1, unit: 'hours' },
       ],
       order: ['complete', 'snooze'],

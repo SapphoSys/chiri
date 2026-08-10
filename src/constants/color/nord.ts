@@ -35,6 +35,7 @@ export const nordColorScheme: ColorSchemeDefinition = {
       defaultAccent: 'Frost Blue',
       semanticColors: {
         info: '#5e81ac',
+        dueToday: '#d08770',
         warning: '#ebcb8b',
         success: '#a3be8c',
         error: '#bf616a',

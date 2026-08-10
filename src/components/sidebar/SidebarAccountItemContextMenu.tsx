@@ -1,20 +1,24 @@
 import { emit } from '@tauri-apps/api/event';
+import Activity from 'lucide-react/icons/activity';
 import Download from 'lucide-react/icons/download';
 import Edit2 from 'lucide-react/icons/edit-2';
+import Loader2 from 'lucide-react/icons/loader-2';
 import Plus from 'lucide-react/icons/plus';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
 import Share2 from 'lucide-react/icons/share-2';
 import Trash2 from 'lucide-react/icons/trash-2';
 import { MENU_EVENTS } from '$constants/menu';
-import { toastManager } from '$hooks/ui/useToast';
-import type { Account } from '$types';
+import { toastManager } from '$lib/toastManager';
+import type { Account } from '$types/account';
 
 interface SidebarAccountItemContextMenuProps {
   accountId: string;
   accounts: Account[];
   syncingCalendarId: string | null;
+  testingAccountIds: Readonly<Record<string, true>>;
   syncCalendar: (calendarId: string) => Promise<void>;
   onClose: () => void;
+  onTestConnection: (account: Account) => void;
   onEditAccount: (account: Account) => void;
   onCreateCalendar: (accountId: string) => void;
   onExportAccount: (accountId: string) => void;
@@ -26,8 +30,10 @@ export const SidebarAccountItemContextMenu = ({
   accountId,
   accounts,
   syncingCalendarId,
+  testingAccountIds,
   syncCalendar,
   onClose,
+  onTestConnection,
   onEditAccount,
   onCreateCalendar,
   onExportAccount,
@@ -36,6 +42,7 @@ export const SidebarAccountItemContextMenu = ({
 }: SidebarAccountItemContextMenuProps) => {
   const account = accounts.find((a) => a.id === accountId);
   const isAccountSyncing = account?.calendars.some((c) => c.id === syncingCalendarId);
+  const isAccountTesting = accountId in testingAccountIds;
 
   const isLocal = !account?.caldav;
 
@@ -54,11 +61,13 @@ export const SidebarAccountItemContextMenu = ({
                     toastManager.error(
                       `Calendar sync failed: ${calendar.displayName || 'Unknown'}`,
                       errorMessage,
-                      `sync-error-calendar-${calendar.id}`,
                       {
-                        label: 'Edit Account',
-                        onClick: () => {
-                          emit(MENU_EVENTS.EDIT_ACCOUNT, { accountId: account.id });
+                        groupKey: `sync-error-calendar-${calendar.id}`,
+                        action: {
+                          label: 'Edit Account',
+                          onClick: () => {
+                            emit(MENU_EVENTS.EDIT_ACCOUNT, { accountId: account.id });
+                          },
                         },
                       },
                     );
@@ -67,7 +76,7 @@ export const SidebarAccountItemContextMenu = ({
               }
             }}
             disabled={isAccountSyncing}
-            className={`flex w-full items-center gap-2 px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+            className={`flex w-full items-center gap-2 rounded-t-md px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
               isAccountSyncing
                 ? 'cursor-not-allowed text-surface-400 dark:text-surface-500'
                 : 'text-surface-700 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-surface-700'
@@ -80,6 +89,31 @@ export const SidebarAccountItemContextMenu = ({
           </button>
 
           <div className="border-surface-200 border-t dark:border-surface-700" />
+
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              if (account) {
+                onTestConnection(account);
+              }
+            }}
+            disabled={isAccountTesting || isAccountSyncing}
+            className={`flex w-full items-center gap-2 px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+              isAccountTesting || isAccountSyncing
+                ? 'cursor-not-allowed text-surface-400 dark:text-surface-500'
+                : 'text-surface-700 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-surface-700'
+            }`}
+          >
+            {isAccountTesting ? (
+              <Loader2 className="h-4 w-4 motion-safe:animate-spin" />
+            ) : (
+              <Activity className="h-4 w-4" />
+            )}
+            {isAccountTesting ? 'Testing...' : 'Test connection'}
+          </button>
+
+          <div className="border-surface-200 border-t dark:border-surface-700" />
         </>
       )}
 
@@ -89,7 +123,7 @@ export const SidebarAccountItemContextMenu = ({
           onCreateCalendar(accountId);
           onClose();
         }}
-        className="flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+        className={`flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700 ${isLocal ? 'rounded-t-md' : ''}`}
       >
         <Plus className="h-4 w-4" />
         New Calendar
@@ -151,7 +185,7 @@ export const SidebarAccountItemContextMenu = ({
           onClose();
           await onDeleteAccount(accountId);
         }}
-        className="flex w-full items-center gap-2 px-3 py-2 text-semantic-error text-sm outline-hidden hover:bg-semantic-error/15 focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
+        className="flex w-full items-center gap-2 rounded-b-md px-3 py-2 text-semantic-error text-sm outline-hidden hover:bg-semantic-error/15 focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
       >
         <Trash2 className="h-4 w-4" />
         Remove

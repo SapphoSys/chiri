@@ -32,6 +32,7 @@ export const everforestColorScheme: ColorSchemeDefinition = {
       defaultAccent: 'Green',
       semanticColors: {
         info: '#3a94c5',
+        dueToday: '#f57d26',
         warning: '#dfa000',
         success: '#8da101',
         error: '#f85552',
@@ -72,6 +73,7 @@ export const everforestColorScheme: ColorSchemeDefinition = {
       defaultAccent: 'Green',
       semanticColors: {
         info: '#7fbbb3',
+        dueToday: '#e69875',
         warning: '#dbbc7f',
         success: '#a7c080',
         error: '#e67e80',

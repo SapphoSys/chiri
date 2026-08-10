@@ -22,7 +22,7 @@ export const SidebarFooter = ({
   isAnyModalOpen,
 }: SidebarFooterProps) => {
   return (
-    <div className="relative flex flex-col justify-between border-surface-200 border-t bg-surface-100 p-2 dark:border-surface-700 dark:bg-surface-900">
+    <div className="app-sidebar-footer relative flex flex-col justify-between border-surface-200 border-t bg-surface-100 p-2 dark:border-surface-700 dark:bg-surface-900">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 -top-8 h-8 bg-linear-to-t from-surface-100 to-transparent dark:from-surface-900"

@@ -5,8 +5,9 @@ import {
   removeKUnifiedPushProviderSubscription,
   restoreKUnifiedPushProviderSubscription,
 } from '$lib/push/providers/kUnifiedPush';
-import type { Calendar } from '$types';
-import { KUNIFIED_PUSH_PROVIDER_ID, type PushSubscription } from '$types/push';
+import type { Calendar } from '$types/calendar';
+import { KUNIFIED_PUSH_PROVIDER_ID } from '$types/push/providers';
+import type { PushSubscription } from '$types/push/webdav';
 
 vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
 vi.mock('@tauri-apps/api/event', () => ({ listen: vi.fn() }));

@@ -9,6 +9,11 @@ on:
         description: 'Release tag to process, for example app-v0.9.0. Defaults to master package version.'
         required: false
         type: string
+      publish-winget:
+        description: 'Submit the selected release to WinGet (use only to retry a failed submission).'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -316,3 +321,20 @@ jobs:
             echo "| Updater metadata | ${UPDATER_RESULT:-not reached} |"
             echo "| Hash update | ${HASH_RESULT:-not reached} |"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  winget:
+    name: Publish to WinGet
+    needs:
+      - version-metadata
+    if: (github.event_name == 'release' || inputs.publish-winget == true) && vars.WINGET_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: vedantmgoyal9/winget-releaser@4ffc7888bffd451b357355dc214d43bb9f23917e # v2
+        with:
+          identifier: SapphicAngels.Chiri
+          version: ${{ needs.version-metadata.outputs.version }}
+          release-tag: app-v${{ needs.version-metadata.outputs.version }}
+          installers-regex: '(_en-US\.msi|-setup\.exe)$'
+          fork-user: ${{ vars.WINGET_FORK_USER || github.repository_owner }}
+          token: ${{ secrets.WINGET_TOKEN }}
+          max-versions-to-keep: 5

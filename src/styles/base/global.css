@@ -1,5 +1,6 @@
 :root {
   --semantic-info: #2563eb; /* blue-600 */
+  --semantic-due-today: #ea580c; /* orange-600 */
   --semantic-warning: #d97706; /* amber-600 */
   --semantic-success: #16a34a; /* green-600 */
   --semantic-error: #dc2626; /* red-600 */
@@ -14,6 +15,7 @@
 
 :root.dark {
   --semantic-info: #60a5fa; /* blue-400 */
+  --semantic-due-today: #fb923c; /* orange-400 */
   --semantic-warning: #fbbf24; /* amber-400 */
   --semantic-success: #4ade80; /* green-400 */
   --semantic-error: #f87171; /* red-400 */
@@ -46,13 +48,9 @@ body {
   *,
   *::before,
   *::after {
-    /* biome-ignore lint/complexity/noImportantStyles: accessibility reset for reduced motion */
     animation-duration: 0.01ms !important;
-    /* biome-ignore lint/complexity/noImportantStyles: accessibility reset for reduced motion */
     animation-iteration-count: 1 !important;
-    /* biome-ignore lint/complexity/noImportantStyles: accessibility reset for reduced motion */
     transition-duration: 0.01ms !important;
-    /* biome-ignore lint/complexity/noImportantStyles: accessibility reset for reduced motion */
     scroll-behavior: auto !important;
   }
 }

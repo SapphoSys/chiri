@@ -1,11 +1,15 @@
+import { isValidPrincipalUrlOverride, parseCalDAVServerUrl } from '$lib/caldav/utils';
 import { decodeMobileConfig } from '$lib/mobileconfig/decode';
 import type {
   DecodedMobileConfig,
   DecodedMobileConfigCalDAVPayload,
+} from '$types/mobileconfig/decode';
+import type {
   MobileConfigCalDAVSettings,
   MobileConfigImportFailureReason,
   MobileConfigImportResult,
-} from '$types/mobileconfig';
+  MobileConfigSkippedCalDAVPayload,
+} from '$types/mobileconfig/import';
 
 type PayloadMappingResult =
   | { ok: true; settings: MobileConfigCalDAVSettings }
@@ -55,7 +59,15 @@ const mapServerUrl = (
       url.port = String(payload.port);
     }
 
-    return { ok: true, serverUrl: url.origin };
+    const parsedServerUrl = parseCalDAVServerUrl(url.origin);
+    if (!parsedServerUrl.ok) {
+      return {
+        ok: false,
+        reason: parsedServerUrl.reason === 'invalid-port' ? 'invalid-port' : 'invalid-hostname',
+      };
+    }
+
+    return { ok: true, serverUrl: parsedServerUrl.url.origin };
   } catch {
     return { ok: false, reason: 'invalid-hostname' };
   }
@@ -67,21 +79,12 @@ const mapPrincipalUrl = (
 ): { ok: true; principalUrl?: string } | { ok: false; reason: 'invalid-principal-url' } => {
   const value = trimOptional(principalUrl);
   if (!value) return { ok: true };
-  if (value.startsWith('//')) return { ok: false, reason: 'invalid-principal-url' };
 
-  try {
-    const resolved = new URL(value, serverUrl);
-    if (
-      !['http:', 'https:'].includes(resolved.protocol) ||
-      resolved.username ||
-      resolved.password
-    ) {
-      return { ok: false, reason: 'invalid-principal-url' };
-    }
-    return { ok: true, principalUrl: value };
-  } catch {
+  if (!isValidPrincipalUrlOverride(value, serverUrl)) {
     return { ok: false, reason: 'invalid-principal-url' };
   }
+
+  return { ok: true, principalUrl: value };
 };
 
 const mapPayload = (payload: DecodedMobileConfigCalDAVPayload): PayloadMappingResult => {
@@ -112,19 +115,27 @@ const mapPayload = (payload: DecodedMobileConfigCalDAVPayload): PayloadMappingRe
 /** validate and map every decoded CalDAV payload into Chiri's account setup shape */
 export const mapDecodedMobileConfig = (profile: DecodedMobileConfig): MobileConfigImportResult => {
   const candidates: MobileConfigCalDAVSettings[] = [];
+  const skippedCandidates: MobileConfigSkippedCalDAVPayload[] = [];
   for (const payload of profile.caldavPayloads) {
     const mapped = mapPayload(payload);
-    if (!mapped.ok) return mapped;
+    if (!mapped.ok) {
+      skippedCandidates.push({ reason: mapped.reason });
+      continue;
+    }
     candidates.push(mapped.settings);
   }
 
-  if (candidates.length === 0) return { ok: false, reason: 'missing-caldav-payload' };
+  if (candidates.length === 0) {
+    return { ok: false, reason: skippedCandidates[0]?.reason ?? 'missing-caldav-payload' };
+  }
 
   return {
     ok: true,
     format: profile.format,
     signature: profile.signature,
+    ...(profile.signer ? { signer: profile.signer } : {}),
     candidates,
+    ...(skippedCandidates.length > 0 ? { skippedCandidates } : {}),
   };
 };
 

@@ -2,6 +2,7 @@ import type { AnimateLayoutChanges } from '@dnd-kit/sortable';
 import { defaultAnimateLayoutChanges, useSortable } from '@dnd-kit/sortable';
 import ChevronRight from 'lucide-react/icons/chevron-right';
 import { type CSSProperties, type MouseEvent, useEffect, useRef, useState } from 'react';
+import { DatePickerModal } from '$components/modals/DatePickerModal';
 import { RepeatModal } from '$components/modals/RepeatModal/RepeatModal';
 import { TaskItemBadges } from '$components/taskItem/TaskItemBadges';
 import { TaskItemCheckbox } from '$components/taskItem/TaskItemCheckbox';
@@ -13,9 +14,11 @@ import { useTaskHighlight } from '$context/taskHighlightContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useToggleTaskComplete, useUpdateTask } from '$hooks/queries/useTasks';
 import {
+  consumeSelectedTaskListScroll,
   useSetActiveAccount,
   useSetActiveCalendar,
   useSetActiveTag,
+  useSetSelectedTask,
   useUIState,
 } from '$hooks/queries/useUIState';
 import { useContextMenu } from '$hooks/ui/useContextMenu';
@@ -24,7 +27,8 @@ import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import { refreshStaleCursorAfterLayoutAtEventPoint } from '$hooks/ui/useStaleCursorReset';
 import { filterCalDavDescription } from '$lib/ical/vtodo';
 import { toggleTaskCollapsed } from '$lib/store/tasks';
-import type { Account, Task } from '$types';
+import type { Account } from '$types/account';
+import type { Task } from '$types/task/model';
 import { getContrastTextColor } from '$utils/color';
 import { getSortableItemDisabled, getSortableItemId } from '$utils/sortable';
 
@@ -48,6 +52,9 @@ interface TaskItemProps {
   isOverlay?: boolean;
   isMultiSelected?: boolean;
   isSelectionMode?: boolean;
+  hideDueDateBadge?: boolean;
+  hideStartDateBadge?: boolean;
+  hideCalendarBadge?: boolean;
   onTaskClick?: (task: Task, e: MouseEvent) => void;
   onSelectionCheckboxClick?: (task: Task, e: MouseEvent) => void;
   onTaskContextMenu?: (task: Task, e: MouseEvent) => void;
@@ -89,6 +96,22 @@ const getSelectionClass = (
   return '';
 };
 
+const isTaskEditable = (task: Task, isOverlay: boolean | undefined) =>
+  !task.deletedAt && !isOverlay;
+
+const shouldFocusSelectedTask = (
+  isSelected: boolean,
+  isEditorOpen: boolean,
+  isMultiSelected: boolean,
+  isOverlay: boolean | undefined,
+  taskElement: HTMLDivElement | null,
+) =>
+  isSelected &&
+  !isEditorOpen &&
+  !isMultiSelected &&
+  !isOverlay &&
+  document.activeElement !== taskElement;
+
 export const TaskItem = ({
   task,
   depth,
@@ -97,6 +120,9 @@ export const TaskItem = ({
   isOverlay,
   isMultiSelected = false,
   isSelectionMode = false,
+  hideDueDateBadge = false,
+  hideStartDateBadge = false,
+  hideCalendarBadge = false,
   onTaskClick,
   onSelectionCheckboxClick,
   onTaskContextMenu,
@@ -106,6 +132,7 @@ export const TaskItem = ({
   const { highlightedTaskId } = useTaskHighlight();
   const toggleTaskCompleteMutation = useToggleTaskComplete();
   const updateTaskMutation = useUpdateTask();
+  const setSelectedTaskMutation = useSetSelectedTask();
   const setActiveTagMutation = useSetActiveTag();
   const setActiveCalendarMutation = useSetActiveCalendar();
   const setActiveAccountMutation = useSetActiveAccount();
@@ -120,6 +147,7 @@ export const TaskItem = ({
   const taskElementRef = useRef<HTMLDivElement>(null);
 
   const selectedTaskId = uiState?.selectedTaskId ?? null;
+  const isEditorOpen = uiState?.isEditorOpen === true;
   const activeCalendarId = uiState?.activeCalendarId ?? null;
   const activeTagId = uiState?.activeTagId ?? null;
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
@@ -130,14 +158,35 @@ export const TaskItem = ({
   // focus the task element when it becomes selected via keyboard navigation
   useEffect(() => {
     if (
-      isSelected &&
-      !isMultiSelected &&
-      !isOverlay &&
-      document.activeElement !== taskElementRef.current
+      !shouldFocusSelectedTask(
+        isSelected,
+        isEditorOpen,
+        isMultiSelected,
+        isOverlay,
+        taskElementRef.current,
+      )
+    )
+      return;
+    taskElementRef.current?.focus();
+  }, [isEditorOpen, isSelected, isMultiSelected, isOverlay]);
+
+  // scroll newly-created tasks into view when they are selected
+  useEffect(() => {
+    if (
+      !isSelected ||
+      isMultiSelected ||
+      isOverlay ||
+      !taskElementRef.current ||
+      !consumeSelectedTaskListScroll(task.id)
     ) {
-      taskElementRef.current?.focus();
+      return;
     }
-  }, [isSelected, isMultiSelected, isOverlay]);
+
+    taskElementRef.current.scrollIntoView({
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      block: 'nearest',
+    });
+  }, [isSelected, isMultiSelected, isOverlay, prefersReducedMotion, task.id]);
 
   // scroll the task into view when it is highlighted from a notification click
   useEffect(() => {
@@ -193,8 +242,11 @@ export const TaskItem = ({
   };
 
   const [flashComplete, setFlashComplete] = useState(false);
+  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [showDueDatePicker, setShowDueDatePicker] = useState(false);
   const [showRepeatModal, setShowRepeatModal] = useState(false);
   const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const canEditTask = isTaskEditable(task, isOverlay);
 
   const handleCheckboxClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -225,6 +277,21 @@ export const TaskItem = ({
     toggleTaskCollapsed(task.id);
   };
 
+  const handleStartDateClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setShowStartDatePicker(true);
+  };
+
+  const handleDueDateClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setShowDueDatePicker(true);
+  };
+
+  const handleProgressClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setSelectedTaskMutation.mutate({ id: task.id, focusEditorField: 'progress' });
+  };
+
   const resetStaleBadgeCursor = (event: MouseEvent) => {
     // WebKit can keep a badge's pointer cursor after switching to the tag/calendar view
     refreshStaleCursorAfterLayoutAtEventPoint(event, {
@@ -248,7 +315,8 @@ export const TaskItem = ({
   const paddingLeft = 12 + depth * 4;
 
   const containerClass = [
-    'group relative flex items-start gap-3 pr-3 rounded-lg border task-item-transition outline-hidden',
+    'group relative flex items-start gap-3 pr-3 rounded-lg border outline-hidden',
+    isHighlighted ? 'task-item-transition' : '',
     'focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-surface-900',
     taskListDensity === 'compact' ? 'py-2' : 'py-3',
     getBackgroundClass(isMultiSelected, isOverlay, contextMenu),
@@ -261,6 +329,18 @@ export const TaskItem = ({
     getPriorityColor(task.priority),
   ].join(' ');
 
+  const editableBadgeProps = canEditTask
+    ? {
+        onStartDateClick: handleStartDateClick,
+        onDueDateClick: handleDueDateClick,
+        onProgressClick: handleProgressClick,
+        onRepeatClick: (event: MouseEvent<HTMLButtonElement>) => {
+          event.stopPropagation();
+          setShowRepeatModal(true);
+        },
+      }
+    : {};
+
   const badgesProps = {
     task,
     accounts,
@@ -269,16 +349,13 @@ export const TaskItem = ({
     showCompletedTasks,
     onTagClick: handleTagClick,
     onCalendarClick: handleCalendarClick,
-    onRepeatClick:
-      !task.deletedAt && !isOverlay
-        ? (event: MouseEvent<HTMLButtonElement>) => {
-            event.stopPropagation();
-            setShowRepeatModal(true);
-          }
-        : undefined,
+    ...editableBadgeProps,
     onToggleCollapsed: handleToggleCollapsed,
     badgeVisibility: taskBadgeVisibility,
     badgeOrder: taskBadgeOrder,
+    hideDueDateBadge,
+    hideStartDateBadge,
+    hideCalendarBadge,
   };
 
   return (
@@ -290,7 +367,11 @@ export const TaskItem = ({
         {...attributes}
         {...(isDragEnabled ? listeners : {})}
         onClick={handleClick}
-        onKeyDown={(e) => e.key === 'Enter' && handleClick(e as unknown as MouseEvent)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !(e.target as HTMLElement).closest('button')) {
+            handleClick(e as unknown as MouseEvent);
+          }
+        }}
         onContextMenu={handleTaskContextMenu}
         role="button"
         aria-pressed={isVisuallySelected}
@@ -314,18 +395,16 @@ export const TaskItem = ({
 
         <div className="min-w-0 flex-1">
           {taskListDensity === 'compact' ? (
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-                <TaskItemTitle
-                  title={task.title}
-                  status={task.status}
-                  isUnstarted={isUnstarted}
-                  isSubtask={!!task.parentUid}
-                  className="min-w-0 shrink truncate font-medium text-sm"
-                />
-                <TaskItemBadges {...badgesProps} compact={true} />
-              </div>
-            </div>
+            <>
+              <TaskItemTitle
+                title={task.title}
+                status={task.status}
+                isUnstarted={isUnstarted}
+                isSubtask={!!task.parentUid}
+                className="truncate font-medium text-sm leading-5"
+              />
+              <TaskItemBadges {...badgesProps} compact={true} />
+            </>
           ) : (
             <>
               <div className="flex items-start justify-between gap-2">
@@ -359,6 +438,38 @@ export const TaskItem = ({
           contextMenu={contextMenu}
           onClose={handleCloseContextMenu}
           setContextMenu={setContextMenu}
+        />
+      )}
+
+      {showStartDatePicker && (
+        <DatePickerModal
+          isOpen
+          onClose={() => setShowStartDatePicker(false)}
+          value={task.startDate ? new Date(task.startDate) : undefined}
+          onChange={(date, allDay) =>
+            updateTaskMutation.mutate({
+              id: task.id,
+              updates: { startDate: date, startDateAllDay: allDay },
+            })
+          }
+          title="Start Date"
+          allDay={task.startDateAllDay}
+        />
+      )}
+
+      {showDueDatePicker && (
+        <DatePickerModal
+          isOpen
+          onClose={() => setShowDueDatePicker(false)}
+          value={task.dueDate ? new Date(task.dueDate) : undefined}
+          onChange={(date, allDay) =>
+            updateTaskMutation.mutate({
+              id: task.id,
+              updates: { dueDate: date, dueDateAllDay: allDay },
+            })
+          }
+          title="Due Date"
+          allDay={task.dueDateAllDay}
         />
       )}
 

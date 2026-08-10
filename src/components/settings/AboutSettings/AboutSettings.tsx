@@ -2,7 +2,6 @@ import { openUrl } from '@tauri-apps/plugin-opener';
 import Bug from 'lucide-react/icons/bug';
 import CircleDollarSign from 'lucide-react/icons/circle-dollar-sign';
 import Code from 'lucide-react/icons/code';
-import ExternalLink from 'lucide-react/icons/external-link';
 import Globe from 'lucide-react/icons/globe';
 import HandHeart from 'lucide-react/icons/hand-heart';
 import Heart from 'lucide-react/icons/heart';
@@ -11,7 +10,9 @@ import Mail from 'lucide-react/icons/mail';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
 import ScrollText from 'lucide-react/icons/scroll-text';
 import Sparkles from 'lucide-react/icons/sparkles';
+import { useState } from 'react';
 import { ChangelogModal } from '$components/modals/ChangelogModal';
+import { ThirdPartyLicensesModal } from '$components/modals/ThirdPartyLicensesModal';
 import { AboutSettingsLinkRow } from '$components/settings/AboutSettings/AboutSettingsLinkRow';
 import { AboutSettingsSection } from '$components/settings/AboutSettings/AboutSettingsSection';
 import { useChangelog } from '$hooks/useChangelog';
@@ -24,23 +25,12 @@ const FIND_US_ELSEWHERE = 'https://sapphic.moe/contact';
 
 const link = (url: string) => () => openUrl(url);
 
-const LIBRARIES: { name: string; url: string }[] = [
-  { name: 'React', url: 'https://react.dev' },
-  { name: 'Tauri', url: 'https://tauri.app' },
-  { name: 'TanStack Query', url: 'https://tanstack.com/query' },
-  { name: 'date-fns', url: 'https://date-fns.org' },
-  { name: 'Lucide', url: 'https://lucide.dev' },
-  { name: 'dnd-kit', url: 'https://dndkit.com' },
-  { name: 'Tailwind CSS', url: 'https://tailwindcss.com' },
-  { name: 'sonner', url: 'https://sonner.emilkowal.ski' },
-  { name: 'frimousse', url: 'https://www.npmjs.com/package/frimousse' },
-];
-
 interface AboutSettingsProps {
   onNavigateToUpdates?: () => void;
 }
 
 export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
+  const [showThirdPartyLicenses, setShowThirdPartyLicenses] = useState(false);
   const { version, name, description, author } = getAppInfo();
   const {
     openChangelog,
@@ -150,6 +140,13 @@ export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
             description="Licensed under the zlib/libpng license"
             onClick={link(GITHUB_URL)}
           />
+          <AboutSettingsLinkRow
+            icon={<ScrollText className="h-5 w-5" />}
+            label="Third-party licenses"
+            description="View licenses for dependencies shipped with Chiri"
+            variant="internal"
+            onClick={() => setShowThirdPartyLicenses(true)}
+          />
         </AboutSettingsSection>
 
         <AboutSettingsSection title="Credits">
@@ -179,10 +176,44 @@ export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
 
           <div className="flex items-center gap-3 px-4 py-3">
             <span className="shrink-0 text-surface-400 dark:text-surface-500">
+              <HandHeart className="h-5 w-5 text-[#25CCFF]" />
+            </span>
+            <p className="text-sm text-surface-800 dark:text-surface-200">
+              Special thanks to the{' '}
+              <button
+                type="button"
+                onClick={link('https://signpath.org/')}
+                className="font-medium outline-hidden hover:underline focus-visible:underline"
+              >
+                SignPath Foundation
+              </button>{' '}
+              for Windows code signing
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 px-4 py-3">
+            <span className="shrink-0 text-surface-400 dark:text-surface-500">
+              <Heart className="h-5 w-5 text-[#FF218C]" />
+            </span>
+            <p className="text-sm text-surface-800 dark:text-surface-200">
+              Special thanks to{' '}
+              <button
+                type="button"
+                onClick={link('https://wamwoowam.co.uk')}
+                className="font-medium outline-hidden hover:underline focus-visible:underline"
+              >
+                WamWooWam
+              </button>{' '}
+              for macOS code signing and notarization
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 px-4 py-3">
+            <span className="shrink-0 text-surface-400 dark:text-surface-500">
               <Heart className="h-5 w-5 text-[#F5C2E7]" />
             </span>
             <p className="text-sm text-surface-800 dark:text-surface-200">
-              Made with love by{' '}
+              Chiri is made with love by{' '}
               <button
                 type="button"
                 onClick={link('https://sapphic.moe')}
@@ -191,23 +222,6 @@ export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
                 {author}
               </button>
             </p>
-          </div>
-
-          <div className="space-y-2 px-4 py-3">
-            <p className="text-surface-500 text-xs dark:text-surface-400">Built with</p>
-            <div className="flex flex-wrap gap-1.5">
-              {LIBRARIES.map(({ name: libName, url }) => (
-                <button
-                  key={libName}
-                  type="button"
-                  onClick={link(url)}
-                  className="inline-flex items-center gap-1 rounded-md bg-surface-100 px-2 py-1 text-surface-600 text-xs outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
-                >
-                  {libName}
-                  <ExternalLink className="h-2.5 w-2.5 opacity-50" />
-                </button>
-              ))}
-            </div>
           </div>
         </AboutSettingsSection>
       </div>
@@ -219,6 +233,10 @@ export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
           date={changelogData.date}
           onClose={closeChangelog}
         />
+      )}
+
+      {showThirdPartyLicenses && (
+        <ThirdPartyLicensesModal onClose={() => setShowThirdPartyLicenses(false)} />
       )}
     </>
   );

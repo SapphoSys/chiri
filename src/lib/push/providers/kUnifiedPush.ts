@@ -2,14 +2,11 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { log } from '$lib/caldav/utils';
 import { generateWebPushKeyPair } from '$lib/push/keys';
-import type { Calendar } from '$types';
-import {
-  KUNIFIED_PUSH_PROVIDER_ID,
-  type PushEndpointSubscription,
-  type PushMessageHandler,
-  type PushProviderSubscriptionDiagnostics,
-  type PushSubscription,
-} from '$types/push';
+import type { Calendar } from '$types/calendar';
+import type { PushProviderSubscriptionDiagnostics } from '$types/push/diagnostics';
+import type { PushMessageHandler } from '$types/push/providers';
+import { KUNIFIED_PUSH_PROVIDER_ID } from '$types/push/providers';
+import type { PushEndpointSubscription, PushSubscription } from '$types/push/webdav';
 import { generateUUID } from '$utils/misc';
 
 interface KUnifiedPushProviderRegistration {

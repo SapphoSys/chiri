@@ -10,8 +10,9 @@ import {
   restoreNtfyProviderSubscription,
   startNtfyProviderListening,
 } from '$lib/push/providers/ntfy';
-import type { Calendar } from '$types';
-import { NTFY_DIRECT_PROVIDER_ID, type PushSubscription } from '$types/push';
+import type { Calendar } from '$types/calendar';
+import { NTFY_DIRECT_PROVIDER_ID } from '$types/push/providers';
+import type { PushSubscription } from '$types/push/webdav';
 
 const tauriMocks = vi.hoisted(() => {
   const handlers = new Map<string, (event: { payload: unknown }) => void>();

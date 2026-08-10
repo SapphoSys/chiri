@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { platform } from '@tauri-apps/plugin-os';
 import { loggers } from '$lib/logger';
-import type { InstallType } from '$types';
+import type { InstallType } from '$types/platform';
 
 const log = loggers.platform;
 
@@ -69,6 +69,8 @@ export const getPackageManagerName = (installType: InstallType | null | undefine
       return 'Nix';
     case 'aur':
       return 'AUR (Arch User Repository)';
+    case 'copr':
+      return 'Fedora Copr';
     case 'flatpak':
       return 'Flatpak';
     case 'homebrew':
@@ -101,6 +103,18 @@ export const isAppImageInstall = async () => {
     return (await invoke<InstallType>('get_install_type')) === 'appimage';
   } catch (error) {
     log.error('[Platform] Failed to detect AppImage install:', error);
+    return false;
+  }
+};
+
+/**
+ * returns the cached tray host availability from the backend
+ */
+export const getTrayHostAvailable = async () => {
+  try {
+    return await invoke<boolean>('get_tray_host_available');
+  } catch (error) {
+    log.error('Failed to read tray host availability:', error);
     return false;
   }
 };

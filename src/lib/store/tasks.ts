@@ -1,16 +1,27 @@
 import { addDays, format, setHours, startOfDay, subDays, subHours, subMinutes } from 'date-fns';
 import { settingsStore } from '$context/settingsContext';
-import { toastManager } from '$hooks/ui/useToast';
 import { db } from '$lib/database';
 import { toAppleEpoch } from '$lib/ical/vtodo';
 import { loggers } from '$lib/logger';
 import { dataStore } from '$lib/store';
-import type { DefaultDateOffset, DefaultReminderOffset, Reminder, Task } from '$types';
-import type { WorkingDay } from '$types/preference';
+import { getFilterTaskCreationDefaults, resolveTaskTags } from '$lib/task/creation';
+import { isExpiredRecentlyDeletedTask } from '$lib/task/deletion';
+import { isCompletedTask, matchesFilter } from '$lib/task/filtering';
+import { getNextOccurrence, parseRRule } from '$lib/task/recurrence';
+import { sortTasks } from '$lib/task/sorting';
+import {
+  buildStatusUpdates,
+  getNewTaskPercentComplete,
+  getTaskStatusAfterCompletionToggle,
+} from '$lib/task/status';
+import { toastManager } from '$lib/toastManager';
+import type { DefaultDateOffset, DefaultReminderOffset } from '$types/settings/categories/defaults';
+import type { WorkingDay } from '$types/settings/categories/scheduling';
+import type { SortConfig } from '$types/sort';
+import type { TaskCreationOptions } from '$types/task/creation';
+import type { Reminder, Task } from '$types/task/model';
 import { getNextWorkingDay } from '$utils/calendar';
 import { generateUUID } from '$utils/misc';
-import { getNextOccurrence, parseRRule } from '$utils/recurrence';
-import { isExpiredRecentlyDeletedTask } from '$utils/taskDeletion';
 
 const resolveReminderOffsets = (
   offsets: DefaultReminderOffset[],
@@ -68,20 +79,16 @@ const resolveDateOffset = (
 
 const log = loggers.dataStore;
 
-// helper: resolve tags including active tag and defaults
-const resolveTaskTags = (
-  providedTags: string[] | undefined,
-  activeTagId: string | null,
-  defaultTags: string[],
+const getActiveFilterTaskDefaults = (
+  data: ReturnType<typeof dataStore.load>,
+  options: TaskCreationOptions,
 ) => {
-  let tags = providedTags ?? [];
-  if (activeTagId && !tags.includes(activeTagId)) {
-    tags = [activeTagId, ...tags];
-  }
-  if (tags.length === 0 && defaultTags.length > 0) {
-    tags = [...defaultTags];
-  }
-  return tags;
+  if (options.source === 'remote' || options.source === 'import') return {};
+  if (data.ui.activeView !== 'filter') return {};
+
+  return getFilterTaskCreationDefaults(
+    data.filters.find((filter) => filter.id === data.ui.activeFilterId),
+  );
 };
 
 // helper: find calendar and account to use for new task
@@ -223,11 +230,11 @@ export const countChildren = (parentUid: string, filter: ChildTaskFilter = 'all'
   return getChildTasks(parentUid, filter).length;
 };
 
-export const getAllDescendants = (parentUid: string) => {
+export const getAllDescendants = (parentUid: string, filter: ChildTaskFilter = 'all') => {
   const tasks = dataStore.load().tasks;
 
   const getDescendants = (uid: string): Task[] => {
-    const children = tasks.filter((t) => t.parentUid === uid);
+    const children = tasks.filter((t) => t.parentUid === uid && matchesChildTaskFilter(t, filter));
     return [...children, ...children.flatMap((child) => getDescendants(child.uid))];
   };
 
@@ -235,9 +242,16 @@ export const getAllDescendants = (parentUid: string) => {
 };
 
 // task create
-export const createTask = (taskData: Partial<Task>) => {
+export const createTask = (
+  taskData: Partial<Task>,
+  options: TaskCreationOptions = {},
+  onBeforePublish?: (task: Task) => void,
+) => {
   const data = dataStore.load();
+  const { selectCreatedTask = false, ...databaseCreationOptions } = options;
   const now = new Date();
+
+  const filterTaskDefaults = getActiveFilterTaskDefaults(data, options);
 
   // get default calendar and task defaults from settings
   const {
@@ -256,8 +270,11 @@ export const createTask = (taskData: Partial<Task>) => {
     workingDays,
   } = settingsStore.getState();
 
+  const taskStatus = taskData.status ?? filterTaskDefaults.status ?? defaultStatus;
+  const taskPriority = taskData.priority ?? filterTaskDefaults.priority ?? defaultPriority;
+
   // resolve tags using helper
-  const tags = resolveTaskTags(taskData.tags, data.ui.activeTagId, defaultTags);
+  const tags = resolveTaskTags(taskData.tags, data.ui.activeTagId, defaultTags, options);
 
   // resolve calendar and account using helper
   const { calendarId, accountId } = resolveCalendarAndAccount(
@@ -281,7 +298,7 @@ export const createTask = (taskData: Partial<Task>) => {
   const due =
     taskData.dueDate !== undefined
       ? { date: taskData.dueDate, allDay: taskData.dueDateAllDay ?? true }
-      : resolveDateOffset(defaultDueDate, undefined, workingDays);
+      : resolveDateOffset(filterTaskDefaults.dueDate ?? defaultDueDate, undefined, workingDays);
   if (due.date !== undefined && defaultDueTime != null && taskData.dueDate === undefined) {
     due.date = new Date(due.date);
     due.date.setHours(Math.floor(defaultDueTime / 60), defaultDueTime % 60, 0, 0);
@@ -290,7 +307,7 @@ export const createTask = (taskData: Partial<Task>) => {
   const start =
     taskData.startDate !== undefined
       ? { date: taskData.startDate, allDay: taskData.startDateAllDay ?? true }
-      : resolveDateOffset(defaultStartDate, due.date, workingDays);
+      : resolveDateOffset(filterTaskDefaults.startDate ?? defaultStartDate, due.date, workingDays);
   if (start.date !== undefined && defaultStartTime != null && taskData.startDate === undefined) {
     start.date = new Date(start.date);
     start.date.setHours(Math.floor(defaultStartTime / 60), defaultStartTime % 60, 0, 0);
@@ -306,10 +323,16 @@ export const createTask = (taskData: Partial<Task>) => {
     uid: generateUUID(),
     title: taskData.title ?? 'New Task',
     description: taskData.description ?? '',
-    status: taskData.status ?? defaultStatus,
-    completed: (taskData.status ?? defaultStatus) === 'completed',
-    percentComplete: taskData.percentComplete ?? defaultPercentComplete,
-    priority: taskData.priority ?? defaultPriority,
+    status: taskStatus,
+    completed: taskStatus === 'completed',
+    percentComplete: getNewTaskPercentComplete(
+      taskData.status,
+      taskData.percentComplete,
+      taskStatus,
+      defaultPercentComplete,
+      settingsStore.getState().syncStatusProgress,
+    ),
+    priority: taskPriority,
     sortOrder: maxSortOrder + 1,
     accountId: accountId ?? '',
     calendarId: calendarId ?? taskData.calendarId ?? data.ui.activeCalendarId ?? '',
@@ -333,14 +356,27 @@ export const createTask = (taskData: Partial<Task>) => {
         : undefined),
   } satisfies Task;
 
+  onBeforePublish?.(task);
+
   dataStore.save({
     ...data,
     tasks: [...data.tasks, task],
+    ...(selectCreatedTask
+      ? {
+          ui: {
+            ...data.ui,
+            selectedTaskId: task.id,
+            isEditorOpen: true,
+          },
+        }
+      : {}),
   });
 
   // persist to SQLite including local-only tasks
   if (dataStore.getIsInitialized()) {
-    db.createTask(task).catch((e) => log.error('Failed to sync task to database:', e));
+    db.createTask(task, databaseCreationOptions).catch((e) =>
+      log.error('Failed to sync task to database:', e),
+    );
   }
 
   return task;
@@ -619,7 +655,7 @@ export const removeLocalTask = (id: string) => {
 };
 
 // task toggles
-export const toggleTaskComplete = (id: string) => {
+export const toggleTaskComplete = (id: string, completeInProcess = false) => {
   const data = dataStore.load();
   const task = data.tasks.find((t) => t.id === id);
   if (!task) return;
@@ -632,18 +668,10 @@ export const toggleTaskComplete = (id: string) => {
     if (handled) return;
   }
 
-  const newStatus =
-    task.status === 'completed'
-      ? 'needs-action'
-      : task.status === 'cancelled' || task.status === 'in-process'
-        ? 'needs-action'
-        : 'completed';
+  const newStatus = getTaskStatusAfterCompletionToggle(task.status, completeInProcess);
 
   const updates = {
-    status: newStatus as Task['status'],
-    completed: newStatus === 'completed',
-    completedAt: newStatus === 'completed' ? new Date() : undefined,
-    percentComplete: newStatus === 'completed' ? 100 : 0,
+    ...buildStatusUpdates(newStatus, task, new Date(), settingsStore.getState().syncStatusProgress),
     modifiedAt: new Date(),
     synced: false,
   };
@@ -694,5 +722,93 @@ export const exportTaskAndChildren = (taskId: string) => {
   const task = data.tasks.find((t) => t.id === taskId);
   if (!task) return null;
 
-  return { task, descendants: getAllDescendants(task.uid) };
+  // exclude subtasks that have been moved to Recently Deleted so they don't
+  // appear in the export modal count or the exported file
+  return { task, descendants: getAllDescendants(task.uid, 'active') };
 };
+
+const matchesDeletionVisibility = (task: Task, activeView: string) => {
+  return activeView === 'recently-deleted' ? !!task.deletedAt : !task.deletedAt;
+};
+
+const matchesActiveScope = (
+  task: Task,
+  activeView: string,
+  activeTagId: string | null,
+  activeCalendarId: string | null,
+) => {
+  if (activeView === 'recently-deleted') return true;
+  if (activeTagId !== null) return (task.tags ?? []).includes(activeTagId);
+  if (activeCalendarId !== null) return task.calendarId === activeCalendarId;
+  return true;
+};
+
+const matchesSearchQuery = (task: Task, tasks: Task[], activeView: string, searchQuery: string) => {
+  const query = searchQuery.toLowerCase();
+
+  if (
+    task.title.toLowerCase().includes(query) ||
+    task.description.toLowerCase().includes(query) ||
+    task.url?.toLowerCase().includes(query)
+  ) {
+    return true;
+  }
+
+  const childTasks = tasks.filter((candidate) => {
+    if (candidate.parentUid !== task.uid) return false;
+    return activeView === 'recently-deleted' ? !!candidate.deletedAt : !candidate.deletedAt;
+  });
+
+  return childTasks.some((child) => child.title.toLowerCase().includes(query));
+};
+
+export const getFilteredTasks = () => {
+  const data = dataStore.load();
+  const {
+    activeView,
+    searchQuery,
+    showCompletedTasks,
+    showUnstartedTasks,
+    activeCalendarId,
+    activeTagId,
+    activeFilterId,
+  } = data.ui;
+  const activeFilter =
+    activeView === 'filter' && activeFilterId
+      ? data.filters.find((filter) => filter.id === activeFilterId)
+      : undefined;
+  const activeFilterControlsStatus = activeFilter?.criteria.some((c) => c.field === 'status');
+  const activeFilterControlsStartDate = activeFilter?.criteria.some((c) => c.field === 'startDate');
+
+  return data.tasks.filter((task) => {
+    if (!matchesDeletionVisibility(task, activeView)) return false;
+    if (!matchesActiveScope(task, activeView, activeTagId, activeCalendarId)) return false;
+
+    if (activeFilter && !matchesFilter(task, activeFilter)) {
+      return false;
+    }
+
+    // filter by completion status (completed and cancelled are both "done")
+    if (!activeFilterControlsStatus && !showCompletedTasks && isCompletedTask(task)) {
+      return false;
+    }
+
+    // filter by start date (hide unstarted tasks with future start dates)
+    if (!activeFilterControlsStartDate && !showUnstartedTasks && task.startDate) {
+      if (new Date(task.startDate) > new Date()) {
+        return false;
+      }
+    }
+
+    // filter by search query
+    if (searchQuery) return matchesSearchQuery(task, data.tasks, activeView, searchQuery);
+
+    return true;
+  });
+};
+
+export const getSortedTasks = (
+  tasks: Task[],
+  sortConfig?: SortConfig,
+  moveCompletedTasksToBottom = false,
+) => sortTasks(tasks, sortConfig ?? dataStore.load().ui.sortConfig, moveCompletedTasksToBottom);

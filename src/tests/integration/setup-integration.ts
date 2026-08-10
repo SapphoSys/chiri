@@ -26,6 +26,7 @@ vi.mock('$context/connectionContext', () => ({
     getConnection: vi.fn(),
     deleteConnection: vi.fn(),
     hasConnection: vi.fn(),
+    beginConnection: vi.fn(),
   },
 }));
 

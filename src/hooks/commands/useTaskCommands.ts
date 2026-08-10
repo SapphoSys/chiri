@@ -2,12 +2,11 @@ import { useCallback } from 'react';
 import { useTaskSelection } from '$context/taskSelectionContext';
 import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
 import { useCreateTask } from '$hooks/queries/useTasks';
-import { useSetEditorOpen, useSetSelectedTask, useUIState } from '$hooks/queries/useUIState';
+import { useSetEditorOpen, useUIState } from '$hooks/queries/useUIState';
 import { useVisibleTasks } from '$hooks/queries/useVisibleTasks';
 
 export const useTaskCommands = () => {
-  const createTaskMutation = useCreateTask();
-  const setSelectedTaskMutation = useSetSelectedTask();
+  const createTaskMutation = useCreateTask('created', { selectCreatedTask: true });
   const { data: uiState } = useUIState();
   const { moveTaskToRecentlyDeleted } = useTaskDeletion();
 
@@ -16,15 +15,8 @@ export const useTaskCommands = () => {
   const setEditorOpenMutation = useSetEditorOpen();
 
   const newTask = useCallback(() => {
-    createTaskMutation.mutate(
-      { title: '' },
-      {
-        onSuccess: (task) => {
-          setSelectedTaskMutation.mutate({ id: task.id, focusTitle: true });
-        },
-      },
-    );
-  }, [createTaskMutation, setSelectedTaskMutation]);
+    createTaskMutation.mutate({ title: '' });
+  }, [createTaskMutation]);
 
   const deleteTask = useCallback(async () => {
     if (uiState?.activeView === 'recently-deleted') return;

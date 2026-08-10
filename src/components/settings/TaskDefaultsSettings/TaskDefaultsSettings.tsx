@@ -1,30 +1,33 @@
-import { TaskDefaultsCalendarSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsCalendarSection';
-import { TaskDefaultsDateSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsDateSection';
-import { TaskDefaultsRecurrenceSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsRecurrenceSection';
-import { TaskDefaultsRemindersSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsRemindersSection';
-import { TaskDefaultsTagsSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsTagsSection';
-import { TaskDefaultsTaskValues } from '$components/settings/TaskDefaultsSettings/TaskDefaultsTaskValues';
-import { TaskDefaultsTimeSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsTimeSection';
+import { TaskDefaultsSettingsCalendarSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsCalendarSection';
+import { TaskDefaultsSettingsDateSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsDateSection';
+import { TaskDefaultsSettingsPrioritySection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsPrioritySection';
+import { TaskDefaultsSettingsRecurrenceSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsRecurrenceSection';
+import { TaskDefaultsSettingsRemindersSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsRemindersSection';
+import { TaskDefaultsSettingsStatusSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsStatusSection';
+import { TaskDefaultsSettingsTagsSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsTagsSection';
+import { TaskDefaultsSettingsTimeSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettingsTimeSection';
 
 export const TaskDefaultsSettings = () => {
   return (
     <div className="space-y-5">
       <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Defaults</h3>
 
-      <TaskDefaultsTaskValues />
+      <TaskDefaultsSettingsStatusSection />
+
+      <TaskDefaultsSettingsPrioritySection />
 
       <div className="grid gap-5">
-        <TaskDefaultsDateSection />
-        <TaskDefaultsTimeSection />
+        <TaskDefaultsSettingsDateSection />
+        <TaskDefaultsSettingsTimeSection />
       </div>
 
-      <TaskDefaultsRecurrenceSection />
+      <TaskDefaultsSettingsRecurrenceSection />
 
-      <TaskDefaultsCalendarSection />
+      <TaskDefaultsSettingsCalendarSection />
 
-      <TaskDefaultsTagsSection />
+      <TaskDefaultsSettingsTagsSection />
 
-      <TaskDefaultsRemindersSection />
+      <TaskDefaultsSettingsRemindersSection />
     </div>
   );
 };

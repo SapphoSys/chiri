@@ -11,7 +11,8 @@ import { addCalendar } from '$lib/store/calendars';
 import { moveItem } from '$lib/store/reorder';
 import { reorderAccounts } from '$lib/store/reorder/accounts';
 import { reorderCalendars } from '$lib/store/reorder/calendars';
-import type { Account, Calendar } from '$types';
+import type { Account } from '$types/account';
+import type { Calendar } from '$types/calendar';
 
 /**
  * hook to get all accounts
@@ -28,6 +29,7 @@ export const useAccounts = () => {
   return useQuery({
     queryKey: queryKeys.accounts.all,
     queryFn: () => getAllAccounts(),
+    initialData: getAllAccounts,
     staleTime: Infinity,
   });
 };

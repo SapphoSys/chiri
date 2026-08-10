@@ -1,6 +1,6 @@
 import PanelLeftClose from 'lucide-react/icons/panel-left-close';
 import PanelLeftOpen from 'lucide-react/icons/panel-left-open';
-import AppIcon from '$components/Icon';
+import AppIcon from '$components/AppIcon';
 import { Tooltip } from '$components/Tooltip';
 
 interface SidebarHeaderProps {

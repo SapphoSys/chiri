@@ -1,8 +1,8 @@
 import { dataStore } from '$lib/store';
-import { getSortedTasks } from '$lib/store/filters';
-import type { Task } from '$types';
+import { getSortedTasks } from '$lib/store/tasks';
 import type { SortConfig } from '$types/sort';
-import type { FlattenedTask } from '$types/store';
+import type { FlattenedTask } from '$types/store/tasks';
+import type { Task } from '$types/task/model';
 
 type TaskUpdate = {
   sortOrder: number;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { KeyboardShortcut } from '$types';
+import type { KeyboardShortcut } from '$types/shortcuts';
 import {
   getReservedShortcutMessage,
   getShortcutSignature,

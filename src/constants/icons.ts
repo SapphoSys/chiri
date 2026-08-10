@@ -1,5 +1,6 @@
 import Activity from 'lucide-react/icons/activity';
 import Apple from 'lucide-react/icons/apple';
+import Ban from 'lucide-react/icons/ban';
 import Book from 'lucide-react/icons/book';
 import Bookmark from 'lucide-react/icons/bookmark';
 import Briefcase from 'lucide-react/icons/briefcase';
@@ -8,8 +9,11 @@ import Calendar from 'lucide-react/icons/calendar';
 import CalendarCheck from 'lucide-react/icons/calendar-check';
 import CalendarClock from 'lucide-react/icons/calendar-clock';
 import CalendarDays from 'lucide-react/icons/calendar-days';
+import CalendarMinus from 'lucide-react/icons/calendar-minus';
+import CalendarOff from 'lucide-react/icons/calendar-off';
 import Camera from 'lucide-react/icons/camera';
 import Car from 'lucide-react/icons/car';
+import Check from 'lucide-react/icons/check';
 import CheckSquare from 'lucide-react/icons/check-square';
 import Clock from 'lucide-react/icons/clock';
 import Code from 'lucide-react/icons/code';
@@ -42,6 +46,7 @@ import Phone from 'lucide-react/icons/phone';
 import Pill from 'lucide-react/icons/pill';
 import Plane from 'lucide-react/icons/plane';
 import Receipt from 'lucide-react/icons/receipt';
+import RotateCcw from 'lucide-react/icons/rotate-ccw';
 import ShoppingCart from 'lucide-react/icons/shopping-cart';
 import Sofa from 'lucide-react/icons/sofa';
 import Sparkles from 'lucide-react/icons/sparkles';
@@ -49,6 +54,7 @@ import Star from 'lucide-react/icons/star';
 import Sun from 'lucide-react/icons/sun';
 import Tag from 'lucide-react/icons/tag';
 import Target from 'lucide-react/icons/target';
+import Timer from 'lucide-react/icons/timer';
 import TreePine from 'lucide-react/icons/tree-pine';
 import TrendingUp from 'lucide-react/icons/trending-up';
 import Trophy from 'lucide-react/icons/trophy';
@@ -68,12 +74,18 @@ export const CALENDAR_ICONS: { name: string; icon: LucideIcon }[] = [
   { name: 'calendar-check', icon: CalendarCheck },
   { name: 'calendar-clock', icon: CalendarClock },
   { name: 'calendar-days', icon: CalendarDays },
+  { name: 'calendar-minus', icon: CalendarMinus },
+  { name: 'calendar-off', icon: CalendarOff },
+  { name: 'ban', icon: Ban },
+  { name: 'check', icon: Check },
   { name: 'check-square', icon: CheckSquare },
   { name: 'list-todo', icon: ListTodo },
   { name: 'clock', icon: Clock },
   { name: 'bookmark', icon: Bookmark },
   { name: 'tag', icon: Tag },
   { name: 'flag', icon: Flag },
+  { name: 'rotate-ccw', icon: RotateCcw },
+  { name: 'timer', icon: Timer },
   // work & Productivity
   { name: 'briefcase', icon: Briefcase },
   { name: 'target', icon: Target },

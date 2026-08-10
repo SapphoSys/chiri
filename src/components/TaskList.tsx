@@ -1,22 +1,32 @@
-import { closestCenter, DndContext, DragOverlay } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { closestCenter, DndContext, DragOverlay, type Modifier } from '@dnd-kit/core';
+import ArrowRight from 'lucide-react/icons/arrow-right';
 import ClipboardPlus from 'lucide-react/icons/clipboard-plus';
 import FunnelX from 'lucide-react/icons/funnel-x';
 import Plus from 'lucide-react/icons/plus';
 import SearchX from 'lucide-react/icons/search-x';
 import Trash2 from 'lucide-react/icons/trash-2';
-import type { ReactNode } from 'react';
-import { RecentlyDeletedNoticeBanner } from '$components/RecentlyDeletedNoticeBanner';
+import {
+  type KeyboardEvent,
+  type MouseEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { RecentlyDeletedNoticeBanner } from '$components/banners/RecentlyDeletedNoticeBanner';
+import { TaskGroupSection } from '$components/TaskGroupSection';
 import { TaskItem } from '$components/taskItem/TaskItem';
-import { DEFAULT_SORT_CONFIG } from '$constants';
+import { DEFAULT_SORT_CONFIG, DEFAULT_TASK_GROUP_CONFIG } from '$constants';
 import { useCreateTask } from '$hooks/queries/useTasks';
-import { useSetSelectedTask, useUIState } from '$hooks/queries/useUIState';
-import { useVisibleTasks } from '$hooks/queries/useVisibleTasks';
+import { useUIState } from '$hooks/queries/useUIState';
+import { useVisibleTaskGroups } from '$hooks/queries/useVisibleTasks';
 import { truncateName, useSortableDrag } from '$hooks/ui/useSortableDrag';
 import { useTaskListSelection } from '$hooks/ui/useTaskListSelection';
+import { getEffectiveTaskGroupConfig } from '$lib/task/grouping';
 import type { LucideIcon } from '$types/lucide';
 import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
-import { getSortableItemKey } from '$utils/sortable';
 
 const getEmptyState = (
   isRecentlyDeleted: boolean,
@@ -71,13 +81,63 @@ const getEmptyState = (
 
 export const TaskList = () => {
   const { data: uiState } = useUIState();
-  const flattenedTasks = useVisibleTasks();
+  const visibleTaskGroups = useVisibleTaskGroups();
+  const [collapsedGroupKeys, setCollapsedGroupKeys] = useState<ReadonlySet<string>>(new Set());
+  const initializedDefaultGroupKeys = useRef(new Set<string>());
+  useEffect(() => {
+    const defaults = visibleTaskGroups
+      .filter(
+        (group) => group.defaultCollapsed && !initializedDefaultGroupKeys.current.has(group.key),
+      )
+      .map((group) => group.key);
+    if (defaults.length === 0) return;
+
+    for (const key of defaults) initializedDefaultGroupKeys.current.add(key);
+    setCollapsedGroupKeys((keys) => new Set([...keys, ...defaults]));
+  }, [visibleTaskGroups]);
+  const displayedTaskGroups = useMemo(
+    () => visibleTaskGroups.filter((group) => !collapsedGroupKeys.has(group.key)),
+    [collapsedGroupKeys, visibleTaskGroups],
+  );
+  const flattenedTasks = useMemo(
+    () => displayedTaskGroups.flatMap((group) => group.tasks),
+    [displayedTaskGroups],
+  );
   const createTaskMutation = useCreateTask();
-  const setSelectedTaskMutation = useSetSelectedTask();
+  const createAndSelectTaskMutation = useCreateTask('created', { selectCreatedTask: true });
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const newTaskInputRef = useRef<HTMLInputElement>(null);
+  const hasNewTaskTitle = newTaskTitle.trim().length > 0;
 
   const sortConfig = uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
+  const taskGroupConfig = uiState?.taskGroupConfig ?? DEFAULT_TASK_GROUP_CONFIG;
+  const activeCalendarId = uiState?.activeCalendarId ?? null;
+  const effectiveTaskGroupConfig = getEffectiveTaskGroupConfig(taskGroupConfig, activeCalendarId);
   const searchQuery = uiState?.searchQuery ?? '';
   const activeView = uiState?.activeView ?? 'tasks';
+  const taskGroupKeys = useMemo(
+    () =>
+      new Map(
+        displayedTaskGroups.flatMap((group) => group.tasks.map((task) => [task.id, group.key])),
+      ),
+    [displayedTaskGroups],
+  );
+  const taskGroupDragBounds = useRef(new Map<string, HTMLDivElement>());
+  const setTaskGroupDragBounds = useCallback(
+    (groupKey: string) => (node: HTMLDivElement | null) => {
+      if (node) {
+        taskGroupDragBounds.current.set(groupKey, node);
+      } else {
+        taskGroupDragBounds.current.delete(groupKey);
+      }
+    },
+    [],
+  );
+  const getDragScope = useCallback(
+    (task: (typeof flattenedTasks)[number]) =>
+      effectiveTaskGroupConfig.mode === 'none' ? 'all' : (taskGroupKeys.get(task.id) ?? task.id),
+    [effectiveTaskGroupConfig.mode, taskGroupKeys],
+  );
 
   const {
     activeItem: activeTask,
@@ -90,7 +150,31 @@ export const TaskList = () => {
     handleDragMove,
     handleDragEnd,
     handleDragCancel,
-  } = useSortableDrag({ flattenedItems: flattenedTasks, minIndent: 0 });
+  } = useSortableDrag({ flattenedItems: flattenedTasks, minIndent: 0, getDragScope });
+
+  const restrictTaskDragToGroup = useCallback<Modifier>(
+    ({ draggingNodeRect, transform }) => {
+      const activeGroupKey = activeTask ? taskGroupKeys.get(activeTask.id) : undefined;
+      const bounds = activeGroupKey
+        ? taskGroupDragBounds.current.get(activeGroupKey)?.getBoundingClientRect()
+        : undefined;
+      if (!bounds || !draggingNodeRect) return transform;
+
+      return {
+        ...transform,
+        y: Math.min(
+          Math.max(transform.y, bounds.top - draggingNodeRect.top),
+          bounds.bottom - draggingNodeRect.bottom,
+        ),
+      };
+    },
+    [activeTask, taskGroupKeys],
+  );
+
+  const visibleTaskIds = useMemo(
+    () => new Set(visibleFlattenedTasks.map((task) => task.id)),
+    [visibleFlattenedTasks],
+  );
 
   const {
     clearSelection,
@@ -103,27 +187,43 @@ export const TaskList = () => {
 
   const handleQuickAdd = () => {
     clearSelection();
-    createTaskMutation.mutate(
-      { title: '' },
-      {
-        onSuccess: (task) => {
-          setSelectedTaskMutation.mutate({ id: task.id, focusTitle: true });
-        },
-      },
-    );
+    createAndSelectTaskMutation.mutate({ title: '' });
+  };
+
+  const handleCreateTaskFromInput = () => {
+    const title = newTaskTitle.trim();
+    if (!title) return;
+
+    clearSelection();
+    createTaskMutation.mutate({ title });
+    setNewTaskTitle('');
+  };
+
+  const handleTaskKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleCreateTaskFromInput();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      setNewTaskTitle('');
+    }
   };
 
   const metaKey = getMetaKeyLabel();
   const modifierJoiner = getModifierJoiner();
   const newTaskShortcut = `${metaKey}${modifierJoiner}N`;
 
-  // only enable dragging for manual sort mode
+  // Group order is derived from task properties; manual drag-reordering applies within each group.
   const isRecentlyDeleted = activeView === 'recently-deleted';
   const isFilterView = activeView === 'filter';
   const isDragEnabled = sortConfig.mode === 'manual' && !isRecentlyDeleted;
   const isDraggingTask = activeTask !== null;
 
-  if (flattenedTasks.length === 0) {
+  const visibleTaskCount = visibleTaskGroups.reduce(
+    (count, group) => count + group.tasks.length,
+    0,
+  );
+  if (visibleTaskCount === 0) {
     const isSearching = searchQuery.trim().length > 0;
     const { Icon, title, description, showCreateButton } = getEmptyState(
       isRecentlyDeleted,
@@ -162,33 +262,38 @@ export const TaskList = () => {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        modifiers={effectiveTaskGroupConfig.mode === 'none' ? undefined : [restrictTaskDragToGroup]}
         onDragStart={handleDragStart}
         onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <SortableContext
-          items={visibleFlattenedTasks.map((t) => t.id)}
-          strategy={verticalListSortingStrategy}
-          disabled={!isDragEnabled}
-        >
-          <div className={isRecentlyDeleted ? 'mt-4 space-y-1.5' : 'space-y-1.5'}>
-            {visibleFlattenedTasks.map((task) => (
-              <TaskItem
-                key={getSortableItemKey(task.id, task.parentUid)}
-                task={task}
-                depth={task.depth}
-                ancestorIds={task.ancestorIds}
-                isDragEnabled={isDragEnabled && !isSelectionMode}
-                isMultiSelected={selectedTaskIdSet.has(task.id)}
-                isSelectionMode={isSelectionMode}
-                onTaskClick={handleTaskClick}
-                onSelectionCheckboxClick={handleSelectionCheckboxClick}
-                onTaskContextMenu={handleTaskContextMenu}
-              />
-            ))}
-          </div>
-        </SortableContext>
+        <div className={isRecentlyDeleted ? 'mt-4 space-y-4' : 'space-y-4'}>
+          {visibleTaskGroups.map((group) => (
+            <TaskGroupSection
+              key={group.key}
+              group={group}
+              visibleTaskIds={visibleTaskIds}
+              dragBoundsRef={setTaskGroupDragBounds(group.key)}
+              showHeader={effectiveTaskGroupConfig.mode !== 'none'}
+              isCollapsed={collapsedGroupKeys.has(group.key)}
+              isDragEnabled={isDragEnabled}
+              isSelectionMode={isSelectionMode}
+              selectedTaskIdSet={selectedTaskIdSet}
+              onTaskClick={handleTaskClick}
+              onSelectionCheckboxClick={handleSelectionCheckboxClick}
+              onTaskContextMenu={handleTaskContextMenu}
+              onToggleCollapsed={() =>
+                setCollapsedGroupKeys((keys) => {
+                  const next = new Set(keys);
+                  if (next.has(group.key)) next.delete(group.key);
+                  else next.add(group.key);
+                  return next;
+                })
+              }
+            />
+          ))}
+        </div>
 
         <DragOverlay dropAnimation={null}>
           {activeTask ? (
@@ -215,14 +320,46 @@ export const TaskList = () => {
       </DndContext>
 
       {!isRecentlyDeleted && !isSelectionMode && !isDraggingTask && (
-        <button
-          type="button"
-          onClick={handleQuickAdd}
-          className="mt-4 flex w-full items-center gap-3 rounded-lg border border-surface-200 p-3 text-surface-500 outline-hidden transition-colors hover:border-surface-300 hover:bg-surface-100 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:text-surface-400 dark:hover:border-surface-500 dark:hover:bg-surface-700 dark:hover:text-surface-300"
+        // biome-ignore lint/a11y/noStaticElementInteractions: wrapper focuses the nested input when clicking its non-interactive area
+        <div
+          onMouseDown={(event: MouseEvent<HTMLDivElement>) => {
+            const target = event.target as HTMLElement;
+            if (target.closest('button') || target === newTaskInputRef.current) return;
+            event.preventDefault();
+            newTaskInputRef.current?.focus();
+          }}
+          className="mt-4 flex w-full cursor-text items-center gap-3 rounded-lg border border-surface-200 px-3 py-2.5 text-surface-500 outline-hidden transition-colors focus-within:bg-surface-50 dark:border-surface-700 dark:text-surface-400 dark:focus-within:bg-surface-800/50"
         >
-          <Plus className="h-5 w-5" />
-          <span>Add a task...</span>
-        </button>
+          <label
+            htmlFor="add-task-input"
+            className="flex min-w-0 flex-1 cursor-text items-center gap-3"
+          >
+            <Plus className="h-5 w-5" />
+            <input
+              ref={newTaskInputRef}
+              id="add-task-input"
+              type="text"
+              value={newTaskTitle}
+              onChange={(event) => setNewTaskTitle(event.target.value)}
+              onKeyDown={handleTaskKeyDown}
+              placeholder="Add a task..."
+              aria-label="Add a task"
+              className="min-w-0 flex-1 bg-transparent text-surface-700 outline-hidden placeholder:text-surface-500 dark:text-surface-300 dark:placeholder:text-surface-400"
+            />
+          </label>
+          {hasNewTaskTitle ? (
+            <button
+              type="button"
+              onClick={handleCreateTaskFromInput}
+              aria-label="Add task"
+              className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md text-surface-400 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-500 dark:hover:bg-surface-700 dark:hover:text-surface-300"
+            >
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          ) : (
+            <span className="h-6 w-6 shrink-0" aria-hidden="true" />
+          )}
+        </div>
       )}
     </div>
   );

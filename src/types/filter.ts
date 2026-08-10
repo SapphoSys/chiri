@@ -1,9 +1,13 @@
-import type { Priority, TaskStatus } from '$types';
+import type { TaskCreationDefaults } from '$types/task/creation';
+import type { Priority, Status } from '$types/task/model';
 
 type FilterCombinator = 'all' | 'any';
 
-export type DateFilterField = 'dueDate' | 'startDate' | 'createdAt' | 'modifiedAt' | 'completedAt';
+export type FilterPresetCategory = 'date' | 'status' | 'priority' | 'organization';
+
 type DateFilterOp = 'exists' | 'empty' | 'today' | 'tomorrow' | 'beforeToday' | 'withinDays';
+
+export type DateFilterField = 'dueDate' | 'startDate' | 'createdAt' | 'modifiedAt' | 'completedAt';
 
 export type FilterCriterion =
   | {
@@ -14,7 +18,7 @@ export type FilterCriterion =
   | {
       field: 'status';
       op: 'is' | 'isNot' | 'in' | 'notIn';
-      value: TaskStatus | TaskStatus[];
+      value: Status | Status[];
     }
   | {
       field: 'priority';
@@ -56,4 +60,6 @@ export type FilterPresetDefinition = Pick<
   'name' | 'icon' | 'combinator' | 'criteria' | 'sortOrder'
 > & {
   presetId: string;
+  category: FilterPresetCategory;
+  taskDefaults?: TaskCreationDefaults;
 };

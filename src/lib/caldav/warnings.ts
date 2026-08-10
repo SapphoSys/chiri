@@ -5,7 +5,7 @@ import {
   type UnsupportedCalDAVProvider,
 } from '$constants/warnings';
 import type { ConfirmOptions } from '$context/confirmDialogContext';
-import type { ServerType } from '$types';
+import type { ServerType } from '$types/account';
 
 export const isVikunjaServer = (calendarHome: string) => {
   return calendarHome.includes('/dav/projects');

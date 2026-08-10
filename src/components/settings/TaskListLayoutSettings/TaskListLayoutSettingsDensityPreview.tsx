@@ -1,0 +1,64 @@
+import ChevronRight from 'lucide-react/icons/chevron-right';
+import Clock from 'lucide-react/icons/clock';
+import Tag from 'lucide-react/icons/tag';
+import { TaskItemBadge } from '$components/taskItem/badges/TaskItemBadge';
+import type { TaskListDensity } from '$types/settings/categories/layout';
+
+interface TaskListLayoutSettingsDensityPreviewProps {
+  density: TaskListDensity;
+}
+
+const renderPreviewBadges = () => (
+  <>
+    <TaskItemBadge tone="due-today" className="shrink-0">
+      <Clock className="h-3 w-3" aria-hidden="true" />
+      Today
+    </TaskItemBadge>
+    <TaskItemBadge color="#3b82f6" className="shrink-0">
+      <Tag className="h-3 w-3" aria-hidden="true" />
+      Home
+    </TaskItemBadge>
+  </>
+);
+
+export const TaskListLayoutSettingsDensityPreview = ({
+  density,
+}: TaskListLayoutSettingsDensityPreviewProps) => {
+  const isCompact = density === 'compact';
+
+  return (
+    <div className="mt-4 rounded-lg bg-surface-50 p-3 dark:bg-surface-900/30" aria-hidden="true">
+      <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">Preview</p>
+      <div
+        className={`flex items-start gap-3 rounded-lg border border-surface-200 bg-white pr-3 pl-3 shadow-xs dark:border-surface-700 dark:bg-surface-800 ${
+          isCompact ? 'py-2' : 'py-3'
+        }`}
+      >
+        <span className="mt-0.5 flex h-5 w-5 shrink-0 rounded-sm border-2 border-surface-300 dark:border-surface-600" />
+
+        <div className="min-w-0 flex-1">
+          {isCompact ? (
+            <>
+              <div className="truncate font-medium text-sm text-surface-800 leading-5 dark:text-surface-200">
+                Plan weekend errands
+              </div>
+              <div className="mt-1 flex flex-wrap items-center gap-1">{renderPreviewBadges()}</div>
+            </>
+          ) : (
+            <>
+              <div className="truncate font-medium text-sm text-surface-800 leading-5 dark:text-surface-200">
+                Plan weekend errands
+              </div>
+              <div className="mt-1 truncate text-surface-500 text-xs dark:text-surface-400">
+                Groceries, pharmacy, and library pickup
+              </div>
+              <div className="mt-2 flex flex-wrap items-center gap-2">{renderPreviewBadges()}</div>
+            </>
+          )}
+        </div>
+
+        <ChevronRight className="h-5 w-5 shrink-0 text-surface-300 dark:text-surface-600" />
+      </div>
+    </div>
+  );
+};

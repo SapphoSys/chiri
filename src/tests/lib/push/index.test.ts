@@ -1,11 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Account, Calendar } from '$types';
-import {
-  NTFY_DIRECT_PROVIDER_ID,
-  type PushEndpointSubscription,
-  type PushProviderSubscriptionDiagnostics,
-  type PushSubscription,
-} from '$types/push';
+import type { Account } from '$types/account';
+import type { Calendar } from '$types/calendar';
+import type { PushProviderSubscriptionDiagnostics } from '$types/push/diagnostics';
+import { NTFY_DIRECT_PROVIDER_ID } from '$types/push/providers';
+import type { PushEndpointSubscription, PushSubscription } from '$types/push/webdav';
 
 const mocks = vi.hoisted(() => {
   let subscriptions: PushSubscription[] = [];

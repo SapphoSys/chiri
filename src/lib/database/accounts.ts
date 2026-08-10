@@ -1,8 +1,8 @@
 import type DatabasePlugin from '@tauri-apps/plugin-sql';
 import { rowToAccount, rowToCalendar } from '$lib/database/converters';
+import type { AccountRow, CalDAVConfigRow, CalendarRow } from '$lib/database/types';
 import { getUIState } from '$lib/database/ui';
-import type { Account } from '$types';
-import type { AccountRow, CalDAVConfigRow, CalendarRow } from '$types/database';
+import type { Account } from '$types/account';
 import { generateUUID } from '$utils/misc';
 
 export const getAllAccounts = async (conn: DatabasePlugin) => {

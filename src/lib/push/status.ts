@@ -1,5 +1,5 @@
-import type { Account } from '$types';
-import type { WebDAVPushAccountDiagnostics } from '$types/push';
+import type { Account } from '$types/account';
+import type { WebDAVPushAccountDiagnostics } from '$types/push/diagnostics';
 
 type WebDAVPushStatusTone = 'success' | 'warning' | 'muted' | 'info';
 type WebDAVPushStatusIconType = 'ready' | 'off' | 'warning' | 'checking' | 'alert';

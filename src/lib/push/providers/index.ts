@@ -30,18 +30,15 @@ import {
   stopAllNtfyProviderListeners,
   stopNtfyProviderListening,
 } from '$lib/push/providers/ntfy';
-import type { Calendar } from '$types';
+import type { Calendar } from '$types/calendar';
+import type { PushProviderSubscriptionDiagnostics } from '$types/push/diagnostics';
+import type { PushMessageHandler, PushProviderConfig, PushProviderId } from '$types/push/providers';
 import {
   KUNIFIED_PUSH_PROVIDER_ID,
   MOZILLA_AUTOPUSH_PROVIDER_ID,
   NTFY_DIRECT_PROVIDER_ID,
-  type PushEndpointSubscription,
-  type PushMessageHandler,
-  type PushProviderConfig,
-  type PushProviderId,
-  type PushProviderSubscriptionDiagnostics,
-  type PushSubscription,
-} from '$types/push';
+} from '$types/push/providers';
+import type { PushEndpointSubscription, PushSubscription } from '$types/push/webdav';
 
 export type PushProviderInvalidationHandler = (calendarId: string, reason: string) => void;
 

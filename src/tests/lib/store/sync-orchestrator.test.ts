@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { CalDAVTaskObject, TaskWithCalDAVObject } from '$types';
+import type { CalDAVTaskObject, TaskWithCalDAVObject } from '$lib/caldav/types';
 import { makeCalendar, makeTask } from '../../fixtures';
 
 /**
@@ -118,7 +118,7 @@ vi.mock('$context/settingsContext', () => ({
   settingsStore: { getState: vi.fn(() => ({})) },
 }));
 
-vi.mock('$hooks/ui/useToast', () => ({
+vi.mock('$lib/toastManager', () => ({
   toastManager: { success: vi.fn(), error: vi.fn(), warning: vi.fn(), info: vi.fn() },
 }));
 
@@ -473,6 +473,7 @@ describe('syncCalendarTasks orchestrator', () => {
 
     expect(mocks.localCreateTask).toHaveBeenCalledWith(
       expect.objectContaining({ uid: 'remote-only' }),
+      { source: 'remote' },
     );
   });
 

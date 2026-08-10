@@ -36,12 +36,16 @@ export const useNativeMenuCommands = ({
   const onOpenAbout = useLatestRef(commands.openAbout);
   const onOpenKeyboardShortcuts = useLatestRef(commands.openKeyboardShortcuts);
   const onToggleCompleted = useLatestRef(commands.toggleCompleted);
+  const onToggleCompletedToBottom = useLatestRef(commands.toggleCompletedToBottom);
   const onToggleUnstarted = useLatestRef(commands.toggleUnstarted);
   const onSyncRef = useLatestRef(onSync ?? null);
   const onAllTasks = useLatestRef(commands.allTasks);
+  const onRecentlyDeleted = useLatestRef(commands.recentlyDeleted);
   const onSetSortMode = useLatestRef(commands.setSortMode);
   const onSetSortDirection = useLatestRef(commands.setSortDirection);
   const onSelectFilter = useLatestRef(commands.selectFilter);
+  const onSelectCalendar = useLatestRef(commands.selectCalendar);
+  const onSelectTag = useLatestRef(commands.selectTag);
   const onToggleSidebar = useLatestRef(commands.toggleSidebar);
   const onSelectAllTasks = useLatestRef(commands.selectAll);
   const onNavPrevList = useLatestRef(commands.navPrevList);
@@ -66,12 +70,16 @@ export const useNativeMenuCommands = ({
       onOpenAbout,
       onOpenKeyboardShortcuts,
       onToggleCompleted,
+      onToggleCompletedToBottom,
       onToggleUnstarted,
       onSync: onSyncRef,
       onAllTasks,
+      onRecentlyDeleted,
       onSetSortMode,
       onSetSortDirection,
       onSelectFilter,
+      onSelectCalendar,
+      onSelectTag,
       onToggleSidebar,
       onSelectAllTasks,
       onNavPrevList,
@@ -95,12 +103,16 @@ export const useNativeMenuCommands = ({
       onOpenAbout,
       onOpenKeyboardShortcuts,
       onToggleCompleted,
+      onToggleCompletedToBottom,
       onToggleUnstarted,
       onSyncRef,
       onAllTasks,
+      onRecentlyDeleted,
       onSetSortMode,
       onSetSortDirection,
       onSelectFilter,
+      onSelectCalendar,
+      onSelectTag,
       onToggleSidebar,
       onSelectAllTasks,
       onNavPrevList,

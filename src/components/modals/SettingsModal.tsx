@@ -1,3 +1,5 @@
+import Activity from 'lucide-react/icons/activity';
+import Badge from 'lucide-react/icons/badge';
 import Bell from 'lucide-react/icons/bell';
 import CalendarClock from 'lucide-react/icons/calendar-clock';
 import ClipboardPlus from 'lucide-react/icons/clipboard-plus';
@@ -24,27 +26,30 @@ import { type ReactNode, useRef, useState } from 'react';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { AboutSettings } from '$components/settings/AboutSettings/AboutSettings';
 import { AppearanceSettings } from '$components/settings/AppearanceSettings';
+import { BadgesSettings } from '$components/settings/BadgesSettings/BadgesSettings';
 import { ConnectionsSettings } from '$components/settings/ConnectionSettings/ConnectionsSettings';
 import { DataSettings } from '$components/settings/DataSettings';
 import { EditorSettings } from '$components/settings/EditorSettings/EditorSettings';
 import { NavigationSettings } from '$components/settings/NavigationSettings/NavigationSettings';
 import { NetworkSettings } from '$components/settings/NetworkSettings';
-import { NotificationSettings } from '$components/settings/NotificationSettings';
+import { NotificationSettings } from '$components/settings/NotificationSettings/NotificationSettings';
 import { PushSettings } from '$components/settings/PushSettings/PushSettings';
 import { RegionAndTimeSettings } from '$components/settings/RegionAndTimeSettings';
 import { SafetySettings } from '$components/settings/SafetySettings';
 import { SchedulingSettings } from '$components/settings/SchedulingSettings';
 import { ShortcutsSettings } from '$components/settings/ShortcutsSettings/ShortcutsSettings';
+import { StatusProgressSettings } from '$components/settings/StatusProgressSettings';
 import { SyncSettings } from '$components/settings/SyncSettings';
 import { SystemSettings } from '$components/settings/SystemSettings';
 import { TaskDefaultsSettings } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettings';
 import { TaskListLayoutSettings } from '$components/settings/TaskListLayoutSettings/TaskListLayoutSettings';
 import { UpdateSettings } from '$components/settings/UpdateSettings';
 import { useAccounts } from '$hooks/queries/useAccounts';
-import type { SettingsCategory, SettingsSubtab } from '$types/settings';
+import type { SettingsCategory, SettingsSubtab } from '$types/settings/categories/navigation';
 
 interface SettingsModalProps {
   onClose: () => void;
+  onRunOnboarding: () => void;
   onAddAccount: () => void;
   onEditAccount: (accountId: string) => void;
   initialCategory?: SettingsCategory;
@@ -59,6 +64,7 @@ type SettingsSubtabInfo = {
 
 export const SettingsModal = ({
   onClose,
+  onRunOnboarding,
   onAddAccount,
   onEditAccount,
   initialCategory,
@@ -113,11 +119,17 @@ export const SettingsModal = ({
       label: 'Tasks',
       icon: <ListTodo className="h-4 w-4" />,
       subtabs: [
+        { id: 'badges', label: 'Badges', icon: <Badge className="h-4 w-4" /> },
         { id: 'defaults', label: 'Defaults', icon: <ClipboardPlus className="h-4 w-4" /> },
         { id: 'editor', label: 'Editor', icon: <SquarePen className="h-4 w-4" /> },
         { id: 'list-layout', label: 'List & layout', icon: <LayoutList className="h-4 w-4" /> },
-        { id: 'scheduling', label: 'Scheduling', icon: <CalendarClock className="h-4 w-4" /> },
         { id: 'safety', label: 'Safety', icon: <Shield className="h-4 w-4" /> },
+        { id: 'scheduling', label: 'Scheduling', icon: <CalendarClock className="h-4 w-4" /> },
+        {
+          id: 'status-and-progress',
+          label: 'Status & progress',
+          icon: <Activity className="h-4 w-4" />,
+        },
       ],
     },
     {
@@ -136,8 +148,8 @@ export const SettingsModal = ({
       label: 'Help',
       icon: <HelpCircle className="h-4 w-4" />,
       subtabs: [
-        { id: 'about', label: 'About', icon: <Info className="h-4 w-4" /> },
         { id: 'updates', label: 'Updates', icon: <Download className="h-4 w-4" /> },
+        { id: 'about', label: 'About', icon: <Info className="h-4 w-4" /> },
       ],
     },
   ];
@@ -156,11 +168,11 @@ export const SettingsModal = ({
       onClose={isChildModalOpen ? () => {} : onClose}
       title="Settings"
       zIndex="z-60"
-      className="max-h-[75vh] max-w-208"
+      className="max-h-[75vh] max-w-208 [@media(max-height:900px)]:max-h-[calc(100vh-2rem)]"
       contentPadding={false}
     >
-      <div className="flex h-[calc(85vh-12rem)] max-h-[75vh] overflow-hidden">
-        <div className="w-56 space-y-4 overflow-y-auto overscroll-contain rounded-l-xl border-surface-200 border-r bg-white p-3 pr-5 dark:border-surface-700 dark:bg-surface-800">
+      <div className="flex h-[calc(85vh-12rem)] max-h-[75vh] overflow-hidden [@media(max-height:900px)]:h-[calc(100vh-10rem)] [@media(max-height:900px)]:max-h-[calc(100vh-10rem)]">
+        <div className="w-56 space-y-4 overflow-y-auto overscroll-contain rounded-l-xl border-surface-200 border-r bg-white p-3 dark:border-surface-700 dark:bg-surface-800">
           {categories.map((category) => (
             <div key={category.id} className="space-y-2">
               <p className="px-2 font-semibold text-surface-500 text-xs uppercase tracking-wide dark:text-surface-400">
@@ -205,10 +217,14 @@ export const SettingsModal = ({
 
         <div ref={contentRef} className="flex-1 overflow-y-auto overscroll-contain p-6">
           {activeCategory === 'tasks' && currentSubtab === 'defaults' && <TaskDefaultsSettings />}
+          {activeCategory === 'tasks' && currentSubtab === 'status-and-progress' && (
+            <StatusProgressSettings />
+          )}
           {activeCategory === 'tasks' && currentSubtab === 'scheduling' && <SchedulingSettings />}
           {activeCategory === 'tasks' && currentSubtab === 'list-layout' && (
             <TaskListLayoutSettings />
           )}
+          {activeCategory === 'tasks' && currentSubtab === 'badges' && <BadgesSettings />}
           {activeCategory === 'tasks' && currentSubtab === 'editor' && <EditorSettings />}
           {activeCategory === 'tasks' && currentSubtab === 'safety' && <SafetySettings />}
 
@@ -222,7 +238,9 @@ export const SettingsModal = ({
               {currentSubtab === 'notifications' && <NotificationSettings />}
               {currentSubtab === 'region-and-time' && <RegionAndTimeSettings />}
               {currentSubtab === 'startup-window' && <SystemSettings />}
-              {currentSubtab === 'data-diagnostics' && <DataSettings onClose={onClose} />}
+              {currentSubtab === 'data-diagnostics' && (
+                <DataSettings onClose={onClose} onRunOnboarding={onRunOnboarding} />
+              )}
             </>
           )}
 

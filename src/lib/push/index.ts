@@ -20,19 +20,21 @@ import {
   stopAllPushProviderListeners,
 } from '$lib/push/providers';
 import { queryClient, queryKeys } from '$lib/queryClient';
-import type { Account, Calendar } from '$types';
+import type { Account } from '$types/account';
+import type { Calendar } from '$types/calendar';
+import type { WebDAVPushAccountDiagnostics } from '$types/push/diagnostics';
+import type { PushMessageHandler, PushProviderConfig } from '$types/push/providers';
 import {
   KUNIFIED_PUSH_PROVIDER_ID,
   MOZILLA_AUTOPUSH_PROVIDER_ID,
   NTFY_DIRECT_PROVIDER_ID,
-  type PushEndpointSubscription,
-  type PushMessageHandler,
-  type PushProviderConfig,
-  type PushRegistration,
-  type PushSubscription,
-  type PushTrigger,
-  type WebDAVPushAccountDiagnostics,
-} from '$types/push';
+} from '$types/push/providers';
+import type {
+  PushEndpointSubscription,
+  PushRegistration,
+  PushSubscription,
+  PushTrigger,
+} from '$types/push/webdav';
 import { generateUUID } from '$utils/misc';
 
 const DEFAULT_PUSH_PROVIDER_CONFIG: PushProviderConfig = {

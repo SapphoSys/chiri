@@ -16,9 +16,10 @@ import { exportSettingsToFile, importSettingsFromFile } from '$utils/settings';
 
 interface DataSettingsProps {
   onClose: () => void;
+  onRunOnboarding: () => void;
 }
 
-export const DataSettings = ({ onClose }: DataSettingsProps) => {
+export const DataSettings = ({ onClose, onRunOnboarding }: DataSettingsProps) => {
   const { exportSettings, importSettings, resetSettings } = useSettingsStore();
   const { confirm, close } = useConfirmDialog();
   const { deleteLocalDatabase } = useDatabaseDeletion();
@@ -247,6 +248,25 @@ export const DataSettings = ({ onClose }: DataSettingsProps) => {
       <h4 className="font-semibold text-sm text-surface-700 dark:text-surface-300">Reset</h4>
 
       <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <div className="flex items-center justify-between gap-4 p-4">
+          <div>
+            <p className="text-sm text-surface-700 dark:text-surface-300">Run setup guide again</p>
+            <p className="text-surface-500 text-xs dark:text-surface-400">
+              Revisit onboarding choices without changing your tasks or accounts
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onRunOnboarding}
+            className="flex shrink-0 items-center gap-1.5 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            Run again
+          </button>
+        </div>
+
+        <div className="border-surface-200 border-t dark:border-surface-700" />
+
         <div className="flex items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Reset preferences</p>
@@ -276,7 +296,7 @@ export const DataSettings = ({ onClose }: DataSettingsProps) => {
           <button
             type="button"
             onClick={handleResetDatabase}
-            className="flex shrink-0 items-center gap-1.5 rounded-lg bg-semantic-error px-3 py-1.5 text-primary-contrast text-sm outline-hidden transition-colors hover:opacity-90 focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
+            className="flex shrink-0 items-center gap-1.5 rounded-lg bg-semantic-error px-3 py-1.5 text-sm text-white outline-hidden transition-colors hover:opacity-90 focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset dark:text-primary-contrast"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             Reset

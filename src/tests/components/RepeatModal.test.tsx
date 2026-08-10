@@ -7,7 +7,11 @@ import { RepeatModal } from '$components/modals/RepeatModal/RepeatModal';
   true;
 
 vi.mock('$context/settingsContext', () => ({
-  useSettingsStore: () => ({ dateFormat: 'MMM d, yyyy', startOfWeek: 'monday' }),
+  useSettingsStore: () => ({
+    dateFormat: 'MMM d, yyyy',
+    startOfWeek: 'monday',
+    workingDays: ['mo', 'tu', 'we', 'th', 'fr', 'su'],
+  }),
   settingsStore: { getState: () => ({ dateFormat: 'MMM d, yyyy' }) },
 }));
 
@@ -102,9 +106,74 @@ describe('RepeatModal', () => {
       weekdaySelect.value = 'MO';
       weekdaySelect.dispatchEvent(new Event('change', { bubbles: true }));
     });
-    await act(async () => button('Done')?.click());
+    await act(async () => button('Add')?.click());
 
     expect(onSave).toHaveBeenCalledWith('FREQ=MONTHLY;BYDAY=3MO', 0);
+  });
+
+  it('promotes daily and weekly presets to custom when their interval changes', async () => {
+    const button = (label: string) =>
+      Array.from(container.querySelectorAll('button')).find(
+        (candidate) => candidate.textContent?.trim() === label,
+      );
+
+    await act(async () => {
+      root.render(
+        <RepeatModal isOpen onClose={vi.fn()} rrule={undefined} repeatFrom={0} onSave={vi.fn()} />,
+      );
+    });
+
+    const interval = () => container.querySelector<HTMLInputElement>('input[type="text"]');
+    await act(async () => button('Daily')?.click());
+    expect(button('Daily')?.getAttribute('aria-pressed')).toBe('true');
+    await act(async () => {
+      const input = interval();
+      if (!input) throw new Error('interval input not found');
+      const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+      input.focus();
+      setValue?.call(input, '2');
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      input.blur();
+    });
+    expect(button('Custom…')?.getAttribute('aria-pressed')).toBe('true');
+
+    await act(async () => button('Weekly')?.click());
+    expect(button('Weekly')?.getAttribute('aria-pressed')).toBe('true');
+    await act(async () => {
+      const input = interval();
+      if (!input) throw new Error('interval input not found');
+      const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+      input.focus();
+      setValue?.call(input, '2');
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      input.blur();
+    });
+    expect(button('Custom…')?.getAttribute('aria-pressed')).toBe('true');
+    expect(container.querySelector('select')?.value).toBe('WEEKLY');
+  });
+
+  it('keeps configured weekdays selected when reopening their preview', async () => {
+    await act(async () => {
+      root.render(
+        <RepeatModal
+          isOpen
+          onClose={vi.fn()}
+          rrule="FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SU"
+          repeatFrom={0}
+          onSave={vi.fn()}
+        />,
+      );
+    });
+
+    const button = (label: string) =>
+      Array.from(container.querySelectorAll('button')).find(
+        (candidate) => candidate.textContent?.trim() === label,
+      );
+
+    expect(button('Weekdays')?.getAttribute('aria-pressed')).toBe('true');
+    expect(button('Weekly')?.getAttribute('aria-pressed')).toBe('false');
   });
 
   it('preserves imported options unchanged and blocks unsafe visual edits', async () => {
@@ -123,17 +192,16 @@ describe('RepeatModal', () => {
     });
 
     expect(container.textContent).toContain('BYSETPOS');
-    const done = Array.from(container.querySelectorAll('button')).find(
-      (button) => button.textContent?.trim() === 'Done',
+    const edit = Array.from(container.querySelectorAll('button')).find(
+      (button) => button.textContent?.trim() === 'Edit',
     );
-    await act(async () => done?.click());
-    expect(onSave).toHaveBeenCalledWith(importedRule, 0);
+    expect(edit?.hasAttribute('disabled')).toBe(true);
 
     const daily = Array.from(container.querySelectorAll('button')).find(
       (button) => button.textContent?.trim() === 'Daily',
     );
     await act(async () => daily?.click());
-    expect(done?.hasAttribute('disabled')).toBe(true);
+    expect(edit?.hasAttribute('disabled')).toBe(true);
     expect(container.querySelector('[role="alert"]')?.textContent).toContain(
       'cannot be safely changed',
     );
@@ -160,7 +228,7 @@ describe('RepeatModal', () => {
       );
     await act(async () => button('After')?.click());
 
-    const done = button('Done');
+    const done = button('Edit');
     expect(done?.hasAttribute('disabled')).toBe(false);
     await act(async () => done?.click());
     expect(onSave).toHaveBeenCalledWith(`${importedRule};COUNT=5`, 0);

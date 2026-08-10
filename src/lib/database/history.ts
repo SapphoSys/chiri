@@ -1,6 +1,7 @@
 import type DatabasePlugin from '@tauri-apps/plugin-sql';
-import type { Task } from '$types';
-import type { TaskHistoryEntry, TaskHistoryRow } from '$types/database';
+import type { TaskHistoryRow } from '$lib/database/types';
+import type { TaskHistoryEntry } from '$types/task/history';
+import type { Task } from '$types/task/model';
 import { generateUUID } from '$utils/misc';
 
 const HISTORY_FIELDS = [

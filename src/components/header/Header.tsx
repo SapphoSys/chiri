@@ -1,34 +1,33 @@
 import { formatDistanceToNow } from 'date-fns';
 
-import ChevronRight from 'lucide-react/icons/chevron-right';
 import Plus from 'lucide-react/icons/plus';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
 import Search from 'lucide-react/icons/search';
-import SlidersHorizontal from 'lucide-react/icons/sliders-horizontal';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ComposedInput } from '$components/ComposedInput';
-import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
-import { HoverFlyout, HoverFlyoutGroup } from '$components/HoverFlyout';
-import { SortDirectionButton } from '$components/header/SortDirectionButton';
-import { SortOptionButton } from '$components/header/SortOptionsButton';
-import { ViewMenuCheckbox } from '$components/header/ViewMenuCheckbox';
-import { TaskBatchActionsBar } from '$components/TaskBatchActionsBar';
+import { HeaderViewMenu } from '$components/header/HeaderViewMenu';
+import { TaskBatchActionsBar } from '$components/header/TaskBatchActionsBar/TaskBatchActionsBar';
 import { Tooltip } from '$components/Tooltip';
-import { DEFAULT_SORT_CONFIG, JUST_NOW_SYNC_TEXT_MS_THRESHOLD, SORT_OPTIONS } from '$constants';
+import {
+  DEFAULT_SORT_CONFIG,
+  DEFAULT_TASK_GROUP_CONFIG,
+  JUST_NOW_SYNC_TEXT_MS_THRESHOLD,
+} from '$constants';
 import { useModalState } from '$context/modalStateContext';
 import { useTaskSelection } from '$context/taskSelectionContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useCreateTask } from '$hooks/queries/useTasks';
 import {
+  useSetMoveCompletedTasksToBottom,
   useSetSearchQuery,
-  useSetSelectedTask,
   useSetShowCompletedTasks,
   useSetShowUnstartedTasks,
   useSetSortConfig,
+  useSetTaskGroupConfig,
   useUIState,
 } from '$hooks/queries/useUIState';
 import { useVisibleTasks } from '$hooks/queries/useVisibleTasks';
-import type { SortDirection, SortMode } from '$types/sort';
+import type { SortDirection, SortMode, TaskGroupMode } from '$types/sort';
 import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
 import { pluralize } from '$utils/misc';
 
@@ -47,6 +46,7 @@ const SYNC_SOURCE_LABELS: Record<string, string> = {
 // extracted helper: get sync button tooltip content
 const getSyncTooltip = (
   disableSync: boolean,
+  isConnectionTesting: boolean,
   isOffline: boolean,
   isSyncing: boolean,
   lastSyncTime: Date | null | undefined,
@@ -57,6 +57,7 @@ const getSyncTooltip = (
   lastSyncSource: string | null,
   accountCount: number,
 ) => {
+  if (isConnectionTesting) return 'Connection test in progress...';
   if (disableSync) return 'Add an account to be able to use sync';
   if (isOffline) return 'Cannot sync while offline';
   if (isSyncing) {
@@ -85,7 +86,7 @@ const getSyncButtonClass = (
   const base =
     'w-9 h-9 rounded-lg border text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset flex items-center justify-center';
   if (isSyncing) {
-    return `${base} text-primary-500 bg-surface-100 dark:bg-surface-800 border-surface-200 dark:border-surface-600 cursor-not-allowed`;
+    return `${base} text-primary-500 border-transparent cursor-not-allowed`;
   }
   if (isOffline || disableSync) {
     return `${base} text-surface-300 dark:text-surface-600 border-transparent cursor-not-allowed`;
@@ -103,6 +104,7 @@ interface HeaderProps {
   lastSyncSource?: string | null;
   onSync?: () => void;
   disableSync?: boolean;
+  isConnectionTesting?: boolean;
 }
 
 export const Header = ({
@@ -115,29 +117,32 @@ export const Header = ({
   lastSyncSource = null,
   onSync,
   disableSync = false,
+  isConnectionTesting = false,
 }: HeaderProps) => {
   const { data: uiState } = useUIState();
   const { data: accounts = [] } = useAccounts();
   const setSearchQueryMutation = useSetSearchQuery();
   const setSortConfigMutation = useSetSortConfig();
+  const setTaskGroupConfigMutation = useSetTaskGroupConfig();
   const setShowCompletedTasksMutation = useSetShowCompletedTasks();
+  const setMoveCompletedTasksToBottomMutation = useSetMoveCompletedTasksToBottom();
   const setShowUnstartedTasksMutation = useSetShowUnstartedTasks();
-  const createTaskMutation = useCreateTask();
-  const setSelectedTaskMutation = useSetSelectedTask();
+  const createTaskMutation = useCreateTask('created', { selectCreatedTask: true });
   const visibleTasks = useVisibleTasks();
   const { selectedTaskIdSet, clearSelection } = useTaskSelection();
 
   const searchQuery = uiState?.searchQuery ?? '';
   const sortConfig = uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
+  const taskGroupConfig = uiState?.taskGroupConfig ?? DEFAULT_TASK_GROUP_CONFIG;
+  const activeCalendarId = uiState?.activeCalendarId ?? null;
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
+  const moveCompletedTasksToBottom = uiState?.moveCompletedTasksToBottom ?? false;
   const showUnstartedTasks = uiState?.showUnstartedTasks ?? true;
   const activeView = uiState?.activeView ?? 'tasks';
 
   const { isAnyModalOpen } = useModalState();
-  const [showViewMenu, setShowViewMenu] = useState(false);
   const [showJustNow, setShowJustNow] = useState(false);
   const justSyncedRef = useRef(false);
-  const viewMenuButtonRef = useRef<HTMLButtonElement>(null);
   const lastNonManualDirectionRef = useRef<SortDirection>(sortConfig.direction);
   const metaKey = getMetaKeyLabel();
   const modifierJoiner = getModifierJoiner();
@@ -153,12 +158,6 @@ export const Header = ({
     () => visibleTasks.filter((task) => selectedTaskIdSet.has(task.id)),
     [selectedTaskIdSet, visibleTasks],
   );
-
-  useEffect(() => {
-    if (selectedTasks.length > 0) {
-      setShowViewMenu(false);
-    }
-  }, [selectedTasks.length]);
 
   // track when sync completes and show "just now" for 3 seconds
   useEffect(() => {
@@ -177,15 +176,20 @@ export const Header = ({
   }, [isSyncing]);
 
   const handleNewTask = () => {
-    createTaskMutation.mutate(
-      { title: '' },
-      {
-        onSuccess: (task) => {
-          setSelectedTaskMutation.mutate({ id: task.id, focusTitle: true });
-        },
-      },
-    );
+    createTaskMutation.mutate({ title: '' });
   };
+
+  const newTaskButton = (
+    <button
+      type="button"
+      onClick={handleNewTask}
+      disabled={activeView === 'recently-deleted'}
+      className={`ml-2 flex items-center gap-2 rounded-lg border border-transparent bg-primary-500 px-4 py-1.5 font-medium text-primary-contrast text-sm transition-colors ${!isAnyModalOpen ? 'hover:bg-primary-600' : ''} shadow-xs outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50`}
+    >
+      <Plus className="h-4 w-4" />
+      New Task
+    </button>
+  );
 
   const toggleSortDirection = () => {
     const newDirection = sortConfig.direction === 'asc' ? 'desc' : 'asc';
@@ -224,10 +228,21 @@ export const Header = ({
     });
   };
 
+  const handleTaskGroupChange = (mode: TaskGroupMode) => {
+    setTaskGroupConfigMutation.mutate({ ...taskGroupConfig, mode });
+  };
+
+  const toggleTaskGroupDirection = () => {
+    setTaskGroupConfigMutation.mutate({
+      ...taskGroupConfig,
+      direction: taskGroupConfig.direction === 'asc' ? 'desc' : 'asc',
+    });
+  };
+
   if (selectedTasks.length > 0) {
     return (
       <header
-        className={`app-main-header flex h-13 items-center bg-white px-4 dark:bg-surface-900 ${className}`}
+        className={`app-main-header flex h-13 items-center bg-white pr-4.25 pl-4 dark:bg-surface-900 ${className}`}
       >
         <TaskBatchActionsBar
           data-drag-region-pass-through
@@ -241,7 +256,7 @@ export const Header = ({
 
   return (
     <header
-      className={`app-main-header flex h-13 items-center bg-white px-4 dark:bg-surface-900 ${className}`}
+      className={`app-main-header flex h-13 items-center bg-white pr-4.25 pl-4 dark:bg-surface-900 ${className}`}
     >
       <div data-drag-region-pass-through className="flex flex-1 items-center justify-between gap-4">
         <div data-drag-region-pass-through className="relative max-w-lg flex-1">
@@ -261,6 +276,7 @@ export const Header = ({
             <Tooltip
               content={getSyncTooltip(
                 disableSync,
+                isConnectionTesting,
                 isOffline,
                 isSyncing,
                 lastSyncTime,
@@ -276,8 +292,13 @@ export const Header = ({
               <button
                 type="button"
                 onClick={onSync}
-                disabled={isSyncing || isOffline || disableSync}
-                className={getSyncButtonClass(isSyncing, isOffline, disableSync, isAnyModalOpen)}
+                disabled={isSyncing || isOffline || disableSync || isConnectionTesting}
+                className={getSyncButtonClass(
+                  isSyncing,
+                  isOffline,
+                  disableSync || isConnectionTesting,
+                  isAnyModalOpen,
+                )}
               >
                 <RefreshCw
                   className={`h-5 w-5 shrink-0 ${isSyncing ? 'motion-safe:animate-spin' : ''}`}
@@ -286,133 +307,39 @@ export const Header = ({
             </Tooltip>
           )}
 
-          <div className="relative">
-            <Tooltip content="View options" position="bottom">
-              <button
-                ref={viewMenuButtonRef}
-                type="button"
-                onClick={() => setShowViewMenu(!showViewMenu)}
-                className={`flex items-center gap-1.5 rounded-lg border border-transparent px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
-                  showViewMenu
-                    ? 'bg-surface-200 text-surface-700 dark:bg-surface-600 dark:text-surface-200'
-                    : `text-surface-600 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-100 dark:hover:bg-surface-700' : ''}`
-                }`}
-              >
-                <SlidersHorizontal className="h-4 w-4" />
-                <span>View</span>
-              </button>
+          <HeaderViewMenu
+            isAnyModalOpen={isAnyModalOpen}
+            sortConfig={sortConfig}
+            taskGroupConfig={taskGroupConfig}
+            activeCalendarId={activeCalendarId}
+            showCompletedTasks={showCompletedTasks}
+            showUnstartedTasks={showUnstartedTasks}
+            moveCompletedTasksToBottom={moveCompletedTasksToBottom}
+            onShowCompletedTasksChange={() =>
+              setShowCompletedTasksMutation.mutate(!showCompletedTasks)
+            }
+            onShowUnstartedTasksChange={() =>
+              setShowUnstartedTasksMutation.mutate(!showUnstartedTasks)
+            }
+            onMoveCompletedTasksToBottomChange={() =>
+              setMoveCompletedTasksToBottomMutation.mutate(!moveCompletedTasksToBottom)
+            }
+            onSortDirectionToggle={toggleSortDirection}
+            onSortChange={handleSortChange}
+            onTaskGroupDirectionToggle={toggleTaskGroupDirection}
+            onTaskGroupChange={handleTaskGroupChange}
+          />
+
+          {activeView === 'recently-deleted' ? (
+            <Tooltip
+              content="Creating new tasks in Recently Deleted is not allowed"
+              position="bottom"
+            >
+              {newTaskButton}
             </Tooltip>
-
-            {showViewMenu && (
-              <FloatingDropdownFrame
-                anchorRef={viewMenuButtonRef}
-                onClose={() => setShowViewMenu(false)}
-                dropdownClassName="z-50 min-w-60"
-                dataAttribute="data-context-menu-content"
-              >
-                <div className="border-surface-200 border-b px-3 py-2 dark:border-surface-700">
-                  <ViewMenuCheckbox
-                    label="Show completed"
-                    checked={showCompletedTasks}
-                    onClick={() => setShowCompletedTasksMutation.mutate(!showCompletedTasks)}
-                  />
-                  <ViewMenuCheckbox
-                    label="Show unstarted"
-                    checked={showUnstartedTasks}
-                    onClick={() => setShowUnstartedTasksMutation.mutate(!showUnstartedTasks)}
-                  />
-                </div>
-
-                <div className="space-y-1 px-1 py-2">
-                  <div className="px-3 pt-1 pb-1 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
-                    Tasks
-                  </div>
-
-                  {sortConfig.mode === 'manual' ? (
-                    <Tooltip
-                      content="Not available for manual sorting"
-                      position="left"
-                      className="whitespace-nowrap"
-                      triggerClassName="w-full"
-                      allowInModal
-                    >
-                      <div className="flex w-full cursor-not-allowed items-center justify-between gap-3 rounded-md px-3 py-1.5 text-sm text-surface-400 dark:text-surface-600">
-                        <span>Sort Direction</span>
-                        <span className="text-xs">Disabled</span>
-                      </div>
-                    </Tooltip>
-                  ) : (
-                    <HoverFlyoutGroup>
-                      <button
-                        type="button"
-                        className="flex w-full items-center justify-between gap-3 rounded-md px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
-                      >
-                        <span>Sort Direction</span>
-                        <div className="flex min-w-0 items-center gap-2">
-                          <span className="truncate text-surface-500 text-xs dark:text-surface-400">
-                            {sortConfig.direction === 'asc' ? 'Ascending' : 'Descending'}
-                          </span>
-                          <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
-                        </div>
-                      </button>
-
-                      <HoverFlyout side="left" minWidthClassName="min-w-52">
-                        <div className="px-3 pt-1 pb-2 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
-                          Sort Direction
-                        </div>
-                        <div className="px-1">
-                          <SortDirectionButton
-                            sortConfig={sortConfig}
-                            onToggle={toggleSortDirection}
-                          />
-                        </div>
-                      </HoverFlyout>
-                    </HoverFlyoutGroup>
-                  )}
-
-                  <HoverFlyoutGroup>
-                    <button
-                      type="button"
-                      className="flex w-full items-center justify-between gap-3 rounded-md px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
-                    >
-                      <span>Sort By</span>
-                      <div className="flex min-w-0 items-center gap-2">
-                        <span className="truncate text-surface-500 text-xs dark:text-surface-400">
-                          {SORT_OPTIONS.find((option) => option.value === sortConfig.mode)?.label}
-                        </span>
-                        <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
-                      </div>
-                    </button>
-
-                    <HoverFlyout side="left" minWidthClassName="min-w-52">
-                      <div className="px-3 pt-1 pb-2 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
-                        Sort By
-                      </div>
-                      <div className="space-y-1 px-1">
-                        {SORT_OPTIONS.map((option) => (
-                          <SortOptionButton
-                            key={option.value}
-                            option={option}
-                            isActive={sortConfig.mode === option.value}
-                            onClick={() => handleSortChange(option.value)}
-                          />
-                        ))}
-                      </div>
-                    </HoverFlyout>
-                  </HoverFlyoutGroup>
-                </div>
-              </FloatingDropdownFrame>
-            )}
-          </div>
-
-          <button
-            type="button"
-            onClick={handleNewTask}
-            className={`ml-2 flex items-center gap-2 rounded-lg border border-transparent bg-primary-500 px-4 py-1.5 font-medium text-primary-contrast text-sm transition-colors ${!isAnyModalOpen ? 'hover:bg-primary-600' : ''} shadow-xs outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
-          >
-            <Plus className="h-4 w-4" />
-            New Task
-          </button>
+          ) : (
+            newTaskButton
+          )}
         </div>
       </div>
     </header>

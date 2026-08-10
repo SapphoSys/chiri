@@ -24,6 +24,7 @@ export interface ColorSchemeAccent {
 
 interface ColorSchemeSemanticColors {
   info: string;
+  dueToday: string;
   warning: string;
   success: string;
   error: string;

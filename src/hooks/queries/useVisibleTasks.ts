@@ -1,32 +1,45 @@
 import { useMemo } from 'react';
-import { DEFAULT_SORT_CONFIG } from '$constants';
+import { DEFAULT_SORT_CONFIG, DEFAULT_TASK_GROUP_CONFIG } from '$constants';
 import { useFilteredTasks } from '$hooks/queries/useTasks';
 import { useUIState } from '$hooks/queries/useUIState';
-import { getSortedTasks } from '$lib/store/filters';
+import { dataStore } from '$lib/store';
 import { getChildTasks } from '$lib/store/tasks';
-import type { Task } from '$types';
-import type { SortConfig } from '$types/sort';
-import type { UIState } from '$types/store';
+import { getEffectiveTaskGroupConfig, groupTasks, type TaskGroup } from '$lib/task/grouping';
+import { sortTasks } from '$lib/task/sorting';
+import type { SortConfig, TaskGroupConfig } from '$types/sort';
+import type { UIState } from '$types/store/state';
+import type { FlattenedTask } from '$types/store/tasks';
+import type { Task } from '$types/task/model';
 import { flattenTasks } from '$utils/sortable';
 
 interface VisibleTasksOptions {
   activeView: UIState['activeView'];
   filteredTasks: Task[];
   showCompletedTasks: boolean;
+  moveCompletedTasksToBottom: boolean;
   sortConfig: SortConfig;
+  taskGroupConfig?: TaskGroupConfig;
+  activeCalendarId?: string | null;
+  calendarNames?: ReadonlyMap<string, string>;
 }
 
-export const getVisibleTasks = ({
+export type VisibleTaskGroup = TaskGroup<FlattenedTask>;
+
+export const getVisibleTaskGroups = ({
   activeView,
   filteredTasks,
   showCompletedTasks,
+  moveCompletedTasksToBottom,
   sortConfig,
+  taskGroupConfig = DEFAULT_TASK_GROUP_CONFIG,
+  activeCalendarId,
+  calendarNames,
 }: VisibleTasksOptions) => {
   const visibleTaskUids = new Set(filteredTasks.map((task) => task.uid));
   const topLevelTasks = filteredTasks.filter(
     (task) => !task.parentUid || !visibleTaskUids.has(task.parentUid),
   );
-  const sortedTopLevel = getSortedTasks(topLevelTasks, sortConfig);
+  const sortedTopLevel = sortTasks(topLevelTasks, sortConfig, moveCompletedTasksToBottom);
 
   const getFilteredChildTasks = (parentUid: string) => {
     const children = getChildTasks(
@@ -39,20 +52,70 @@ export const getVisibleTasks = ({
     return children;
   };
 
-  return flattenTasks(sortedTopLevel, getFilteredChildTasks, (tasks) =>
-    getSortedTasks(tasks, sortConfig),
-  );
+  const effectiveTaskGroupConfig = getEffectiveTaskGroupConfig(taskGroupConfig, activeCalendarId);
+
+  return groupTasks(
+    sortedTopLevel,
+    effectiveTaskGroupConfig.mode,
+    calendarNames,
+    moveCompletedTasksToBottom,
+    effectiveTaskGroupConfig.direction,
+  ).map((group) => ({
+    ...group,
+    tasks: flattenTasks(group.tasks, getFilteredChildTasks, (tasks) =>
+      sortTasks(tasks, sortConfig, moveCompletedTasksToBottom),
+    ),
+  }));
 };
 
-export const useVisibleTasks = () => {
+export const getVisibleTasks = (options: VisibleTasksOptions) => {
+  return getVisibleTaskGroups(options).flatMap((group) => group.tasks);
+};
+
+const getCalendarNames = () => {
+  const calendarNames = new Map<string, string>();
+  for (const account of dataStore.load().accounts) {
+    for (const calendar of account.calendars) {
+      calendarNames.set(calendar.id, calendar.displayName);
+    }
+  }
+  return calendarNames;
+};
+
+export const useVisibleTaskGroups = () => {
   const { data: uiState } = useUIState();
   const { data: filteredTasks = [] } = useFilteredTasks();
 
   const sortConfig = uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
+  const taskGroupConfig = uiState?.taskGroupConfig ?? DEFAULT_TASK_GROUP_CONFIG;
+  const activeCalendarId = uiState?.activeCalendarId ?? null;
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
+  const moveCompletedTasksToBottom = uiState?.moveCompletedTasksToBottom ?? false;
   const activeView = uiState?.activeView ?? 'tasks';
 
   return useMemo(() => {
-    return getVisibleTasks({ activeView, filteredTasks, showCompletedTasks, sortConfig });
-  }, [activeView, filteredTasks, showCompletedTasks, sortConfig]);
+    return getVisibleTaskGroups({
+      activeView,
+      filteredTasks,
+      showCompletedTasks,
+      moveCompletedTasksToBottom,
+      sortConfig,
+      taskGroupConfig,
+      activeCalendarId,
+      calendarNames: getCalendarNames(),
+    });
+  }, [
+    activeView,
+    filteredTasks,
+    moveCompletedTasksToBottom,
+    showCompletedTasks,
+    sortConfig,
+    taskGroupConfig,
+    activeCalendarId,
+  ]);
+};
+
+export const useVisibleTasks = () => {
+  const groups = useVisibleTaskGroups();
+  return useMemo(() => groups.flatMap((group) => group.tasks), [groups]);
 };

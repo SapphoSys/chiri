@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import type { SystemRegionPreferences } from '$types/preference';
+import type { SystemRegionPreferences } from '$types/platform';
 
 let cachedRegionPreferences: Promise<SystemRegionPreferences> | null = null;
 

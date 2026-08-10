@@ -49,6 +49,7 @@ let
     pkgs.openssl
     pkgs.nsis
     pkgs.nix-update
+    pkgs.nixfmt
     pkgs.actionlint
     pkgs.yq
 

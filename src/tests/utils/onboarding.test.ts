@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 import { shouldShowOnboarding } from '$utils/onboarding';
 import { makeCalendar, makeTask } from '../fixtures';
 

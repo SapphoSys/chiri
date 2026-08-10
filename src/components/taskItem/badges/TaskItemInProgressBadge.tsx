@@ -1,8 +1,32 @@
 import Timer from 'lucide-react/icons/timer';
+import type { MouseEvent } from 'react';
+import { TaskItemBadge } from '$components/taskItem/badges/TaskItemBadge';
 
-export const TaskItemInProgressBadge = ({ percentComplete }: { percentComplete?: number }) => (
-  <span className="inline-flex items-center gap-1 rounded-sm border border-status-in-process/30 bg-status-in-process/10 px-2 py-0.5 font-medium text-status-in-process text-xs">
-    <Timer className="h-3 w-3 text-status-in-process" />
-    {percentComplete}%
-  </span>
-);
+export const TaskItemInProgressBadge = ({
+  percentComplete,
+  onClick,
+}: {
+  percentComplete?: number;
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+}) => {
+  const progress = `${percentComplete ?? 'unknown'}%`;
+
+  return (
+    <TaskItemBadge
+      tone="in-process"
+      tooltip={onClick ? `Edit progress: ${progress}` : `In progress: ${progress} complete`}
+      ariaLabel={onClick ? `Edit progress: ${progress}` : undefined}
+      onClick={
+        onClick
+          ? (event) => {
+              event.stopPropagation();
+              onClick(event);
+            }
+          : undefined
+      }
+    >
+      <Timer className="h-3 w-3" />
+      {progress}
+    </TaskItemBadge>
+  );
+};

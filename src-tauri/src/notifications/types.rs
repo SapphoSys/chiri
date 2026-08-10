@@ -14,7 +14,7 @@ impl NotificationActionConfig {
         Self {
             show_complete: true,
             show_snooze: true,
-            snooze_durations: vec![15 * 60, 60 * 60], // 15 minutes and 1 hour in seconds
+            snooze_durations: vec![30 * 60, 60 * 60], // 30 minutes and 1 hour in seconds
             action_order: vec!["complete".to_string(), "snooze".to_string()],
         }
     }

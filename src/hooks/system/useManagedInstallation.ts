@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { loggers } from '$lib/logger';
+import { queryKeys } from '$lib/queryClient';
 import { getInstallType, shouldDisableUpdates } from '$utils/platform';
 
 const log = loggers.platform;
@@ -10,7 +11,7 @@ const log = loggers.platform;
  */
 export const useManagedInstallation = () => {
   const installTypeQuery = useQuery({
-    queryKey: ['platform', 'installType'],
+    queryKey: queryKeys.platform.installType,
     queryFn: async () => {
       try {
         return await getInstallType();
@@ -25,7 +26,7 @@ export const useManagedInstallation = () => {
   });
 
   const managedQuery = useQuery({
-    queryKey: ['platform', 'shouldDisableUpdates'],
+    queryKey: queryKeys.platform.shouldDisableUpdates,
     queryFn: async () => {
       try {
         return await shouldDisableUpdates();

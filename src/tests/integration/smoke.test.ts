@@ -2,7 +2,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { fetchCalendars } from '$lib/caldav/calendars';
 import { connect } from '$lib/caldav/connection';
 import { createTask, deleteTask, fetchTasks, updateTask } from '$lib/caldav/tasks';
-import type { Calendar, Task } from '$types';
+import type { Calendar } from '$types/calendar';
+import type { Task } from '$types/task/model';
 import { makeTask } from '../fixtures';
 import {
   calendarHomeOverride,

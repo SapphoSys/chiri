@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.7/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -20,6 +20,7 @@
       "!target",
       "!src-tauri/target",
       "!src-tauri/gen",
+      "!public/licenses.generated.json",
       "!*.min.js",
       "!pnpm-lock.yaml"
     ]
@@ -58,7 +59,8 @@
             "maxAllowedComplexity": 30
           }
         },
-        "noForEach": "off"
+        "noForEach": "off",
+        "noImportantStyles": "off"
       },
       "correctness": {
         "noUnusedVariables": "error",

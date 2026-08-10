@@ -1,8 +1,19 @@
+import {
+  APPLE_DEFAULT_TASK_CALENDAR_DISPLAY_NAME,
+  APPLE_DEFAULT_TASK_CALENDAR_NAME,
+} from '$constants';
 import type { Connection } from '$lib/caldav/connection';
 import { NS_WEBDAV_PUSH } from '$lib/caldav/push';
 import { log, makeAbsoluteUrl } from '$lib/caldav/utils';
-import { del, mkcalendar, parseMultiStatus, propfind, proppatch } from '$lib/http';
-import type { Calendar } from '$types';
+import {
+  del,
+  type HttpRequestContext,
+  mkcalendar,
+  parseMultiStatus,
+  propfind,
+  proppatch,
+} from '$lib/http';
+import type { Calendar } from '$types/calendar';
 import { normalizeHexColor } from '$utils/color';
 
 const checkPropertySuccess = (responseBody: string, propertyName: string) => {
@@ -18,13 +29,25 @@ const checkPropertySuccess = (responseBody: string, propertyName: string) => {
   return false;
 };
 
-export const calendarExists = async (conn: Connection, calendarUrl: string) => {
-  const response = await propfind(
-    calendarUrl,
-    conn.credentials,
-    `<?xml version="1.0" encoding="utf-8"?><d:propfind xmlns:d="DAV:"><d:prop><d:resourcetype/></d:prop></d:propfind>`,
-    '0',
-  );
+export const calendarExists = async (
+  conn: Connection,
+  calendarUrl: string,
+  context?: HttpRequestContext,
+) => {
+  const response = context
+    ? await propfind(
+        calendarUrl,
+        conn.credentials,
+        `<?xml version="1.0" encoding="utf-8"?><d:propfind xmlns:d="DAV:"><d:prop><d:resourcetype/></d:prop></d:propfind>`,
+        '0',
+        context,
+      )
+    : await propfind(
+        calendarUrl,
+        conn.credentials,
+        `<?xml version="1.0" encoding="utf-8"?><d:propfind xmlns:d="DAV:"><d:prop><d:resourcetype/></d:prop></d:propfind>`,
+        '0',
+      );
   if (response.status === 207 || response.status === 200) return true;
   if (response.status === 404 || response.status === 410) return false;
   throw new Error(`Failed to verify calendar existence: HTTP ${response.status}`);
@@ -63,6 +86,13 @@ const slugifyCalendarName = (displayName: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '') || 'calendar';
 
+const normalizeCalendarDisplayName = (displayName: string | null | undefined): string => {
+  if (displayName === APPLE_DEFAULT_TASK_CALENDAR_NAME) {
+    return APPLE_DEFAULT_TASK_CALENDAR_DISPLAY_NAME;
+  }
+  return displayName ?? 'Calendar';
+};
+
 export interface CalendarDiscoveryDiagnostics {
   calendarCollectionCount: number;
   includedCalendarCount: number;
@@ -81,6 +111,7 @@ export const discoverCalendars = async (
   conn: Connection,
   accountId: string,
   enforceVapid = false,
+  context?: HttpRequestContext,
 ): Promise<CalendarDiscoveryResult> => {
   // include WebDAV Push properties in the PROPFIND request
   const propfindBody = `<?xml version="1.0" encoding="utf-8"?>
@@ -98,7 +129,9 @@ export const discoverCalendars = async (
   </d:prop>
 </d:propfind>`;
 
-  const response = await propfind(conn.calendarHome, conn.credentials, propfindBody, '1');
+  const response = context
+    ? await propfind(conn.calendarHome, conn.credentials, propfindBody, '1', context)
+    : await propfind(conn.calendarHome, conn.credentials, propfindBody, '1');
 
   if (response.status !== 207) {
     throw new Error(`Failed to fetch calendars: HTTP ${response.status}`);
@@ -139,7 +172,9 @@ export const discoverCalendars = async (
 
     if (supportedComponents.length > 0 && !supportedComponents.includes('VTODO')) {
       diagnostics.nonVtodoCalendarCount++;
-      diagnostics.nonVtodoCalendarNames.push(result.props.displayname ?? 'Calendar');
+      diagnostics.nonVtodoCalendarNames.push(
+        normalizeCalendarDisplayName(result.props.displayname),
+      );
       continue;
     }
 
@@ -161,7 +196,7 @@ export const discoverCalendars = async (
 
     calendars.push({
       id: calendarUrl,
-      displayName: result.props.displayname ?? 'Calendar',
+      displayName: normalizeCalendarDisplayName(result.props.displayname),
       url: calendarUrl,
       ctag: result.props.getctag ?? undefined,
       syncToken: result.props['sync-token'] ?? undefined,
@@ -179,8 +214,13 @@ export const discoverCalendars = async (
   return { calendars, diagnostics };
 };
 
-export const fetchCalendars = async (conn: Connection, accountId: string, enforceVapid = false) => {
-  return (await discoverCalendars(conn, accountId, enforceVapid)).calendars;
+export const fetchCalendars = async (
+  conn: Connection,
+  accountId: string,
+  enforceVapid = false,
+  context?: HttpRequestContext,
+) => {
+  return (await discoverCalendars(conn, accountId, enforceVapid, context)).calendars;
 };
 
 export const createCalendar = async (
@@ -189,6 +229,7 @@ export const createCalendar = async (
   displayName: string,
   color?: string,
   enforceVapid = false,
+  context?: HttpRequestContext,
 ) => {
   const isVikunja = conn.serverType === 'vikunja' || conn.calendarHome.includes('/dav/projects');
   if (isVikunja) {
@@ -218,7 +259,9 @@ export const createCalendar = async (
   </d:set>
 </c:mkcalendar>`;
 
-  const response = await mkcalendar(calendarUrl, conn.credentials, mkcalendarBody);
+  const response = context
+    ? await mkcalendar(calendarUrl, conn.credentials, mkcalendarBody, context)
+    : await mkcalendar(calendarUrl, conn.credentials, mkcalendarBody);
 
   if (response.status !== 201 && response.status !== 200) {
     log.error(`Failed to create calendar: HTTP ${response.status}`, response.body);
@@ -238,7 +281,9 @@ export const createCalendar = async (
   };
 
   try {
-    const { calendars } = await discoverCalendars(conn, accountId, enforceVapid);
+    const { calendars } = context
+      ? await discoverCalendars(conn, accountId, enforceVapid, context)
+      : await discoverCalendars(conn, accountId, enforceVapid);
     const discoveredCalendar = calendars.find(
       (calendar) => calendar.id === calendarUrl || calendar.url === calendarUrl,
     );
@@ -249,6 +294,11 @@ export const createCalendar = async (
 
     log.warn(`Created calendar "${displayName}", but follow-up discovery did not return it`);
   } catch (error) {
+    if (context?.signal?.aborted) {
+      // the MKCALENDAR request has already completed, so return the known URL
+      // and let the probe perform its non-cancellable cleanup request
+      return fallbackCalendar;
+    }
     log.warn(`Failed to discover push properties for created calendar "${displayName}":`, error);
   }
 
@@ -259,17 +309,31 @@ export const probeVtodoCalendarCreation = async (
   conn: Connection,
   accountId: string,
   enforceVapid = false,
+  context?: HttpRequestContext,
 ) => {
   const displayName = `Chiri VTODO capability check ${Date.now()} ${Math.random().toString(36).slice(2, 8)}`;
-  const probeCalendar = await createCalendar(conn, accountId, displayName, undefined, enforceVapid);
+  const probeCalendar = await createCalendar(
+    conn,
+    accountId,
+    displayName,
+    undefined,
+    enforceVapid,
+    context,
+  );
 
   try {
+    // if creation completed before cancellation, cleanup must not be tied to
+    // the cancelled operation or the temporary calendar could be orphaned
     await deleteCalendar(conn, probeCalendar.url);
   } catch (error) {
     log.error('Failed to clean up VTODO capability check calendar:', error);
     throw new Error(
       `Chiri could create a VTODO calendar, but could not clean up the temporary test calendar at ${probeCalendar.url}.`,
     );
+  }
+
+  if (context?.signal?.aborted) {
+    throw new Error('HTTP request cancelled');
   }
 };
 
@@ -345,9 +409,15 @@ export const updateCalendar = async (
   return { success: failedProperties.length === 0, failedProperties };
 };
 
-export const deleteCalendar = async (conn: Connection, calendarUrl: string) => {
+export const deleteCalendar = async (
+  conn: Connection,
+  calendarUrl: string,
+  context?: HttpRequestContext,
+) => {
   try {
-    const response = await del(calendarUrl, conn.credentials);
+    const response = context
+      ? await del(calendarUrl, conn.credentials, undefined, context)
+      : await del(calendarUrl, conn.credentials);
 
     if (response.status !== 204 && response.status !== 200) {
       log.error(`Failed to delete calendar: HTTP ${response.status}`);

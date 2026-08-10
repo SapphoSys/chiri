@@ -1,15 +1,20 @@
-import type { KeyboardShortcut } from '$types';
+import type { KeyboardShortcut } from '$types/shortcuts';
 import type {
   AccountSortMode,
   CalendarSortMode,
   SortDirection,
   SortMode,
   TagSortMode,
+  TaskGroupConfig,
+  TaskGroupMode,
 } from '$types/sort';
 
 export const DEFAULT_DAY_OF_WEEK = 'monday';
 
 export const DEFAULT_CALENDAR_NAME = 'Default calendar';
+
+export const APPLE_DEFAULT_TASK_CALENDAR_NAME = 'DEFAULT_TASK_CALENDAR_NAME';
+export const APPLE_DEFAULT_TASK_CALENDAR_DISPLAY_NAME = 'Reminders';
 
 export const RECENTLY_DELETED_RETENTION_DAYS = 30;
 export const RECENTLY_DELETED_CLEANUP_INTERVAL_MS = 60 * 60 * 1000;
@@ -36,6 +41,11 @@ export const DEFAULT_SORT_CONFIG = {
   direction: 'asc' as const satisfies SortDirection,
 };
 
+export const DEFAULT_TASK_GROUP_CONFIG = {
+  mode: 'none',
+  direction: 'asc',
+} as const satisfies TaskGroupConfig;
+
 export const DEFAULT_ACCOUNT_SORT_CONFIG = {
   mode: 'manual' as const satisfies AccountSortMode,
   direction: 'asc' as const satisfies SortDirection,
@@ -60,6 +70,10 @@ export const CALENDAR_SORT_OPTIONS: Array<{ value: CalendarSortMode; label: stri
   { value: 'task-count', label: 'Task Count' },
 ];
 
+export const LOCAL_CALENDAR_SORT_OPTIONS = CALENDAR_SORT_OPTIONS.filter(
+  (option) => option.value !== 'server',
+);
+
 export const DEFAULT_TAG_SORT_CONFIG = {
   mode: 'manual' as const satisfies TagSortMode,
   direction: 'asc' as const satisfies SortDirection,
@@ -80,6 +94,17 @@ export const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [
   { value: 'title', label: 'Title' },
   { value: 'modified', label: 'Last Modified' },
   { value: 'created', label: 'Created' },
+];
+
+export const TASK_GROUP_OPTIONS: Array<{ value: TaskGroupMode; label: string }> = [
+  { value: 'none', label: 'None' },
+  { value: 'status', label: 'Status' },
+  { value: 'priority', label: 'Priority' },
+  { value: 'calendar', label: 'Calendar' },
+  { value: 'due-date', label: 'Due Date' },
+  { value: 'start-date', label: 'Start Date' },
+  { value: 'created', label: 'Created' },
+  { value: 'modified', label: 'Last Modified' },
 ];
 
 export const DEFAULT_SHORTCUTS: KeyboardShortcut[] = [

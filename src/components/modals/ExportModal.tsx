@@ -13,9 +13,13 @@ import {
   exportTasksAsMarkdown,
 } from '$lib/ical/export';
 import { loggers } from '$lib/logger';
-import type { Calendar, ExportFormat, ExportType, Task } from '$types';
+import type { Calendar } from '$types/calendar';
+import type { Task } from '$types/task/model';
 import { saveTextFile } from '$utils/fs';
 import { pluralize } from '$utils/misc';
+
+type ExportFormat = 'ics' | 'json' | 'markdown' | 'csv';
+type ExportType = 'tasks' | 'all-calendars' | 'single-calendar';
 
 const log = loggers.export;
 
@@ -169,15 +173,20 @@ export const ExportModal = ({
       description={getExportDescription(type, tasks, calendars, calendarName)}
       size="md"
       zIndex="z-60"
+      footerLeft={
+        <ModalButton
+          variant="secondary"
+          onClick={handleCopyToClipboard}
+          disabled={tasks.length === 0}
+        >
+          <Copy className="h-4 w-4" />
+          {copied ? 'Copied!' : 'Copy'}
+        </ModalButton>
+      }
       footer={
         <>
-          <ModalButton
-            variant="ghost"
-            onClick={handleCopyToClipboard}
-            disabled={tasks.length === 0}
-          >
-            <Copy className="h-4 w-4" />
-            {copied ? 'Copied!' : 'Copy'}
+          <ModalButton variant="secondary" onClick={onClose}>
+            Cancel
           </ModalButton>
           <ModalButton onClick={handleExportToFile} disabled={exporting || tasks.length === 0}>
             <Download className="h-4 w-4" />

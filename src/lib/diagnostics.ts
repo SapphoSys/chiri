@@ -7,7 +7,6 @@ import {
 } from '@tauri-apps/api/app';
 import { appConfigDir, appLocalDataDir, appLogDir, join } from '@tauri-apps/api/path';
 import { readDir, readTextFile } from '@tauri-apps/plugin-fs';
-import { isPermissionGranted } from '@tauri-apps/plugin-notification';
 import {
   arch,
   exeExtension,
@@ -18,8 +17,10 @@ import {
   type,
 } from '@tauri-apps/plugin-os';
 import { settingsStore } from '$context/settingsContext';
+import { checkNotificationPermission } from '$lib/notifications';
 import { dataStore } from '$lib/store';
-import type { Account, InstallType } from '$types';
+import type { Account } from '$types/account';
+import type { InstallType } from '$types/platform';
 import {
   getInstallType,
   getPackageManagerName,
@@ -357,7 +358,10 @@ const createPermissionProbes = async (): Promise<DiagnosticsPermissionProbes> =>
     logFilesReadable:
       logFilePaths.length === 0 ? true : await probe(() => readTextFile(logFilePaths[0])),
     databaseDirectoryReadable: await probe(() => readDir(databaseDirectory)),
-    notificationPermissionGranted: await resolveMetadataField(isPermissionGranted),
+    notificationPermissionGranted: await resolveMetadataField(async () => {
+      const { status } = await checkNotificationPermission();
+      return status === 'granted';
+    }),
     clipboardWriteApiAvailable: typeof navigator.clipboard?.writeText === 'function',
   };
 };

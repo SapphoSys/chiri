@@ -2,7 +2,7 @@ import X from 'lucide-react/icons/x';
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
-import type { KeyboardShortcut } from '$types';
+import type { KeyboardShortcut } from '$types/shortcuts';
 import {
   formatShortcut,
   getReservedShortcutMessage,

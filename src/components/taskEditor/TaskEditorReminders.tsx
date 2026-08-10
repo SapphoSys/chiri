@@ -7,8 +7,8 @@ import AlertTriangle from 'lucide-react/icons/triangle-alert';
 import X from 'lucide-react/icons/x';
 import type { KeyboardEvent } from 'react';
 import { TaskEditorEmptyState } from '$components/taskEditor/TaskEditorEmptyState';
-import type { Task } from '$types';
-import type { TimeFormat } from '$types/preference';
+import type { TimeFormat } from '$types/settings/categories/region';
+import type { Task } from '$types/task/model';
 import { formatDate, formatTime } from '$utils/date';
 import { isMacPlatform } from '$utils/platform';
 
@@ -108,7 +108,7 @@ export const TaskEditorReminders = ({
         ) : !readOnly ? (
           <div className="flex items-start gap-2 rounded-lg border border-semantic-warning/30 bg-semantic-warning/10 px-3 py-2 text-sm text-surface-700 dark:text-surface-300">
             <AlertTriangle className="mt-0.5 size-4 shrink-0 text-semantic-warning" />
-            <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <div className="flex min-w-0 flex-1 flex-col gap-1 text-surface-900 dark:text-surface-100">
               <span>
                 {!notifications
                   ? isMacPlatform()

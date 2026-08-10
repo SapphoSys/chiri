@@ -3,8 +3,8 @@ import CalendarClock from 'lucide-react/icons/calendar-clock';
 import CalendarFold from 'lucide-react/icons/calendar-fold';
 import CalendarPlus from 'lucide-react/icons/calendar-plus';
 import CalendarX from 'lucide-react/icons/calendar-x';
-import type { Task } from '$types';
-import type { TimeFormat } from '$types/preference';
+import type { TimeFormat } from '$types/settings/categories/region';
+import type { Task } from '$types/task/model';
 import { formatDate, formatTime } from '$utils/date';
 
 interface TaskEditorDatesProps {

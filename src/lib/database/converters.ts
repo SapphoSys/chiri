@@ -1,14 +1,4 @@
 import type {
-  Account,
-  CalDAVConfig,
-  Calendar,
-  Priority,
-  ServerType,
-  Tag,
-  Task,
-  TaskStatus,
-} from '$types';
-import type {
   AccountRow,
   CalDAVConfigRow,
   CalendarRow,
@@ -16,12 +6,16 @@ import type {
   ReminderRow,
   TagRow,
   TaskRow,
-} from '$types/database';
+} from '$lib/database/types';
+import type { Account, CalDAVConfig, ServerType } from '$types/account';
+import type { Calendar } from '$types/calendar';
 import type { Filter, FilterCriterion } from '$types/filter';
+import type { Tag } from '$types/tag';
+import type { Priority, Status, Task } from '$types/task/model';
 
 export const rowToTask = (row: TaskRow): Task => {
   const status =
-    (row.status as TaskStatus | null) ?? (row.completed === 1 ? 'completed' : 'needs-action');
+    (row.status as Status | null) ?? (row.completed === 1 ? 'completed' : 'needs-action');
 
   return {
     id: row.id,

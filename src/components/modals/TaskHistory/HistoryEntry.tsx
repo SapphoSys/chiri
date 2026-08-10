@@ -16,14 +16,16 @@ import Sparkles from 'lucide-react/icons/sparkles';
 import Tag from 'lucide-react/icons/tag';
 import Timer from 'lucide-react/icons/timer';
 import Type from 'lucide-react/icons/type';
+import Upload from 'lucide-react/icons/upload';
 import type { ReactNode } from 'react';
-import type { TaskHistoryEntry } from '$types/database';
+import { rruleToText } from '$lib/task/recurrence';
 import type { LucideIcon } from '$types/lucide';
+import type { TaskHistoryEntry } from '$types/task/history';
 import { formatDate, formatTime } from '$utils/date';
-import { rruleToText } from '$utils/recurrence';
 
 const FIELD_LABELS: Record<string, string> = {
   created: 'Created',
+  imported: 'Imported',
   title: 'Title',
   description: 'Description',
   status: 'Status',
@@ -38,7 +40,7 @@ const FIELD_LABELS: Record<string, string> = {
   parentUid: 'Parent task',
   url: 'URL',
   calendarId: 'Calendar',
-  rrule: 'Recurrence',
+  rrule: 'Repeat',
   repeatFrom: 'Repeat from',
   accountId: 'Account',
   subtask: 'Subtask',
@@ -46,6 +48,7 @@ const FIELD_LABELS: Record<string, string> = {
 
 const FIELD_ICONS: Record<string, LucideIcon> = {
   created: Sparkles,
+  imported: Upload,
   title: Type,
   description: AlignLeft,
   status: Activity,
@@ -157,7 +160,7 @@ interface HistoryEntryProps {
 export const HistoryEntry = ({ entry, timeFormat, isLast }: HistoryEntryProps) => {
   const label = FIELD_LABELS[entry.field] ?? entry.field;
   const Icon = FIELD_ICONS[entry.field] ?? History;
-  const isCreated = entry.field === 'created';
+  const isCreationEvent = entry.field === 'created' || entry.field === 'imported';
 
   return (
     <div className="flex gap-3">
@@ -171,14 +174,10 @@ export const HistoryEntry = ({ entry, timeFormat, isLast }: HistoryEntryProps) =
           <span>{label}</span>
           <span className="text-surface-300 dark:text-surface-600">&middot;</span>
           <span className="font-normal text-surface-400 text-xs dark:text-surface-500">
-            {formatDate(entry.changedAt, true)}
-          </span>
-          <span className="text-surface-300 dark:text-surface-600">&middot;</span>
-          <span className="font-normal text-surface-400 text-xs dark:text-surface-500">
             {formatTime(entry.changedAt, timeFormat)}
           </span>
         </div>
-        {!isCreated && (
+        {!isCreationEvent && (
           <div className="mt-0.5 pl-5 text-surface-500 text-xs dark:text-surface-400">
             {entry.oldValue !== null && entry.oldValue !== '' && (
               <>

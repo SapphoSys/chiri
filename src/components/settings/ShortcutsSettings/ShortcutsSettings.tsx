@@ -3,11 +3,11 @@ import Search from 'lucide-react/icons/search';
 import X from 'lucide-react/icons/x';
 import { useEffect, useRef, useState } from 'react';
 import { KeyboardShortcutModal } from '$components/modals/KeyboardShortcutModal';
-import { ShortcutRow } from '$components/settings/ShortcutsSettings/ShortcutRow';
+import { ShortcutsSettingsRow } from '$components/settings/ShortcutsSettings/ShortcutsSettingsRow';
 import { Tooltip } from '$components/Tooltip';
 import { DEFAULT_SHORTCUTS } from '$constants';
 import { useSettingsStore } from '$context/settingsContext';
-import type { KeyboardShortcut } from '$types';
+import type { KeyboardShortcut } from '$types/shortcuts';
 import { keyboardShortcutsMatch } from '$utils/keyboard';
 
 const SHORTCUT_GROUPS: { label: string; ids: string[] }[] = [
@@ -146,7 +146,7 @@ export const ShortcutsSettings = ({
                 </h4>
                 <div className="overflow-hidden rounded-lg border border-surface-200 dark:border-surface-700">
                   {group.shortcuts.map((shortcut, index) => (
-                    <ShortcutRow
+                    <ShortcutsSettingsRow
                       key={shortcut.id}
                       shortcut={shortcut}
                       onEdit={handleOpenEdit}

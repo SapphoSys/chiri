@@ -14,9 +14,9 @@ import { type MouseEvent, useCallback, useRef, useState } from 'react';
 import { SidebarFilterItem } from '$components/sidebar/SidebarFilterItem';
 import { Tooltip } from '$components/Tooltip';
 import { useReorderFilters } from '$hooks/queries/useFilters';
-import { matchesFilter } from '$lib/store/filters';
-import type { Task } from '$types';
+import { matchesFilter } from '$lib/task/filtering';
 import type { Filter } from '$types/filter';
+import type { Task } from '$types/task/model';
 
 interface SidebarFiltersListProps {
   filters: Filter[];
@@ -121,7 +121,7 @@ export const SidebarFiltersList = ({
               No filters. Click + to add one.
             </div>
           ) : (
-            <div ref={filtersDragBoundsRef} className="space-y-1">
+            <div ref={filtersDragBoundsRef}>
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -130,28 +130,30 @@ export const SidebarFiltersList = ({
                 onDragEnd={handleDragEnd}
                 onDragCancel={() => setIsAnyFilterDragging(false)}
               >
-                <SortableContext
-                  items={sortedFilters.map((filter) => filter.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {sortedFilters.map((filter) => (
-                    <SidebarFilterItem
-                      key={filter.id}
-                      filter={filter}
-                      isActive={activeFilterId === filter.id}
-                      isContextMenuOpen={
-                        contextMenu?.type === 'filter' && contextMenu.id === filter.id
-                      }
-                      isAnyModalOpen={isAnyModalOpen}
-                      isAnyFilterDragging={isAnyFilterDragging}
-                      taskCount={getFilterTaskCount(filter)}
-                      showTaskCount={showTaskCounts}
-                      sortable
-                      onSelect={() => onSelectFilter(filter.id)}
-                      onContextMenu={(e) => onContextMenu(e, 'filter', filter.id)}
-                    />
-                  ))}
-                </SortableContext>
+                <div className="space-y-1">
+                  <SortableContext
+                    items={sortedFilters.map((filter) => filter.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {sortedFilters.map((filter) => (
+                      <SidebarFilterItem
+                        key={filter.id}
+                        filter={filter}
+                        isActive={activeFilterId === filter.id}
+                        isContextMenuOpen={
+                          contextMenu?.type === 'filter' && contextMenu.id === filter.id
+                        }
+                        isAnyModalOpen={isAnyModalOpen}
+                        isAnyFilterDragging={isAnyFilterDragging}
+                        taskCount={getFilterTaskCount(filter)}
+                        showTaskCount={showTaskCounts}
+                        sortable
+                        onSelect={() => onSelectFilter(filter.id)}
+                        onContextMenu={(e) => onContextMenu(e, 'filter', filter.id)}
+                      />
+                    ))}
+                  </SortableContext>
+                </div>
               </DndContext>
             </div>
           )}

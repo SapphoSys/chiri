@@ -2,7 +2,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import GripVertical from 'lucide-react/icons/grip-vertical';
 import type { CSSProperties, ReactNode } from 'react';
-import type { TaskBadgeKey } from '$types/settings';
+import type { TaskBadgeKey } from '$types/settings/categories/editor';
 
 export type BadgeConfig = {
   key: TaskBadgeKey;

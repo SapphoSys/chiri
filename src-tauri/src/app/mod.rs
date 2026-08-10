@@ -42,13 +42,13 @@ pub fn run() {
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
-        .plugin(tauri_plugin_notification::init())
         .plugin(
             SqlBuilder::default()
                 .add_migrations("sqlite:chiri.db", schema::get_migrations())
                 .build(),
         )
         .manage(tray::TrayState::default())
+        .manage(http::HttpRequestState::default())
         .manage(push::maintenance::PushMaintenanceState::default())
         .manage(push::autopush::MozillaAutopushState::default())
         .manage(push::ntfy::NtfySseState::default());
@@ -61,6 +61,7 @@ pub fn run() {
             commands::force_quit,
             commands::was_launched_from_autostart,
             http::http_request,
+            http::cancel_http_operation,
             install::get_install_type,
             install::should_disable_updates,
             #[cfg(target_os = "linux")]
@@ -118,6 +119,7 @@ pub fn run() {
             push::autopush::stop_all_mozilla_autopush_listeners,
             push::autopush::stop_mozilla_autopush_listener,
             tray::commands::get_tray_enabled,
+            tray::commands::get_tray_host_available,
             tray::commands::initialize_tray,
             tray::commands::set_tray_visible,
             tray::commands::update_tray_sync_enabled,
@@ -129,6 +131,15 @@ pub fn run() {
             window::set_hide_dock_icon_when_window_closed,
         ])
         .setup(setup::setup_app)
+        .on_menu_event(|app, event| {
+            #[cfg(target_os = "macos")]
+            if event.id.as_ref() == "quit" {
+                app.exit(0);
+            }
+
+            #[cfg(not(target_os = "macos"))]
+            let _ = (app, event);
+        })
         .on_window_event(|window, event| {
             window::handle_window_event(window, event);
         })

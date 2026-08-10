@@ -6,15 +6,15 @@ import {
   useEffect,
   useRef,
 } from 'react';
+import { OfflineBanner } from '$components/banners/OfflineBanner';
 import { DragOverlay } from '$components/DragOverlay';
 import { Header } from '$components/header/Header';
-import { OfflineBanner } from '$components/OfflineBanner';
 import { Sidebar } from '$components/sidebar/Sidebar';
 import { TaskList } from '$components/TaskList';
 import { TaskEditor } from '$components/taskEditor/TaskEditor';
 import { useSettingsStore } from '$context/settingsContext';
 import { useWindowFullscreen } from '$hooks/system/useWindowFullscreen';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 import { isMacPlatform } from '$utils/platform';
 
 interface AppShellProps {
@@ -41,6 +41,7 @@ interface AppShellProps {
   syncProgress: { current: number; total: number } | null;
   onSync: () => void;
   disableSync: boolean;
+  isConnectionTesting: boolean;
   isOffline: boolean;
   isReconnecting: boolean;
   lastSyncTime: Date | null;
@@ -71,6 +72,7 @@ export const AppShell = ({
   syncProgress,
   onSync,
   disableSync,
+  isConnectionTesting,
   isOffline,
   isReconnecting,
   lastSyncTime,
@@ -145,6 +147,7 @@ export const AppShell = ({
               syncProgress={syncProgress}
               onSync={onSync}
               disableSync={disableSync}
+              isConnectionTesting={isConnectionTesting}
               isOffline={isOffline}
               lastSyncTime={lastSyncTime}
               lastSyncSource={lastSyncSource}
@@ -157,6 +160,7 @@ export const AppShell = ({
             syncProgress={syncProgress}
             onSync={onSync}
             disableSync={disableSync}
+            isConnectionTesting={isConnectionTesting}
             isOffline={isOffline}
             lastSyncTime={lastSyncTime}
             lastSyncSource={lastSyncSource}

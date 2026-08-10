@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useConfirmDialog } from '$context/confirmDialogContext';
 import { useDeleteTag } from '$hooks/queries/useTags';
-import type { Tag } from '$types';
+import type { Tag } from '$types/tag';
 
 export const useTagDeletion = () => {
   const deleteTagMutation = useDeleteTag();

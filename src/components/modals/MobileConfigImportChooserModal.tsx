@@ -1,8 +1,12 @@
 import CalendarDays from 'lucide-react/icons/calendar-days';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
+import { MobileConfigImportSkippedWarning } from '$components/modals/MobileConfigImportSkippedWarning';
 import { MobileConfigSignatureWarning } from '$components/modals/MobileConfigSignatureWarning';
-import type { MobileConfigCalDAVSettings, MobileConfigImportProfile } from '$types/mobileconfig';
+import type {
+  MobileConfigCalDAVSettings,
+  MobileConfigImportProfile,
+} from '$types/mobileconfig/import';
 
 interface MobileConfigImportChooserModalProps {
   profile: MobileConfigImportProfile;
@@ -26,6 +30,9 @@ const getCandidateKey = (candidate: MobileConfigCalDAVSettings) =>
     .map((value) => value ?? '')
     .join('\u001f');
 
+const getCredentialHint = (candidate: MobileConfigCalDAVSettings) =>
+  candidate.password ? 'Password included' : 'Password missing';
+
 export const MobileConfigImportChooserModal = ({
   profile,
   onSelect,
@@ -42,7 +49,8 @@ export const MobileConfigImportChooserModal = ({
       </ModalButton>
     }
   >
-    <MobileConfigSignatureWarning signature={profile.signature} />
+    <MobileConfigSignatureWarning signature={profile.signature} signer={profile.signer} />
+    <MobileConfigImportSkippedWarning skippedCandidates={profile.skippedCandidates} />
 
     <div className="space-y-3">
       {profile.candidates.map((candidate, index) => (
@@ -62,6 +70,11 @@ export const MobileConfigImportChooserModal = ({
             <div className="mt-1 space-y-0.5 text-surface-500 text-xs dark:text-surface-400">
               <p className="truncate">{candidate.serverUrl}</p>
               {candidate.username && <p className="truncate">{candidate.username}</p>}
+              <p>
+                <span className="inline-flex rounded-full bg-surface-200 px-2 py-0.5 font-medium text-[11px] text-surface-600 dark:bg-surface-600 dark:text-surface-300">
+                  {getCredentialHint(candidate)}
+                </span>
+              </p>
             </div>
           </div>
         </button>

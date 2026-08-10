@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
+import { queryKeys } from '$lib/queryClient';
 import { isLinuxPlatform } from '$utils/platform';
 
 export const usePlatform = () => {
   const isLinux = isLinuxPlatform();
 
   const gnomeQuery = useQuery({
-    queryKey: ['platform', 'isGnomeDesktop'],
+    queryKey: queryKeys.platform.isGnomeDesktop,
     enabled: isLinux,
     queryFn: async () => {
       try {
@@ -22,7 +23,7 @@ export const usePlatform = () => {
   });
 
   const kdeQuery = useQuery({
-    queryKey: ['platform', 'isKdeDesktop'],
+    queryKey: queryKeys.platform.isKdeDesktop,
     enabled: isLinux,
     queryFn: async () => {
       try {

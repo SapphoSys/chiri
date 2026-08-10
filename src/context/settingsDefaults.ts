@@ -5,12 +5,8 @@ import {
   DEFAULT_SIDEBAR_WIDTH,
 } from '$constants';
 import { DEFAULT_COLOR_SCHEME_ID } from '$constants/color';
-import {
-  DEFAULT_MOZILLA_AUTOPUSH_ENDPOINT_URL,
-  DEFAULT_MOZILLA_AUTOPUSH_WEBSOCKET_URL,
-} from '$lib/push/providers/mozillaAutopush';
-import { NTFY_DIRECT_PROVIDER_ID } from '$types/push';
-import type { SettingsState } from '$types/settings';
+import { NTFY_DIRECT_PROVIDER_ID } from '$types/push/providers';
+import type { SettingsState } from '$types/settings/state';
 import { getDefaultAccentColor } from '$utils/color/scheme';
 
 const defaultAccentColor = getDefaultAccentColor();
@@ -40,6 +36,7 @@ export const defaultState: SettingsState = {
   defaultPriority: 'none',
   defaultStatus: 'needs-action',
   defaultPercentComplete: 0,
+  syncStatusProgress: true,
   defaultTags: [],
   defaultStartDate: 'none',
   defaultStartTime: null,
@@ -67,10 +64,8 @@ export const defaultState: SettingsState = {
   enableSystemTray: true,
   systemTrayAppliedValue: true,
   hideDockIconWhenWindowClosed: true,
-  showWindowOnNormalLaunch: true,
   showWindowOnLoginLaunch: false,
   enableSystemTrayExplicitlySet: false,
-  restoreWindowState: true,
   windowDecorationStyle: 'integrated',
   checkForUpdatesAutomatically: true,
   confirmBeforeQuit: true,
@@ -90,6 +85,7 @@ export const defaultState: SettingsState = {
   quietHoursEnd: 8,
   editorFieldVisibility: {
     status: true,
+    progress: true,
     description: true,
     url: true,
     dates: true,
@@ -102,6 +98,7 @@ export const defaultState: SettingsState = {
   },
   editorFieldOrder: [
     'status',
+    'progress',
     'description',
     'url',
     'dates',
@@ -148,14 +145,14 @@ export const defaultState: SettingsState = {
   enablePush: false,
   enforceVapid: false,
   pushProvider: NTFY_DIRECT_PROVIDER_ID,
-  ntfyServerUrl: 'https://ntfy.sh',
-  mozillaAutopushWebsocketUrl: DEFAULT_MOZILLA_AUTOPUSH_WEBSOCKET_URL,
-  mozillaAutopushEndpointUrl: DEFAULT_MOZILLA_AUTOPUSH_ENDPOINT_URL,
+  ntfyServerUrl: '',
+  mozillaAutopushWebsocketUrl: '',
+  mozillaAutopushEndpointUrl: '',
   notificationActions: {
     complete: true,
     snooze: true,
     snoozeDurations: [
-      { id: '15m', value: 15, unit: 'minutes' },
+      { id: '30m', value: 30, unit: 'minutes' },
       { id: '1h', value: 1, unit: 'hours' },
     ],
     order: ['complete', 'snooze'],

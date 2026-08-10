@@ -8,10 +8,14 @@ import { preloadAutostartState } from '$hooks/system/useAutostart';
 import { db } from '$lib/database';
 import { initLogger, loggers } from '$lib/logger';
 import { dataStore } from '$lib/store';
-import { setAllTasksView, setRecentlyDeletedView } from '$lib/store/ui';
-import { restoreWindowState } from '$lib/window';
+import { setActiveFilter, setAllTasksView, setRecentlyDeletedView } from '$lib/store/ui';
 import { initAppMenu } from '$utils/menu';
-import { isLinuxPlatform, isMacPlatform, isWindowsPlatform } from '$utils/platform';
+import {
+  getTrayHostAvailable,
+  isLinuxPlatform,
+  isMacPlatform,
+  isWindowsPlatform,
+} from '$utils/platform';
 
 const log = loggers.bootstrap;
 
@@ -48,6 +52,19 @@ const applyDefaultLaunchViewPreference = () => {
 
   if (defaultLaunchView === 'all-tasks') {
     setAllTasksView();
+    return;
+  }
+
+  if (defaultLaunchView.startsWith('filter:')) {
+    const filterId = defaultLaunchView.slice('filter:'.length);
+    if (dataStore.load().filters.some((filter) => filter.id === filterId)) {
+      setActiveFilter(filterId);
+    } else {
+      log.warn('Configured default launch filter no longer exists; opening All Tasks', {
+        filterId,
+      });
+      setAllTasksView();
+    }
     return;
   }
 
@@ -132,17 +149,7 @@ export const initializeApp = async () => {
   // is present on the session bus.
   await applyTrayDefaultForGNOME();
 
-  // initialize system tray based on settings
-  const enableSystemTray = settingsStore.getState().enableSystemTray;
-
-  try {
-    await invoke('initialize_tray', { enabled: enableSystemTray });
-    log.debug(`System tray initialized (enabled: ${enableSystemTray})`);
-    // sync the applied value with the current setting on app start
-    settingsStore.setSystemTrayAppliedValue(enableSystemTray);
-  } catch (error) {
-    log.error('Failed to initialize system tray:', error);
-  }
+  await initializeTray();
 
   log.debug('Getting UI state...');
   const uiState = await db.getUIState();
@@ -173,11 +180,32 @@ export const initializeApp = async () => {
   log.info('Application initialization finished');
 };
 
+/**
+ * initialize the tray even when normal app startup has failed. the bootstrap
+ * error screen is still a usable app state and must retain its tray recovery
+ * path on every platform
+ */
+export const initializeTray = async () => {
+  const enableSystemTray = settingsStore.getState().enableSystemTray;
+
+  if (!enableSystemTray) {
+    settingsStore.setSystemTrayAppliedValue(false);
+    return;
+  }
+
+  try {
+    await invoke('initialize_tray', { enabled: true });
+    log.debug('System tray initialized for recovery');
+    settingsStore.setSystemTrayAppliedValue(true);
+  } catch (error) {
+    log.error('Failed to initialize system tray:', error);
+  }
+};
+
 export const showWindow = async (delay: number = 200): Promise<void> => {
   return new Promise((resolve) => {
     setTimeout(async () => {
       const window = getCurrentWindow();
-      await restoreWindowState();
       await setMacDockIconVisible(true);
       await window.show();
       await window.setFocus();
@@ -199,26 +227,22 @@ export const shouldShowWindowOnStartup = async () => {
         return false;
       });
 
-  const enableSystemTray = settingsStore.getState().enableSystemTray;
-
   if (!launchedAtLogin) {
-    if (!enableSystemTray) {
-      log.debug('Showing window for normal app launch because system tray is disabled');
-      return true;
-    }
-
-    const showWindowOnNormalLaunch = settingsStore.getState().showWindowOnNormalLaunch;
-    if (showWindowOnNormalLaunch) {
-      log.debug('Showing window for normal app launch');
-      return true;
-    }
-
-    log.info('Keeping window hidden for normal app launch');
-    return false;
+    log.debug('Showing window for normal app launch');
+    return true;
   }
+
+  const enableSystemTray = settingsStore.getState().enableSystemTray;
+  const trayHostAvailable =
+    isLinuxPlatform() && enableSystemTray ? await getTrayHostAvailable() : true;
 
   if (!enableSystemTray) {
     log.info('Showing window for login/autostart launch because system tray is disabled');
+    return true;
+  }
+
+  if (!trayHostAvailable) {
+    log.info('Showing window for login/autostart launch because no tray host is available');
     return true;
   }
 

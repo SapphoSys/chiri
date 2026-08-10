@@ -1,4 +1,4 @@
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 import { formatDate } from '$utils/date';
 import { generateVCalendar, generateVTodo } from './vtodo';
 

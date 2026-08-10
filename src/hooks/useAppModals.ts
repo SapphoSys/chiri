@@ -5,7 +5,7 @@ import type {
   EditingCalendar,
   OpenAccountOptions,
   SettingsInitialTab,
-} from '$types/controller';
+} from '$types/modals';
 
 const ACCOUNT_MODAL_Z_INDEX = {
   default: 'z-60',

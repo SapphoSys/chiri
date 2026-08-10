@@ -16,20 +16,29 @@ import Flag from 'lucide-react/icons/flag';
 import FolderSync from 'lucide-react/icons/folder-sync';
 import Link from 'lucide-react/icons/link';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
+import RotateCcw from 'lucide-react/icons/rotate-ccw';
 import Tag from 'lucide-react/icons/tag';
+import Timer from 'lucide-react/icons/timer';
 import {
   EditorSettingsSortableFields,
   type FieldConfig,
 } from '$components/settings/EditorSettings/EditorSettingsSortableFields';
 import { useSettingsStore } from '$context/settingsContext';
-import type { EditorFieldKey } from '$types/settings';
+import { defaultState } from '$context/settingsDefaults';
+import type { EditorFieldKey } from '$types/settings/categories/editor';
 
 const FIELDS: FieldConfig[] = [
   {
     key: 'status',
-    label: 'Status & progress',
-    description: 'Status buttons and progress slider',
+    label: 'Status',
+    description: 'Status buttons for the task',
     icon: <Activity className="h-4 w-4" />,
+  },
+  {
+    key: 'progress',
+    label: 'Progress',
+    description: 'Progress slider for the task',
+    icon: <Timer className="h-4 w-4" />,
   },
   {
     key: 'description',
@@ -52,7 +61,7 @@ const FIELDS: FieldConfig[] = [
   {
     key: 'repeat',
     label: 'Repeat',
-    description: 'Recurrence options for the task',
+    description: 'Repeat options for the task',
     icon: <RefreshCw className="h-4 w-4" />,
   },
   {
@@ -109,9 +118,33 @@ export const EditorSettings = () => {
     setEditorFieldOrder(arrayMove(editorFieldOrder, oldIndex, newIndex));
   };
 
+  const handleReset = () => {
+    setEditorFieldVisibility(defaultState.editorFieldVisibility);
+    setEditorFieldOrder(defaultState.editorFieldOrder);
+  };
+
+  const hasChanged =
+    FIELDS.some(
+      ({ key }) => editorFieldVisibility[key] !== defaultState.editorFieldVisibility[key],
+    ) ||
+    editorFieldOrder.length !== defaultState.editorFieldOrder.length ||
+    editorFieldOrder.some((key, index) => key !== defaultState.editorFieldOrder[index]);
+
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Editor</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Editor</h3>
+        {hasChanged && (
+          <button
+            type="button"
+            onClick={handleReset}
+            className="inline-flex items-center gap-1 text-surface-500 text-xs outline-hidden transition-colors hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200"
+          >
+            <RotateCcw className="h-3 w-3" />
+            Reset
+          </button>
+        )}
+      </div>
 
       <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

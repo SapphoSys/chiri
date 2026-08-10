@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { ServerType } from '$types';
+import type { ServerType } from '$types/account';
 
 export interface CalDAVWarning {
   title: string;

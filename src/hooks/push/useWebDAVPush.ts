@@ -25,12 +25,9 @@ import {
   stopAllPushSubscriptions,
 } from '$lib/push';
 import { getPushProviderConfigKey } from '$lib/push/providers';
-import type { Account } from '$types';
-import {
-  KUNIFIED_PUSH_PROVIDER_ID,
-  NTFY_DIRECT_PROVIDER_ID,
-  type PushProviderConfig,
-} from '$types/push';
+import type { Account } from '$types/account';
+import type { PushProviderConfig } from '$types/push/providers';
+import { KUNIFIED_PUSH_PROVIDER_ID, NTFY_DIRECT_PROVIDER_ID } from '$types/push/providers';
 
 const log = loggers.sync;
 const PUSH_MAINTENANCE_INTERVAL_SECONDS = 12 * 60 * 60;

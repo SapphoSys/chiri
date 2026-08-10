@@ -4,9 +4,10 @@ import { relaunch } from '@tauri-apps/plugin-process';
 import AlertTriangle from 'lucide-react/icons/alert-triangle';
 import Loader2 from 'lucide-react/icons/loader-2';
 import { useEffect, useState } from 'react';
+import { TrayHostWarningBanner } from '$components/banners/TrayHostWarningBanner';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAutostart } from '$hooks/system/useAutostart';
-import { usePlatform } from '$hooks/system/usePlatform';
+import { useTrayHostAvailability } from '$hooks/system/useTrayHostAvailability';
 import {
   installAppImageDesktopIntegration,
   isAppImageDesktopFileInstalled,
@@ -25,7 +26,6 @@ const formatRestartReasons = (reasons: string[]) => {
 };
 
 export const SystemSettings = () => {
-  const { isGNOME } = usePlatform();
   const autostart = useAutostart();
   const isLinux = isLinuxPlatform();
   const isMac = isMacPlatform();
@@ -37,12 +37,8 @@ export const SystemSettings = () => {
     setEnableSystemTray,
     enableSystemTrayExplicitlySet,
     setEnableSystemTrayExplicitlySet,
-    showWindowOnNormalLaunch,
-    setShowWindowOnNormalLaunch,
     showWindowOnLoginLaunch,
     setShowWindowOnLoginLaunch,
-    restoreWindowState,
-    setRestoreWindowState,
     hideDockIconWhenWindowClosed,
     setHideDockIconWhenWindowClosed,
     confirmBeforeQuit,
@@ -68,8 +64,9 @@ export const SystemSettings = () => {
     autostart.pending && autostart.enabled === true
       ? 'text-primary-500 dark:text-primary-400'
       : 'text-surface-500 dark:text-surface-400';
-  const startQuietlyAtLoginDisabled = autostart.enabled !== true || !enableSystemTray;
-  const startHiddenOnNormalLaunchDisabled = !enableSystemTray;
+  const { isAvailable: isTrayHostAvailable } = useTrayHostAvailability();
+  const startHiddenOptionsDisabled = !enableSystemTray || isTrayHostAvailable === false;
+  const startQuietlyAtLoginDisabled = autostart.enabled !== true || startHiddenOptionsDisabled;
 
   useEffect(() => {
     if (!isLinux) {
@@ -215,47 +212,6 @@ export const SystemSettings = () => {
       </div>
 
       <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
-        <label
-          className={`flex items-center justify-between gap-4 ${startHiddenOnNormalLaunchDisabled ? 'cursor-not-allowed opacity-50' : ''} p-4`}
-        >
-          <div className="min-w-0">
-            <p className="text-sm text-surface-700 dark:text-surface-300">
-              Start hidden on normal launch
-            </p>
-            <p className="text-surface-500 text-xs dark:text-surface-400">
-              Hide the main window when Chiri starts manually. Requires system tray.
-            </p>
-          </div>
-          <input
-            type="checkbox"
-            checked={!showWindowOnNormalLaunch}
-            disabled={startHiddenOnNormalLaunchDisabled}
-            onChange={(e) => setShowWindowOnNormalLaunch(!e.target.checked)}
-            className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          />
-        </label>
-
-        <div className="border-surface-200 border-t dark:border-surface-700" />
-
-        <label className="flex items-center justify-between p-4">
-          <div>
-            <p className="text-sm text-surface-700 dark:text-surface-300">
-              Restore window size and position
-            </p>
-            <p className="text-surface-500 text-xs dark:text-surface-400">
-              Reopen Chiri where you left it
-            </p>
-          </div>
-          <input
-            type="checkbox"
-            checked={restoreWindowState}
-            onChange={(e) => setRestoreWindowState(e.target.checked)}
-            className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-          />
-        </label>
-      </div>
-
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label className="flex items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Enable system tray</p>
@@ -295,23 +251,9 @@ export const SystemSettings = () => {
           </div>
         )}
 
-        {isGNOME && (
+        {isLinux && enableSystemTray && isTrayHostAvailable === false && (
           <div className="px-4 pb-4">
-            <div className="flex gap-2 rounded-lg border border-semantic-warning/30 bg-semantic-warning/10 p-3">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-semantic-warning" />
-              <p className="text-semantic-warning text-xs">
-                <strong>GNOME detected:</strong> System tray requires the{' '}
-                <a
-                  href="https://extensions.gnome.org/extension/615/appindicator-support/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline hover:opacity-80"
-                >
-                  AppIndicator and KStatusNotifierItem Support
-                </a>{' '}
-                extension. Without it, the tray icon will not appear.
-              </p>
-            </div>
+            <TrayHostWarningBanner />
           </div>
         )}
       </div>

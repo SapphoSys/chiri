@@ -1,6 +1,6 @@
 import { loggers } from '$lib/logger';
-import type { Task } from '$types';
-import type { ParsedTaskWithStatus } from '$types/import';
+import type { ParsedTaskWithStatus } from '$types/task/import';
+import type { Task } from '$types/task/model';
 import { generateUUID } from '$utils/misc';
 import { extractVTodos, parsedVTodoToTask, parseVTodo } from './vtodo';
 

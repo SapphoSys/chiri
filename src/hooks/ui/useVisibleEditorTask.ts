@@ -1,5 +1,5 @@
 import { useUIState } from '$hooks/queries/useUIState';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 
 export const useVisibleEditorTask = (tasks: Task[]) => {
   const { data: uiState } = useUIState();

@@ -2,7 +2,7 @@ import { deleteAppPassword as deleteNextcloudAppPassword } from '$lib/auth/nextc
 import { db } from '$lib/database';
 import { loggers } from '$lib/logger';
 import { dataStore } from '$lib/store';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 import { generateUUID } from '$utils/misc';
 
 const log = loggers.dataStore;
@@ -81,7 +81,10 @@ export const deleteAccount = (id: string) => {
   const deletedAccount = data.accounts.find((acc) => acc.id === id);
   const deletedCalendarIds = deletedAccount?.calendars.map((c) => c.id) ?? [];
 
-  if (deletedAccount?.caldav?.serverType === 'nextcloud') {
+  if (
+    deletedAccount?.caldav?.serverType === 'nextcloud' ||
+    deletedAccount?.caldav?.serverType === 'disrootCloud'
+  ) {
     deleteNextcloudAppPassword(
       deletedAccount.caldav.serverUrl,
       deletedAccount.caldav.username,

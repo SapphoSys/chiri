@@ -37,6 +37,7 @@ export const catppuccinColorScheme: ColorSchemeDefinition = {
       defaultAccent: 'Mauve',
       semanticColors: {
         info: '#1e66f5',
+        dueToday: '#fe640b',
         warning: '#df8e1d',
         success: '#40a02b',
         error: '#d20f39',
@@ -81,6 +82,7 @@ export const catppuccinColorScheme: ColorSchemeDefinition = {
       defaultAccent: 'Mauve',
       semanticColors: {
         info: '#8caaee',
+        dueToday: '#ef9f76',
         warning: '#e5c890',
         success: '#a6d189',
         error: '#e78284',
@@ -124,6 +126,7 @@ export const catppuccinColorScheme: ColorSchemeDefinition = {
       defaultAccent: 'Mauve',
       semanticColors: {
         info: '#8aadf4',
+        dueToday: '#f5a97f',
         warning: '#eed49f',
         success: '#a6da95',
         error: '#ed8796',
@@ -167,6 +170,7 @@ export const catppuccinColorScheme: ColorSchemeDefinition = {
       defaultAccent: 'Mauve',
       semanticColors: {
         info: '#89b4fa',
+        dueToday: '#fab387',
         warning: '#f9e2af',
         success: '#a6e3a1',
         error: '#f38ba8',

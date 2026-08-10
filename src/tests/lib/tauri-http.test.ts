@@ -1,63 +1,71 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// tauri-http imports invoke + tauriFetch at top level. stub to no-ops so the
-// module evaluates without needing a Tauri runtime (logger mocks come from src/tests/setup.ts)
+// http.ts imports invoke at top level. stub it so the module evaluates without
+// needing a Tauri runtime (logger mocks come from src/tests/setup.ts)
 vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
-vi.mock('@tauri-apps/plugin-http', () => ({ fetch: vi.fn() }));
 
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
+import { invoke } from '@tauri-apps/api/core';
 import { parseMultiStatus, tauriRequest } from '$lib/http';
 
 const xml = (body: string) => `<?xml version="1.0" encoding="utf-8"?>${body}`;
 
-const response = (status: number, headers: Record<string, string> = {}) =>
-  ({
-    status,
-    headers: new Headers(headers),
-    text: async () => '',
-  }) as Response;
+const httpResponse = (status: number, headers: Record<string, string> = {}, body = '') => ({
+  status,
+  headers,
+  body,
+});
 
 const credentials = { username: 'alice', password: 'secret' };
 
 describe('tauriRequest redirects', () => {
   beforeEach(() => {
-    vi.mocked(tauriFetch).mockReset();
+    vi.mocked(invoke).mockReset();
   });
 
   it('keeps authorization on same-origin redirects', async () => {
-    vi.mocked(tauriFetch)
-      .mockResolvedValueOnce(response(302, { Location: '/dav/' }))
-      .mockResolvedValueOnce(response(200));
+    vi.mocked(invoke)
+      .mockResolvedValueOnce(httpResponse(302, { Location: '/dav/' }))
+      .mockResolvedValueOnce(httpResponse(200));
 
     await tauriRequest('https://calendar.example', 'GET', credentials);
 
-    const redirectedHeaders = vi.mocked(tauriFetch).mock.calls[1][1]?.headers as Record<
-      string,
-      string
-    >;
+    const secondCall = vi.mocked(invoke).mock.calls[1] as [string, Record<string, unknown>];
+    const redirectedHeaders = secondCall[1].headers as Record<string, string>;
     expect(redirectedHeaders.Authorization).toMatch(/^Basic /);
   });
 
   it('strips authorization on cross-origin redirects', async () => {
-    vi.mocked(tauriFetch)
-      .mockResolvedValueOnce(response(302, { Location: 'https://other.example/dav/' }))
-      .mockResolvedValueOnce(response(200));
+    vi.mocked(invoke)
+      .mockResolvedValueOnce(httpResponse(302, { Location: 'https://other.example/dav/' }))
+      .mockResolvedValueOnce(httpResponse(200));
 
     await tauriRequest('https://calendar.example', 'GET', credentials, undefined, {
       Authorization: 'Digest sensitive',
       Cookie: 'session=sensitive',
     });
 
-    const redirectedHeaders = vi.mocked(tauriFetch).mock.calls[1][1]?.headers as Record<
-      string,
-      string
-    >;
+    const secondCall = vi.mocked(invoke).mock.calls[1] as [string, Record<string, unknown>];
+    const redirectedHeaders = secondCall[1].headers as Record<string, string>;
     expect(redirectedHeaders.Authorization).toBeUndefined();
     expect(redirectedHeaders.Cookie).toBeUndefined();
   });
 
+  it('upgrades HTTPS-to-HTTP same-host redirects and keeps authorization', async () => {
+    vi.mocked(invoke)
+      .mockResolvedValueOnce(httpResponse(301, { Location: 'http://calendar.example/dav/' }))
+      .mockResolvedValueOnce(httpResponse(207));
+
+    await tauriRequest('https://calendar.example/.well-known/caldav', 'PROPFIND', credentials);
+
+    const secondCall = vi.mocked(invoke).mock.calls[1] as [string, Record<string, unknown>];
+    expect(secondCall[1].url).toBe('https://calendar.example/dav/');
+
+    const redirectedHeaders = secondCall[1].headers as Record<string, string>;
+    expect(redirectedHeaders.Authorization).toMatch(/^Basic /);
+  });
+
   it('rejects redirects to non-HTTP URLs', async () => {
-    vi.mocked(tauriFetch).mockResolvedValueOnce(response(302, { Location: 'file:///etc/passwd' }));
+    vi.mocked(invoke).mockResolvedValueOnce(httpResponse(302, { Location: 'file:///etc/passwd' }));
 
     await expect(tauriRequest('https://calendar.example', 'GET', credentials)).rejects.toThrow(
       /unsupported file: URL/i,
@@ -65,12 +73,81 @@ describe('tauriRequest redirects', () => {
   });
 
   it('stops after five redirects', async () => {
-    vi.mocked(tauriFetch).mockResolvedValue(response(302, { Location: '/again' }));
+    vi.mocked(invoke).mockResolvedValue(httpResponse(302, { Location: '/again' }));
 
     await expect(tauriRequest('https://calendar.example', 'GET', credentials)).rejects.toThrow(
       /Too many HTTP redirects/i,
     );
-    expect(tauriFetch).toHaveBeenCalledTimes(6);
+    expect(invoke).toHaveBeenCalledTimes(6);
+  });
+});
+
+describe('tauriRequest routing', () => {
+  beforeEach(() => {
+    vi.mocked(invoke).mockReset();
+  });
+
+  it('always routes CalDAV requests through the Rust http_request command', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce(httpResponse(200));
+
+    await tauriRequest('https://calendar.example', 'PROPFIND', credentials);
+
+    expect(invoke).toHaveBeenCalledTimes(1);
+    expect(invoke).toHaveBeenCalledWith('http_request', {
+      url: 'https://calendar.example',
+      method: 'PROPFIND',
+      headers: expect.objectContaining({
+        Authorization: expect.stringMatching(/^Basic /),
+        'User-Agent': 'Chiri',
+        'Content-Type': 'application/xml; charset=utf-8',
+      }),
+      body: null,
+      acceptInvalidCerts: false,
+      proxyConfig: expect.any(Object),
+      timeoutMs: 15_000,
+    });
+  });
+
+  it('routes through Rust even when the default system proxy mode is active', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce(httpResponse(200));
+
+    await tauriRequest('https://calendar.example', 'REPORT', credentials);
+
+    const call = vi.mocked(invoke).mock.calls[0] as [string, Record<string, unknown>];
+    expect(call[1].proxyConfig).toEqual(
+      expect.objectContaining({
+        mode: 'system',
+      }),
+    );
+  });
+
+  it('cancels the native request when its operation signal is aborted', async () => {
+    let resolveRequest!: (response: ReturnType<typeof httpResponse>) => void;
+    const pendingRequest = new Promise<ReturnType<typeof httpResponse>>((resolve) => {
+      resolveRequest = resolve;
+    });
+    vi.mocked(invoke).mockImplementation((command) => {
+      if (command === 'http_request') return pendingRequest;
+      return Promise.resolve();
+    });
+
+    const controller = new AbortController();
+    const request = tauriRequest(
+      'https://calendar.example',
+      'GET',
+      credentials,
+      undefined,
+      undefined,
+      { operationId: 'test-operation', signal: controller.signal },
+    );
+
+    controller.abort();
+    expect(invoke).toHaveBeenCalledWith('cancel_http_operation', {
+      operationId: 'test-operation',
+    });
+
+    resolveRequest(httpResponse(200));
+    await expect(request).rejects.toThrow(/cancelled/i);
   });
 });
 

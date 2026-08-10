@@ -20,9 +20,11 @@ interface MenuCallbacks {
   onOpenAbout?: RefObject<(() => void) | null>;
   onOpenKeyboardShortcuts?: RefObject<(() => void) | null>;
   onToggleCompleted?: RefObject<((currentValue: boolean) => void) | null>;
+  onToggleCompletedToBottom?: RefObject<((currentValue: boolean) => void) | null>;
   onToggleUnstarted?: RefObject<((currentValue: boolean) => void) | null>;
   onSync?: RefObject<(() => void) | null>;
   onAllTasks?: RefObject<(() => void) | null>;
+  onRecentlyDeleted?: RefObject<(() => void) | null>;
   onSetSortMode?: RefObject<
     ((mode: SortMode, currentMode: SortMode, currentDirection: SortDirection) => void) | null
   >;
@@ -30,6 +32,8 @@ interface MenuCallbacks {
     ((direction: SortDirection, currentMode: SortMode) => void) | null
   >;
   onSelectFilter?: RefObject<((filterId: string) => void) | null>;
+  onSelectCalendar?: RefObject<((accountId: string, calendarId: string) => void) | null>;
+  onSelectTag?: RefObject<((tagId: string) => void) | null>;
   onToggleSidebar?: RefObject<(() => void) | null>;
   onSelectAllTasks?: RefObject<(() => void) | null>;
   onNavPrevList?: RefObject<(() => void) | null>;
@@ -61,6 +65,11 @@ const SIMPLE_EVENTS: SimpleEventConfig[] = [
   { event: MENU_EVENTS.NEW_TASK, callback: 'onNewTask', label: 'New Task' },
   { event: MENU_EVENTS.SYNC, callback: 'onSync', label: 'Sync' },
   { event: MENU_EVENTS.ALL_TASKS, callback: 'onAllTasks', label: 'All Tasks' },
+  {
+    event: MENU_EVENTS.RECENTLY_DELETED,
+    callback: 'onRecentlyDeleted',
+    label: 'Recently Deleted',
+  },
   { event: MENU_EVENTS.PREFERENCES, callback: 'onOpenSettings', label: 'Preferences' },
   { event: MENU_EVENTS.ADD_ACCOUNT, callback: 'onOpenAccount', label: 'Add Account' },
   { event: MENU_EVENTS.IMPORT_TASKS, callback: 'onOpenImport', label: 'Import Tasks' },
@@ -88,6 +97,17 @@ const PARAM_EVENTS: ParamEventConfig[] = [
     event: MENU_EVENTS.SELECT_FILTER,
     label: 'Select Filter',
     handler: (cb, p) => cb.onSelectFilter?.current?.(p.filterId as string),
+  },
+  {
+    event: MENU_EVENTS.SELECT_CALENDAR,
+    label: 'Select Calendar',
+    handler: (cb, p) =>
+      cb.onSelectCalendar?.current?.(p.accountId as string, p.calendarId as string),
+  },
+  {
+    event: MENU_EVENTS.SELECT_TAG,
+    label: 'Select Tag',
+    handler: (cb, p) => cb.onSelectTag?.current?.(p.tagId as string),
   },
   {
     event: MENU_EVENTS.EDIT_ACCOUNT,
@@ -150,8 +170,10 @@ const MODAL_BLOCKED_MENU_EVENTS = new Set<string>([
   MENU_EVENTS.SEARCH,
   MENU_EVENTS.SHOW_KEYBOARD_SHORTCUTS,
   MENU_EVENTS.TOGGLE_COMPLETED,
+  MENU_EVENTS.TOGGLE_COMPLETED_TO_BOTTOM,
   MENU_EVENTS.TOGGLE_UNSTARTED,
   MENU_EVENTS.ALL_TASKS,
+  MENU_EVENTS.RECENTLY_DELETED,
   MENU_EVENTS.SORT_MANUAL,
   MENU_EVENTS.SORT_SMART,
   MENU_EVENTS.SORT_START_DATE,
@@ -163,6 +185,8 @@ const MODAL_BLOCKED_MENU_EVENTS = new Set<string>([
   MENU_EVENTS.SORT_DIRECTION_ASC,
   MENU_EVENTS.SORT_DIRECTION_DESC,
   MENU_EVENTS.SELECT_FILTER,
+  MENU_EVENTS.SELECT_CALENDAR,
+  MENU_EVENTS.SELECT_TAG,
   MENU_EVENTS.TOGGLE_SIDEBAR,
   MENU_EVENTS.SELECT_ALL,
   MENU_EVENTS.NAV_PREV_LIST,
@@ -339,6 +363,21 @@ export const useMenuEvents = (callbacks: MenuCallbacks) => {
         isActiveRef,
       );
       if (!toggleSuccess) return;
+
+      const toggleCompletedToBottomSuccess = await registerListener(
+        MENU_EVENTS.TOGGLE_COMPLETED_TO_BOTTOM,
+        () => {
+          if (isBlocked(MENU_EVENTS.TOGGLE_COMPLETED_TO_BOTTOM, 'Toggle Completed to Bottom'))
+            return;
+          log.debug('Toggle Completed to Bottom triggered');
+          callbacks.onToggleCompletedToBottom?.current?.(
+            uiState?.moveCompletedTasksToBottom ?? false,
+          );
+        },
+        unlistenCallbacks,
+        isActiveRef,
+      );
+      if (!toggleCompletedToBottomSuccess) return;
 
       const toggleUnstartedSuccess = await registerListener(
         MENU_EVENTS.TOGGLE_UNSTARTED,

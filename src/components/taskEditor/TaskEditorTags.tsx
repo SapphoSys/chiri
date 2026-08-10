@@ -4,8 +4,11 @@ import TagIcon from 'lucide-react/icons/tag';
 import TagX from 'lucide-react/icons/tag-x';
 import X from 'lucide-react/icons/x';
 import { TaskEditorEmptyState } from '$components/taskEditor/TaskEditorEmptyState';
+import { TaskItemBadge } from '$components/taskItem/badges/TaskItemBadge';
 import { getIconByName } from '$constants/icons';
-import type { Tag, Task } from '$types';
+import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
+import type { Tag } from '$types/tag';
+import type { Task } from '$types/task/model';
 
 interface TagsProps {
   task: Task;
@@ -22,6 +25,8 @@ export const TaskEditorTags = ({
   onOpenTagsModal,
   readOnly = false,
 }: TagsProps) => {
+  const resolveAccent = useAccentColorResolver();
+  const resolvedAccentColor = useResolvedAccentColor();
   const taskTags = (task.tags || [])
     .map((tagId) => tags.find((t) => t.id === tagId))
     .filter(Boolean);
@@ -44,17 +49,12 @@ export const TaskEditorTags = ({
         {taskTags.map((tag) => {
           if (!tag) return null;
           const Icon = getIconByName(tag.icon ?? 'tag');
+          const tagColor = tag.color ? resolveAccent(tag.color) : resolvedAccentColor;
           return (
-            <span
+            <TaskItemBadge
               key={tag.id}
-              className={`group box-border inline-flex h-6.5 items-center gap-1.5 rounded-sm border pr-1 pl-2 font-medium text-xs leading-none ${
-                readOnly ? 'cursor-not-allowed' : ''
-              }`}
-              style={{
-                borderColor: tag.color,
-                backgroundColor: `${tag.color}15`,
-                color: tag.color,
-              }}
+              color={tagColor}
+              className={`h-6.5 gap-1.5 pr-1 leading-none ${readOnly ? 'cursor-not-allowed' : ''}`}
             >
               {tag.emoji ? (
                 <span className="text-xs leading-none">{tag.emoji}</span>
@@ -71,7 +71,7 @@ export const TaskEditorTags = ({
                   <X className="h-3 w-3" />
                 </button>
               )}
-            </span>
+            </TaskItemBadge>
           );
         })}
 

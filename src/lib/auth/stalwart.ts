@@ -1,0 +1,449 @@
+/**
+ * Stalwart OAuth 2.0 + PKCE authentication
+ *
+ * flow:
+ *  1. discover OIDC/OAuth endpoints from serverUrl/.well-known/openid-configuration
+ *  2. register a public PKCE client dynamically (Stalwart allows this by default)
+ *  3. open browser to the authorization endpoint
+ *  4. Stalwart redirects to garden.chiri:/oauth/stalwart?code=...&state=...
+ *  5. exchange code + verifier for access + refresh tokens
+ *  6. derive username from the OIDC id_token's preferred_username/email claim
+ */
+
+import { invoke } from '@tauri-apps/api/core';
+import { openUrl } from '@tauri-apps/plugin-opener';
+import {
+  assertTokenResponseOk,
+  generateChallenge,
+  generateState,
+  generateVerifier,
+  type OAuthTokens,
+  parseTokenResponse,
+} from '$lib/auth/oauth';
+import { registerDeepLinkHandler, unregisterDeepLinkHandler } from '$lib/deepLink';
+import type { HttpResponse } from '$lib/http';
+import { loggers } from '$lib/logger';
+import type { ServerValidationResult } from '$types/account';
+
+const log = loggers.account;
+const STALWART_VALIDATION_TIMEOUT_MS = 10_000;
+const STALWART_REQUEST_TIMEOUT_MS = 15_000;
+
+export const STALWART_REDIRECT_URI = 'garden.chiri:/oauth/stalwart';
+export const STALWART_SCOPE = 'openid offline_access urn:ietf:params:oauth:scope:calendars';
+export const STALWART_OAUTH_PATH = '/oauth/stalwart';
+
+export interface StalwartTokens extends OAuthTokens {
+  /** Account identifier returned by the OIDC id_token (preferred_username or email) */
+  username: string;
+  /** Public client_id used to obtain the refresh token; must be reused on refresh */
+  clientId: string;
+}
+
+interface OAuthMetadata {
+  issuer: string;
+  authorization_endpoint: string;
+  token_endpoint: string;
+  registration_endpoint?: string;
+  device_authorization_endpoint?: string;
+}
+
+interface ClientRegistrationResponse {
+  client_id: string;
+  client_secret?: string;
+  client_id_issued_at?: number;
+  redirect_uris?: string[];
+}
+
+const normalizeServerUrl = (serverUrl: string): string => serverUrl.trim().replace(/\/$/, '');
+
+const MAX_REDIRECTS = 5;
+const REDIRECT_STATUS_CODES = new Set([301, 302, 303, 307, 308]);
+
+const HTTP_STATUS_TEXT: Record<number, string> = {
+  301: 'Moved Permanently',
+  302: 'Found',
+  303: 'See Other',
+  307: 'Temporary Redirect',
+  308: 'Permanent Redirect',
+  400: 'Bad Request',
+  401: 'Unauthorized',
+  403: 'Forbidden',
+  404: 'Not Found',
+  500: 'Internal Server Error',
+  502: 'Bad Gateway',
+  503: 'Service Unavailable',
+  504: 'Gateway Timeout',
+};
+
+const isHtmlResponse = (body: string): boolean =>
+  body.trim().length > 0 && body.trimStart().startsWith('<');
+
+const formatStalwartHttpError = (context: string, response: HttpResponse): string => {
+  const statusText = HTTP_STATUS_TEXT[response.status] ?? '';
+  const status = `${response.status}${statusText ? ` (${statusText})` : ''}`;
+
+  if (response.status === 404) {
+    return `${context}: the server responded with ${status}. Make sure you selected the correct server type and URL.`;
+  }
+
+  if (isHtmlResponse(response.body)) {
+    return `${context}: the server responded with ${status} and returned an HTML page instead of the expected JSON metadata.`;
+  }
+
+  const body = response.body.trim();
+  if (!body) {
+    return `${context}: the server responded with ${status}.`;
+  }
+
+  const snippet = body.length > 200 ? `${body.slice(0, 200)}…` : body;
+  return `${context}: the server responded with ${status}: ${snippet}`;
+};
+
+const getStalwartRedirectUrl = (response: HttpResponse, url: string): string => {
+  const location = response.headers.location ?? response.headers.Location;
+  if (!location) {
+    throw new Error(
+      formatStalwartHttpError('Failed to discover Stalwart OAuth endpoints', response),
+    );
+  }
+
+  const originalUrl = new URL(url);
+  const redirectUrl = new URL(location, url);
+  if (!['http:', 'https:'].includes(redirectUrl.protocol)) {
+    throw new Error(`Refusing redirect to unsupported protocol ${redirectUrl.protocol}.`);
+  }
+
+  if (
+    originalUrl.protocol === 'https:' &&
+    redirectUrl.protocol === 'http:' &&
+    redirectUrl.hostname === originalUrl.hostname
+  ) {
+    redirectUrl.protocol = 'https:';
+  }
+
+  return redirectUrl.toString();
+};
+
+export const discoverStalwartOAuthEndpoints = async (
+  serverUrl: string,
+  acceptInvalidCerts = false,
+  signal?: AbortSignal,
+): Promise<OAuthMetadata> => {
+  const base = normalizeServerUrl(serverUrl);
+  let requestUrl = `${base}/.well-known/openid-configuration`;
+
+  for (let attempt = 0; attempt <= MAX_REDIRECTS; attempt++) {
+    if (signal?.aborted) {
+      throw new DOMException('Stalwart OAuth discovery was aborted', 'AbortError');
+    }
+
+    const res = await invoke<HttpResponse>('http_request', {
+      url: requestUrl,
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      body: undefined,
+      acceptInvalidCerts,
+      timeoutMs: STALWART_REQUEST_TIMEOUT_MS,
+    });
+
+    if (signal?.aborted) {
+      throw new DOMException('Stalwart OAuth discovery was aborted', 'AbortError');
+    }
+
+    if (REDIRECT_STATUS_CODES.has(res.status)) {
+      if (attempt === MAX_REDIRECTS) {
+        throw new Error('Failed to discover Stalwart OAuth endpoints: too many redirects.');
+      }
+      requestUrl = getStalwartRedirectUrl(res, requestUrl);
+      continue;
+    }
+
+    if (res.status < 200 || res.status >= 300) {
+      throw new Error(formatStalwartHttpError('Failed to discover Stalwart OAuth endpoints', res));
+    }
+
+    const metadata = JSON.parse(res.body) as OAuthMetadata;
+    if (!metadata.authorization_endpoint || !metadata.token_endpoint) {
+      throw new Error(
+        'Stalwart OAuth metadata is missing authorization_endpoint or token_endpoint',
+      );
+    }
+
+    return metadata;
+  }
+
+  throw new Error('Failed to discover Stalwart OAuth endpoints: too many redirects.');
+};
+
+/**
+ * validates that the provided URL is a Stalwart server by attempting to
+ * discover its OIDC/OAuth endpoints.
+ */
+export const validateStalwartServer = async (
+  serverUrl: string,
+  signal?: AbortSignal,
+  acceptInvalidCerts = false,
+): Promise<ServerValidationResult> => {
+  const timeout = new Promise<never>((_, reject) => {
+    const id = setTimeout(
+      () => reject(new DOMException('Stalwart validation timed out', 'TimeoutError')),
+      STALWART_VALIDATION_TIMEOUT_MS,
+    );
+    signal?.addEventListener('abort', () => {
+      clearTimeout(id);
+      reject(new DOMException('Stalwart validation was aborted', 'AbortError'));
+    });
+  });
+
+  try {
+    await Promise.race([
+      discoverStalwartOAuthEndpoints(serverUrl, acceptInvalidCerts, signal),
+      timeout,
+    ]);
+    return { ok: true };
+  } catch (error) {
+    if (signal?.aborted) {
+      return { ok: false, reason: 'unreachable' };
+    }
+
+    if (
+      error instanceof DOMException &&
+      (error.name === 'TimeoutError' || error.name === 'AbortError')
+    ) {
+      return { ok: false, reason: 'timeout' };
+    }
+
+    if (error instanceof Error && error.message.toLowerCase().includes('timeout')) {
+      return { ok: false, reason: 'timeout' };
+    }
+
+    log.debug('Stalwart server validation failed', { error, url: serverUrl });
+    return { ok: false, reason: 'unreachable' };
+  }
+};
+
+export const registerStalwartOAuthClient = async (
+  registrationEndpoint: string,
+  acceptInvalidCerts = false,
+): Promise<string> => {
+  const res = await invoke<HttpResponse>('http_request', {
+    url: registrationEndpoint,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      client_name: 'Chiri',
+      redirect_uris: [STALWART_REDIRECT_URI],
+      grant_types: ['authorization_code', 'refresh_token'],
+      response_types: ['code'],
+      token_endpoint_auth_method: 'none',
+      scope: STALWART_SCOPE,
+    }),
+    acceptInvalidCerts,
+    timeoutMs: STALWART_REQUEST_TIMEOUT_MS,
+  });
+
+  if (res.status < 200 || res.status >= 300) {
+    throw new Error(`Failed to register Stalwart OAuth client (${res.status}): ${res.body}`);
+  }
+
+  const data = JSON.parse(res.body) as ClientRegistrationResponse;
+  if (!data.client_id) {
+    throw new Error('Stalwart OAuth client registration did not return a client_id');
+  }
+
+  return data.client_id;
+};
+
+export const startStalwartOAuth = (
+  serverUrl: string,
+  { acceptInvalidCerts = false }: { acceptInvalidCerts?: boolean } = {},
+): { promise: Promise<StalwartTokens>; cancel: () => void } => {
+  const { promise, resolve, reject } = Promise.withResolvers<StalwartTokens>();
+  let cancelled = false;
+
+  const cancel = () => {
+    if (cancelled) return;
+    cancelled = true;
+    unregisterDeepLinkHandler(STALWART_OAUTH_PATH);
+    reject(new Error('Stalwart OAuth flow was cancelled'));
+  };
+
+  (async () => {
+    try {
+      const metadata = await discoverStalwartOAuthEndpoints(serverUrl, acceptInvalidCerts);
+      if (cancelled) return;
+
+      const registrationEndpoint =
+        metadata.registration_endpoint ?? `${normalizeServerUrl(serverUrl)}/auth/register`;
+      const clientId = await registerStalwartOAuthClient(registrationEndpoint, acceptInvalidCerts);
+      if (cancelled) return;
+
+      const verifier = generateVerifier();
+      const challenge = await generateChallenge(verifier);
+      const state = generateState();
+
+      const params = new URLSearchParams({
+        response_type: 'code',
+        client_id: clientId,
+        redirect_uri: STALWART_REDIRECT_URI,
+        scope: STALWART_SCOPE,
+        code_challenge: challenge,
+        code_challenge_method: 'S256',
+        state,
+      });
+
+      const authUrl = `${metadata.authorization_endpoint}?${params}`;
+      log.info('[StalwartOAuth] Opening browser for authorization', { serverUrl });
+
+      const handler = async (url: URL) => {
+        unregisterDeepLinkHandler(STALWART_OAUTH_PATH);
+
+        const returnedState = url.searchParams.get('state');
+        const code = url.searchParams.get('code');
+        const error = url.searchParams.get('error');
+        const errorDescription = url.searchParams.get('error_description');
+
+        if (error) {
+          reject(new Error(errorDescription ? `${error}: ${errorDescription}` : error));
+          return;
+        }
+
+        if (returnedState !== state) {
+          reject(new Error('OAuth state mismatch (possible CSRF)'));
+          return;
+        }
+
+        if (!code) {
+          reject(new Error('No authorization code received'));
+          return;
+        }
+
+        try {
+          log.info('[StalwartOAuth] Exchanging code for tokens');
+          const tokens = await exchangeStalwartCode(
+            metadata.token_endpoint,
+            clientId,
+            code,
+            verifier,
+            acceptInvalidCerts,
+          );
+          resolve({ ...tokens, clientId });
+        } catch (e) {
+          reject(e);
+        }
+      };
+
+      registerDeepLinkHandler(STALWART_OAUTH_PATH, handler);
+
+      openUrl(authUrl).catch((e: unknown) => {
+        cancel();
+        reject(new Error(`Failed to open browser: ${e}`));
+      });
+    } catch (e) {
+      reject(e);
+    }
+  })();
+
+  return { promise, cancel };
+};
+
+const exchangeStalwartCode = async (
+  tokenEndpoint: string,
+  clientId: string,
+  code: string,
+  verifier: string,
+  acceptInvalidCerts: boolean,
+): Promise<OAuthTokens & { username: string }> => {
+  const body = new URLSearchParams({
+    grant_type: 'authorization_code',
+    client_id: clientId,
+    code,
+    redirect_uri: STALWART_REDIRECT_URI,
+    code_verifier: verifier,
+  });
+
+  const res = await invoke<HttpResponse>('http_request', {
+    url: tokenEndpoint,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString(),
+    acceptInvalidCerts,
+    timeoutMs: STALWART_REQUEST_TIMEOUT_MS,
+  });
+
+  assertTokenResponseOk(res, 'Token exchange');
+
+  const data = JSON.parse(res.body) as Record<string, unknown>;
+  const base = parseTokenResponse(data);
+  const username = usernameFromTokenResponse(data);
+
+  return { ...base, username };
+};
+
+export const refreshStalwartToken = async (
+  serverUrl: string,
+  refreshToken: string,
+  clientId?: string,
+  { acceptInvalidCerts = false }: { acceptInvalidCerts?: boolean } = {},
+): Promise<OAuthTokens> => {
+  const metadata = await discoverStalwartOAuthEndpoints(serverUrl, acceptInvalidCerts);
+  const body = new URLSearchParams({
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken,
+    scope: STALWART_SCOPE,
+  });
+  if (clientId) body.set('client_id', clientId);
+
+  const res = await invoke<HttpResponse>('http_request', {
+    url: metadata.token_endpoint,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString(),
+    acceptInvalidCerts,
+    timeoutMs: STALWART_REQUEST_TIMEOUT_MS,
+  });
+
+  assertTokenResponseOk(res, 'Token refresh');
+
+  const data = JSON.parse(res.body) as Record<string, unknown>;
+  return parseTokenResponse(data, refreshToken);
+};
+
+const usernameFromTokenResponse = (data: Record<string, unknown>): string => {
+  const idToken = data.id_token as string | undefined;
+  if (!idToken) return '';
+
+  try {
+    const payload = JSON.parse(decodeJwtPayload(idToken)) as Record<string, unknown>;
+    return (
+      (payload.preferred_username as string | undefined) ||
+      (payload.email as string | undefined) ||
+      ''
+    );
+  } catch {
+    return '';
+  }
+};
+
+const decodeJwtPayload = (token: string): string => {
+  const parts = token.split('.');
+  if (parts.length !== 3) {
+    throw new Error('Invalid JWT format');
+  }
+
+  const rawPayload = parts[1];
+  const padding = '='.repeat((4 - (rawPayload.length % 4)) % 4);
+  return atob((rawPayload + padding).replace(/-/g, '+').replace(/_/g, '/'));
+};
+
+/**
+ * extract the username (email) from a Stalwart CalDAV principal URL
+ * Stalwart principal URLs look like:
+ *   http://localhost:8082/dav/pal/unit-tests@example.test/
+ */
+export const usernameFromPrincipalUrl = (principalUrl: string) => {
+  const segment = principalUrl.replace(/\/$/, '').split('/').pop() ?? '';
+  if (segment.includes('@')) return segment;
+  return segment;
+};

@@ -31,12 +31,42 @@ export const ConnectionProvider = ({ children }: { children: ReactNode }) => {
     return connectionStore.hasConnection(accountId);
   }, []);
 
+  const getStatus = useCallback((accountId: string) => {
+    return connectionStore.getStatus(accountId);
+  }, []);
+
+  const beginConnection = useCallback((accountId: string) => {
+    connectionStore.beginConnection(accountId);
+  }, []);
+
+  const beginTesting = useCallback((accountId: string, operationId?: string) => {
+    return connectionStore.beginTesting(accountId, operationId);
+  }, []);
+
+  const endTesting = useCallback((accountId: string, operationId?: string) => {
+    connectionStore.endTesting(accountId, operationId);
+  }, []);
+
+  const isTesting = useCallback((accountId: string) => {
+    return connectionStore.isTesting(accountId);
+  }, []);
+
+  const isAnyTesting = useCallback(() => {
+    return connectionStore.isAnyTesting();
+  }, []);
+
   const value: ConnectionStore = {
     ...currentState,
     setConnection,
     getConnection,
     deleteConnection,
     hasConnection,
+    getStatus,
+    beginConnection,
+    beginTesting,
+    endTesting,
+    isTesting,
+    isAnyTesting,
   };
 
   return <ConnectionContext.Provider value={value}>{children}</ConnectionContext.Provider>;

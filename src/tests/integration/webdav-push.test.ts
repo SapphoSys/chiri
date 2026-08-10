@@ -12,7 +12,8 @@ import { connect } from '$lib/caldav/connection';
 import { registerPushSubscription, unregisterPushSubscription } from '$lib/caldav/push';
 import { createTask, deleteTask } from '$lib/caldav/tasks';
 import { generateWebPushKeyPair } from '$lib/push/keys';
-import type { Calendar, Task } from '$types';
+import type { Calendar } from '$types/calendar';
+import type { Task } from '$types/task/model';
 import { makeTask } from '../fixtures';
 import {
   calendarHomeOverride,
