@@ -111,7 +111,9 @@ export const getAppearanceColorState = ({
   const activeFlavor = getColorSchemeFlavor(colorScheme, colorSchemeFlavor, effectiveMode);
   const accentColors = activeFlavor.accentColors;
 
-  const schemeOptions: AppearanceColorOption[] = COLOR_SCHEMES.map((scheme) => {
+  const schemeOptions: AppearanceColorOption[] = COLOR_SCHEMES.filter((scheme) =>
+    scheme.flavors.some((flavor) => flavor.mode === effectiveMode),
+  ).map((scheme) => {
     const previewFlavor = getPreviewFlavor(scheme, activeScheme, activeFlavor, effectiveMode);
     const matchesEffectiveMode = scheme.flavors.some((flavor) => flavor.mode === effectiveMode);
 
