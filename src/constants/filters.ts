@@ -3,6 +3,7 @@ import type { Filter, FilterPresetDefinition } from '$types/filter';
 export const DEFAULT_FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
   {
     presetId: 'today',
+    category: 'date',
     name: 'Today',
     icon: 'calendar-check',
     combinator: 'all',
@@ -14,6 +15,7 @@ export const DEFAULT_FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
   },
   {
     presetId: 'overdue',
+    category: 'date',
     name: 'Overdue',
     icon: 'clock',
     combinator: 'all',
@@ -25,6 +27,7 @@ export const DEFAULT_FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
   },
   {
     presetId: 'scheduled',
+    category: 'date',
     name: 'Scheduled',
     icon: 'calendar-clock',
     combinator: 'all',
@@ -36,6 +39,7 @@ export const DEFAULT_FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
   },
   {
     presetId: 'this-week',
+    category: 'date',
     name: 'This Week',
     icon: 'calendar-days',
     combinator: 'all',
@@ -51,6 +55,7 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
   ...DEFAULT_FILTER_PRESET_DEFINITIONS,
   {
     presetId: 'recently-modified',
+    category: 'date',
     name: 'Recently Modified',
     icon: 'sparkles',
     combinator: 'all',
@@ -59,6 +64,7 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
   },
   {
     presetId: 'tomorrow',
+    category: 'date',
     name: 'Tomorrow',
     icon: 'calendar',
     combinator: 'all',
@@ -70,6 +76,7 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
   },
   {
     presetId: 'no-due-date',
+    category: 'date',
     name: 'No Due Date',
     icon: 'list-todo',
     combinator: 'all',
@@ -81,6 +88,7 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
   },
   {
     presetId: 'high-priority',
+    category: 'priority',
     name: 'High Priority',
     icon: 'flag',
     combinator: 'all',
@@ -92,6 +100,7 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
   },
   {
     presetId: 'untagged',
+    category: 'organization',
     name: 'Untagged',
     icon: 'tag',
     combinator: 'all',
@@ -103,6 +112,7 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
   },
   {
     presetId: 'recently-completed',
+    category: 'date',
     name: 'Recently Completed',
     icon: 'check-square',
     combinator: 'all',
