@@ -68,29 +68,27 @@ afterEach(() => {
 });
 
 describe('toastManager', () => {
-  it.each(
-    TYPE_METHODS,
-  )('$method() calls sonner toast.$method with a ToastTitle element and standardized options', ({
-    method,
-    mock,
-  }) => {
-    toastManager[method]('Title text', 'Detail message');
+  it.each(TYPE_METHODS)(
+    '$method() calls sonner toast.$method with a ToastTitle element and standardized options',
+    ({ method, mock }) => {
+      toastManager[method]('Title text', 'Detail message');
 
-    const [titleArg, optionsArg] = getOnlyCall(mock);
+      const [titleArg, optionsArg] = getOnlyCall(mock);
 
-    const title = asTitleElement(titleArg);
-    expect(title.type).toBe(ToastTitle);
-    expect(title.props.type).toBe(method);
-    expect(title.props.children).toBe('Title text');
+      const title = asTitleElement(titleArg);
+      expect(title.type).toBe(ToastTitle);
+      expect(title.props.type).toBe(method);
+      expect(title.props.children).toBe('Title text');
 
-    expect(optionsArg).toEqual({
-      description: 'Detail message',
-      duration: 5000,
-      closeButton: false,
-      icon: null,
-      action: undefined,
-    });
-  });
+      expect(optionsArg).toEqual({
+        description: 'Detail message',
+        duration: 5000,
+        closeButton: false,
+        icon: null,
+        action: undefined,
+      });
+    },
+  );
 
   it('forwards a null message as description: null so sonner skips the description block', () => {
     toastManager.info('Title only', null);

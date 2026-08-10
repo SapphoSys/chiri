@@ -55,21 +55,18 @@ const TYPE_CASES: Array<{
 ];
 
 describe('ToastTitle', () => {
-  it.each(
-    TYPE_CASES,
-  )('type="$type" renders the $lucideClass icon with $colorClass and sizing classes', async ({
-    type,
-    colorClass,
-    lucideClass,
-  }) => {
-    await render(<ToastTitle type={type}>Something happened</ToastTitle>);
+  it.each(TYPE_CASES)(
+    'type="$type" renders the $lucideClass icon with $colorClass and sizing classes',
+    async ({ type, colorClass, lucideClass }) => {
+      await render(<ToastTitle type={type}>Something happened</ToastTitle>);
 
-    const svg = getSvg();
-    const svgClass = svg.getAttribute('class') ?? '';
-    expect(svgClass).toContain('h-4 w-4 shrink-0');
-    expect(svgClass).toContain(colorClass);
-    expect(svg.classList.contains(lucideClass)).toBe(true);
-  });
+      const svg = getSvg();
+      const svgClass = svg.getAttribute('class') ?? '';
+      expect(svgClass).toContain('h-4 w-4 shrink-0');
+      expect(svgClass).toContain(colorClass);
+      expect(svg.classList.contains(lucideClass)).toBe(true);
+    },
+  );
 
   it.each(TYPE_CASES)('type="$type" marks the icon svg aria-hidden', async ({ type }) => {
     await render(<ToastTitle type={type}>Something happened</ToastTitle>);
