@@ -17,17 +17,19 @@ let
     src = pkgs.fetchFromGitHub {
       owner = "jelmer";
       repo = "xandikos";
-      rev = "master";
-      sha256 = "sha256-0OskWcCqAOdyM6BE/hDjv6uuZ0kf6fL1SDznraAYiUI=";
+      rev = "9b95735fa92f770298149889fae303be2e4d3e5f";
+      sha256 = "sha256-+8pBZEmXaoEpBZkd/It6QSJqDPVQG1FK4Dre8agcknA=";
     };
     postPatch = ''
       sed -i 's/if ssl_context is None:/if False:/' xandikos/web.py
     '';
-    dependencies = old.dependencies ++ (with pkgs.python3Packages; [
-      pywebpush
-      py-vapid
-      bcrypt
-    ]);
+    dependencies =
+      old.dependencies
+      ++ (with pkgs.python3Packages; [
+        pywebpush
+        py-vapid
+        bcrypt
+      ]);
   });
 
   package = pkgs.writeShellApplication {
