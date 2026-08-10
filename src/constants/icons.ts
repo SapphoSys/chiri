@@ -8,6 +8,7 @@ import Calendar from 'lucide-react/icons/calendar';
 import CalendarCheck from 'lucide-react/icons/calendar-check';
 import CalendarClock from 'lucide-react/icons/calendar-clock';
 import CalendarDays from 'lucide-react/icons/calendar-days';
+import CalendarOff from 'lucide-react/icons/calendar-off';
 import Camera from 'lucide-react/icons/camera';
 import Car from 'lucide-react/icons/car';
 import CheckSquare from 'lucide-react/icons/check-square';
@@ -68,6 +69,7 @@ export const CALENDAR_ICONS: { name: string; icon: LucideIcon }[] = [
   { name: 'calendar-check', icon: CalendarCheck },
   { name: 'calendar-clock', icon: CalendarClock },
   { name: 'calendar-days', icon: CalendarDays },
+  { name: 'calendar-off', icon: CalendarOff },
   { name: 'check-square', icon: CheckSquare },
   { name: 'list-todo', icon: ListTodo },
   { name: 'clock', icon: Clock },

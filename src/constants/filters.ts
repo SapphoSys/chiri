@@ -80,7 +80,7 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
     presetId: 'no-due-date',
     category: 'date',
     name: 'No Due Date',
-    icon: 'list-todo',
+    icon: 'calendar-off',
     combinator: 'all',
     sortOrder: 700,
     criteria: [
