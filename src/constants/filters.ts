@@ -12,6 +12,7 @@ export const DEFAULT_FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
       { field: 'dueDate', op: 'today' },
       { field: 'status', op: 'notIn', value: ['completed', 'cancelled'] },
     ],
+    taskDefaults: { dueDate: 'today' },
   },
   {
     presetId: 'overdue',
@@ -73,6 +74,7 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
       { field: 'dueDate', op: 'tomorrow' },
       { field: 'status', op: 'notIn', value: ['completed', 'cancelled'] },
     ],
+    taskDefaults: { dueDate: 'tomorrow' },
   },
   {
     presetId: 'no-due-date',
@@ -85,6 +87,7 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
       { field: 'dueDate', op: 'empty' },
       { field: 'status', op: 'notIn', value: ['completed', 'cancelled'] },
     ],
+    taskDefaults: { dueDate: 'none' },
   },
   {
     presetId: 'high-priority',
@@ -97,6 +100,7 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
       { field: 'priority', op: 'is', value: 'high' },
       { field: 'status', op: 'notIn', value: ['completed', 'cancelled'] },
     ],
+    taskDefaults: { priority: 'high' },
   },
   {
     presetId: 'untagged',

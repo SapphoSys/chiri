@@ -4,7 +4,7 @@ import { db } from '$lib/database';
 import { toAppleEpoch } from '$lib/ical/vtodo';
 import { loggers } from '$lib/logger';
 import { dataStore } from '$lib/store';
-import { resolveTaskTags } from '$lib/task/creation';
+import { getFilterTaskCreationDefaults, resolveTaskTags } from '$lib/task/creation';
 import { isExpiredRecentlyDeletedTask } from '$lib/task/deletion';
 import { isCompletedTask, matchesFilter } from '$lib/task/filtering';
 import { getNextOccurrence, parseRRule } from '$lib/task/recurrence';
@@ -78,6 +78,18 @@ const resolveDateOffset = (
 };
 
 const log = loggers.dataStore;
+
+const getActiveFilterTaskDefaults = (
+  data: ReturnType<typeof dataStore.load>,
+  options: TaskCreationOptions,
+) => {
+  if (options.source === 'remote' || options.source === 'import') return {};
+  if (data.ui.activeView !== 'filter') return {};
+
+  return getFilterTaskCreationDefaults(
+    data.filters.find((filter) => filter.id === data.ui.activeFilterId),
+  );
+};
 
 // helper: find calendar and account to use for new task
 const resolveCalendarAndAccount = (
@@ -239,6 +251,8 @@ export const createTask = (
   const { selectCreatedTask = false, ...databaseCreationOptions } = options;
   const now = new Date();
 
+  const filterTaskDefaults = getActiveFilterTaskDefaults(data, options);
+
   // get default calendar and task defaults from settings
   const {
     defaultCalendarId,
@@ -255,6 +269,8 @@ export const createTask = (
     defaultRepeatFrom,
     workingDays,
   } = settingsStore.getState();
+
+  const taskPriority = taskData.priority ?? filterTaskDefaults.priority ?? defaultPriority;
 
   // resolve tags using helper
   const tags = resolveTaskTags(taskData.tags, data.ui.activeTagId, defaultTags, options);
@@ -281,7 +297,7 @@ export const createTask = (
   const due =
     taskData.dueDate !== undefined
       ? { date: taskData.dueDate, allDay: taskData.dueDateAllDay ?? true }
-      : resolveDateOffset(defaultDueDate, undefined, workingDays);
+      : resolveDateOffset(filterTaskDefaults.dueDate ?? defaultDueDate, undefined, workingDays);
   if (due.date !== undefined && defaultDueTime != null && taskData.dueDate === undefined) {
     due.date = new Date(due.date);
     due.date.setHours(Math.floor(defaultDueTime / 60), defaultDueTime % 60, 0, 0);
@@ -290,7 +306,7 @@ export const createTask = (
   const start =
     taskData.startDate !== undefined
       ? { date: taskData.startDate, allDay: taskData.startDateAllDay ?? true }
-      : resolveDateOffset(defaultStartDate, due.date, workingDays);
+      : resolveDateOffset(filterTaskDefaults.startDate ?? defaultStartDate, due.date, workingDays);
   if (start.date !== undefined && defaultStartTime != null && taskData.startDate === undefined) {
     start.date = new Date(start.date);
     start.date.setHours(Math.floor(defaultStartTime / 60), defaultStartTime % 60, 0, 0);
@@ -315,7 +331,7 @@ export const createTask = (
       defaultPercentComplete,
       settingsStore.getState().syncStatusProgress,
     ),
-    priority: taskData.priority ?? defaultPriority,
+    priority: taskPriority,
     sortOrder: maxSortOrder + 1,
     accountId: accountId ?? '',
     calendarId: calendarId ?? taskData.calendarId ?? data.ui.activeCalendarId ?? '',

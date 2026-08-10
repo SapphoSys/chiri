@@ -1,3 +1,4 @@
+import type { TaskCreationDefaults } from '$types/task/creation';
 import type { Priority, Status } from '$types/task/model';
 
 type FilterCombinator = 'all' | 'any';
@@ -60,4 +61,5 @@ export type FilterPresetDefinition = Pick<
 > & {
   presetId: string;
   category: FilterPresetCategory;
+  taskDefaults?: TaskCreationDefaults;
 };
