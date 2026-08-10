@@ -1,7 +1,8 @@
 import type { DefaultDateOffset } from '$types/settings/categories/defaults';
-import type { Priority } from '$types/task/model';
+import type { Priority, Status } from '$types/task/model';
 
 export interface TaskCreationDefaults {
+  status?: Status;
   priority?: Priority;
   startDate?: DefaultDateOffset;
   dueDate?: DefaultDateOffset;

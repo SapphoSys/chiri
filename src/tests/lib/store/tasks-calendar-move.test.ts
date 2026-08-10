@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Filter } from '$types/filter';
 import type { SettingsState } from '$types/settings/state';
 import type { PendingDeletion } from '$types/store/sync';
 import type { Task } from '$types/task/model';
@@ -509,6 +510,82 @@ describe('createTask: selected task publication', () => {
       taskIds: ['previous-task', createdTask.id],
       selectedTaskId: createdTask.id,
     });
+  });
+});
+
+describe('createTask: active filter defaults', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    seedStore([]);
+  });
+
+  it('applies a predefined priority to new tasks in a priority filter', () => {
+    const highPriorityFilter: Filter = {
+      id: 'filter-high-priority',
+      presetId: 'high-priority',
+      name: 'High Priority',
+      combinator: 'all',
+      criteria: [{ field: 'priority', op: 'is', value: 'high' }],
+      sortOrder: 100,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    dataStore.save({
+      ...defaultDataStore,
+      filters: [highPriorityFilter],
+      ui: { ...defaultUIState, activeView: 'filter', activeFilterId: highPriorityFilter.id },
+    });
+
+    expect(createTask({ title: 'Important task' }).priority).toBe('high');
+    expect(createTask({ title: 'Explicitly low task', priority: 'low' }).priority).toBe('low');
+  });
+
+  it('applies a predefined status to new tasks in the in-progress filter', () => {
+    const inProgressFilter: Filter = {
+      id: 'filter-in-progress',
+      presetId: 'in-progress',
+      name: 'In Progress',
+      combinator: 'all',
+      criteria: [{ field: 'status', op: 'is', value: 'in-process' }],
+      sortOrder: 100,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    dataStore.save({
+      ...defaultDataStore,
+      filters: [inProgressFilter],
+      ui: { ...defaultUIState, activeView: 'filter', activeFilterId: inProgressFilter.id },
+    });
+
+    expect(createTask({ title: 'Started task' })).toMatchObject({
+      status: 'in-process',
+      completed: false,
+      percentComplete: 1,
+    });
+  });
+
+  it('clears the configured start-date default in the no-start-date filter', () => {
+    mockGetSettingsState.mockReturnValue({
+      ...mockSettingsState,
+      defaultStartDate: 'today',
+    });
+    const noStartDateFilter: Filter = {
+      id: 'filter-no-start-date',
+      presetId: 'no-start-date',
+      name: 'No Start Date',
+      combinator: 'all',
+      criteria: [{ field: 'startDate', op: 'empty' }],
+      sortOrder: 100,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    dataStore.save({
+      ...defaultDataStore,
+      filters: [noStartDateFilter],
+      ui: { ...defaultUIState, activeView: 'filter', activeFilterId: noStartDateFilter.id },
+    });
+
+    expect(createTask({ title: 'Unscheduled task' }).startDate).toBeUndefined();
   });
 });
 

@@ -270,6 +270,7 @@ export const createTask = (
     workingDays,
   } = settingsStore.getState();
 
+  const taskStatus = taskData.status ?? filterTaskDefaults.status ?? defaultStatus;
   const taskPriority = taskData.priority ?? filterTaskDefaults.priority ?? defaultPriority;
 
   // resolve tags using helper
@@ -322,12 +323,12 @@ export const createTask = (
     uid: generateUUID(),
     title: taskData.title ?? 'New Task',
     description: taskData.description ?? '',
-    status: taskData.status ?? defaultStatus,
-    completed: (taskData.status ?? defaultStatus) === 'completed',
+    status: taskStatus,
+    completed: taskStatus === 'completed',
     percentComplete: getNewTaskPercentComplete(
       taskData.status,
       taskData.percentComplete,
-      defaultStatus,
+      taskStatus,
       defaultPercentComplete,
       settingsStore.getState().syncStatusProgress,
     ),
