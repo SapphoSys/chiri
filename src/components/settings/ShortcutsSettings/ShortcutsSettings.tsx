@@ -96,7 +96,7 @@ export const ShortcutsSettings = ({
               onClick={resetShortcuts}
               disabled={!hasCustomShortcuts}
               aria-label={resetTitle}
-              className="flex items-center gap-1.5 rounded-sm bg-surface-100 px-2 py-1 text-surface-700 text-xs outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset enabled:hover:bg-surface-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-surface-700 dark:text-surface-300 dark:enabled:hover:bg-surface-600"
+              className="flex items-center gap-1.5 rounded-sm bg-surface-100 px-2 py-1 text-surface-700 text-xs outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset enabled:hover:bg-surface-200 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-surface-700 dark:text-surface-300 dark:enabled:hover:bg-surface-600"
             >
               <RotateCcw className="h-3 w-3" />
               Reset to defaults
@@ -105,7 +105,7 @@ export const ShortcutsSettings = ({
         </div>
 
         <div className="relative">
-          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-surface-400" />
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-surface-500 dark:text-surface-400" />
           <input
             ref={searchInputRef}
             type="text"
@@ -120,7 +120,7 @@ export const ShortcutsSettings = ({
               type="button"
               onClick={() => setSearchQuery('')}
               aria-label="Clear search"
-              className="absolute top-1/2 right-2.5 -translate-y-1/2 rounded-sm p-0.5 text-surface-400 transition-colors hover:text-surface-600 dark:hover:text-surface-300"
+              className="absolute top-1/2 right-2.5 -translate-y-1/2 rounded-sm p-0.5 text-surface-500 transition-colors hover:text-surface-600 dark:text-surface-400 dark:hover:text-surface-300"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -130,7 +130,7 @@ export const ShortcutsSettings = ({
         <div className="space-y-6">
           {isSearching && renderedGroups.length === 0 ? (
             <div className="flex flex-col items-center gap-2 py-8 text-center">
-              <Search className="h-7 w-7 text-surface-300 dark:text-surface-600" />
+              <Search className="h-7 w-7 text-surface-500 dark:text-surface-500" />
               <p className="text-sm text-surface-500 dark:text-surface-400">
                 No shortcuts match{' '}
                 <span className="font-medium text-surface-700 dark:text-surface-300">
@@ -144,7 +144,7 @@ export const ShortcutsSettings = ({
                 <h4 className="mb-1.5 font-semibold text-sm text-surface-700 dark:text-surface-300">
                   {group.label}
                 </h4>
-                <div className="overflow-hidden rounded-lg border border-surface-200 dark:border-surface-700">
+                <div className="overflow-hidden rounded-lg border border-surface-300 dark:border-surface-700">
                   {group.shortcuts.map((shortcut, index) => (
                     <ShortcutsSettingsRow
                       key={shortcut.id}

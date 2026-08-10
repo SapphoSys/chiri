@@ -32,6 +32,7 @@ export const TaskEditorPriority = ({ task, readOnly = false }: PriorityProps) =>
             key={p.value}
             onClick={() => handlePriorityChange(p.value)}
             disabled={readOnly}
+            aria-pressed={task.priority === p.value}
             className={`flex-1 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
               task.priority === p.value
                 ? `${p.borderColor} ${p.bgColor} text-surface-900 dark:text-surface-100`

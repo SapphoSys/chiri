@@ -13,7 +13,7 @@ const SWITCHER_CLASS =
 const SWITCHER_ACTIVE =
   'border-surface-300 dark:border-surface-500 bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100';
 const SWITCHER_INACTIVE =
-  'border-surface-200 dark:border-surface-700 hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400';
+  'border-surface-300 dark:border-surface-700 hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400';
 
 export const AppearanceSettings = () => {
   const {
@@ -68,7 +68,7 @@ export const AppearanceSettings = () => {
     <div className="space-y-4">
       <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Appearance</h3>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="p-4">
           <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">Theme</p>
           <div className="flex gap-2">
@@ -87,7 +87,7 @@ export const AppearanceSettings = () => {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="p-4">
           <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
             Color scheme
@@ -114,7 +114,7 @@ export const AppearanceSettings = () => {
           )}
         </div>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <div className="p-4">
           <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
@@ -132,7 +132,7 @@ export const AppearanceSettings = () => {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label className="flex cursor-pointer items-center justify-between gap-4 p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">
@@ -146,11 +146,11 @@ export const AppearanceSettings = () => {
             type="checkbox"
             checked={useAccentColorForCheckboxes}
             onChange={(e) => setUseAccentColorForCheckboxes(e.target.checked)}
-            className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            className="shrink-0 rounded-sm border-surface-400 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           />
         </label>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <label className="flex cursor-pointer items-center justify-between gap-4 p-4">
           <div>
@@ -165,7 +165,7 @@ export const AppearanceSettings = () => {
             type="checkbox"
             checked={showCursorPointers}
             onChange={(e) => setShowCursorPointers(e.target.checked)}
-            className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            className="shrink-0 rounded-sm border-surface-400 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           />
         </label>
       </div>

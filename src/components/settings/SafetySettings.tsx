@@ -14,12 +14,12 @@ const Section = ({ children, title }: { children: ReactNode; title: string }) =>
 );
 
 const Card = ({ children }: { children: ReactNode }) => (
-  <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+  <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
     {children}
   </div>
 );
 
-const RowDivider = () => <div className="border-surface-200 border-t dark:border-surface-700" />;
+const RowDivider = () => <div className="border-surface-300 border-t dark:border-surface-700" />;
 
 const Label = ({ children }: { children: ReactNode }) => (
   <p className="text-sm text-surface-700 dark:text-surface-300">{children}</p>
@@ -98,7 +98,7 @@ export const SafetySettings = () => {
 
           {autoEmptyRecentlyDeleted && (
             <div className="px-4 pb-4">
-              <div className="border-surface-200 border-l-2 pl-4 dark:border-surface-600">
+              <div className="border-surface-300 border-l-2 pl-4 dark:border-surface-600">
                 <div className="flex items-center justify-between gap-4">
                   <div className="min-w-0">
                     <Label>Recently Deleted retention</Label>

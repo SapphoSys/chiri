@@ -185,7 +185,7 @@ export const PushSettings = () => {
           </button>
         </div>
       </div>
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label
           className={`flex items-center justify-between p-4 ${pushGated ? 'cursor-not-allowed opacity-50' : ''}`}
         >
@@ -215,7 +215,7 @@ export const PushSettings = () => {
 
         {enablePush && !pushGated && (
           <>
-            <div className="border-surface-200 border-t dark:border-surface-700" />
+            <div className="border-surface-300 border-t dark:border-surface-700" />
 
             <div className="flex items-center justify-between p-4">
               <div>
@@ -241,7 +241,7 @@ export const PushSettings = () => {
 
             {pushProviderConfig.providerId === NTFY_DIRECT_PROVIDER_ID && (
               <>
-                <div className="border-surface-200 border-t dark:border-surface-700" />
+                <div className="border-surface-300 border-t dark:border-surface-700" />
 
                 <div className="space-y-2 p-4">
                   <div>
@@ -258,7 +258,7 @@ export const PushSettings = () => {
                     onBlur={commitDraftNtfyServerUrl}
                     onChange={(e) => setDraftNtfyServerUrl(e.target.value)}
                     placeholder={DEFAULT_NTFY_SERVER_URL}
-                    className="w-full rounded-lg border border-surface-200 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                    className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                   />
                 </div>
               </>
@@ -266,7 +266,7 @@ export const PushSettings = () => {
 
             {pushProviderConfig.providerId === MOZILLA_AUTOPUSH_PROVIDER_ID && (
               <>
-                <div className="border-surface-200 border-t dark:border-surface-700" />
+                <div className="border-surface-300 border-t dark:border-surface-700" />
 
                 <div className="space-y-4 p-4">
                   <div className="space-y-2">
@@ -284,7 +284,7 @@ export const PushSettings = () => {
                       onBlur={commitDraftMozillaAutopushWebsocketUrl}
                       onChange={(e) => setDraftMozillaAutopushWebsocketUrl(e.target.value)}
                       placeholder={DEFAULT_MOZILLA_AUTOPUSH_WEBSOCKET_URL}
-                      className="w-full rounded-lg border border-surface-200 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                      className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                     />
                   </div>
 
@@ -301,7 +301,7 @@ export const PushSettings = () => {
                       onBlur={commitDraftMozillaAutopushEndpointUrl}
                       onChange={(e) => setDraftMozillaAutopushEndpointUrl(e.target.value)}
                       placeholder={DEFAULT_MOZILLA_AUTOPUSH_ENDPOINT_URL}
-                      className="w-full rounded-lg border border-surface-200 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                      className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                     />
                   </div>
                 </div>
@@ -312,7 +312,7 @@ export const PushSettings = () => {
       </div>
 
       {enablePush && (
-        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
           <div className="flex items-center justify-between gap-4 p-4">
             <div className="min-w-0">
               <p className="text-sm text-surface-700 dark:text-surface-300">Provider test</p>
@@ -336,7 +336,7 @@ export const PushSettings = () => {
           </div>
 
           {showProviderResult && (
-            <div className="mx-4 mb-4 rounded-lg border border-surface-200 bg-surface-50 px-3 py-2 text-xs dark:border-surface-700 dark:bg-surface-900/60">
+            <div className="mx-4 mb-4 rounded-lg border border-surface-300 bg-surface-50 px-3 py-2 text-xs dark:border-surface-700 dark:bg-surface-900/60">
               <div className="flex gap-2">
                 {providerChecking ? (
                   <Loader2 className="mt-px size-4 shrink-0 text-semantic-info motion-safe:animate-spin" />
@@ -373,7 +373,7 @@ export const PushSettings = () => {
       )}
 
       {enablePush && (
-        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
           <label className="flex items-center justify-between p-4">
             <div>
               <p className="text-sm text-surface-700 dark:text-surface-300">

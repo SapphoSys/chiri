@@ -21,7 +21,7 @@ export const AddRepeatRuleButton = ({ presets, onSelect, onCustom }: AddRepeatRu
         onClick={() => setShowPresets((open) => !open)}
         aria-haspopup="menu"
         aria-expanded={showPresets}
-        className="inline-flex items-center gap-1 rounded-sm border border-surface-200 bg-surface-50 px-2 py-1 text-surface-500 text-xs outline-hidden transition-colors hover:border-surface-400 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400 dark:hover:border-surface-500"
+        className="inline-flex items-center gap-1 rounded-sm border border-surface-300 bg-surface-100 px-2 py-1 text-surface-700 text-xs outline-hidden transition-colors hover:border-surface-400 hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-300 dark:hover:border-surface-500 dark:hover:bg-surface-700"
       >
         <Plus className="h-3 w-3" />
         Add repeat rule

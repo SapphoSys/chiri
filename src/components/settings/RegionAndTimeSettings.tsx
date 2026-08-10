@@ -15,7 +15,7 @@ export const RegionAndTimeSettings = () => {
       <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">
         Region & time
       </h3>
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between gap-4 p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Date format</p>
@@ -36,7 +36,7 @@ export const RegionAndTimeSettings = () => {
           </Select>
         </div>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <div className="flex items-center justify-between gap-4 p-4">
           <div>
@@ -68,7 +68,7 @@ export const RegionAndTimeSettings = () => {
           </div>
         </div>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <div className="flex items-center justify-between gap-4 p-4">
           <div>

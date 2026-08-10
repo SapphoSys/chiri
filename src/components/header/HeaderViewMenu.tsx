@@ -71,7 +71,7 @@ export const HeaderViewMenu = ({
           dropdownClassName="z-50 min-w-60"
           dataAttribute="data-context-menu-content"
         >
-          <div className="border-surface-200 border-b px-3 py-2 dark:border-surface-700">
+          <div className="border-surface-300 border-b px-3 py-2 dark:border-surface-700">
             <ViewMenuCheckbox
               label="Show completed"
               checked={showCompletedTasks}
@@ -105,7 +105,7 @@ export const HeaderViewMenu = ({
                   <span className="truncate text-surface-500 text-xs dark:text-surface-400">
                     {SORT_OPTIONS.find((option) => option.value === sortConfig.mode)?.label}
                   </span>
-                  <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
+                  <ChevronRight className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400" />
                 </div>
               </button>
 
@@ -145,7 +145,7 @@ export const HeaderViewMenu = ({
                         ?.label
                     }
                   </span>
-                  <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
+                  <ChevronRight className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400" />
                 </div>
               </button>
 

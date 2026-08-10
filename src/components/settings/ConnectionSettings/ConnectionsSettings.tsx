@@ -163,7 +163,7 @@ export const ConnectionsSettings = ({
 
       <div>
         {accounts.length === 0 ? (
-          <div className="rounded-lg border border-surface-200 p-4 dark:border-surface-700">
+          <div className="rounded-lg border border-surface-300 p-4 dark:border-surface-700">
             <p className="text-sm text-surface-500 dark:text-surface-400">
               No accounts connected yet.
             </p>
@@ -180,7 +180,7 @@ export const ConnectionsSettings = ({
               return (
                 <div
                   key={account.id}
-                  className="overflow-hidden rounded-lg border border-surface-200 bg-surface-50 dark:border-surface-700 dark:bg-surface-900/50"
+                  className="overflow-hidden rounded-lg border border-surface-300 bg-surface-50 dark:border-surface-700 dark:bg-surface-900/50"
                 >
                   <div className="flex justify-between gap-3 p-4">
                     <div className="flex flex-col">

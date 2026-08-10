@@ -92,19 +92,19 @@ export const NotificationSettingsSortableAction = ({
 
   return (
     <div ref={setNodeRef} style={style} className="bg-white dark:bg-surface-800">
-      {showBorder && <div className="border-surface-200 border-t dark:border-surface-700" />}
+      {showBorder && <div className="border-surface-300 border-t dark:border-surface-700" />}
       <div className="flex items-center justify-between gap-4 p-4">
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
-            className="shrink-0 cursor-grab rounded-sm text-surface-400 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 active:cursor-grabbing dark:text-surface-500"
+            className="shrink-0 cursor-grab rounded-sm text-surface-500 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 active:cursor-grabbing dark:text-surface-500"
             aria-label={`Reorder ${action.label}`}
             {...attributes}
             {...listeners}
           >
             <GripVertical className="h-4 w-4" />
           </button>
-          <span className="shrink-0 text-surface-400 dark:text-surface-500">{action.icon}</span>
+          <span className="shrink-0 text-surface-500 dark:text-surface-500">{action.icon}</span>
           <div className="min-w-0">
             <p className="text-sm text-surface-700 dark:text-surface-300">{action.label}</p>
             <p className="text-surface-500 text-xs dark:text-surface-400">{action.description}</p>
@@ -120,7 +120,7 @@ export const NotificationSettingsSortableAction = ({
       </div>
       {isSnooze && checked && !isOverlay && (
         <div className="px-4 pb-3">
-          <div className="border-surface-200 border-l-2 pl-4 dark:border-surface-600">
+          <div className="border-surface-300 border-l-2 pl-4 dark:border-surface-600">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="min-w-0">
@@ -145,7 +145,7 @@ export const NotificationSettingsSortableAction = ({
                         );
                       }}
                       disabled={disabled}
-                      className="w-20 shrink-0 rounded-lg border border-surface-200 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                      className="w-20 shrink-0 rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                     />
                     <Select
                       value={duration.unit}
@@ -153,7 +153,7 @@ export const NotificationSettingsSortableAction = ({
                         updateSnoozeUnit(duration.id, e.target.value as SnoozeDuration['unit'])
                       }
                       disabled={disabled}
-                      className="shrink-0 rounded-lg border border-surface-200 bg-surface-50 px-2 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                      className="shrink-0 rounded-lg border border-surface-300 bg-surface-50 px-2 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                     >
                       {SNOOZE_DURATION_UNITS.map((option) => (
                         <option key={option.value} value={option.value}>

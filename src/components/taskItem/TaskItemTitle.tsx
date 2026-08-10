@@ -16,8 +16,8 @@ export const TaskItemTitle = ({
   className = '',
 }: TaskItemTitleProps) => {
   const getTextClass = () => {
-    if (status === 'completed') return 'line-through text-surface-400';
-    if (status === 'cancelled') return 'line-through text-surface-400 dark:text-surface-500';
+    if (status === 'completed') return 'line-through text-surface-500 dark:text-surface-400';
+    if (status === 'cancelled') return 'line-through text-surface-500 dark:text-surface-500';
     if (isUnstarted) return 'text-surface-500 dark:text-surface-400';
     return 'text-surface-800 dark:text-surface-200';
   };
@@ -25,7 +25,7 @@ export const TaskItemTitle = ({
   return (
     <div className={`${className} ${getTextClass()}`}>
       {title || (
-        <span className="text-surface-400 italic">
+        <span className="text-surface-500 italic dark:text-surface-500">
           {isSubtask ? 'Untitled subtask' : 'Untitled task'}
         </span>
       )}

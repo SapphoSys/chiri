@@ -36,7 +36,7 @@ const SyncEmptyState = ({ hasCalDAVAccounts }: { hasCalDAVAccounts: boolean }) =
     <div className="flex gap-2">
       <Icon
         className={`mt-px size-4 shrink-0 ${
-          hasCalDAVAccounts ? 'text-surface-400' : 'text-semantic-warning'
+          hasCalDAVAccounts ? 'text-surface-500' : 'text-semantic-warning'
         }`}
       />
       <div className="min-w-0 space-y-1">
@@ -92,7 +92,7 @@ export const SyncSettings = () => {
 
       <section className="space-y-2">
         <h4 className="font-semibold text-sm text-surface-700 dark:text-surface-300">Status</h4>
-        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
           <div className="flex items-center justify-between gap-4 p-4">
             <div className="min-w-0">
               <p className="text-sm text-surface-700 dark:text-surface-300">Sync status</p>
@@ -117,7 +117,7 @@ export const SyncSettings = () => {
             </button>
           </div>
 
-          <div className="mx-4 mb-4 rounded-lg border border-surface-200 bg-surface-50 px-3 py-2 text-xs dark:border-surface-700 dark:bg-surface-900/60">
+          <div className="mx-4 mb-4 rounded-lg border border-surface-300 bg-surface-50 px-3 py-2 text-xs dark:border-surface-700 dark:bg-surface-900/60">
             {isSyncInProgress ? (
               <div className="flex gap-2">
                 <Loader2 className="mt-px size-4 shrink-0 text-semantic-info motion-safe:animate-spin" />
@@ -165,7 +165,7 @@ export const SyncSettings = () => {
 
       <section className="space-y-2">
         <h4 className="font-semibold text-sm text-surface-700 dark:text-surface-300">Schedule</h4>
-        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
           <label className="flex items-center justify-between gap-4 p-4">
             <div className="min-w-0">
               <p className="text-sm text-surface-700 dark:text-surface-300">Scheduled sync</p>
@@ -181,7 +181,7 @@ export const SyncSettings = () => {
             />
           </label>
 
-          <div className="border-surface-200 border-t dark:border-surface-700" />
+          <div className="border-surface-300 border-t dark:border-surface-700" />
 
           <div className="flex items-center justify-between gap-4 p-4">
             <div className="min-w-0">
@@ -209,7 +209,7 @@ export const SyncSettings = () => {
 
       <section className="space-y-2">
         <h4 className="font-semibold text-sm text-surface-700 dark:text-surface-300">Triggers</h4>
-        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
           <label className="flex items-center justify-between gap-4 p-4">
             <div className="min-w-0">
               <p className="text-sm text-surface-700 dark:text-surface-300">Sync on startup</p>
@@ -225,7 +225,7 @@ export const SyncSettings = () => {
             />
           </label>
 
-          <div className="border-surface-200 border-t dark:border-surface-700" />
+          <div className="border-surface-300 border-t dark:border-surface-700" />
 
           <label className="flex items-center justify-between gap-4 p-4">
             <div className="min-w-0">

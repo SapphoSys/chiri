@@ -209,7 +209,7 @@ export const BatchTaskTagsModal = ({
       >
         <div className="p-4 pb-3">
           <div className="relative">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-surface-400" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-surface-500 dark:text-surface-400" />
             <input
               ref={searchInputRef}
               type="text"
@@ -249,7 +249,7 @@ export const BatchTaskTagsModal = ({
                     <span
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border ${
                         selectionState === 'none'
-                          ? 'border-surface-300 dark:border-surface-600'
+                          ? 'border-surface-400 dark:border-surface-600'
                           : 'border-primary-500 bg-primary-500 text-primary-contrast'
                       }`}
                     >
@@ -276,7 +276,7 @@ export const BatchTaskTagsModal = ({
             {canCreateTag && (
               <button type="button" onClick={openCreateTagModal} className={tagRowButtonClass}>
                 <span className={`${tagRowContentClass} text-surface-700 dark:text-surface-300`}>
-                  <Plus className="h-4 w-4 shrink-0 text-surface-400" />
+                  <Plus className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400" />
                   {trimmedSearchQuery ? `Create tag "${trimmedSearchQuery}"` : 'Create a new tag'}
                 </span>
               </button>

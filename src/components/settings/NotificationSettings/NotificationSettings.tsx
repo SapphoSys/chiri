@@ -154,7 +154,7 @@ export const NotificationSettings = () => {
         Notifications
       </h3>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="p-4">
           <label
             className={`flex items-center justify-between ${macPermissionPending ? 'cursor-not-allowed opacity-50' : ''}`}
@@ -170,7 +170,7 @@ export const NotificationSettings = () => {
               checked={notifications}
               onChange={(e) => setNotifications(e.target.checked)}
               disabled={macPermissionPending}
-              className="rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+              className="rounded-sm border-surface-400 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed"
             />
           </label>
           {macPermissionPending && (
@@ -182,7 +182,7 @@ export const NotificationSettings = () => {
 
         {notifications && (
           <div className="px-4 pb-4">
-            <div className="space-y-3 border-surface-200 border-l-2 pl-4 dark:border-surface-600">
+            <div className="space-y-3 border-surface-300 border-l-2 pl-4 dark:border-surface-600">
               <label
                 className={`flex items-center justify-between ${macPermissionPending ? 'cursor-not-allowed opacity-50' : ''}`}
               >
@@ -197,7 +197,7 @@ export const NotificationSettings = () => {
                   checked={notifyReminders}
                   onChange={(e) => setNotifyReminders(e.target.checked)}
                   disabled={macPermissionPending}
-                  className="rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+                  className="rounded-sm border-surface-400 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed"
                 />
               </label>
 
@@ -215,7 +215,7 @@ export const NotificationSettings = () => {
                   checked={notifyOverdue}
                   onChange={(e) => setNotifyOverdue(e.target.checked)}
                   disabled={macPermissionPending}
-                  className="rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+                  className="rounded-sm border-surface-400 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed"
                 />
               </label>
             </div>
@@ -231,7 +231,7 @@ export const NotificationSettings = () => {
         />
       )}
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label className="flex cursor-pointer items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">App icon badge count</p>
@@ -243,12 +243,12 @@ export const NotificationSettings = () => {
             type="checkbox"
             checked={showAppIconBadge}
             onChange={(e) => setShowAppIconBadge(e.target.checked)}
-            className="rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+            className="rounded-sm border-surface-400 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed"
           />
         </label>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label className="flex items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Quiet hours</p>
@@ -260,13 +260,13 @@ export const NotificationSettings = () => {
             type="checkbox"
             checked={quietHoursEnabled}
             onChange={(e) => setQuietHoursEnabled(e.target.checked)}
-            className="rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            className="rounded-sm border-surface-400 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           />
         </label>
 
         {quietHoursEnabled && (
           <div className="px-4 pb-4">
-            <div className="space-y-3 border-surface-200 border-l-2 pl-4 dark:border-surface-600">
+            <div className="space-y-3 border-surface-300 border-l-2 pl-4 dark:border-surface-600">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-surface-600 dark:text-surface-400">From</p>
                 <button
@@ -293,7 +293,7 @@ export const NotificationSettings = () => {
         )}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label className="flex items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">All-day reminders</p>
@@ -305,13 +305,13 @@ export const NotificationSettings = () => {
             type="checkbox"
             checked={allDayReminderNotificationsEnabled}
             onChange={(e) => setAllDayReminderNotificationsEnabled(e.target.checked)}
-            className="rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            className="rounded-sm border-surface-400 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           />
         </label>
 
         {allDayReminderNotificationsEnabled && (
           <div className="px-4 pb-4">
-            <div className="border-surface-200 border-l-2 pl-4 dark:border-surface-600">
+            <div className="border-surface-300 border-l-2 pl-4 dark:border-surface-600">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-surface-600 dark:text-surface-400">Notification time</p>
                 <button
@@ -341,7 +341,7 @@ export const NotificationSettings = () => {
           </p>
         </div>
       </div>
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}

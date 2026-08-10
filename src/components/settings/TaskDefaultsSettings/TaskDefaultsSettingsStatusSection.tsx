@@ -101,7 +101,7 @@ export const TaskDefaultsSettingsStatusSection = () => {
         )}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="p-4">
           <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">Status</p>
           <div className="grid grid-cols-2 gap-2">
@@ -113,7 +113,7 @@ export const TaskDefaultsSettingsStatusSection = () => {
                 className={`flex items-center gap-2 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                   defaultStatus === value
                     ? activeClass
-                    : `border-surface-200 text-surface-600 ${hoverBorderColor} hover:bg-surface-50 hover:text-surface-700 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-300`
+                    : `border-surface-300 text-surface-600 ${hoverBorderColor} hover:bg-surface-50 hover:text-surface-700 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-300`
                 }`}
               >
                 <Icon className="h-4 w-4 shrink-0" />
@@ -123,7 +123,7 @@ export const TaskDefaultsSettingsStatusSection = () => {
           </div>
         </div>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <div className="p-4">
           <div className="mb-1 flex items-center justify-between">
@@ -143,8 +143,8 @@ export const TaskDefaultsSettingsStatusSection = () => {
             className="w-full"
           />
           <div className="mt-1 flex justify-between">
-            <span className="text-surface-400 text-xs">0%</span>
-            <span className="text-surface-400 text-xs">100%</span>
+            <span className="text-surface-500 text-xs">0%</span>
+            <span className="text-surface-500 text-xs">100%</span>
           </div>
         </div>
       </div>

@@ -69,7 +69,7 @@ export const TaskEditorReminders = ({
                 : 'cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-700'
             }`}
           >
-            <BellRing className="h-4 w-4 shrink-0 text-surface-400" />
+            <BellRing className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400" />
             <span className="flex-1 text-sm text-surface-700 dark:text-surface-300">
               {formatDate(new Date(reminder.trigger), true)}{' '}
               {formatTime(new Date(reminder.trigger), timeFormat)}
@@ -81,7 +81,7 @@ export const TaskEditorReminders = ({
                   e.stopPropagation();
                   onRemoveReminder(reminder.id);
                 }}
-                className="invisible rounded-full p-1 text-surface-400 outline-hidden hover:bg-surface-100 hover:text-semantic-error focus-visible:visible focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset group-hover:visible dark:hover:bg-surface-800"
+                className="invisible rounded-full p-1 text-surface-500 outline-hidden hover:bg-surface-100 hover:text-semantic-error focus-visible:visible focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset group-hover:visible dark:text-surface-400 dark:hover:bg-surface-800"
                 title="Remove reminder"
               >
                 <X className="h-4 w-4" />

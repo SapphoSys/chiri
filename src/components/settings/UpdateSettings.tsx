@@ -60,7 +60,7 @@ export const UpdateSettings = () => {
     <div className="space-y-4">
       <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Updates</h3>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between p-4">
           <p className="text-sm text-surface-700 dark:text-surface-300">Current version</p>
           <span className="font-medium text-sm text-surface-800 dark:text-surface-200">
@@ -68,7 +68,7 @@ export const UpdateSettings = () => {
           </span>
         </div>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         {!isManagedInstallLoading && isManagedInstall && (
           <div className="flex items-start gap-2 bg-semantic-info/10 px-4 py-3 text-surface-700 dark:text-surface-300">
@@ -102,7 +102,7 @@ export const UpdateSettings = () => {
               />
             </label>
 
-            <div className="border-surface-200 border-t dark:border-surface-700" />
+            <div className="border-surface-300 border-t dark:border-surface-700" />
 
             <div className="flex items-center justify-between gap-4 p-4">
               <div>
@@ -135,7 +135,7 @@ export const UpdateSettings = () => {
 
         {showError && (
           <>
-            <div className="border-surface-200 border-t dark:border-surface-700" />
+            <div className="border-surface-300 border-t dark:border-surface-700" />
             <div className="flex items-start gap-2 bg-semantic-error/10 px-4 py-3">
               <div className="min-w-0 flex-1">
                 <p className="font-medium text-semantic-error text-sm">{error.title}</p>
@@ -155,7 +155,7 @@ export const UpdateSettings = () => {
 
         {showUpToDate && (
           <>
-            <div className="border-surface-200 border-t dark:border-surface-700" />
+            <div className="border-surface-300 border-t dark:border-surface-700" />
             <div className="flex items-center gap-2 bg-semantic-success/10 px-4 py-3">
               <CheckCircle className="h-4 w-4 shrink-0 text-semantic-success" />
               <p className="flex-1 text-semantic-success text-sm">You're up to date!</p>
@@ -173,7 +173,7 @@ export const UpdateSettings = () => {
       </div>
 
       {!isManagedInstallLoading && !isManagedInstall && updateAvailable && (
-        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
           <div className="flex items-start gap-3 p-4">
             <Download className="mt-0.5 h-5 w-5 shrink-0 text-primary-500" />
             <div>
@@ -188,7 +188,7 @@ export const UpdateSettings = () => {
 
           {isDownloading && (
             <>
-              <div className="border-surface-200 border-t dark:border-surface-700" />
+              <div className="border-surface-300 border-t dark:border-surface-700" />
               <div className="px-4 py-3">
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-surface-600 text-xs dark:text-surface-400">
@@ -208,13 +208,13 @@ export const UpdateSettings = () => {
             </>
           )}
 
-          <div className="border-surface-200 border-t dark:border-surface-700" />
+          <div className="border-surface-300 border-t dark:border-surface-700" />
 
           <div className="flex gap-2 px-4 py-3">
             <button
               type="button"
               onClick={() => setShowChangelogModal(true)}
-              className="flex items-center gap-2 rounded-lg border border-surface-200 bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
+              className="flex items-center gap-2 rounded-lg border border-surface-300 bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
             >
               <FileText className="h-4 w-4" />
               Changelog

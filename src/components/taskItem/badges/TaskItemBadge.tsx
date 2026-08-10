@@ -18,7 +18,7 @@ const BASE_CLASS_NAME =
   'inline-flex items-center gap-1 rounded-sm border px-2 py-0.5 font-medium text-surface-700 text-xs dark:text-surface-300';
 
 const TONE_CLASS_NAMES: Record<BadgeTone, string> = {
-  neutral: 'border-surface-300 bg-surface-100 dark:border-surface-600 dark:bg-surface-700',
+  neutral: 'border-surface-400 bg-surface-100 dark:border-surface-600 dark:bg-surface-700',
   primary: 'border-primary-500 bg-primary-500/15',
   info: 'border-semantic-info bg-semantic-info/10',
   'due-today': 'border-semantic-due-today bg-semantic-due-today/10',

@@ -129,7 +129,7 @@ export const NetworkSettings = () => {
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label className="flex items-center justify-between gap-4 p-4">
           <div className="min-w-0">
             <p className="text-sm text-surface-700 dark:text-surface-300">
@@ -159,7 +159,7 @@ export const NetworkSettings = () => {
 
         {connectivityCheckEnabled && (
           <>
-            <div className="border-surface-200 border-t dark:border-surface-700" />
+            <div className="border-surface-300 border-t dark:border-surface-700" />
 
             <div className="space-y-2 p-4">
               <div>
@@ -175,14 +175,14 @@ export const NetworkSettings = () => {
                 value={connectivityCheckUrl}
                 onChange={(e) => setConnectivityCheckUrl(e.target.value)}
                 placeholder={DEFAULT_CONNECTIVITY_CHECK_URL}
-                className="w-full rounded-lg border border-surface-200 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
               />
             </div>
           </>
         )}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between gap-4 p-4">
           <div className="min-w-0">
             <p className="text-sm text-surface-700 dark:text-surface-300">Connectivity test</p>
@@ -206,7 +206,7 @@ export const NetworkSettings = () => {
         </div>
 
         {(isCheckingConnectivity || lastResult || testError) && (
-          <div className="mx-4 mb-4 rounded-lg border border-surface-200 bg-surface-50 px-3 py-2 text-xs dark:border-surface-700 dark:bg-surface-900/60">
+          <div className="mx-4 mb-4 rounded-lg border border-surface-300 bg-surface-50 px-3 py-2 text-xs dark:border-surface-700 dark:bg-surface-900/60">
             {isCheckingConnectivity && !lastResult && (
               <div className="flex gap-2">
                 <Loader2 className="mt-px h-4 w-4 shrink-0 text-semantic-info motion-safe:animate-spin" />
@@ -251,7 +251,7 @@ export const NetworkSettings = () => {
         )}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between gap-4 p-4">
           <div className="min-w-0">
             <p className="text-sm text-surface-700 dark:text-surface-300">Check interval</p>
@@ -273,7 +273,7 @@ export const NetworkSettings = () => {
           </Select>
         </div>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <label className="flex items-center justify-between gap-4 p-4">
           <div className="min-w-0">
@@ -291,12 +291,12 @@ export const NetworkSettings = () => {
             onChange={(e) =>
               setConnectivityRequestTimeout(Math.min(60, Math.max(1, Number(e.target.value) || 1)))
             }
-            className="w-20 shrink-0 rounded-lg border border-surface-200 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+            className="w-20 shrink-0 rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
           />
         </label>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between gap-4 p-4">
           <div className="min-w-0">
             <p className="text-sm text-surface-700 dark:text-surface-300">Proxy</p>
@@ -318,7 +318,7 @@ export const NetworkSettings = () => {
 
         {(networkProxyMode === 'http' || networkProxyMode === 'socks') && (
           <>
-            <div className="border-surface-200 border-t dark:border-surface-700" />
+            <div className="border-surface-300 border-t dark:border-surface-700" />
 
             <div className="grid gap-3 p-4 sm:grid-cols-[1fr_auto]">
               <div className="space-y-2">
@@ -333,7 +333,7 @@ export const NetworkSettings = () => {
                   value={networkProxyHost}
                   onChange={(event) => setNetworkProxyHost(event.target.value)}
                   placeholder={DEFAULT_PROXY_HOST}
-                  className="w-full rounded-lg border border-surface-200 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                  className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                 />
               </div>
 
@@ -352,7 +352,7 @@ export const NetworkSettings = () => {
                   value={networkProxyPort}
                   onChange={(event) => handleProxyPortChange(event.target.value)}
                   placeholder={String(defaultProxyPort)}
-                  className="w-28 shrink-0 rounded-lg border border-surface-200 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                  className="w-28 shrink-0 rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                 />
               </div>
             </div>

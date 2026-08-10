@@ -39,22 +39,22 @@ export const TaskEditorDates = ({
           aria-labelledby="start-date-label"
           className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:focus:bg-surface-800 ${
             readOnly && !task.startDate
-              ? 'cursor-not-allowed border-surface-300 border-dashed text-surface-400 dark:border-surface-700 dark:text-surface-500'
+              ? 'cursor-not-allowed border-surface-400 border-dashed text-surface-500 dark:border-surface-700 dark:text-surface-500'
               : 'border-transparent bg-surface-100 focus:bg-white dark:bg-surface-800'
           } ${!readOnly ? 'hover:border-surface-300 dark:hover:border-surface-500' : ''}`}
         >
           {task.startDate ? (
-            <Calendar className="h-4 w-4 shrink-0 text-surface-400" />
+            <Calendar className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400" />
           ) : readOnly ? (
             <CalendarX className="h-4 w-4 shrink-0" />
           ) : (
-            <CalendarPlus className="h-4 w-4 shrink-0 text-surface-400" />
+            <CalendarPlus className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400" />
           )}
           <span
             className={
               task.startDate
                 ? 'text-surface-700 dark:text-surface-300'
-                : 'text-surface-400 dark:text-surface-500'
+                : 'text-surface-500 dark:text-surface-500'
             }
           >
             {task.startDate
@@ -82,22 +82,22 @@ export const TaskEditorDates = ({
           aria-labelledby="due-date-label"
           className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:focus:bg-surface-800 ${
             readOnly && !task.dueDate
-              ? 'cursor-not-allowed border-surface-300 border-dashed text-surface-400 dark:border-surface-700 dark:text-surface-500'
+              ? 'cursor-not-allowed border-surface-400 border-dashed text-surface-500 dark:border-surface-700 dark:text-surface-500'
               : 'border-transparent bg-surface-100 focus:bg-white dark:bg-surface-800'
           } ${!readOnly ? 'hover:border-surface-300 dark:hover:border-surface-500' : ''}`}
         >
           {task.dueDate ? (
-            <Calendar className="h-4 w-4 shrink-0 text-surface-400" />
+            <Calendar className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400" />
           ) : readOnly ? (
             <CalendarX className="h-4 w-4 shrink-0" />
           ) : (
-            <CalendarPlus className="h-4 w-4 shrink-0 text-surface-400" />
+            <CalendarPlus className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400" />
           )}
           <span
             className={
               task.dueDate
                 ? 'text-surface-700 dark:text-surface-300'
-                : 'text-surface-400 dark:text-surface-500'
+                : 'text-surface-500 dark:text-surface-500'
             }
           >
             {task.dueDate

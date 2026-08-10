@@ -205,7 +205,7 @@ export const TaskItemContextMenu = ({
                 Restore
               </button>
 
-              <div className="border-surface-200 border-t dark:border-surface-700" />
+              <div className="border-surface-300 border-t dark:border-surface-700" />
               <button
                 type="button"
                 onClick={handlePermanentDelete}
@@ -229,7 +229,7 @@ export const TaskItemContextMenu = ({
                 Edit
               </button>
 
-              <div className="border-surface-200 border-t dark:border-surface-700" />
+              <div className="border-surface-300 border-t dark:border-surface-700" />
               <button
                 type="button"
                 onMouseEnter={handleStatusMouseEnter}
@@ -241,7 +241,7 @@ export const TaskItemContextMenu = ({
                 <ChevronRight className="h-3 w-3" />
               </button>
 
-              <div className="border-surface-200 border-t dark:border-surface-700" />
+              <div className="border-surface-300 border-t dark:border-surface-700" />
               <button
                 type="button"
                 onClick={() => {
@@ -254,7 +254,7 @@ export const TaskItemContextMenu = ({
                 Move to calendar
               </button>
 
-              <div className="border-surface-200 border-t dark:border-surface-700" />
+              <div className="border-surface-300 border-t dark:border-surface-700" />
               <button
                 type="button"
                 onMouseEnter={handlePriorityMouseEnter}
@@ -266,7 +266,7 @@ export const TaskItemContextMenu = ({
                 <ChevronRight className="h-3 w-3" />
               </button>
 
-              <div className="border-surface-200 border-t dark:border-surface-700" />
+              <div className="border-surface-300 border-t dark:border-surface-700" />
               <button
                 type="button"
                 onClick={() => {
@@ -279,7 +279,7 @@ export const TaskItemContextMenu = ({
                 Manage tags
               </button>
 
-              <div className="border-surface-200 border-t dark:border-surface-700" />
+              <div className="border-surface-300 border-t dark:border-surface-700" />
               <button
                 type="button"
                 onClick={() => {
@@ -301,13 +301,13 @@ export const TaskItemContextMenu = ({
                 Add subtask
               </button>
 
-              <div className="border-surface-200 border-t dark:border-surface-700" />
+              <div className="border-surface-300 border-t dark:border-surface-700" />
               <button type="button" onClick={handleExport} className={menuItemClass}>
                 <Share2 className="h-4 w-4" />
                 Export
               </button>
 
-              <div className="border-surface-200 border-t dark:border-surface-700" />
+              <div className="border-surface-300 border-t dark:border-surface-700" />
               <button
                 type="button"
                 onClick={handleDelete}
@@ -323,7 +323,7 @@ export const TaskItemContextMenu = ({
             <div
               data-context-menu-content
               role="menu"
-              className="fixed z-60 min-w-35 rounded-lg border border-surface-200 bg-white shadow-lg motion-safe:animate-scale-in dark:border-surface-700 dark:bg-surface-800"
+              className="fixed z-60 min-w-35 rounded-lg border border-surface-300 bg-white shadow-lg motion-safe:animate-scale-in dark:border-surface-700 dark:bg-surface-800"
               style={
                 priorityFlyoutPos.useRight
                   ? { right: priorityFlyoutPos.x, top: priorityFlyoutPos.y }
@@ -339,10 +339,10 @@ export const TaskItemContextMenu = ({
                   onClick={() => handleChangePriority(p.value)}
                   className={`flex w-full items-center gap-2 px-3 py-2 text-sm outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-700 ${
                     i === 0
-                      ? 'rounded-t-lg border-surface-200 border-b dark:border-surface-700'
+                      ? 'rounded-t-lg border-surface-300 border-b dark:border-surface-700'
                       : i === PRIORITIES.length - 1
                         ? 'rounded-b-lg'
-                        : 'border-surface-200 border-b dark:border-surface-700'
+                        : 'border-surface-300 border-b dark:border-surface-700'
                   }`}
                 >
                   <span className={`flex-1 text-left ${p.color}`}>{p.label}</span>
@@ -358,7 +358,7 @@ export const TaskItemContextMenu = ({
             <div
               data-context-menu-content
               role="menu"
-              className="fixed z-60 min-w-40 rounded-lg border border-surface-200 bg-white shadow-lg motion-safe:animate-scale-in dark:border-surface-700 dark:bg-surface-800"
+              className="fixed z-60 min-w-40 rounded-lg border border-surface-300 bg-white shadow-lg motion-safe:animate-scale-in dark:border-surface-700 dark:bg-surface-800"
               style={
                 statusFlyoutPos.useRight
                   ? { right: statusFlyoutPos.x, top: statusFlyoutPos.y }
@@ -374,10 +374,10 @@ export const TaskItemContextMenu = ({
                   onClick={() => handleChangeStatus(value)}
                   className={`flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700 ${
                     i === 0
-                      ? 'rounded-t-lg border-surface-200 border-b dark:border-surface-700'
+                      ? 'rounded-t-lg border-surface-300 border-b dark:border-surface-700'
                       : i === STATUS_OPTIONS.length - 1
                         ? 'rounded-b-lg'
-                        : 'border-surface-200 border-b dark:border-surface-700'
+                        : 'border-surface-300 border-b dark:border-surface-700'
                   }`}
                 >
                   <Icon className="h-4 w-4 shrink-0" />

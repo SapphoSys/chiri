@@ -38,7 +38,7 @@ export const TaskDefaultsReminderPickerModal = ({
                 : 'text-surface-700 hover:bg-surface-50 dark:text-surface-300 dark:hover:bg-surface-700'
             }`}
           >
-            <BellRing className="h-4 w-4 shrink-0 text-surface-400" />
+            <BellRing className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400" />
             {opt.label}
           </button>
         ))}

@@ -58,9 +58,9 @@ export const TaskHistoryModal = ({
       className="max-h-[80vh] max-w-md"
     >
       {isLoading ? (
-        <p className="text-sm text-surface-400 dark:text-surface-500">Loading...</p>
+        <p className="text-sm text-surface-500 dark:text-surface-400">Loading...</p>
       ) : !history || history.length === 0 ? (
-        <p className="text-sm text-surface-400 dark:text-surface-500">No history yet.</p>
+        <p className="text-sm text-surface-500 dark:text-surface-400">No history yet.</p>
       ) : (
         <div className="space-y-4">
           {groupHistoryByDate(history).map((entries) => (

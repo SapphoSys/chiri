@@ -217,7 +217,7 @@ export const BatchTaskDatesModal = ({
                 : `${formatDate(date, true)} ${formatTime(date, timeFormat)}`}
             </span>
           ) : (
-            <span className="text-surface-400">
+            <span className="text-surface-500 dark:text-surface-400">
               {hasSet ? 'No date' : `Set ${field === 'dueDate' ? 'due' : 'start'} date...`}
             </span>
           )}

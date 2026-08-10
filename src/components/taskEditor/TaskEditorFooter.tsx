@@ -16,7 +16,7 @@ export const TaskEditorFooter = ({ task, timeFormat }: TaskEditorFooterProps) =>
 
   return (
     <>
-      <div className="flex items-center justify-between border-surface-200 border-t p-4 text-surface-400 text-xs dark:border-surface-700">
+      <div className="flex items-center justify-between border-surface-300 border-t p-4 text-surface-500 text-xs dark:border-surface-700 dark:text-surface-400">
         <div>
           <div>
             Created: {formatDate(new Date(task.createdAt), true)}{' '}
@@ -43,7 +43,7 @@ export const TaskEditorFooter = ({ task, timeFormat }: TaskEditorFooterProps) =>
           <button
             type="button"
             onClick={() => setShowHistory(true)}
-            className="rounded-lg p-2 text-surface-400 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-600 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-800 dark:hover:text-surface-300"
+            className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-600 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-800 dark:hover:text-surface-300"
             aria-label="View task history"
           >
             <History className="h-5 w-5" />

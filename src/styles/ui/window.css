@@ -4,7 +4,7 @@
 }
 
 .app-shell {
-  --app-header-divider: var(--color-surface-200);
+  --app-header-divider: var(--color-surface-300);
   --app-traffic-light-offset: 0px;
 }
 
@@ -38,7 +38,7 @@
   padding-left: var(--app-traffic-light-offset);
   position: relative;
   z-index: 20;
-  background: #fff;
+  background: var(--surface-50, #fafafa);
 }
 
 .dark .app-shell[data-platform="macos"] .app-sidebar-header {

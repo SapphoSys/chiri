@@ -63,12 +63,12 @@ export const TaskItemCheckbox = ({
         return `${checkboxBaseClass} ${disabledClass} bg-status-cancelled border-status-cancelled`;
       if (isInProcess)
         return `${checkboxBaseClass} ${disabledClass} bg-status-in-process border-status-in-process`;
-      return `${checkboxBaseClass} ${disabledClass} border-surface-300 dark:border-surface-600`;
+      return `${checkboxBaseClass} ${disabledClass} border-surface-400 dark:border-surface-600`;
     }
     if (isCompleted) return `${checkboxBaseClass} ${getCompletedClass(useAccentColor)}`;
     if (isCancelled) return `${checkboxBaseClass} bg-status-cancelled border-status-cancelled`;
     if (isInProcess) return `${checkboxBaseClass} bg-status-in-process border-status-in-process`;
-    return `${checkboxBaseClass} border-surface-300 dark:border-surface-600 hover:border-primary-500 hover:bg-surface-100 dark:hover:bg-surface-700`;
+    return `${checkboxBaseClass} border-surface-400 dark:border-surface-600 hover:border-primary-500 hover:bg-surface-100 dark:hover:bg-surface-700`;
   };
 
   return (

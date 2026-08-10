@@ -84,7 +84,7 @@ export const TaskEditorProgress = ({
           className={`w-full ${readOnly ? 'pointer-events-none' : ''}`}
         />
       </div>
-      <div className="mt-1 flex justify-between text-surface-400 text-xs">
+      <div className="mt-1 flex justify-between text-surface-500 text-xs dark:text-surface-400">
         <span>0%</span>
         <span>100%</span>
       </div>

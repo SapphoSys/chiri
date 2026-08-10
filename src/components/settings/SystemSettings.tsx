@@ -137,7 +137,7 @@ export const SystemSettings = () => {
       <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">
         Startup & window
       </h3>
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label
           className={`flex items-center justify-between p-4 ${launchAtLoginBusy ? 'cursor-wait' : ''}`}
         >
@@ -162,9 +162,9 @@ export const SystemSettings = () => {
         </label>
 
         <div className="px-4 pb-4">
-          <div className="space-y-3 border-surface-200 border-l-2 pl-4 dark:border-surface-600">
+          <div className="space-y-3 border-surface-300 border-l-2 pl-4 dark:border-surface-600">
             <label
-              className={`flex items-center justify-between ${startQuietlyAtLoginDisabled ? 'cursor-not-allowed opacity-50' : ''}`}
+              className={`flex items-center justify-between ${startQuietlyAtLoginDisabled ? 'cursor-not-allowed opacity-70' : ''}`}
             >
               <div>
                 <p className="text-sm text-surface-700 dark:text-surface-300">
@@ -179,7 +179,7 @@ export const SystemSettings = () => {
                 checked={!showWindowOnLoginLaunch}
                 disabled={startQuietlyAtLoginDisabled}
                 onChange={(e) => setShowWindowOnLoginLaunch(!e.target.checked)}
-                className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
               />
             </label>
           </div>
@@ -187,13 +187,13 @@ export const SystemSettings = () => {
 
         {isMac && (
           <>
-            <div className="border-surface-200 border-t dark:border-surface-700" />
+            <div className="border-surface-300 border-t dark:border-surface-700" />
 
             <div className="px-4 py-3">
               <button
                 type="button"
                 onClick={handleOpenLoginItemsSettings}
-                className="inline-flex items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
+                className="inline-flex items-center gap-2 rounded-lg border border-surface-300 bg-surface-100 px-3 py-1.5 text-sm text-surface-800 outline-hidden transition-colors hover:border-surface-400 hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:hover:border-surface-500 dark:hover:bg-surface-600"
               >
                 Open macOS Settings
               </button>
@@ -211,7 +211,7 @@ export const SystemSettings = () => {
         )}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label className="flex items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Enable system tray</p>
@@ -229,7 +229,7 @@ export const SystemSettings = () => {
 
         {isMac && (
           <div className="px-4 pb-4">
-            <div className="space-y-3 border-surface-200 border-l-2 pl-4 dark:border-surface-600">
+            <div className="space-y-3 border-surface-300 border-l-2 pl-4 dark:border-surface-600">
               <label
                 className={`flex items-center justify-between ${!enableSystemTray ? 'cursor-not-allowed opacity-50' : ''}`}
               >
@@ -259,7 +259,7 @@ export const SystemSettings = () => {
       </div>
 
       {isMac && (
-        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
           <label
             htmlFor="window-decoration-style"
             className="flex items-center justify-between gap-4 p-4"
@@ -286,7 +286,7 @@ export const SystemSettings = () => {
       )}
 
       {isMac && (
-        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
           <label className="flex items-center justify-between p-4">
             <div>
               <p className="text-sm text-surface-700 dark:text-surface-300">
@@ -307,7 +307,7 @@ export const SystemSettings = () => {
       )}
 
       {restartRequired && (
-        <div className="overflow-hidden rounded-lg border border-surface-200 dark:border-surface-700">
+        <div className="overflow-hidden rounded-lg border border-surface-300 dark:border-surface-700">
           <div className="flex items-center justify-between gap-4 bg-surface-100 px-4 py-3 dark:bg-surface-700/50">
             <p className="text-sm text-surface-700 dark:text-surface-300">
               {restartRequiredMessage}
@@ -323,7 +323,7 @@ export const SystemSettings = () => {
         </div>
       )}
       {isAppImage === true && (
-        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
           <label
             className={`flex items-center justify-between gap-4 p-4 ${isDesktopFileInstalled === null || isTogglingIntegration ? 'cursor-wait' : ''}`}
           >

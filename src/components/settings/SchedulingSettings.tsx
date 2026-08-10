@@ -76,7 +76,7 @@ export const SchedulingSettings = () => {
             </button>
           )}
         </div>
-        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
           <div className="p-4">
             <div className="space-y-2">
               {TIME_CATEGORIES.map(({ id, label, Icon }) => {
@@ -87,7 +87,7 @@ export const SchedulingSettings = () => {
                     type="button"
                     key={id}
                     onClick={() => setEditingCategory(id)}
-                    className="flex w-full items-center justify-between gap-4 rounded-lg border border-transparent bg-surface-50 px-3 py-2.5 outline-hidden transition-colors hover:border-surface-200 hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700/50 dark:hover:border-surface-600 dark:hover:bg-surface-700"
+                    className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-lg border border-surface-300 bg-surface-100 px-3 py-2.5 outline-hidden transition-colors hover:border-surface-400 hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700/50 dark:hover:border-surface-500 dark:hover:bg-surface-700"
                   >
                     <div className="flex items-center gap-2.5">
                       <Icon className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400" />
@@ -127,7 +127,7 @@ export const SchedulingSettings = () => {
             </button>
           )}
         </div>
-        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
           <div className="flex items-center gap-2 p-4">
             {orderedDays.map((day) => {
               const active = workingDays.includes(day);

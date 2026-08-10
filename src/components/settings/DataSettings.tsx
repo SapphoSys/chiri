@@ -116,7 +116,7 @@ export const DataSettings = ({ onClose, onRunOnboarding }: DataSettingsProps) =>
         Data & diagnostics
       </h3>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between gap-4 p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Export settings</p>
@@ -137,7 +137,7 @@ export const DataSettings = ({ onClose, onRunOnboarding }: DataSettingsProps) =>
           </button>
         </div>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <div className="flex items-center justify-between p-4">
           <div>
@@ -158,8 +158,8 @@ export const DataSettings = ({ onClose, onRunOnboarding }: DataSettingsProps) =>
           </button>
         </div>
 
-        <div className="border-surface-200 border-t px-4 py-3 dark:border-surface-700">
-          <p className="text-surface-400 text-xs dark:text-surface-500">
+        <div className="border-surface-300 border-t px-4 py-3 dark:border-surface-700">
+          <p className="text-surface-500 text-xs dark:text-surface-500">
             Account credentials and task data are not included.
           </p>
         </div>
@@ -167,7 +167,7 @@ export const DataSettings = ({ onClose, onRunOnboarding }: DataSettingsProps) =>
 
       <h4 className="font-semibold text-sm text-surface-700 dark:text-surface-300">Diagnostics</h4>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between gap-4 p-4">
           <div className="min-w-0">
             <p className="text-sm text-surface-700 dark:text-surface-300">Diagnostics report</p>
@@ -196,7 +196,7 @@ export const DataSettings = ({ onClose, onRunOnboarding }: DataSettingsProps) =>
           </div>
         </div>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <div className="flex items-center justify-between gap-4 p-4">
           <div className="min-w-0">
@@ -222,7 +222,7 @@ export const DataSettings = ({ onClose, onRunOnboarding }: DataSettingsProps) =>
           </div>
         </div>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <div className="flex items-center justify-between gap-4 p-4">
           <div className="min-w-0">
@@ -239,7 +239,7 @@ export const DataSettings = ({ onClose, onRunOnboarding }: DataSettingsProps) =>
         </div>
 
         {diagnosticsMessage ? (
-          <div className="border-surface-200 border-t px-4 py-3 dark:border-surface-700">
+          <div className="border-surface-300 border-t px-4 py-3 dark:border-surface-700">
             <p className="text-surface-500 text-xs dark:text-surface-400">{diagnosticsMessage}</p>
           </div>
         ) : null}
@@ -247,7 +247,7 @@ export const DataSettings = ({ onClose, onRunOnboarding }: DataSettingsProps) =>
 
       <h4 className="font-semibold text-sm text-surface-700 dark:text-surface-300">Reset</h4>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between gap-4 p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Run setup guide again</p>
@@ -265,7 +265,7 @@ export const DataSettings = ({ onClose, onRunOnboarding }: DataSettingsProps) =>
           </button>
         </div>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <div className="flex items-center justify-between p-4">
           <div>
@@ -284,7 +284,7 @@ export const DataSettings = ({ onClose, onRunOnboarding }: DataSettingsProps) =>
           </button>
         </div>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <div className="flex items-center justify-between p-4">
           <div>

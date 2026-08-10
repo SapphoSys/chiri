@@ -123,7 +123,7 @@ export const UpdateModal = ({
               <span className="font-mono text-sm text-surface-500 dark:text-surface-400">
                 v{updateInfo.currentVersion}
               </span>
-              <ArrowRight className="h-3.5 w-3.5 shrink-0 text-surface-400 dark:text-surface-500" />
+              <ArrowRight className="h-3.5 w-3.5 shrink-0 text-surface-500 dark:text-surface-400" />
               <span className="font-mono font-semibold text-sm text-surface-900 dark:text-surface-100">
                 v{updateInfo.version}
               </span>
@@ -148,7 +148,7 @@ export const UpdateModal = ({
           )}
 
           {isDownloading && (
-            <section className="space-y-2 border-surface-200 border-t pt-4 dark:border-surface-700">
+            <section className="space-y-2 border-surface-300 border-t pt-4 dark:border-surface-700">
               <div className="flex items-center justify-between gap-3 text-xs" aria-live="polite">
                 <span className="font-medium text-surface-700 dark:text-surface-300">
                   Downloading update
@@ -167,7 +167,7 @@ export const UpdateModal = ({
           )}
 
           {!isDownloading && (
-            <section className="border-surface-200 border-t pt-4 dark:border-surface-700">
+            <section className="border-surface-300 border-t pt-4 dark:border-surface-700">
               <h3 className="mb-3 font-semibold text-base text-surface-800 dark:text-surface-200">
                 What's new
               </h3>

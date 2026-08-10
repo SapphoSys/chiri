@@ -51,7 +51,7 @@ const getStatusButtonClassName = (
         : 'bg-status-completed border-status-completed'
       : task.status === 'cancelled'
         ? 'bg-status-cancelled border-status-cancelled'
-        : `border-surface-300 dark:border-surface-600 ${readOnly ? '' : 'hover:border-primary-400 dark:hover:border-primary-500'}`;
+        : `border-surface-400 dark:border-surface-600 ${readOnly ? '' : 'hover:border-primary-400 dark:hover:border-primary-500'}`;
 
   return `w-4 h-4 rounded border-[1.5px] flex items-center justify-center shrink-0 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${statusClass} ${
     readOnly ? 'cursor-not-allowed' : 'cursor-pointer'
@@ -60,7 +60,7 @@ const getStatusButtonClassName = (
 
 const getTitleClassName = (task: Task, isInteractive: boolean) => {
   const stateClass = task.completed
-    ? 'line-through text-surface-400 dark:text-surface-500'
+    ? 'line-through text-surface-500 dark:text-surface-500'
     : `text-surface-700 dark:text-surface-300 ${
         isInteractive ? 'hover:text-surface-900 dark:hover:text-surface-100' : ''
       }`;
@@ -70,7 +70,7 @@ const getTitleClassName = (task: Task, isInteractive: boolean) => {
 
 const SubtaskTitleContent = ({ task }: { task: Task }) =>
   task.title || (
-    <span className="text-surface-400 italic dark:text-surface-500">Untitled subtask</span>
+    <span className="text-surface-500 italic dark:text-surface-500">Untitled subtask</span>
   );
 
 interface TaskEditorSubtaskItemProps {
@@ -206,7 +206,7 @@ export const TaskEditorSubtaskItem = ({
           <button
             type="button"
             onClick={toggleExpanded}
-            className="flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-surface-400 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-500 dark:hover:bg-surface-700 dark:hover:text-surface-300"
+            className="flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-surface-500 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-300"
             aria-label={isExpanded ? 'Collapse subtasks' : 'Expand subtasks'}
           >
             <ChevronRight
@@ -263,7 +263,7 @@ export const TaskEditorSubtaskItem = ({
             onClick={async () => {
               await moveTaskToRecentlyDeleted(task.id);
             }}
-            className="shrink-0 cursor-pointer rounded-sm p-0.5 text-surface-400 opacity-0 outline-hidden transition-all hover:bg-semantic-error/10 hover:text-semantic-error focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-semantic-error group-hover/row:opacity-100"
+            className="shrink-0 cursor-pointer rounded-sm p-0.5 text-surface-500 opacity-0 outline-hidden transition-all hover:bg-semantic-error/10 hover:text-semantic-error focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-semantic-error group-hover/row:opacity-100 dark:text-surface-400"
           >
             <X className="h-3.5 w-3.5" />
           </button>

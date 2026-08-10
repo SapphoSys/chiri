@@ -299,7 +299,7 @@ export const ColorSchemeSelect = ({ label, value, options, onChange }: ColorSche
         className={`flex w-full items-center gap-3 rounded-lg border p-2 text-left outline-hidden transition-colors hover:border-surface-300 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:border-surface-600 ${
           isOpen
             ? 'border-surface-300 dark:border-surface-600'
-            : 'border-surface-200 dark:border-surface-700'
+            : 'border-surface-300 dark:border-surface-700'
         }`}
         style={getTriggerStyle(selectedOption)}
       >

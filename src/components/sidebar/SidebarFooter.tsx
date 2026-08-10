@@ -22,7 +22,7 @@ export const SidebarFooter = ({
   isAnyModalOpen,
 }: SidebarFooterProps) => {
   return (
-    <div className="app-sidebar-footer relative flex flex-col justify-between border-surface-200 border-t bg-surface-100 p-2 dark:border-surface-700 dark:bg-surface-900">
+    <div className="app-sidebar-footer relative flex flex-col justify-between border-surface-300 border-t bg-surface-100 p-2 dark:border-surface-700 dark:bg-surface-900">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 -top-8 h-8 bg-linear-to-t from-surface-100 to-transparent dark:from-surface-900"
@@ -49,7 +49,9 @@ export const SidebarFooter = ({
         <Import className="h-4 w-4" />
         Import tasks...
         {importShortcut && (
-          <span className="ml-auto text-surface-400 text-xs">{importShortcut}</span>
+          <span className="ml-auto text-surface-500 text-xs dark:text-surface-400">
+            {importShortcut}
+          </span>
         )}
       </button>
       <button
@@ -60,7 +62,9 @@ export const SidebarFooter = ({
         <Settings className="h-4 w-4" />
         Settings
         {settingsShortcut && (
-          <span className="ml-auto text-surface-400 text-xs">{settingsShortcut}</span>
+          <span className="ml-auto text-surface-500 text-xs dark:text-surface-400">
+            {settingsShortcut}
+          </span>
         )}
       </button>
     </div>

@@ -54,7 +54,7 @@ export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
               {name}
             </h1>
             <p className="text-sm text-surface-500 dark:text-surface-400">Version {version}</p>
-            <p className="mt-2 max-w-xs text-surface-400 text-xs dark:text-surface-500">
+            <p className="mt-2 max-w-xs text-surface-500 text-xs dark:text-surface-400">
               {description}
             </p>
           </div>
@@ -151,7 +151,7 @@ export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
 
         <AboutSettingsSection title="Credits">
           <div className="flex items-center gap-3 px-4 py-3">
-            <span className="shrink-0 text-surface-400 dark:text-surface-500">
+            <span className="shrink-0 text-surface-500 dark:text-surface-400">
               <Sparkles className="h-5 w-5 text-[#2196F2]" />
             </span>
             <p className="text-sm text-surface-800 dark:text-surface-200">
@@ -175,7 +175,7 @@ export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
           </div>
 
           <div className="flex items-center gap-3 px-4 py-3">
-            <span className="shrink-0 text-surface-400 dark:text-surface-500">
+            <span className="shrink-0 text-surface-500 dark:text-surface-400">
               <HandHeart className="h-5 w-5 text-[#25CCFF]" />
             </span>
             <p className="text-sm text-surface-800 dark:text-surface-200">
@@ -192,7 +192,7 @@ export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
           </div>
 
           <div className="flex items-center gap-3 px-4 py-3">
-            <span className="shrink-0 text-surface-400 dark:text-surface-500">
+            <span className="shrink-0 text-surface-500 dark:text-surface-400">
               <Heart className="h-5 w-5 text-[#FF218C]" />
             </span>
             <p className="text-sm text-surface-800 dark:text-surface-200">
@@ -209,7 +209,7 @@ export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
           </div>
 
           <div className="flex items-center gap-3 px-4 py-3">
-            <span className="shrink-0 text-surface-400 dark:text-surface-500">
+            <span className="shrink-0 text-surface-500 dark:text-surface-400">
               <Heart className="h-5 w-5 text-[#F5C2E7]" />
             </span>
             <p className="text-sm text-surface-800 dark:text-surface-200">

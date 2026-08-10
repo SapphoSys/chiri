@@ -19,10 +19,10 @@ const STATUS_OPTIONS = [
 const getMenuItemClass = (index: number, itemCount: number) => {
   const positionClass =
     index === 0
-      ? 'rounded-t-lg border-b border-surface-200 dark:border-surface-700'
+      ? 'rounded-t-lg border-b border-surface-300 dark:border-surface-700'
       : index === itemCount - 1
         ? 'rounded-b-lg'
-        : 'border-b border-surface-200 dark:border-surface-700';
+        : 'border-b border-surface-300 dark:border-surface-700';
 
   return `w-full flex items-center gap-2 px-3 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${positionClass}`;
 };

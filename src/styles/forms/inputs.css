@@ -10,6 +10,11 @@ input[type="datetime-local"] {
   color-scheme: light;
 }
 
+.dark input[type="date"],
+.dark input[type="datetime-local"] {
+  color-scheme: dark;
+}
+
 /* explicitly allow selection only in input fields and editable content */
 input,
 textarea,
@@ -25,7 +30,7 @@ input[type="checkbox"] {
   -webkit-appearance: none;
   width: 16px;
   height: 16px;
-  border: 2px solid rgb(var(--primary-rgb-400, 96 165 250));
+  border: 2px solid rgb(var(--primary-rgb-600, 37 99 235));
   border-radius: 4px;
   background-color: transparent;
   cursor: pointer;
@@ -33,7 +38,7 @@ input[type="checkbox"] {
   position: relative;
 
   &:hover {
-    border-color: rgb(var(--primary-rgb-500, 59 130 246));
+    border-color: rgb(var(--primary-rgb-700, 29 78 216));
     background-color: rgb(var(--primary-rgb-50, 239 246 255));
   }
 

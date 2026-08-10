@@ -103,7 +103,7 @@ export const NavigationSettings = () => {
     <div className="space-y-4">
       <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Navigation</h3>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label
           htmlFor="default-launch-view"
           className="flex items-center justify-between gap-4 p-4"
@@ -137,7 +137,7 @@ export const NavigationSettings = () => {
           </Select>
         </label>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <label className="flex items-center justify-between gap-4 p-4">
           <div className="min-w-0">
@@ -159,7 +159,7 @@ export const NavigationSettings = () => {
         Sidebar sections
       </h4>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}

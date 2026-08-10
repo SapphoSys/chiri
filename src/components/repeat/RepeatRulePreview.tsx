@@ -84,7 +84,7 @@ export const RepeatRulePreview = ({
           ) : null}
         </span>
         {!readOnly && (
-          <ChevronRight className="h-4 w-4 shrink-0 text-surface-400 opacity-0 group-hover:opacity-100" />
+          <ChevronRight className="h-4 w-4 shrink-0 text-surface-500 opacity-0 group-hover:opacity-100 dark:text-surface-400" />
         )}
       </button>
     </div>

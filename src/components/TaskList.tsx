@@ -236,7 +236,7 @@ export const TaskList = () => {
       <div className="app-task-list flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain p-4">
         {isRecentlyDeleted && <RecentlyDeletedNoticeBanner />}
         <div className="flex flex-1 flex-col items-center justify-center p-4 text-center">
-          <Icon className="mb-4 h-16 w-16 text-surface-300 dark:text-surface-600" />
+          <Icon className="mb-4 h-16 w-16 text-surface-500 dark:text-surface-600" />
           <h3 className="mb-2 font-medium text-lg text-surface-700 dark:text-surface-300">
             {title}
           </h3>

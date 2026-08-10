@@ -42,9 +42,9 @@ export const PRIORITY_CONFIG: Record<
     value: 'none',
     label: 'None',
     color: 'text-surface-600 dark:text-surface-300',
-    borderColor: 'border-surface-300 dark:border-surface-500',
-    hoverBorderColor: 'hover:border-surface-300/70 dark:hover:border-surface-500/70',
-    bgColor: 'bg-surface-50 dark:bg-surface-700',
+    borderColor: 'border-surface-500 dark:border-surface-400',
+    hoverBorderColor: 'hover:border-surface-400 dark:hover:border-surface-300',
+    bgColor: 'bg-surface-200 dark:bg-surface-600',
   },
 };
 

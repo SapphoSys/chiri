@@ -52,7 +52,7 @@ export const TaskDefaultsSettingsTagsSection = () => {
         )}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="p-4">
           <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
             Default tags for new tasks
@@ -87,7 +87,7 @@ export const TaskDefaultsSettingsTagsSection = () => {
             <button
               type="button"
               onClick={() => setShowTagsModal(true)}
-              className="inline-flex items-center gap-1 rounded-sm border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-surface-500 text-xs leading-none outline-hidden transition-colors hover:border-surface-400 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400 dark:hover:border-surface-500"
+              className="inline-flex items-center gap-1 rounded-sm border border-surface-300 bg-surface-100 px-2.5 py-1.5 text-surface-700 text-xs leading-none outline-hidden transition-colors hover:border-surface-400 hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-300 dark:hover:border-surface-500 dark:hover:bg-surface-700"
             >
               <Plus className="h-3 w-3" />
               Add tag
@@ -95,7 +95,7 @@ export const TaskDefaultsSettingsTagsSection = () => {
           </div>
         </div>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <TaskDefaultsSettingsColorPicker
           label="Default tag color"

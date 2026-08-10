@@ -46,9 +46,9 @@ export const RepeatPresetMenu = ({
             <span className="min-w-0 flex-1 truncate">{preset.label}</span>
           </button>
         ))}
-        <div className="mx-2 border-surface-200 border-t dark:border-surface-700" />
+        <div className="mx-2 border-surface-300 border-t dark:border-surface-700" />
         <button type="button" role="menuitem" onClick={onCustom} className={menuItemClass}>
-          <SlidersHorizontal className="h-4 w-4 shrink-0 text-surface-400" />
+          <SlidersHorizontal className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400" />
           <span>Custom…</span>
         </button>
       </div>

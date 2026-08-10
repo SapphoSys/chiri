@@ -151,7 +151,7 @@ export const ModalWrapper = ({
       >
         {title && (
           <div
-            className={`flex shrink-0 justify-between rounded-t-xl border-surface-200 border-b bg-white p-4 dark:border-surface-700 dark:bg-surface-800 ${description ? 'items-start' : 'items-center'}`}
+            className={`flex shrink-0 justify-between rounded-t-xl border-surface-300 border-b bg-white p-4 dark:border-surface-700 dark:bg-surface-800 ${description ? 'items-start' : 'items-center'}`}
           >
             <div className="flex min-w-0 items-center gap-3">
               {headerLeft}
@@ -187,7 +187,7 @@ export const ModalWrapper = ({
 
         {(footer || footerLeft) && (
           <div
-            className={`flex items-center border-surface-200 border-t p-4 dark:border-surface-700 ${footerLeft ? 'justify-between' : 'justify-end'} shrink-0 gap-3 rounded-b-xl bg-white dark:bg-surface-800`}
+            className={`flex items-center border-surface-300 border-t p-4 dark:border-surface-700 ${footerLeft ? 'justify-between' : 'justify-end'} shrink-0 gap-3 rounded-b-xl bg-white dark:bg-surface-800`}
           >
             {footerLeft && <div className="flex items-center gap-3">{footerLeft}</div>}
             {footer && <div className="flex items-center gap-3">{footer}</div>}

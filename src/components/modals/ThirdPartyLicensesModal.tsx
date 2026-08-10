@@ -139,7 +139,7 @@ export const ThirdPartyLicensesModal = ({ onClose }: ThirdPartyLicensesModalProp
       ) : (
         <>
           <div className="relative">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-surface-400" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-surface-500 dark:text-surface-400" />
             <input
               type="text"
               value={searchQuery}
@@ -153,7 +153,7 @@ export const ThirdPartyLicensesModal = ({ onClose }: ThirdPartyLicensesModalProp
                 type="button"
                 onClick={() => setSearchQuery('')}
                 aria-label="Clear search"
-                className="absolute top-1/2 right-2.5 -translate-y-1/2 rounded-sm p-0.5 text-surface-400 transition-colors hover:text-surface-600 dark:hover:text-surface-300"
+                className="absolute top-1/2 right-2.5 -translate-y-1/2 rounded-sm p-0.5 text-surface-500 transition-colors hover:text-surface-600 dark:text-surface-400 dark:hover:text-surface-300"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -170,7 +170,7 @@ export const ThirdPartyLicensesModal = ({ onClose }: ThirdPartyLicensesModalProp
             Show direct dependencies only
           </label>
 
-          <div className="divide-y divide-surface-100 overflow-hidden rounded-lg border border-surface-200 dark:divide-surface-700 dark:border-surface-700">
+          <div className="divide-y divide-surface-100 overflow-hidden rounded-lg border border-surface-300 dark:divide-surface-700 dark:border-surface-700">
             {filteredLicenses.length > 0 ? (
               filteredLicenses.map((license) => (
                 <button
@@ -184,7 +184,7 @@ export const ThirdPartyLicensesModal = ({ onClose }: ThirdPartyLicensesModalProp
                       <p className="truncate font-mono text-sm text-surface-800 dark:text-surface-200">
                         {license.name}
                       </p>
-                      <span className="shrink-0 text-surface-400 text-xs dark:text-surface-500">
+                      <span className="shrink-0 text-surface-500 text-xs dark:text-surface-400">
                         ({license.ecosystem})
                       </span>
                     </div>
@@ -194,7 +194,7 @@ export const ThirdPartyLicensesModal = ({ onClose }: ThirdPartyLicensesModalProp
                   </div>
                   <ChevronRight
                     aria-hidden="true"
-                    className="h-4 w-4 shrink-0 text-surface-400 dark:text-surface-500"
+                    className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400"
                   />
                 </button>
               ))

@@ -29,7 +29,7 @@ const getCheckboxStateClass = (
   if (task.status === 'cancelled') return 'bg-status-cancelled border-status-cancelled';
   if (task.status === 'in-process') return 'bg-status-in-process border-status-in-process';
 
-  return `border-surface-300 dark:border-surface-600 ${
+  return `border-surface-400 dark:border-surface-600 ${
     readOnly ? '' : 'hover:border-primary-500 hover:bg-surface-100 dark:hover:bg-surface-700'
   }`;
 };
@@ -140,7 +140,7 @@ export const TaskEditorTitle = ({
         {readOnly ? (
           <div className="selectable flex-1 cursor-not-allowed whitespace-pre-wrap font-medium text-sm text-surface-700 dark:text-surface-300">
             {pendingTitle || (
-              <span className="text-surface-400 dark:text-surface-500">
+              <span className="text-surface-500 dark:text-surface-500">
                 {task.parentUid ? 'Untitled subtask' : 'Untitled task'}
               </span>
             )}

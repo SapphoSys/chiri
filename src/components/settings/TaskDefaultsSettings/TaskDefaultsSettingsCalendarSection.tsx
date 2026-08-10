@@ -48,7 +48,7 @@ export const TaskDefaultsSettingsCalendarSection = () => {
         )}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between gap-4 p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">
@@ -85,7 +85,7 @@ export const TaskDefaultsSettingsCalendarSection = () => {
 
         {!defaultCalendarId && (
           <div className="px-4 pb-4">
-            <div className="border-surface-200 border-l-2 pl-4 dark:border-surface-600">
+            <div className="border-surface-300 border-l-2 pl-4 dark:border-surface-600">
               <label className="flex cursor-pointer items-center justify-between gap-4">
                 <div>
                   <p className="text-sm text-surface-700 dark:text-surface-300">Prefer CalDAV</p>
@@ -105,7 +105,7 @@ export const TaskDefaultsSettingsCalendarSection = () => {
           </div>
         )}
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <TaskDefaultsSettingsColorPicker
           label="Default calendar color"

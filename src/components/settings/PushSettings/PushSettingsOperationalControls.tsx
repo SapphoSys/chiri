@@ -106,7 +106,7 @@ const renderSubscriptionContent = (
   }
 
   return (
-    <div className="border-surface-200 border-t dark:border-surface-700">
+    <div className="border-surface-300 border-t dark:border-surface-700">
       {groups.map((group) => {
         const accountId = group.subscriptions[0].accountId;
         const account = accountMap[accountId];
@@ -128,7 +128,7 @@ const renderSubscriptionContent = (
         return (
           <div
             key={accountMap[accountId] ? accountId : 'unknown'}
-            className="border-surface-200 border-b dark:border-surface-700"
+            className="border-surface-300 border-b dark:border-surface-700"
           >
             <div className="flex items-center justify-between gap-2 bg-surface-50 px-4 py-2 font-medium text-surface-600 text-xs dark:bg-surface-900/40 dark:text-surface-400">
               <div className="flex min-w-0 items-center gap-2">
@@ -284,7 +284,7 @@ export const PushSettingsOperationalControls = ({
   };
 
   return (
-    <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+    <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
       <div className="flex items-center justify-between gap-4 p-4">
         <div>
           <p className="text-sm text-surface-700 dark:text-surface-300">Active subscriptions</p>
@@ -312,7 +312,7 @@ export const PushSettingsOperationalControls = ({
         </button>
       </div>
       {resubscribeError && (
-        <div className="mx-4 mb-4 rounded-lg border border-surface-200 bg-surface-50 px-3 py-2 text-xs dark:border-surface-700 dark:bg-surface-900/60">
+        <div className="mx-4 mb-4 rounded-lg border border-surface-300 bg-surface-50 px-3 py-2 text-xs dark:border-surface-700 dark:bg-surface-900/60">
           <div className="flex items-center gap-2">
             <CircleAlert className="mt-px size-4 shrink-0 text-semantic-error" />
             <p className="flex-1 text-semantic-error">{resubscribeError}</p>
@@ -327,7 +327,7 @@ export const PushSettingsOperationalControls = ({
           </div>
         </div>
       )}
-      <div className="border-surface-200 border-t dark:border-surface-700" />
+      <div className="border-surface-300 border-t dark:border-surface-700" />
       {renderSubscriptionContent(
         activeSubscriptions.isLoading,
         activeSubscriptions.data,

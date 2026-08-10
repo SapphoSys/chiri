@@ -11,7 +11,7 @@ export const StatusProgressSettings = () => {
         Status & progress
       </h3>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label
           htmlFor="sync-status-progress"
           className="flex cursor-pointer items-start justify-between gap-4 p-4"
@@ -31,7 +31,7 @@ export const StatusProgressSettings = () => {
                     type="button"
                     aria-label="Status and progress synchronization rules"
                     onClick={(event) => event.preventDefault()}
-                    className="flex size-5 shrink-0 items-center justify-center rounded-md p-0 text-surface-400 leading-none outline-hidden transition-colors hover:text-surface-600 focus-visible:bg-primary-500/15 focus-visible:text-primary-500 dark:text-surface-500 dark:focus-visible:bg-primary-400/15 dark:focus-visible:text-primary-400 dark:hover:text-surface-300"
+                    className="flex size-5 shrink-0 items-center justify-center rounded-md p-0 text-surface-500 leading-none outline-hidden transition-colors hover:text-surface-600 focus-visible:bg-primary-500/15 focus-visible:text-primary-500 dark:text-surface-500 dark:focus-visible:bg-primary-400/15 dark:focus-visible:text-primary-400 dark:hover:text-surface-300"
                   >
                     <HelpCircle className="h-4 w-4" />
                   </button>

@@ -94,13 +94,13 @@ export const BadgesSettingsPreview = () => {
     <div className="mt-4 rounded-lg bg-surface-50 p-3 dark:bg-surface-900/30" aria-hidden="true">
       <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">Preview</p>
       <div
-        className={`flex items-start gap-3 rounded-lg border border-surface-200 bg-white pr-3 pl-3 shadow-xs dark:border-surface-700 dark:bg-surface-800 ${
+        className={`flex items-start gap-3 rounded-lg border border-surface-300 bg-white pr-3 pl-3 shadow-xs dark:border-surface-700 dark:bg-surface-800 ${
           isCompact ? 'py-2' : 'py-3'
         }`}
       >
         {/* Checkbox */}
         <div className="mt-0.5 shrink-0">
-          <span className="flex h-5 w-5 rounded-sm border-2 border-surface-300 dark:border-surface-600" />
+          <span className="flex h-5 w-5 rounded-sm border-2 border-surface-400 dark:border-surface-600" />
         </div>
 
         {/* Content */}
@@ -126,7 +126,7 @@ export const BadgesSettingsPreview = () => {
         </div>
 
         {/* Chevron */}
-        <ChevronRight className="h-5 w-5 shrink-0 text-surface-300 dark:text-surface-600" />
+        <ChevronRight className="h-5 w-5 shrink-0 text-surface-500 dark:text-surface-400" />
       </div>
     </div>
   );

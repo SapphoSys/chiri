@@ -72,13 +72,13 @@ const getBackgroundClass = (
 
 const getBorderClass = (isVisuallySelected: boolean, priority: Task['priority']) => {
   if (isVisuallySelected) return '';
-  if (priority === 'none') return 'border-surface-200 dark:border-surface-700';
+  if (priority === 'none') return 'border-surface-300 dark:border-surface-700';
   return '';
 };
 
 const getOpacityClass = (status: Task['status'], isUnstarted: boolean) => {
-  if (status === 'completed' || status === 'cancelled') return 'opacity-60';
-  if (isUnstarted) return 'opacity-70';
+  if (status === 'completed' || status === 'cancelled') return 'opacity-80 dark:opacity-60';
+  if (isUnstarted) return 'opacity-85 dark:opacity-70';
   return '';
 };
 
@@ -419,7 +419,7 @@ export const TaskItem = ({
 
               {filterCalDavDescription(task.description) && (
                 <div
-                  className={`mt-1 line-clamp-1 text-xs ${task.status === 'completed' || task.status === 'cancelled' ? 'text-surface-400 dark:text-surface-500' : 'text-surface-500 dark:text-surface-400'}`}
+                  className={`mt-1 line-clamp-1 text-xs ${task.status === 'completed' || task.status === 'cancelled' ? 'text-surface-500 dark:text-surface-500' : 'text-surface-500 dark:text-surface-400'}`}
                 >
                   {filterCalDavDescription(task.description)}
                 </div>
@@ -429,7 +429,7 @@ export const TaskItem = ({
           )}
         </div>
 
-        <ChevronRight className="h-5 w-5 shrink-0 text-surface-300 transition-colors group-hover:text-surface-500 dark:text-surface-600 dark:group-hover:text-surface-400" />
+        <ChevronRight className="h-5 w-5 shrink-0 text-surface-500 transition-colors group-hover:text-surface-600 dark:text-surface-500 dark:group-hover:text-surface-400" />
       </div>
 
       {contextMenu && (

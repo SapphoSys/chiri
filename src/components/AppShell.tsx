@@ -182,7 +182,7 @@ export const AppShell = ({
 
           {visibleTask && (
             <div
-              className="relative flex-1 overflow-hidden border-surface-200 bg-white lg:flex-none lg:border-l dark:border-surface-700 dark:bg-surface-800"
+              className="relative flex-1 overflow-hidden border-surface-300 bg-white lg:flex-none lg:border-l dark:border-surface-700 dark:bg-surface-800"
               style={{ width: taskEditorWidth }}
             >
               {/* biome-ignore lint/a11y/noStaticElementInteractions: Resize handle requires mouse events for drag functionality */}

@@ -89,7 +89,7 @@ const getSyncButtonClass = (
     return `${base} text-primary-500 border-transparent cursor-not-allowed`;
   }
   if (isOffline || disableSync) {
-    return `${base} text-surface-300 dark:text-surface-600 border-transparent cursor-not-allowed`;
+    return `${base} text-surface-500 dark:text-surface-600 border-transparent cursor-not-allowed`;
   }
   return `${base} text-surface-500 dark:text-surface-400 border-transparent ${!isAnyModalOpen ? 'hover:bg-surface-100 dark:hover:bg-surface-700' : ''}`;
 };
@@ -242,7 +242,7 @@ export const Header = ({
   if (selectedTasks.length > 0) {
     return (
       <header
-        className={`app-main-header flex h-13 items-center bg-white pr-4.25 pl-4 dark:bg-surface-900 ${className}`}
+        className={`app-main-header flex h-13 items-center bg-surface-50 pr-4.25 pl-4 dark:bg-surface-900 ${className}`}
       >
         <TaskBatchActionsBar
           data-drag-region-pass-through
@@ -256,18 +256,18 @@ export const Header = ({
 
   return (
     <header
-      className={`app-main-header flex h-13 items-center bg-white pr-4.25 pl-4 dark:bg-surface-900 ${className}`}
+      className={`app-main-header flex h-13 items-center bg-surface-50 pr-4.25 pl-4 dark:bg-surface-900 ${className}`}
     >
       <div data-drag-region-pass-through className="flex flex-1 items-center justify-between gap-4">
         <div data-drag-region-pass-through className="relative max-w-lg flex-1">
-          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-surface-400" />
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-surface-500 dark:text-surface-400" />
           <ComposedInput
             type="text"
             data-search-input
             placeholder={`Search tasks... (${searchShortcut})`}
             value={searchQuery}
             onChange={(value) => setSearchQueryMutation.mutate(value)}
-            className="w-full rounded-lg border border-transparent bg-surface-100 py-2 pr-4 pl-9 text-sm text-surface-800 transition-colors placeholder:text-surface-400 focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700/60 dark:text-surface-200 dark:focus:bg-surface-800"
+            className="w-full rounded-lg border border-surface-300 bg-white py-2 pr-4 pl-9 text-sm text-surface-800 outline-hidden transition-colors placeholder:text-surface-400 hover:border-surface-400 focus:border-primary-500 focus:bg-white dark:border-surface-700 dark:bg-surface-800/80 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:border-surface-600"
           />
         </div>
 

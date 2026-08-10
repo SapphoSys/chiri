@@ -84,7 +84,7 @@ export const TaskDefaultsSettingsTimeSection = () => {
         )}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between gap-4 p-4">
           <div>
             <p
@@ -106,7 +106,7 @@ export const TaskDefaultsSettingsTimeSection = () => {
             disabled={startTimeUnavailableReason !== null}
             aria-labelledby="default-start-time-label"
             aria-describedby="default-start-time-description"
-            className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-surface-100 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600 dark:disabled:hover:bg-surface-700"
+            className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-surface-100 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600 dark:disabled:hover:bg-surface-700"
           >
             {startTimeUnavailableReason && defaultStartTime === null
               ? startTimeUnavailableReason
@@ -114,7 +114,7 @@ export const TaskDefaultsSettingsTimeSection = () => {
           </button>
         </div>
 
-        <div className="border-surface-200 border-t dark:border-surface-700" />
+        <div className="border-surface-300 border-t dark:border-surface-700" />
 
         <div className="flex items-center justify-between gap-4 p-4">
           <div>
@@ -137,7 +137,7 @@ export const TaskDefaultsSettingsTimeSection = () => {
             disabled={dueTimeUnavailableReason !== null}
             aria-labelledby="default-due-time-label"
             aria-describedby="default-due-time-description"
-            className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-surface-100 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600"
+            className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-surface-100 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600"
           >
             {dueTimeUnavailableReason && defaultDueTime === null
               ? dueTimeUnavailableReason

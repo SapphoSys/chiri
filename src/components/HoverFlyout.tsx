@@ -166,7 +166,7 @@ export const HoverFlyout = ({
   return (
     <div ref={flyoutRef} className={`hover-flyout fixed z-60 w-max ${sideClass}`} style={position}>
       <div
-        className={`hover-flyout-panel ${minWidthClassName} rounded-lg border border-surface-200 bg-white py-2 shadow-lg dark:border-surface-700 dark:bg-surface-800`}
+        className={`hover-flyout-panel ${minWidthClassName} rounded-lg border border-surface-300 bg-white py-2 shadow-lg dark:border-surface-700 dark:bg-surface-800`}
       >
         {children}
       </div>
