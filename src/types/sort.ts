@@ -13,6 +13,21 @@ export interface SortConfig {
   direction: SortDirection;
 }
 
+export type TaskGroupMode =
+  | 'none'
+  | 'status'
+  | 'priority'
+  | 'calendar'
+  | 'due-date'
+  | 'start-date'
+  | 'created'
+  | 'modified';
+
+export interface TaskGroupConfig {
+  mode: TaskGroupMode;
+  direction: SortDirection;
+}
+
 export type AccountSortMode = 'manual' | 'title' | 'task-count' | 'calendar-count';
 export interface AccountSortConfig {
   mode: AccountSortMode;

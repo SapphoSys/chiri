@@ -1,5 +1,4 @@
 import { invoke } from '@tauri-apps/api/core';
-import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
 import {
   DEFAULT_HTTP_PROXY_PORT,
   DEFAULT_PROXY_HOST,
@@ -8,7 +7,7 @@ import {
 import { settingsStore } from '$context/settingsContext';
 import { buildDigestAuth, parseDigestChallenge } from '$lib/auth/digest';
 import { loggers } from '$lib/logger';
-import type { NetworkProxyMode } from '$types/settings';
+import type { NetworkProxyMode } from '$types/settings/categories/network';
 
 const log = loggers.http;
 const REQUEST_TIMEOUT_MS = 15_000;
@@ -35,10 +34,24 @@ export interface HttpResponse {
   body: string;
 }
 
+export class DetailedError extends Error {
+  detail: string;
+  constructor(message: string, detail: string) {
+    super(message);
+    this.detail = detail;
+    this.name = 'DetailedError';
+  }
+}
+
 export interface HttpProxyConfig {
   mode: NetworkProxyMode;
   host?: string;
   port?: number;
+}
+
+export interface HttpRequestContext {
+  operationId?: string;
+  signal?: AbortSignal;
 }
 
 export interface CalDAVCredentials {
@@ -89,16 +102,6 @@ export const getNetworkProxyConfig = (): HttpProxyConfig => {
   return { mode: networkProxyMode };
 };
 
-const shouldUseRustHttp = (credentials: CalDAVCredentials, proxyConfig: HttpProxyConfig) => {
-  return (
-    credentials.acceptInvalidCerts ||
-    credentials.bearerToken ||
-    proxyConfig.mode === 'none' ||
-    proxyConfig.mode === 'http' ||
-    proxyConfig.mode === 'socks'
-  );
-};
-
 const getRequestHeaders = (
   credentials: CalDAVCredentials,
   headers: Record<string, string> | undefined,
@@ -126,35 +129,40 @@ const sendHttpRequest = async (
   credentials: CalDAVCredentials,
   requestHeaders: Record<string, string>,
   body?: string,
+  context?: HttpRequestContext,
 ) => {
+  // route all CalDAV requests through the Rust command. the Tauri HTTP plugin
+  // uses a persistent cookie jar: Nextcloud's login flow stores session cookies,
+  // and sending them on subsequent DAV requests triggers SabreDAV's CSRF check
+  // ("CSRF check not passed"). using our own reqwest client per request avoids
+  // the cookie jar entirely.
   const proxyConfig = getNetworkProxyConfig();
 
-  if (shouldUseRustHttp(credentials, proxyConfig)) {
-    return invoke<HttpResponse>('http_request', {
-      url,
-      method,
-      headers: requestHeaders,
-      body: body ?? null,
-      acceptInvalidCerts: credentials.acceptInvalidCerts ?? false,
-      proxyConfig,
-      timeoutMs: REQUEST_TIMEOUT_MS,
+  return invoke<HttpResponse>('http_request', {
+    url,
+    method,
+    headers: requestHeaders,
+    body: body ?? null,
+    acceptInvalidCerts: credentials.acceptInvalidCerts ?? false,
+    proxyConfig,
+    timeoutMs: REQUEST_TIMEOUT_MS,
+    ...(context?.operationId ? { operationId: context.operationId } : {}),
+  });
+};
+
+const throwIfAborted = (signal?: AbortSignal) => {
+  if (signal?.aborted) {
+    throw new Error('HTTP request cancelled');
+  }
+};
+
+const cancelHttpOperation = (operationId?: string) => {
+  if (operationId) {
+    void invoke('cancel_http_operation', { operationId }).catch(() => {
+      // the request may have completed between aborting and issuing the
+      // cancellation command. there is nothing left to cancel in that case
     });
   }
-
-  const rawResponse = await tauriFetch(url, {
-    method: method,
-    headers: requestHeaders,
-    body: body,
-    maxRedirections: 0,
-    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-  });
-  const responseBody = await rawResponse.text();
-  const headersObj: Record<string, string> = {};
-  rawResponse.headers.forEach((value, key) => {
-    headersObj[key] = value;
-  });
-
-  return { status: rawResponse.status, headers: headersObj, body: responseBody };
 };
 
 const getRedirectUrl = (response: HttpResponse, url: string) => {
@@ -165,10 +173,24 @@ const getRedirectUrl = (response: HttpResponse, url: string) => {
   const location = response.headers.location ?? response.headers.Location;
   if (!location) return undefined;
 
+  const originalUrl = new URL(url);
   const redirectUrl = new URL(location, url);
   if (!['http:', 'https:'].includes(redirectUrl.protocol)) {
     throw new Error(`Refusing redirect to unsupported ${redirectUrl.protocol} URL`);
   }
+
+  // some CalDAV servers (e.g. Runbox) misconfigure .well-known redirects so an
+  // HTTPS request is answered with a redirect to HTTP on the same host. never
+  // send credentials over plain HTTP; keep the request on the same origin by
+  // upgrading the redirect back to HTTPS
+  if (
+    originalUrl.protocol === 'https:' &&
+    redirectUrl.protocol === 'http:' &&
+    redirectUrl.hostname === originalUrl.hostname
+  ) {
+    redirectUrl.protocol = 'https:';
+  }
+
   return redirectUrl.toString();
 };
 
@@ -245,10 +267,13 @@ export const tauriRequest = async (
   credentials: CalDAVCredentials,
   body?: string,
   headers?: Record<string, string>,
+  context?: HttpRequestContext,
   _retried = false,
   _redirects = 0,
   _allowAuth = true,
 ): Promise<HttpResponse> => {
+  throwIfAborted(context?.signal);
+
   // for known Digest-only hosts, skip sending wrong Basic auth upfront
   // we'll still do 2 round-trips (need server's nonce), but won't waste one
   // on a credential that's guaranteed to be rejected
@@ -261,11 +286,25 @@ export const tauriRequest = async (
 
   const requestHeaders = getRequestHeaders(credentials, headers, skipBasic, _allowAuth);
 
-  // route through the Rust command when:
-  //  - cert validation bypass is needed (self-signed / private CA), or
-  //  - bearer token auth is in use (WebView injects an Origin header that
-  //    some servers, including Fastmail, reject)
-  const response = await sendHttpRequest(url, method, credentials, requestHeaders, body);
+  // CalDAV requests always go through the Rust command, which builds a fresh
+  // reqwest client per request and does not use a cookie jar. this prevents
+  // servers like Nextcloud from rejecting requests with "CSRF check not passed"
+  // because of stale session cookies left over from the login flow.
+  const abortHandler = () => {
+    if (context?.operationId) {
+      log.debug(`Cancelling HTTP operation ${context.operationId}...`);
+    }
+    cancelHttpOperation(context?.operationId);
+  };
+  context?.signal?.addEventListener('abort', abortHandler, { once: true });
+
+  let response: HttpResponse;
+  try {
+    response = await sendHttpRequest(url, method, credentials, requestHeaders, body, context);
+  } finally {
+    context?.signal?.removeEventListener('abort', abortHandler);
+  }
+  throwIfAborted(context?.signal);
 
   if (!silent) log.debug(`Response: ${response.status}`);
 
@@ -282,6 +321,7 @@ export const tauriRequest = async (
       credentials,
       body,
       headers,
+      context,
       false,
       _redirects + 1,
       _allowAuth && hasSameOrigin(url, redirectUrl),
@@ -300,6 +340,7 @@ export const tauriRequest = async (
       credentials,
       body,
       { ...headers, Authorization: digestRetry.header },
+      context,
       true,
       _redirects,
       _allowAuth,
@@ -317,11 +358,19 @@ export const propfind = async (
   credentials: CalDAVCredentials,
   body: string,
   depth: '0' | '1' | 'infinity' = '1',
+  context?: HttpRequestContext,
 ) => {
-  return tauriRequest(url, 'PROPFIND', credentials, body, {
-    Depth: depth,
-    'Content-Type': 'application/xml; charset=utf-8',
-  });
+  return tauriRequest(
+    url,
+    'PROPFIND',
+    credentials,
+    body,
+    {
+      Depth: depth,
+      'Content-Type': 'application/xml; charset=utf-8',
+    },
+    context,
+  );
 };
 
 /**
@@ -374,7 +423,12 @@ export const put = async (
 /**
  * DELETE request for removing calendar objects
  */
-export const del = async (url: string, credentials: CalDAVCredentials, etag?: string) => {
+export const del = async (
+  url: string,
+  credentials: CalDAVCredentials,
+  etag?: string,
+  context?: HttpRequestContext,
+) => {
   const headers: Record<string, string> = {};
 
   if (etag) {
@@ -382,14 +436,19 @@ export const del = async (url: string, credentials: CalDAVCredentials, etag?: st
     headers['If-Match'] = `"${etag}"`;
   }
 
-  return tauriRequest(url, 'DELETE', credentials, undefined, headers);
+  return tauriRequest(url, 'DELETE', credentials, undefined, headers, context);
 };
 
 /**
  * MKCALENDAR request for creating a new calendar collection
  */
-export const mkcalendar = async (url: string, credentials: CalDAVCredentials, body: string) => {
-  return tauriRequest(url, 'MKCALENDAR', credentials, body);
+export const mkcalendar = async (
+  url: string,
+  credentials: CalDAVCredentials,
+  body: string,
+  context?: HttpRequestContext,
+) => {
+  return tauriRequest(url, 'MKCALENDAR', credentials, body, undefined, context);
 };
 
 const parsePropValue = (child: Element) => {

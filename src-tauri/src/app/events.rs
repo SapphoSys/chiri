@@ -14,6 +14,8 @@ pub(super) fn handle_run_event(app_handle: &tauri::AppHandle<AppRuntime>, event:
             let _ = app_handle.emit("app:quit-requested", ());
         }
 
+        RunEvent::Exit => {}
+
         // handle app reactivation (e.g., from Spotlight, Dock, Cmd+Tab)
         RunEvent::Reopen { .. } => {
             if let Some(window) = app_handle.get_webview_window("main") {
@@ -28,8 +30,6 @@ pub(super) fn handle_run_event(app_handle: &tauri::AppHandle<AppRuntime>, event:
 }
 
 #[cfg(not(target_os = "macos"))]
-pub(super) fn handle_run_event(
-    _app_handle: &tauri::AppHandle<AppRuntime>,
-    _event: tauri::RunEvent,
-) {
+pub(super) fn handle_run_event(_app_handle: &tauri::AppHandle<AppRuntime>, event: tauri::RunEvent) {
+    if let tauri::RunEvent::Exit = event {}
 }

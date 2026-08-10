@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 import { makeTask } from '../../fixtures';
 
 const { mockDb } = vi.hoisted(() => ({
@@ -22,7 +22,7 @@ vi.mock('$context/settingsContext', () => ({
   },
 }));
 
-vi.mock('$hooks/ui/useToast', () => ({
+vi.mock('$lib/toastManager', () => ({
   toastManager: { success: vi.fn(), error: vi.fn() },
 }));
 
@@ -30,7 +30,7 @@ vi.mock('$lib/ical/vtodo', () => ({
   toAppleEpoch: vi.fn((ms: number) => ms),
 }));
 
-vi.mock('$utils/recurrence', () => ({
+vi.mock('$lib/task/recurrence', () => ({
   getNextOccurrence: vi.fn(),
   parseRRule: vi.fn(() => ({})),
 }));

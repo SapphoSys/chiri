@@ -1,4 +1,4 @@
-import type { SnoozeDuration, SnoozeDurationUnit } from '$types/settings';
+import type { SnoozeDuration, SnoozeDurationUnit } from '$types/notifications/settings';
 
 const SECONDS_PER_UNIT: Record<SnoozeDurationUnit, number> = {
   seconds: 1,

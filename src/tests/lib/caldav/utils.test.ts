@@ -5,6 +5,7 @@ import {
   isValidPrincipalUrlOverride,
   makeAbsoluteUrl,
   normalizeUrl,
+  parseCalDAVServerUrl,
 } from '$lib/caldav/utils';
 
 describe('cleanEtag', () => {
@@ -134,6 +135,29 @@ describe('makeAbsoluteUrl', () => {
 
   it('throws on truly invalid base url for relative input', () => {
     expect(() => makeAbsoluteUrl('/path', 'not a url at all')).toThrow();
+  });
+});
+
+describe('parseCalDAVServerUrl', () => {
+  it('accepts valid HTTP(S) CalDAV server URLs', () => {
+    const https = parseCalDAVServerUrl(' https://caldav.example.com:8443/dav/ ');
+    const http = parseCalDAVServerUrl('http://localhost:5232');
+    const pathWithColon = parseCalDAVServerUrl('https://caldav.example.com/dav:0/');
+
+    expect(https.ok && https.url.origin).toBe('https://caldav.example.com:8443');
+    expect(http.ok && http.url.origin).toBe('http://localhost:5232');
+    expect(pathWithColon.ok && pathWithColon.url.pathname).toBe('/dav:0/');
+  });
+
+  it.each([
+    ['', 'missing-url'],
+    ['example.com', 'invalid-url'],
+    ['ftp://example.com', 'unsupported-scheme'],
+    ['https://alice:secret@example.com', 'embedded-credentials'],
+    ['https://example.com:0', 'invalid-port'],
+    ['https://example.com:65536', 'invalid-port'],
+  ] as const)('rejects %s with %s', (value, reason) => {
+    expect(parseCalDAVServerUrl(value)).toEqual({ ok: false, reason });
   });
 });
 

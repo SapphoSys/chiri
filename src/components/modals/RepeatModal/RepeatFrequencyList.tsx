@@ -1,7 +1,7 @@
 import { useSettingsStore } from '$context/settingsContext';
-import type { RecurrenceFrequency } from '$types/recurrence';
+import { frequencyToRRule, parseRRule } from '$lib/task/recurrence';
+import type { RecurrenceFrequency } from '$types/task/recurrence';
 import { WORKING_DAY_META } from '$utils/calendar';
-import { frequencyToRRule, parseRRule } from '$utils/recurrence';
 
 const OPTIONS: { value: RecurrenceFrequency; label: string }[] = [
   { value: 'daily', label: 'Daily' },

@@ -6,23 +6,22 @@ import Plus from 'lucide-react/icons/plus';
 import Trash2 from 'lucide-react/icons/trash-2';
 import User from 'lucide-react/icons/user';
 import { useMemo, useState } from 'react';
-import { ConnectionNoticeBanner } from '$components/ConnectionNoticeBanner';
+import { ConnectionNoticeBanner } from '$components/banners/ConnectionNoticeBanner';
 import { MobileConfigExportModal } from '$components/modals/MobileConfigExportModal';
-import { WebDAVPushAccountStatus } from '$components/settings/ConnectionSettings/WebDAVPushAccountStatus';
+import { ConnectionsSettingsPushAccountStatus } from '$components/settings/ConnectionSettings/ConnectionsSettingsPushAccountStatus';
 import { Tooltip } from '$components/Tooltip';
 import { useConnectionStore } from '$context/connectionContext';
 import { useSettingsStore } from '$context/settingsContext';
+import {
+  AccountConnectionTestCancelledError,
+  useAccountConnectionTestRunner,
+} from '$hooks/account/useAccountConnectionTestRunner';
 import { useAccountDeletion } from '$hooks/deletion/useAccountDeletion';
 import { useTasks } from '$hooks/queries/useTasks';
-import { CalDAVClient } from '$lib/caldav';
 import type { CalDAVSetupError, CalDAVSetupNotice } from '$lib/caldav/setup';
-import {
-  getSetupErrorInfo,
-  getSetupNotice,
-  probeSetupVtodoCreationIfNeeded,
-} from '$lib/caldav/setup';
+import { getSetupErrorInfo } from '$lib/caldav/setup';
 import { exportMobileConfigFile } from '$lib/mobileconfig/export';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 import { pluralize } from '$utils/misc';
 
 interface ConnectionsSettingsProps {
@@ -39,10 +38,9 @@ export const ConnectionsSettings = ({
   const accounts = allAccounts.filter((a) => a.caldav);
   const { enforceVapid } = useSettingsStore();
   const { deleteAccount } = useAccountDeletion();
-  const { hasConnection } = useConnectionStore();
+  const { getStatus, testingAccountIds } = useConnectionStore();
   const { data: tasks = [] } = useTasks();
 
-  const [testingAccounts, setTestingAccounts] = useState<Set<string>>(new Set());
   const [testResults, setTestResults] = useState<
     Record<
       string,
@@ -55,6 +53,10 @@ export const ConnectionsSettings = ({
     >
   >({});
   const [exportingAccount, setExportingAccount] = useState<Account | null>(null);
+  const { runTest } = useAccountConnectionTestRunner({
+    enforceVapid,
+    operationIdPrefix: 'settings-connection-test',
+  });
 
   // calculate task counts per account
   const accountStats = useMemo(() => {
@@ -82,7 +84,6 @@ export const ConnectionsSettings = ({
   };
 
   const handleTestConnection = async (account: Account) => {
-    setTestingAccounts((prev) => new Set(prev).add(account.id));
     setTestResults((prev) => {
       const next = { ...prev };
       delete next[account.id];
@@ -90,25 +91,19 @@ export const ConnectionsSettings = ({
     });
 
     try {
-      await CalDAVClient.reconnect(account);
-      const client = CalDAVClient.getForAccount(account.id);
-      const { calendars, diagnostics } = await client.discoverCalendars(enforceVapid);
-      const canCreateVtodoCalendar = await probeSetupVtodoCreationIfNeeded(
-        client,
-        diagnostics,
-        enforceVapid,
-      );
+      const { calendars, notice } = await runTest(account);
 
       setTestResults((prev) => ({
         ...prev,
         [account.id]: {
           success: true,
           error: null,
-          notice: getSetupNotice(diagnostics, canCreateVtodoCalendar),
+          notice,
           calendarCount: calendars.length,
         },
       }));
     } catch (error) {
+      if (error instanceof AccountConnectionTestCancelledError) return;
       setTestResults((prev) => ({
         ...prev,
         [account.id]: {
@@ -123,12 +118,6 @@ export const ConnectionsSettings = ({
           calendarCount: 0,
         },
       }));
-    } finally {
-      setTestingAccounts((prev) => {
-        const next = new Set(prev);
-        next.delete(account.id);
-        return next;
-      });
     }
   };
 
@@ -182,8 +171,9 @@ export const ConnectionsSettings = ({
         ) : (
           <div className="space-y-3">
             {accounts.map((account) => {
-              const isConnected = hasConnection(account.id);
-              const isTesting = testingAccounts.has(account.id);
+              const connectionStatus = getStatus(account.id);
+              const isConnected = connectionStatus === 'connected';
+              const isTesting = account.id in testingAccountIds;
               const testResult = testResults[account.id];
               const taskCount = accountStats[account.id] || 0;
 
@@ -200,7 +190,22 @@ export const ConnectionsSettings = ({
                           {account.name}
                         </p>
                         {!isConnected && (
-                          <span className="text-semantic-warning text-xs">Disconnected</span>
+                          <span
+                            className={`inline-flex items-center gap-1.5 text-xs ${
+                              connectionStatus === 'disconnected'
+                                ? 'text-semantic-warning'
+                                : 'text-surface-500 dark:text-surface-400'
+                            }`}
+                          >
+                            {connectionStatus === 'disconnected' ? null : (
+                              <Loader2 className="h-3 w-3 motion-safe:animate-spin" />
+                            )}
+                            {connectionStatus === 'connecting'
+                              ? 'Connecting…'
+                              : connectionStatus === 'reconnecting'
+                                ? 'Reconnecting…'
+                                : 'Disconnected'}
+                          </span>
                         )}
                       </div>
 
@@ -219,7 +224,7 @@ export const ConnectionsSettings = ({
                         )}
                       </div>
 
-                      <WebDAVPushAccountStatus account={account} />
+                      <ConnectionsSettingsPushAccountStatus account={account} />
                     </div>
 
                     <div className="flex items-center justify-center gap-1">

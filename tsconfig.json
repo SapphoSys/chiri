@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["ES2020", "ES2024.Promise", "DOM", "DOM.Iterable"],
     "types": ["node"],
     "module": "ESNext",
     "skipLibCheck": true,
@@ -27,11 +27,10 @@
       "$lib/*": ["./src/lib/*"],
       "$providers/*": ["./src/providers/*"],
       "$styles/*": ["./src/styles/*"],
-      "$types": ["./src/types/index.ts"],
       "$types/*": ["./src/types/*"],
       "$utils/*": ["./src/utils/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "scripts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

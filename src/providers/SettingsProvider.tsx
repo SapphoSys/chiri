@@ -1,30 +1,25 @@
 import { type ReactNode, useCallback, useSyncExternalStore } from 'react';
 import { SettingsContext, settingsStore } from '$context/settingsContext';
-import type {
-  DefaultDateOffset,
-  DefaultReminderOffset,
-  KeyboardShortcut,
-  Priority,
-  TaskStatus,
-} from '$types';
 import type { AccentColor, Theme } from '$types/color';
-import type { DateFormat, StartOfWeek, TimeFormat, WorkingDay } from '$types/preference';
-import type { PushProviderId } from '$types/push';
+import type { NotificationActionSettings } from '$types/notifications/settings';
+import type { PushProviderId } from '$types/push/providers';
+import type { DefaultDateOffset, DefaultReminderOffset } from '$types/settings/categories/defaults';
 import type {
-  DefaultLaunchView,
   EditorFieldKey,
   EditorFieldVisibility,
-  NetworkProxyMode,
-  NotificationActionSettings,
-  QuickTimePresets,
-  SettingsStore,
-  SidebarSectionKey,
-  SubtaskDeletionBehavior,
   TaskBadgeKey,
   TaskBadgeVisibility,
-  TaskListDensity,
-  WindowDecorationStyle,
-} from '$types/settings';
+} from '$types/settings/categories/editor';
+import type { TaskListDensity } from '$types/settings/categories/layout';
+import type { DefaultLaunchView, SidebarSectionKey } from '$types/settings/categories/navigation';
+import type { NetworkProxyMode } from '$types/settings/categories/network';
+import type { DateFormat, StartOfWeek, TimeFormat } from '$types/settings/categories/region';
+import type { SubtaskDeletionBehavior } from '$types/settings/categories/safety';
+import type { QuickTimePresets, WorkingDay } from '$types/settings/categories/scheduling';
+import type { WindowDecorationStyle } from '$types/settings/categories/system';
+import type { SettingsStore } from '$types/settings/state';
+import type { KeyboardShortcut } from '$types/shortcuts';
+import type { Priority, Status } from '$types/task/model';
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const currentState = useSyncExternalStore(
@@ -129,11 +124,15 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     [],
   );
   const setDefaultStatus = useCallback(
-    (status: TaskStatus) => settingsStore.setDefaultStatus(status),
+    (status: Status) => settingsStore.setDefaultStatus(status),
     [],
   );
   const setDefaultPercentComplete = useCallback(
     (pct: number) => settingsStore.setDefaultPercentComplete(pct),
+    [],
+  );
+  const setSyncStatusProgress = useCallback(
+    (enabled: boolean) => settingsStore.setSyncStatusProgress(enabled),
     [],
   );
   const setDefaultTags = useCallback(
@@ -240,16 +239,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     (enabled: boolean) => settingsStore.setHideDockIconWhenWindowClosed(enabled),
     [],
   );
-  const setShowWindowOnNormalLaunch = useCallback(
-    (show: boolean) => settingsStore.setShowWindowOnNormalLaunch(show),
-    [],
-  );
   const setShowWindowOnLoginLaunch = useCallback(
     (show: boolean) => settingsStore.setShowWindowOnLoginLaunch(show),
-    [],
-  );
-  const setRestoreWindowState = useCallback(
-    (restore: boolean) => settingsStore.setRestoreWindowState(restore),
     [],
   );
   const setWindowDecorationStyle = useCallback(
@@ -430,6 +421,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     setDefaultPriority,
     setDefaultStatus,
     setDefaultPercentComplete,
+    setSyncStatusProgress,
     setDefaultTags,
     setDefaultStartDate,
     setDefaultStartTime,
@@ -456,9 +448,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     setEnableSystemTrayExplicitlySet,
     setSystemTrayAppliedValue,
     setHideDockIconWhenWindowClosed,
-    setShowWindowOnNormalLaunch,
     setShowWindowOnLoginLaunch,
-    setRestoreWindowState,
     setWindowDecorationStyle,
     setCheckForUpdatesAutomatically,
     setConfirmBeforeQuit,

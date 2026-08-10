@@ -1,9 +1,10 @@
 import CalendarClock from 'lucide-react/icons/calendar-clock';
 import CornerDownRight from 'lucide-react/icons/corner-down-right';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
-import type { DateFormat } from '$types/preference';
+import { useSettingsStore } from '$context/settingsContext';
+import { getNextOccurrences, rruleToText } from '$lib/task/recurrence';
+import type { DateFormat } from '$types/settings/categories/region';
 import { formatDate } from '$utils/date';
-import { getNextOccurrences, rruleToText } from '$utils/recurrence';
 
 interface RepeatRuleSummaryProps {
   rrule?: string;
@@ -18,11 +19,12 @@ export const RepeatRuleSummary = ({
   dueDate,
   dateFormat,
 }: RepeatRuleSummaryProps) => {
+  const { workingDays } = useSettingsStore();
   const previewStart = dueDate ?? new Date();
   const occurrences =
     rrule && repeatFrom !== 1 ? getNextOccurrences(rrule, previewStart, previewStart, 3) : [];
 
-  const summaryText = rrule ? rruleToText(rrule, repeatFrom, dateFormat) : '';
+  const summaryText = rrule ? rruleToText(rrule, repeatFrom, dateFormat, workingDays) : '';
   const [ruleText, fromText] = summaryText.split(' · from ') as [string, string | undefined];
 
   return (

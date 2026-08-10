@@ -1,4 +1,8 @@
-use cms::{content_info::ContentInfo, signed_data::SignedData};
+use cms::{
+    cert::{x509::certificate::Certificate, CertificateChoices},
+    content_info::ContentInfo,
+    signed_data::{SignedData, SignerIdentifier},
+};
 use der::{Decode, Encode};
 use plist::{Dictionary, Value};
 use serde::Serialize;
@@ -24,6 +28,15 @@ pub enum MobileConfigFormat {
 pub enum MobileConfigSignatureStatus {
     Unsigned,
     SignedUnverified,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MobileConfigSignerInfo {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    common_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    organization: Option<String>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
@@ -66,6 +79,8 @@ pub struct DecodedMobileConfigCalDavPayload {
 pub struct DecodedMobileConfig {
     format: MobileConfigFormat,
     signature: MobileConfigSignatureStatus,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    signer: Option<MobileConfigSignerInfo>,
     caldav_payloads: Vec<DecodedMobileConfigCalDavPayload>,
 }
 
@@ -146,6 +161,7 @@ fn decode_payloads(
     value: Value,
     format: MobileConfigFormat,
     signature: MobileConfigSignatureStatus,
+    signer: Option<MobileConfigSignerInfo>,
 ) -> Result<DecodedMobileConfig, MobileConfigDecodeFailureReason> {
     let Value::Dictionary(profile) = value else {
         return Err(MobileConfigDecodeFailureReason::InvalidProfile);
@@ -175,11 +191,73 @@ fn decode_payloads(
     Ok(DecodedMobileConfig {
         format,
         signature,
+        signer,
         caldav_payloads,
     })
 }
 
-fn decode_signed_cms(data: &[u8]) -> Result<Value, MobileConfigDecodeFailureReason> {
+fn directory_string_value(
+    value: der::Result<Option<cms::cert::x509::ext::pkix::name::DirectoryString>>,
+) -> Option<String> {
+    value.ok().flatten().map(|value| value.value().into_owned())
+}
+
+fn certificate_signer_info(certificate: &Certificate) -> MobileConfigSignerInfo {
+    let subject = certificate.tbs_certificate().subject();
+
+    MobileConfigSignerInfo {
+        common_name: directory_string_value(subject.common_name()),
+        organization: directory_string_value(subject.organization()),
+    }
+}
+
+fn certificate_matches_signer(certificate: &Certificate, signer_id: &SignerIdentifier) -> bool {
+    let tbs = certificate.tbs_certificate();
+    match signer_id {
+        SignerIdentifier::IssuerAndSerialNumber(issuer_and_serial) => {
+            tbs.issuer() == &issuer_and_serial.issuer
+                && tbs.serial_number() == &issuer_and_serial.serial_number
+        }
+        SignerIdentifier::SubjectKeyIdentifier(subject_key_identifier) => {
+            match tbs.get_extension::<cms::cert::x509::ext::pkix::SubjectKeyIdentifier>() {
+                Ok(Some((_critical, certificate_subject_key_identifier))) => {
+                    &certificate_subject_key_identifier == subject_key_identifier
+                }
+                _ => false,
+            }
+        }
+    }
+}
+
+fn extract_signer_info(signed_data: &SignedData) -> Option<MobileConfigSignerInfo> {
+    let certificates = signed_data.certificates.as_ref()?;
+    let signer_id = &signed_data.signer_infos.as_ref().as_slice().first()?.sid;
+
+    certificates
+        .as_ref()
+        .as_slice()
+        .iter()
+        .filter_map(|choice| match choice {
+            CertificateChoices::Certificate(certificate) => Some(certificate),
+            CertificateChoices::Other(_) => None,
+        })
+        .find(|certificate| certificate_matches_signer(certificate, signer_id))
+        .or_else(|| {
+            certificates
+                .as_ref()
+                .as_slice()
+                .iter()
+                .find_map(|choice| match choice {
+                    CertificateChoices::Certificate(certificate) => Some(certificate),
+                    CertificateChoices::Other(_) => None,
+                })
+        })
+        .map(certificate_signer_info)
+}
+
+fn decode_signed_cms(
+    data: &[u8],
+) -> Result<(Value, Option<MobileConfigSignerInfo>), MobileConfigDecodeFailureReason> {
     let content_info =
         ContentInfo::from_ber(data).map_err(|_| MobileConfigDecodeFailureReason::InvalidCms)?;
     let content_type = content_info.content_type.to_string();
@@ -203,10 +281,14 @@ fn decode_signed_cms(data: &[u8]) -> Result<Value, MobileConfigDecodeFailureReas
     let decoded_bytes = signed_data
         .encap_content_info
         .econtent
+        .as_ref()
         .ok_or(MobileConfigDecodeFailureReason::InvalidCms)?;
+    let signer = extract_signer_info(&signed_data);
 
-    plist::from_reader(Cursor::new(decoded_bytes.value()))
-        .map_err(|_| MobileConfigDecodeFailureReason::InvalidProfile)
+    let value = plist::from_reader(Cursor::new(decoded_bytes.value()))
+        .map_err(|_| MobileConfigDecodeFailureReason::InvalidProfile)?;
+
+    Ok((value, signer))
 }
 
 fn decode(data: &[u8]) -> Result<DecodedMobileConfig, MobileConfigDecodeFailureReason> {
@@ -223,18 +305,19 @@ fn decode(data: &[u8]) -> Result<DecodedMobileConfig, MobileConfigDecodeFailureR
         } else {
             MobileConfigFormat::Xml
         };
-        return decode_payloads(value, format, MobileConfigSignatureStatus::Unsigned);
+        return decode_payloads(value, format, MobileConfigSignatureStatus::Unsigned, None);
     }
 
     if !data.starts_with(&[0x30]) {
         return Err(MobileConfigDecodeFailureReason::InvalidProfile);
     }
 
-    let value = decode_signed_cms(data)?;
+    let (value, signer) = decode_signed_cms(data)?;
     decode_payloads(
         value,
         MobileConfigFormat::SignedCms,
         MobileConfigSignatureStatus::SignedUnverified,
+        signer,
     )
 }
 
@@ -323,6 +406,13 @@ mod tests {
         assert_eq!(
             profile.caldav_payloads[0].username.as_deref(),
             Some("alice")
+        );
+        assert_eq!(
+            profile
+                .signer
+                .as_ref()
+                .and_then(|signer| signer.common_name.as_deref()),
+            Some("Chiri MobileConfig Test Fixture")
         );
     }
 

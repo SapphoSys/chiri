@@ -11,17 +11,19 @@ import { UpdateModal } from '$components/modals/UpdateModal';
 import type { FileDropResult } from '$hooks/system/useFileDrop';
 import type { UpdateError, UpdateInfo } from '$hooks/system/useUpdateChecker';
 import { getTasksByCalendar } from '$lib/store/tasks';
-import type { Account } from '$types';
-import type { AppModalActions, AppModalState } from '$types/controller';
+import type { Account } from '$types/account';
 import type {
   MobileConfigCalDAVSettings,
   MobileConfigImportProfile,
   MobileConfigImportSelection,
-} from '$types/mobileconfig';
+} from '$types/mobileconfig/import';
+import type { AppModalActions, AppModalState } from '$types/modals';
 
 interface AppModalsOnboarding {
   show: boolean;
   hasCalDAVAccounts: boolean;
+  calDAVAccountCount: number;
+  isRerun: boolean;
 }
 
 interface AppModalsAppImageIntegration {
@@ -65,6 +67,7 @@ interface AppModalsProps {
   appImageIntegration: AppModalsAppImageIntegration;
   modals: AppModalState;
   modalActions: AppModalActions;
+  onRunOnboarding: () => void;
   fileDrop: AppModalsFileDrop;
   updates: AppModalsUpdates;
 }
@@ -75,6 +78,7 @@ export const AppModals = ({
   appImageIntegration,
   modals,
   modalActions,
+  onRunOnboarding,
   fileDrop,
   updates,
 }: AppModalsProps) => {
@@ -150,6 +154,7 @@ export const AppModals = ({
           onClose={closeSettings}
           onAddAccount={() => openAccountAboveModal()}
           onEditAccount={openAccountAboveModal}
+          onRunOnboarding={onRunOnboarding}
           initialCategory={settingsInitialTab.category}
           initialSubtab={settingsInitialTab.subtab}
         />
@@ -217,6 +222,8 @@ export const AppModals = ({
       {onboarding.show && (
         <OnboardingModal
           hasCalDAVAccount={onboarding.hasCalDAVAccounts}
+          calDAVAccountCount={onboarding.calDAVAccountCount}
+          isRerun={onboarding.isRerun}
           onAddAccount={() => openAccountAboveModal()}
         />
       )}

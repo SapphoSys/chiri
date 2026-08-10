@@ -45,7 +45,7 @@ export const Tooltip = ({
 }: TooltipProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
-  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const [coords, setCoords] = useState({ x: 0, y: 0, arrowX: 0, arrowY: 0 });
   const tooltipId = useId();
   const triggerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -109,9 +109,14 @@ export const Tooltip = ({
     const tooltipHeight = tooltipRect?.height || 32; // Use actual height or fallback
     const offset = 8;
     const padding = 8;
+    const arrowPadding = 8;
+    const triggerCenterX = rect.left + rect.width / 2;
+    const triggerCenterY = rect.top + rect.height / 2;
 
     let x = 0;
     let y = 0;
+    let arrowX = tooltipWidth / 2;
+    let arrowY = tooltipHeight / 2;
 
     switch (position) {
       case 'top':
@@ -145,6 +150,11 @@ export const Tooltip = ({
       } else {
         y = Math.min(window.innerHeight - padding - tooltipHeight, y);
       }
+
+      arrowX = Math.max(
+        arrowPadding,
+        Math.min(triggerCenterX - (x - tooltipWidth / 2), tooltipWidth - arrowPadding),
+      );
     } else {
       // constrain vertical position for left/right tooltips
       y = Math.max(
@@ -157,9 +167,14 @@ export const Tooltip = ({
       } else {
         x = Math.min(window.innerWidth - padding - tooltipWidth, x);
       }
+
+      arrowY = Math.max(
+        arrowPadding,
+        Math.min(triggerCenterY - (y - tooltipHeight / 2), tooltipHeight - arrowPadding),
+      );
     }
 
-    setCoords({ x, y });
+    setCoords({ x, y, arrowX, arrowY });
   }, [position]);
 
   const showTooltip = useCallback(() => {
@@ -348,7 +363,7 @@ export const Tooltip = ({
             id={tooltipId}
             ref={tooltipRef}
             role="tooltip"
-            className={`pointer-events-none fixed z-100 rounded-sm bg-surface-900 px-2 py-1 font-medium text-white text-xs shadow-lg dark:bg-surface-700 ${isVisible ? 'tooltip-anim animate-tooltip-in' : 'invisible'} ${className}`}
+            className={`pointer-events-none fixed z-100 w-max max-w-[calc(100vw-1rem)] rounded-sm bg-surface-900 px-2 py-1 font-medium text-white text-xs shadow-lg dark:bg-surface-700 ${isVisible ? 'tooltip-anim animate-tooltip-in' : 'invisible'} ${className}`}
             style={
               {
                 left: coords.x,
@@ -362,13 +377,18 @@ export const Tooltip = ({
             <div
               className={`absolute h-2 w-2 rotate-45 bg-surface-900 dark:bg-surface-700 ${
                 position === 'top'
-                  ? 'bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2'
+                  ? 'bottom-0 -translate-x-1/2 translate-y-1/2'
                   : position === 'bottom'
-                    ? 'top-0 left-1/2 -translate-x-1/2 -translate-y-1/2'
+                    ? 'top-0 -translate-x-1/2 -translate-y-1/2'
                     : position === 'left'
-                      ? 'top-1/2 right-0 translate-x-1/2 -translate-y-1/2'
-                      : 'top-1/2 left-0 -translate-x-1/2 -translate-y-1/2'
+                      ? 'right-0 translate-x-1/2 -translate-y-1/2'
+                      : 'left-0 -translate-x-1/2 -translate-y-1/2'
               }`}
+              style={
+                position === 'top' || position === 'bottom'
+                  ? { left: coords.arrowX }
+                  : { top: coords.arrowY }
+              }
             />
           </div>,
           document.body,

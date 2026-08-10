@@ -7,7 +7,8 @@ import {
   isTomorrow,
 } from 'date-fns';
 import { settingsStore } from '$context/settingsContext';
-import type { DateFormat, TimeFormat } from '$types/preference';
+import type { BadgeTone } from '$types/badge';
+import type { DateFormat, TimeFormat } from '$types/settings/categories/region';
 
 /**
  * standard date format strings for consistent formatting across the app
@@ -82,41 +83,39 @@ export const formatDueDate = (date: Date, timeFormat?: TimeFormat) => {
   const isOverdue = d.getTime() < now.getTime();
   const dayDiff = differenceInCalendarDays(d, now);
 
-  const overdue = 'border-semantic-error/30 bg-semantic-error/10 text-semantic-error';
-  const neutral =
-    'border-surface-300 dark:border-surface-600 bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-400';
+  const overdue: BadgeTone = 'error';
+  const dueToday: BadgeTone = 'due-today';
+  const neutral: BadgeTone = 'neutral';
 
   if (isToday(d)) {
     return {
       text: `Today ${time}`,
-      className: isOverdue
-        ? overdue
-        : 'border-semantic-warning/30 bg-semantic-warning/10 text-semantic-warning',
+      tone: isOverdue ? overdue : dueToday,
     };
   }
 
   if (dayDiff === -1) {
-    return { text: `Yesterday ${time}`, className: overdue };
+    return { text: `Yesterday ${time}`, tone: overdue };
   }
 
   if (isTomorrow(d)) {
-    return { text: `Tmrw ${time}`, className: neutral };
+    return { text: `Tmrw ${time}`, tone: neutral };
   }
 
   if (isThisWeek(d)) {
-    return { text: `${format(d, 'EEE')} ${time}`, className: neutral };
+    return { text: `${format(d, 'EEE')} ${time}`, tone: neutral };
   }
 
   if (isSameYear(d, now)) {
     return {
       text: `${formatDate(d, false)}, ${time}`,
-      className: isOverdue ? overdue : neutral,
+      tone: isOverdue ? overdue : neutral,
     };
   }
 
   return {
     text: `${formatDate(d, true)} ${time}`,
-    className: isOverdue ? overdue : neutral,
+    tone: isOverdue ? overdue : neutral,
   };
 };
 
@@ -126,51 +125,27 @@ export const formatDueDate = (date: Date, timeFormat?: TimeFormat) => {
 export const formatStartDate = (date: Date, timeFormat?: TimeFormat) => {
   const d = new Date(date);
   const now = new Date();
-  const colors = {
-    borderColor: '#10b981',
-    bgColor: '#10b98115',
-    textColor: '#10b981',
-  };
+  const color = '#10b981';
 
   // check if date has a meaningful time component (not midnight)
   const hasTime = d.getHours() !== 0 || d.getMinutes() !== 0 || d.getSeconds() !== 0;
   const timeStr = hasTime ? ` ${formatTime(d, timeFormat)}` : '';
 
   if (isToday(d)) {
-    return {
-      text: `Today${timeStr}`,
-      className: 'text-surface-600 dark:text-surface-400 bg-surface-100 dark:bg-surface-700',
-      ...colors,
-    };
+    return { text: `Today${timeStr}`, color };
   }
 
   if (isTomorrow(d)) {
-    return {
-      text: `Tomorrow${timeStr}`,
-      className: 'text-surface-600 dark:text-surface-400 bg-surface-100 dark:bg-surface-700',
-      ...colors,
-    };
+    return { text: `Tomorrow${timeStr}`, color };
   }
 
   if (isThisWeek(d)) {
-    return {
-      text: `${format(d, DATE_FORMATS.dayName)}${timeStr}`, // Full day name
-      className: 'text-surface-600 dark:text-surface-400 bg-surface-100 dark:bg-surface-700',
-      ...colors,
-    };
+    return { text: `${format(d, DATE_FORMATS.dayName)}${timeStr}`, color };
   }
 
   if (isSameYear(d, now)) {
-    return {
-      text: `${formatDate(d, false)}${timeStr}`,
-      className: 'text-surface-600 dark:text-surface-400 bg-surface-100 dark:bg-surface-700',
-      ...colors,
-    };
+    return { text: `${formatDate(d, false)}${timeStr}`, color };
   }
 
-  return {
-    text: `${formatDate(d, true)}${timeStr}`,
-    className: 'text-surface-600 dark:text-surface-400 bg-surface-100 dark:bg-surface-700',
-    ...colors,
-  };
+  return { text: `${formatDate(d, true)}${timeStr}`, color };
 };

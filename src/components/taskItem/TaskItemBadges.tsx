@@ -1,13 +1,12 @@
 import { Fragment, type MouseEvent, type ReactNode, useSyncExternalStore } from 'react';
 import { TaskItemCalendarBadge } from '$components/taskItem/badges/TaskItemCalendarBadge';
-import { TaskItemCollapseButtonBadge } from '$components/taskItem/badges/TaskItemCollapseButtonBadge';
 import { TaskItemDueDateBadge } from '$components/taskItem/badges/TaskItemDueDateBadge';
 import { TaskItemHiddenSubtasksBadge } from '$components/taskItem/badges/TaskItemHiddenSubtasksBadge';
 import { TaskItemInProgressBadge } from '$components/taskItem/badges/TaskItemInProgressBadge';
 import { TaskItemRepeatBadge } from '$components/taskItem/badges/TaskItemRepeatBadge';
 import { TaskItemSnoozedBadge } from '$components/taskItem/badges/TaskItemSnoozedBadge';
 import { TaskItemStartDateBadge } from '$components/taskItem/badges/TaskItemStartDateBadge';
-import { TaskItemSubtaskProgressBadge } from '$components/taskItem/badges/TaskItemSubtaskProgressBadge';
+import { TaskItemSubtaskBadge } from '$components/taskItem/badges/TaskItemSubtaskBadge';
 import { TaskItemTagBadge } from '$components/taskItem/badges/TaskItemTagBadge';
 import { TaskItemURLBadge } from '$components/taskItem/badges/TaskItemURLBadge';
 import { useSettingsStore } from '$context/settingsContext';
@@ -15,8 +14,10 @@ import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useRes
 import { getSnoozedUntil, subscribeToSnoozes } from '$lib/notifications/snoozes';
 import { getAllTags } from '$lib/store/tags';
 import { getChildTasks } from '$lib/store/tasks';
-import type { Account, Tag, Task } from '$types';
-import type { TaskBadgeKey, TaskBadgeVisibility } from '$types/settings';
+import type { Account } from '$types/account';
+import type { TaskBadgeKey, TaskBadgeVisibility } from '$types/settings/categories/editor';
+import type { Tag } from '$types/tag';
+import type { Task } from '$types/task/model';
 import { formatStartDate } from '$utils/date';
 
 interface TaskItemBadgesProps {
@@ -27,11 +28,17 @@ interface TaskItemBadgesProps {
   showCompletedTasks: boolean;
   onTagClick: (tagId: string, event: MouseEvent) => void;
   onCalendarClick: (calendarId: string, event: MouseEvent) => void;
+  onStartDateClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+  onDueDateClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+  onProgressClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   onRepeatClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   onToggleCollapsed: (e: MouseEvent) => void;
   compact: boolean;
   badgeVisibility: TaskBadgeVisibility;
   badgeOrder: TaskBadgeKey[];
+  hideDueDateBadge?: boolean;
+  hideStartDateBadge?: boolean;
+  hideCalendarBadge?: boolean;
 }
 
 export const TaskItemBadges = ({
@@ -42,11 +49,17 @@ export const TaskItemBadges = ({
   showCompletedTasks,
   onTagClick,
   onCalendarClick,
+  onStartDateClick,
+  onDueDateClick,
+  onProgressClick,
   onRepeatClick,
   onToggleCollapsed,
   compact,
   badgeVisibility,
   badgeOrder,
+  hideDueDateBadge = false,
+  hideStartDateBadge = false,
+  hideCalendarBadge = false,
 }: TaskItemBadgesProps) => {
   const { dateFormat } = useSettingsStore();
   const resolveAccent = useAccentColorResolver();
@@ -60,11 +73,10 @@ export const TaskItemBadges = ({
     (s) => s.status === 'completed' || s.status === 'cancelled',
   ).length;
   const totalSubtasks = allChildTasks.length;
-  const childCount = allChildTasks.length;
   const allCalendars = accounts.flatMap((a) => a.calendars);
   const calendar = allCalendars.find((c) => c.id === task.calendarId);
   const calendarColor = calendar?.color ? resolveAccent(calendar.color) : resolvedAccentColor;
-  const showCalendar = activeCalendarId === null && calendar;
+  const showCalendar = activeCalendarId === null && calendar && !hideCalendarBadge;
   const isUnstarted = task.startDate && new Date(task.startDate) > new Date();
   const startDateDisplay = isUnstarted && task.startDate ? formatStartDate(task.startDate) : null;
   const taskTags = (task.tags || [])
@@ -77,14 +89,14 @@ export const TaskItemBadges = ({
   );
 
   const hasAnyVisibleBadge =
-    (badgeVisibility.startDate && startDateDisplay) ||
-    (badgeVisibility.dueDate && task.dueDate) ||
+    (badgeVisibility.startDate && startDateDisplay && !hideStartDateBadge) ||
+    (badgeVisibility.dueDate && task.dueDate && !hideDueDateBadge) ||
     (badgeVisibility.tags && taskTags.length > 0) ||
     (badgeVisibility.calendar && showCalendar) ||
     (badgeVisibility.url && task.url) ||
     (badgeVisibility.status && task.status === 'in-process') ||
     (badgeVisibility.repeat && task.rrule) ||
-    (badgeVisibility.subtasks && (totalSubtasks > 0 || childCount > 0)) ||
+    (badgeVisibility.subtasks && totalSubtasks > 0) ||
     (badgeVisibility.snooze && isSnoozed);
 
   if (!hasAnyVisibleBadge) {
@@ -93,11 +105,13 @@ export const TaskItemBadges = ({
 
   const badgeRenderers: Record<TaskBadgeKey, () => ReactNode> = {
     startDate: () =>
-      badgeVisibility.startDate && startDateDisplay ? (
-        <TaskItemStartDateBadge startDateDisplay={startDateDisplay} />
+      badgeVisibility.startDate && startDateDisplay && !hideStartDateBadge ? (
+        <TaskItemStartDateBadge startDateDisplay={startDateDisplay} onClick={onStartDateClick} />
       ) : null,
     dueDate: () =>
-      badgeVisibility.dueDate ? <TaskItemDueDateBadge dueDate={task.dueDate} /> : null,
+      badgeVisibility.dueDate && !hideDueDateBadge ? (
+        <TaskItemDueDateBadge dueDate={task.dueDate} onClick={onDueDateClick} />
+      ) : null,
     tags: () =>
       badgeVisibility.tags
         ? taskTags.map((tag) => <TaskItemTagBadge key={tag.id} tag={tag} onTagClick={onTagClick} />)
@@ -114,7 +128,7 @@ export const TaskItemBadges = ({
     url: () => (badgeVisibility.url && task.url ? <TaskItemURLBadge url={task.url} /> : null),
     status: () =>
       badgeVisibility.status && task.status === 'in-process' ? (
-        <TaskItemInProgressBadge percentComplete={task.percentComplete} />
+        <TaskItemInProgressBadge percentComplete={task.percentComplete} onClick={onProgressClick} />
       ) : null,
     snooze: () => (badgeVisibility.snooze ? <TaskItemSnoozedBadge taskId={task.id} /> : null),
     repeat: () =>
@@ -130,12 +144,10 @@ export const TaskItemBadges = ({
       badgeVisibility.subtasks ? (
         <>
           {totalSubtasks > 0 && (
-            <TaskItemSubtaskProgressBadge completed={completedSubtasks} total={totalSubtasks} />
-          )}
-          {childCount > 0 && (
-            <TaskItemCollapseButtonBadge
+            <TaskItemSubtaskBadge
+              completed={completedSubtasks}
+              total={totalSubtasks}
               isCollapsed={!!task.isCollapsed}
-              childCount={childCount}
               onToggleCollapsed={onToggleCollapsed}
             />
           )}
@@ -145,9 +157,7 @@ export const TaskItemBadges = ({
   };
 
   return (
-    <div
-      className={`flex items-center gap-2 ${compact ? 'shrink-0 overflow-hidden' : 'mt-2 flex-wrap'}`}
-    >
+    <div className={`${compact ? 'mt-1 gap-1' : 'mt-2 gap-2'} flex flex-wrap items-center`}>
       {badgeOrder.map((badgeKey) => (
         <Fragment key={badgeKey}>{badgeRenderers[badgeKey]()}</Fragment>
       ))}

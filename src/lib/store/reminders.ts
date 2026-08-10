@@ -1,5 +1,5 @@
 import { getTaskById, updateTask } from '$lib/store/tasks';
-import type { Reminder } from '$types';
+import type { Reminder } from '$types/task/model';
 import { generateUUID } from '$utils/misc';
 
 export const addReminder = (taskId: string, trigger: Date) => {

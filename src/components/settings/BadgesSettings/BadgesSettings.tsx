@@ -14,6 +14,7 @@ import Clock from 'lucide-react/icons/clock';
 import FolderSync from 'lucide-react/icons/folder-sync';
 import Link from 'lucide-react/icons/link';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
+import RotateCcw from 'lucide-react/icons/rotate-ccw';
 import Tag from 'lucide-react/icons/tag';
 import Timer from 'lucide-react/icons/timer';
 import { BadgesSettingsPreview } from '$components/settings/BadgesSettings/BadgesSettingsPreview';
@@ -22,7 +23,8 @@ import {
   BadgesSettingsSortableBadges,
 } from '$components/settings/BadgesSettings/BadgesSettingsSortableBadges';
 import { useSettingsStore } from '$context/settingsContext';
-import type { TaskBadgeKey } from '$types/settings';
+import { defaultState } from '$context/settingsDefaults';
+import type { TaskBadgeKey } from '$types/settings/categories/editor';
 
 const BADGES: BadgeConfig[] = [
   {
@@ -70,7 +72,7 @@ const BADGES: BadgeConfig[] = [
   {
     key: 'repeat',
     label: 'Repeat',
-    description: 'Shown when a task has a recurrence rule',
+    description: 'Shown when a task has a repeat rule',
     icon: <RefreshCw className="h-4 w-4" />,
   },
   {
@@ -103,13 +105,32 @@ export const BadgesSettings = () => {
     setTaskBadgeOrder(arrayMove(taskBadgeOrder, oldIndex, newIndex));
   };
 
+  const handleReset = () => {
+    setTaskBadgeVisibility(defaultState.taskBadgeVisibility);
+    setTaskBadgeOrder(defaultState.taskBadgeOrder);
+  };
+
+  const hasChanged =
+    BADGES.some(({ key }) => taskBadgeVisibility[key] !== defaultState.taskBadgeVisibility[key]) ||
+    taskBadgeOrder.length !== defaultState.taskBadgeOrder.length ||
+    taskBadgeOrder.some((key, index) => key !== defaultState.taskBadgeOrder[index]);
+
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Badges</h3>
-      <div>
-        <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">Preview</p>
-        <BadgesSettingsPreview />
+      <div className="flex items-center justify-between">
+        <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Badges</h3>
+        {hasChanged && (
+          <button
+            type="button"
+            onClick={handleReset}
+            className="inline-flex items-center gap-1 text-surface-500 text-xs outline-hidden transition-colors hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200"
+          >
+            <RotateCcw className="h-3 w-3" />
+            Reset
+          </button>
+        )}
       </div>
+      <BadgesSettingsPreview />
       <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={taskBadgeOrder} strategy={verticalListSortingStrategy}>

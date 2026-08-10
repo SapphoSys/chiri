@@ -9,7 +9,9 @@ import {
   DEFAULT_CALENDAR_SORT_CONFIG,
   DEFAULT_SORT_CONFIG,
   DEFAULT_TAG_SORT_CONFIG,
+  DEFAULT_TASK_GROUP_CONFIG,
 } from '$constants';
+import { queryKeys } from '$lib/queryClient';
 import { dataStore } from '$lib/store';
 import {
   getUIState,
@@ -21,6 +23,7 @@ import {
   setAllTasksView,
   setCalendarSortConfig,
   setEditorOpen,
+  setMoveCompletedTasksToBottom,
   setRecentlyDeletedView,
   setSearchQuery,
   setSelectedTask,
@@ -28,18 +31,60 @@ import {
   setShowUnstartedTasks,
   setSortConfig,
   setTagSortConfig,
+  setTaskGroupConfig,
 } from '$lib/store/ui';
-import type { AccountSortConfig, CalendarSortConfig, SortConfig, TagSortConfig } from '$types/sort';
+import type {
+  AccountSortConfig,
+  CalendarSortConfig,
+  SortConfig,
+  TagSortConfig,
+  TaskGroupConfig,
+} from '$types/sort';
 
-type SetSelectedTaskInput = string | null | { id: string | null; focusTitle?: boolean };
+export type TaskEditorFocusField = 'progress';
+
+type SetSelectedTaskInput =
+  | string
+  | null
+  | { id: string | null; focusTitle?: boolean; focusEditorField?: TaskEditorFocusField };
 
 let pendingTitleAutofocusTaskId: string | null = null;
+let pendingTaskListScrollTaskId: string | null = null;
+let pendingEditorFocus: { taskId: string; field: TaskEditorFocusField } | null = null;
+let editorFocusRequestVersion = 0;
+const editorFocusListeners = new Set<() => void>();
+
+export const requestSelectedTaskTitleAutofocus = (taskId: string) => {
+  pendingTitleAutofocusTaskId = taskId;
+};
 
 export const consumeSelectedTaskTitleAutofocus = (taskId: string) => {
   if (pendingTitleAutofocusTaskId !== taskId) return false;
   pendingTitleAutofocusTaskId = null;
   return true;
 };
+
+export const consumeSelectedTaskListScroll = (taskId: string) => {
+  if (pendingTaskListScrollTaskId !== taskId) return false;
+  pendingTaskListScrollTaskId = null;
+  return true;
+};
+
+export const consumeSelectedTaskEditorFocus = (taskId: string) => {
+  if (pendingEditorFocus?.taskId !== taskId) return null;
+  const field = pendingEditorFocus.field;
+  pendingEditorFocus = null;
+  return field;
+};
+
+export const subscribeToTaskEditorFocus = (listener: () => void) => {
+  editorFocusListeners.add(listener);
+  return () => {
+    editorFocusListeners.delete(listener);
+  };
+};
+
+export const getTaskEditorFocusRequestVersion = () => editorFocusRequestVersion;
 
 /**
  * hook to get the full UI state
@@ -49,13 +94,14 @@ export const useUIState = () => {
 
   useEffect(() => {
     return dataStore.subscribe(() => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     });
   }, [queryClient]);
 
   return useQuery({
-    queryKey: ['uiState'],
+    queryKey: queryKeys.uiState.all,
     queryFn: () => getUIState(),
+    initialData: getUIState,
     staleTime: Infinity,
   });
 };
@@ -124,6 +170,11 @@ export const useSortConfig = () => {
   return uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
 };
 
+export const useTaskGroupConfig = () => {
+  const { data: uiState } = useUIState();
+  return uiState?.taskGroupConfig ?? DEFAULT_TASK_GROUP_CONFIG;
+};
+
 /**
  * hook to get account sort config
  */
@@ -144,7 +195,7 @@ export const useSetAccountSortConfig = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -177,7 +228,7 @@ export const useSetActiveAccount = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -194,8 +245,8 @@ export const useSetActiveCalendar = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -212,8 +263,8 @@ export const useSetActiveTag = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -230,8 +281,8 @@ export const useSetActiveFilter = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -248,8 +299,8 @@ export const useSetAllTasksView = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -266,8 +317,8 @@ export const useSetRecentlyDeletedView = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -283,13 +334,22 @@ export const useSetSelectedTask = () => {
       const id = typeof input === 'object' && input !== null ? input.id : input;
       const focusTitle =
         typeof input === 'object' && input !== null ? (input.focusTitle ?? false) : false;
+      const focusEditorField =
+        typeof input === 'object' && input !== null ? input.focusEditorField : undefined;
 
       pendingTitleAutofocusTaskId = focusTitle && id !== null ? id : null;
+      pendingTaskListScrollTaskId = focusTitle && id !== null ? id : null;
+      pendingEditorFocus =
+        focusEditorField && id !== null ? { taskId: id, field: focusEditorField } : null;
+      if (pendingEditorFocus) {
+        editorFocusRequestVersion += 1;
+        for (const listener of editorFocusListeners) listener();
+      }
       setSelectedTask(id);
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -302,12 +362,16 @@ export const useSetEditorOpen = () => {
 
   return useMutation({
     mutationFn: (open: boolean) => {
-      if (!open) pendingTitleAutofocusTaskId = null;
+      if (!open) {
+        pendingTitleAutofocusTaskId = null;
+        pendingTaskListScrollTaskId = null;
+        pendingEditorFocus = null;
+      }
       setEditorOpen(open);
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -324,8 +388,8 @@ export const useSetSearchQuery = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };
@@ -342,7 +406,21 @@ export const useSetSortConfig = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+    },
+  });
+};
+
+export const useSetTaskGroupConfig = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (config: TaskGroupConfig) => {
+      setTaskGroupConfig(config);
+      return Promise.resolve();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -359,7 +437,7 @@ export const useSetCalendarSortConfig = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -384,7 +462,7 @@ export const useSetTagSortConfig = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -401,8 +479,25 @@ export const useSetShowCompletedTasks = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
+    },
+  });
+};
+
+/**
+ * hook to set whether completed tasks appear after active tasks
+ */
+export const useSetMoveCompletedTasksToBottom = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (moveToBottom: boolean) => {
+      setMoveCompletedTasksToBottom(moveToBottom);
+      return Promise.resolve();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
     },
   });
 };
@@ -419,8 +514,8 @@ export const useSetShowUnstartedTasks = () => {
       return Promise.resolve();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['uiState'] });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.uiState.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     },
   });
 };

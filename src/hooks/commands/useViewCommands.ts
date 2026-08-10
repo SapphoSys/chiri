@@ -4,13 +4,17 @@ import { useSettingsStore } from '$context/settingsContext';
 import { useListNavigationCommands } from '$hooks/commands/useListNavigationCommands';
 import {
   useSetActiveAccount,
+  useSetActiveCalendar,
   useSetActiveFilter,
+  useSetActiveTag,
   useSetAllTasksView,
+  useSetMoveCompletedTasksToBottom,
+  useSetRecentlyDeletedView,
   useSetShowCompletedTasks,
   useSetShowUnstartedTasks,
   useSetSortConfig,
 } from '$hooks/queries/useUIState';
-import type { AppModals } from '$types/controller';
+import type { AppModals } from '$types/modals';
 import type { SortDirection, SortMode } from '$types/sort';
 
 interface UseViewCommandsOptions {
@@ -19,11 +23,15 @@ interface UseViewCommandsOptions {
 
 export const useViewCommands = ({ modals }: UseViewCommandsOptions) => {
   const setShowCompletedMutation = useSetShowCompletedTasks();
+  const setMoveCompletedTasksToBottomMutation = useSetMoveCompletedTasksToBottom();
   const setShowUnstartedMutation = useSetShowUnstartedTasks();
   const setSortConfigMutation = useSetSortConfig();
   const setActiveFilterMutation = useSetActiveFilter();
   const setActiveAccountMutation = useSetActiveAccount();
+  const setActiveCalendarMutation = useSetActiveCalendar();
+  const setActiveTagMutation = useSetActiveTag();
   const setAllTasksViewMutation = useSetAllTasksView();
+  const setRecentlyDeletedViewMutation = useSetRecentlyDeletedView();
   const { toggleSidebarCollapsed } = useSettingsStore();
   const { isAnyModalOpen } = useModalState();
   const { navPrevList, navNextList } = useListNavigationCommands();
@@ -68,6 +76,13 @@ export const useViewCommands = ({ modals }: UseViewCommandsOptions) => {
     [setShowCompletedMutation],
   );
 
+  const toggleCompletedToBottom = useCallback(
+    (currentValue: boolean) => {
+      setMoveCompletedTasksToBottomMutation.mutate(!currentValue);
+    },
+    [setMoveCompletedTasksToBottomMutation],
+  );
+
   const toggleUnstarted = useCallback(
     (currentValue: boolean) => {
       setShowUnstartedMutation.mutate(!currentValue);
@@ -101,11 +116,33 @@ export const useViewCommands = ({ modals }: UseViewCommandsOptions) => {
     [isAnyModalOpen, setActiveFilterMutation],
   );
 
+  const selectCalendar = useCallback(
+    (accountId: string, calendarId: string) => {
+      if (isAnyModalOpen) return;
+      setActiveAccountMutation.mutate(accountId);
+      setActiveCalendarMutation.mutate(calendarId);
+    },
+    [isAnyModalOpen, setActiveAccountMutation, setActiveCalendarMutation],
+  );
+
+  const selectTag = useCallback(
+    (tagId: string) => {
+      if (isAnyModalOpen) return;
+      setActiveTagMutation.mutate(tagId);
+    },
+    [isAnyModalOpen, setActiveTagMutation],
+  );
+
   const allTasks = useCallback(() => {
     if (isAnyModalOpen) return;
     setAllTasksViewMutation.mutate();
     setActiveAccountMutation.mutate(null);
   }, [isAnyModalOpen, setActiveAccountMutation, setAllTasksViewMutation]);
+
+  const recentlyDeleted = useCallback(() => {
+    if (isAnyModalOpen) return;
+    setRecentlyDeletedViewMutation.mutate();
+  }, [isAnyModalOpen, setRecentlyDeletedViewMutation]);
 
   return {
     openSettings,
@@ -114,11 +151,15 @@ export const useViewCommands = ({ modals }: UseViewCommandsOptions) => {
     openAbout,
     openKeyboardShortcuts,
     toggleCompleted,
+    toggleCompletedToBottom,
     toggleUnstarted,
     setSortMode,
     setSortDirection,
     allTasks,
+    recentlyDeleted,
     selectFilter,
+    selectCalendar,
+    selectTag,
     toggleSidebar,
     navPrevList,
     navNextList,

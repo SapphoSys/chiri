@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 import type { CalDAVCredentials } from '$lib/http';
-import type { ServerType } from '$types';
+import type { ServerType } from '$types/account';
 
 interface AccountConnection {
   serverUrl: string;
@@ -12,19 +12,35 @@ interface AccountConnection {
 
 interface ConnectionState {
   connections: Record<string, AccountConnection>;
+  statuses: Record<string, AccountConnectionStatus>;
+  testingAccountIds: Record<string, true>;
+  testingOperationIds: Record<string, string>;
 }
+
+export type AccountConnectionStatus = 'connected' | 'connecting' | 'reconnecting' | 'disconnected';
 
 interface ConnectionActions {
   setConnection: (accountId: string, connection: AccountConnection) => void;
   getConnection: (accountId: string) => AccountConnection | undefined;
   deleteConnection: (accountId: string) => void;
   hasConnection: (accountId: string) => boolean;
+  getStatus: (accountId: string) => AccountConnectionStatus;
+  beginConnection: (accountId: string) => void;
+  beginTesting: (accountId: string, operationId?: string) => boolean;
+  endTesting: (accountId: string, operationId?: string) => void;
+  isTesting: (accountId: string) => boolean;
+  isAnyTesting: () => boolean;
 }
 
 export type ConnectionStore = ConnectionState & ConnectionActions;
 
 // singleton store for accessing state outside React
-let state: ConnectionState = { connections: {} };
+let state: ConnectionState = {
+  connections: {},
+  statuses: {},
+  testingAccountIds: {},
+  testingOperationIds: {},
+};
 const listeners = new Set<() => void>();
 
 const emitChange = () => {
@@ -55,6 +71,10 @@ export const connectionStore = {
         ...state.connections,
         [accountId]: connection,
       },
+      statuses: {
+        ...state.statuses,
+        [accountId]: 'connected',
+      },
     };
     emitChange();
   },
@@ -63,11 +83,62 @@ export const connectionStore = {
 
   deleteConnection: (accountId: string) => {
     const { [accountId]: _, ...rest } = state.connections;
-    state = { ...state, connections: rest };
+    state = {
+      ...state,
+      connections: rest,
+      statuses: { ...state.statuses, [accountId]: 'disconnected' },
+    };
     emitChange();
   },
 
   hasConnection: (accountId: string) => accountId in state.connections,
+
+  getStatus: (accountId: string) => state.statuses[accountId] ?? 'disconnected',
+
+  beginConnection: (accountId: string) => {
+    state = {
+      ...state,
+      statuses: {
+        ...state.statuses,
+        [accountId]: accountId in state.connections ? 'reconnecting' : 'connecting',
+      },
+    };
+    emitChange();
+  },
+
+  beginTesting: (accountId: string, operationId?: string) => {
+    if (accountId in state.testingAccountIds) return false;
+
+    state = {
+      ...state,
+      testingAccountIds: {
+        ...state.testingAccountIds,
+        [accountId]: true,
+      },
+      testingOperationIds: operationId
+        ? { ...state.testingOperationIds, [accountId]: operationId }
+        : state.testingOperationIds,
+    };
+    emitChange();
+    return true;
+  },
+
+  endTesting: (accountId: string, operationId?: string) => {
+    if (operationId && state.testingOperationIds[accountId] !== operationId) return;
+
+    const { [accountId]: _, ...rest } = state.testingAccountIds;
+    const { [accountId]: _operationId, ...restOperations } = state.testingOperationIds;
+    state = {
+      ...state,
+      testingAccountIds: rest,
+      testingOperationIds: restOperations,
+    };
+    emitChange();
+  },
+
+  isTesting: (accountId: string) => accountId in state.testingAccountIds,
+
+  isAnyTesting: () => Object.keys(state.testingAccountIds).length > 0,
 };
 
 // context for React components

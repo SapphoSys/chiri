@@ -16,6 +16,7 @@ static DOCK_SYNC_ENABLED: AtomicBool = AtomicBool::new(false);
 const MENU_NEW_TASK: &str = "menu:new-task";
 const MENU_SYNC: &str = "menu:sync";
 const MENU_ALL_TASKS: &str = "menu:all-tasks";
+const MENU_RECENTLY_DELETED: &str = "menu:recently-deleted";
 const MENU_SELECT_FILTER: &str = "menu:select-filter";
 
 #[derive(Deserialize)]
@@ -132,6 +133,10 @@ pub extern "C" fn chiri_macos_dock_menu_item_selected(action: *const c_char) {
         "all-tasks" => {
             focus_main_window(app);
             let _ = app.emit(MENU_ALL_TASKS, ());
+        }
+        "recently-deleted" => {
+            focus_main_window(app);
+            let _ = app.emit(MENU_RECENTLY_DELETED, ());
         }
         action if action.starts_with("filter:") => {
             let filter_id = &action["filter:".len()..];

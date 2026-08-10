@@ -1,7 +1,10 @@
 import { MOBILE_CONFIG_EXTENSION } from '$lib/mobileconfig';
 import { generateMobileConfig } from '$lib/mobileconfig/generate';
-import type { Account } from '$types';
-import type { MobileConfigExportResult, MobileConfigGenerationOptions } from '$types/mobileconfig';
+import type { Account } from '$types/account';
+import type {
+  MobileConfigExportResult,
+  MobileConfigGenerationOptions,
+} from '$types/mobileconfig/export';
 import { saveTextFile } from '$utils/fs';
 
 export const getMobileConfigFileName = (account: Pick<Account, 'name'>) => {

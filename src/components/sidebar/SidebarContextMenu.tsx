@@ -5,7 +5,7 @@ import { SidebarAccountsContextMenu } from '$components/sidebar/SidebarAccountsC
 import { SidebarCalendarContextMenu } from '$components/sidebar/SidebarCalendarContextMenu';
 import { SidebarFilterItemContextMenu } from '$components/sidebar/SidebarFilterItemContextMenu';
 import { SidebarTagItemContextMenu } from '$components/sidebar/SidebarTagItemContextMenu';
-import type { Account } from '$types';
+import type { Account } from '$types/account';
 
 interface ContextMenuState {
   type: 'account' | 'calendar' | 'tag' | 'filter' | 'accounts-section';
@@ -19,10 +19,12 @@ interface SidebarContextMenuProps {
   contextMenu: ContextMenuState;
   accounts: Account[];
   syncingCalendarId: string | null;
+  testingAccountIds: Readonly<Record<string, true>>;
   syncCalendar: (calendarId: string) => Promise<void>;
   onClose: () => void;
   onPointerClose?: MouseEventHandler<HTMLDivElement>;
   onEditAccount: (account: Account) => void;
+  onTestConnection: (account: Account) => void;
   onEditCalendar: (calendarId: string, accountId: string) => void;
   onEditTag: (tagId: string) => void;
   onCreateCalendar: (accountId: string) => void;
@@ -42,10 +44,12 @@ export const SidebarContextMenu = ({
   contextMenu,
   accounts,
   syncingCalendarId,
+  testingAccountIds,
   syncCalendar,
   onClose,
   onPointerClose,
   onEditAccount,
+  onTestConnection,
   onEditCalendar,
   onEditTag,
   onCreateCalendar,
@@ -76,9 +80,11 @@ export const SidebarContextMenu = ({
           accountId={contextMenu.id}
           accounts={accounts}
           syncingCalendarId={syncingCalendarId}
+          testingAccountIds={testingAccountIds}
           syncCalendar={syncCalendar}
           onClose={onClose}
           onEditAccount={onEditAccount}
+          onTestConnection={onTestConnection}
           onCreateCalendar={onCreateCalendar}
           onExportAccount={onExportAccount}
           onMobileConfigExport={onMobileConfigExport}

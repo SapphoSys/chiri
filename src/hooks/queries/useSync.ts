@@ -5,10 +5,10 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef } from 'react';
+import { connectionStore } from '$context/connectionContext';
 import { settingsStore, useSettingsStore } from '$context/settingsContext';
 import { useSyncStore } from '$context/syncContext';
 import { useOffline } from '$hooks/system/useOffline';
-import { toastManager } from '$hooks/ui/useToast';
 import { loggers } from '$lib/logger';
 import { getAllAccounts } from '$lib/store/accounts';
 import {
@@ -17,7 +17,8 @@ import {
   removeTaskFromServer,
   syncCalendarTasks,
 } from '$lib/store/sync';
-import type { Task } from '$types';
+import { toastManager } from '$lib/toastManager';
+import type { Task } from '$types/task/model';
 
 const log = loggers.sync;
 
@@ -127,6 +128,14 @@ export const useSyncQuery = () => {
     async (trigger?: SyncTrigger) => {
       const syncTrigger = normalizeSyncTrigger(trigger);
 
+      if (connectionStore.isAnyTesting()) {
+        log.info('Sync request deferred - a connection test is in progress', {
+          requestedBy: syncTrigger,
+        });
+        pendingSyncRef.current = true;
+        return;
+      }
+
       // skip if already syncing (shared across all hook instances)
       if (syncRunInProgress) {
         log.info('Sync request skipped - another sync is already running', {
@@ -149,6 +158,7 @@ export const useSyncQuery = () => {
       }
 
       const runId = ++syncRunCounter;
+      pendingSyncRef.current = false;
       syncRunInProgress = true;
       activeSyncRun = { id: runId, source: syncTrigger.source };
       log.info('Starting sync...', { runId, trigger: syncTrigger });
@@ -161,7 +171,7 @@ export const useSyncQuery = () => {
         const message = error instanceof Error ? error.message : 'Sync failed';
         setLastSyncError(message);
         log.error('Sync error:', error);
-        toastManager.error('Sync Failed', message, 'sync-error');
+        toastManager.error('Sync failed', message, { groupKey: 'sync-error' });
       } finally {
         log.info('Sync finished', { runId });
         syncRunInProgress = false;
@@ -218,6 +228,27 @@ export const useSyncQuery = () => {
   useEffect(() => {
     syncAllRef.current = syncAll;
   }, [syncAll]);
+
+  useEffect(() => {
+    if (!ensureSyncOwner()) return;
+
+    const unsubscribe = connectionStore.subscribe(() => {
+      if (connectionStore.isAnyTesting() || !pendingSyncRef.current || !syncAllRef.current) {
+        return;
+      }
+
+      pendingSyncRef.current = false;
+      void syncAllRef.current({
+        source: 'deferred-connection-test',
+        reason: 'a deferred sync resumed after connection testing completed',
+        where: 'useSyncQuery connection test completion listener',
+      });
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [ensureSyncOwner]);
 
   // auto-sync interval
   useEffect(() => {

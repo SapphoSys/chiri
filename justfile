@@ -8,21 +8,37 @@ alias d := dev
 alias h := hash
 alias i := install
 alias l := clippy
-alias m := mac-build
+alias m := mac-signed-build
 alias u := update
 alias v := vite
 alias g := hooks
 
+build:
+  pnpm run build:app
+
 cargo:
   cd src-tauri && cargo update
+
+check-workflows:
+  actionlint .github/workflows/*.yml
+  yq '.' .github/workflows/*.yml > /dev/null
 
 clippy:
   cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings
 
-build:
-  pnpm tauri build
+dev:
+  pnpm tauri dev
 
-mac-build:
+hash:
+  ./scripts/update-hashes.sh
+
+hooks:
+  bash scripts/install-hooks.sh
+
+install: hooks
+  pnpm install
+
+mac-signed-build:
   #!/usr/bin/env bash
   set -euo pipefail
 
@@ -44,22 +60,6 @@ mac-build:
   APPLE_API_KEY='op://GitHub Actions/Apple Secrets/api-key' \
   APPLE_API_KEY_PATH="$tmp_p8" \
   op run -- pnpm tauri build
-
-dev:
-  pnpm tauri dev
-
-hash:
-  ./scripts/update-hashes.sh
-
-check-workflows:
-  actionlint .github/workflows/*.yml
-  yq '.' .github/workflows/*.yml > /dev/null
-
-hooks:
-  bash scripts/install-hooks.sh
-
-install: hooks
-  pnpm install
 
 update:
   pnpm upgrade -L

@@ -1,6 +1,6 @@
 import type DatabasePlugin from '@tauri-apps/plugin-sql';
-import type { CalDAVTaskObject } from '$types';
-import type { CalDAVTaskObjectRow } from '$types/database';
+import type { CalDAVTaskObject } from '$lib/caldav/types';
+import type { CalDAVTaskObjectRow } from '$lib/database/types';
 
 const rowToCalDAVTaskObject = (row: CalDAVTaskObjectRow): CalDAVTaskObject => ({
   taskUid: row.task_uid,

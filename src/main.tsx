@@ -9,12 +9,12 @@ import {
   deleteDatabase,
   forceShowWindow,
   initializeApp,
+  initializeTray,
   shouldShowWindowOnStartup,
   showWindow,
 } from '$lib/bootstrap';
 import { loggers } from '$lib/logger';
 import { queryClient } from '$lib/queryClient';
-import { watchWindowState } from '$lib/window';
 import { ConfirmDialogProvider } from '$providers/ConfirmDialogProvider';
 import { ConnectionProvider } from '$providers/ConnectionProvider';
 import { DismissableLayerProvider } from '$providers/DismissableLayerProvider';
@@ -84,9 +84,6 @@ const renderBootstrapError = (error: unknown) => {
 const bootstrap = async () => {
   await initializeApp();
   renderApp();
-  await watchWindowState().catch((error) => {
-    log.warn('Failed to watch window state:', error);
-  });
   if (await shouldShowWindowOnStartup()) {
     await showWindow();
   } else {
@@ -96,6 +93,7 @@ const bootstrap = async () => {
 
 await bootstrap().catch(async (error) => {
   log.error('Failed to initialize app:', error);
+  await initializeTray();
   renderBootstrapError(error);
   // still show window so user can see the error
   await forceShowWindow().catch((windowError) => {

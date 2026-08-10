@@ -10,7 +10,6 @@
   glib,
   gtk3,
   webkitgtk_4_1,
-  libayatana-appindicator,
   openssl,
   glib-networking,
   libsoup_3,
@@ -106,7 +105,6 @@ else
       glib
       gtk3
       webkitgtk_4_1
-      libayatana-appindicator
       openssl
       glib-networking
       libsoup_3
@@ -140,8 +138,7 @@ else
     postFixup = ''
       if [ -f "$out/bin/Chiri" ]; then
         wrapProgram $out/bin/Chiri \
-          --set GIO_EXTRA_MODULES "${glib-networking}/lib/gio/modules" \
-          --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ libayatana-appindicator ]}"
+          --set GIO_EXTRA_MODULES "${glib-networking}/lib/gio/modules"
       fi
     '';
 

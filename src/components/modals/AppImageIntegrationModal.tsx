@@ -1,4 +1,4 @@
-import AppIcon from '$components/Icon';
+import AppIcon from '$components/AppIcon';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
 

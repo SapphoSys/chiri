@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { HttpResponse, MultiStatusResponse } from '$lib/http';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 import { makeCalendar, makeConnection, makeTask } from '../../fixtures';
 
 // syncCalendar internally calls fetchTasks (same module). ESM bindings mean we

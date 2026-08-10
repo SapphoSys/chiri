@@ -2,7 +2,10 @@ import * as calendarOps from '$lib/caldav/calendars';
 import type { Connection } from '$lib/caldav/connection';
 import * as connectionOps from '$lib/caldav/connection';
 import * as taskOps from '$lib/caldav/tasks';
-import type { Account, Calendar, ServerType, Task } from '$types';
+import type { HttpRequestContext } from '$lib/http';
+import type { Account, ServerType } from '$types/account';
+import type { Calendar } from '$types/calendar';
+import type { Task } from '$types/task/model';
 
 export class CalDAVClient {
   readonly accountId: string;
@@ -29,6 +32,7 @@ export class CalDAVClient {
     principalUrl?: string,
     acceptInvalidCerts?: boolean,
     bearerToken?: string,
+    context?: HttpRequestContext,
   ) {
     return connectionOps.connect(
       accountId,
@@ -40,6 +44,7 @@ export class CalDAVClient {
       principalUrl,
       acceptInvalidCerts,
       bearerToken,
+      context,
     );
   }
 
@@ -52,6 +57,7 @@ export class CalDAVClient {
     calendarHomeUrl?: string,
     principalUrl?: string,
     acceptInvalidCerts?: boolean,
+    context?: HttpRequestContext,
   ) {
     return connectionOps.connectWithBearer(
       accountId,
@@ -62,6 +68,7 @@ export class CalDAVClient {
       calendarHomeUrl,
       principalUrl,
       acceptInvalidCerts,
+      context,
     );
   }
 
@@ -73,29 +80,41 @@ export class CalDAVClient {
     return connectionOps.isConnected(accountId);
   }
 
-  static async reconnect(account: Account) {
-    return connectionOps.reconnect(account);
+  static async reconnect(account: Account, context?: HttpRequestContext, connectionId?: string) {
+    return connectionOps.reconnect(account, context, connectionId);
   }
 
   // calendars
-  async fetchCalendars(enforceVapid: boolean) {
-    return calendarOps.fetchCalendars(this.conn, this.accountId, enforceVapid);
+  async fetchCalendars(enforceVapid: boolean, context?: HttpRequestContext) {
+    return calendarOps.fetchCalendars(this.conn, this.accountId, enforceVapid, context);
   }
 
-  async discoverCalendars(enforceVapid: boolean) {
-    return calendarOps.discoverCalendars(this.conn, this.accountId, enforceVapid);
+  async discoverCalendars(enforceVapid: boolean, context?: HttpRequestContext) {
+    return calendarOps.discoverCalendars(this.conn, this.accountId, enforceVapid, context);
   }
 
-  async calendarExists(calendarUrl: string) {
-    return calendarOps.calendarExists(this.conn, calendarUrl);
+  async calendarExists(calendarUrl: string, context?: HttpRequestContext) {
+    return calendarOps.calendarExists(this.conn, calendarUrl, context);
   }
 
-  async createCalendar(displayName: string, color?: string, enforceVapid = false) {
-    return calendarOps.createCalendar(this.conn, this.accountId, displayName, color, enforceVapid);
+  async createCalendar(
+    displayName: string,
+    color?: string,
+    enforceVapid = false,
+    context?: HttpRequestContext,
+  ) {
+    return calendarOps.createCalendar(
+      this.conn,
+      this.accountId,
+      displayName,
+      color,
+      enforceVapid,
+      context,
+    );
   }
 
-  async probeVtodoCalendarCreation(enforceVapid = false) {
-    return calendarOps.probeVtodoCalendarCreation(this.conn, this.accountId, enforceVapid);
+  async probeVtodoCalendarCreation(enforceVapid = false, context?: HttpRequestContext) {
+    return calendarOps.probeVtodoCalendarCreation(this.conn, this.accountId, enforceVapid, context);
   }
 
   async updateCalendar(
@@ -105,8 +124,8 @@ export class CalDAVClient {
     return calendarOps.updateCalendar(this.conn, calendarUrl, updates);
   }
 
-  async deleteCalendar(calendarUrl: string) {
-    return calendarOps.deleteCalendar(this.conn, calendarUrl);
+  async deleteCalendar(calendarUrl: string, context?: HttpRequestContext) {
+    return calendarOps.deleteCalendar(this.conn, calendarUrl, context);
   }
 
   // tasks

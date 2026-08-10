@@ -23,7 +23,7 @@ import {
   useUIState,
 } from '$hooks/queries/useUIState';
 import { useVisibleTasks } from '$hooks/queries/useVisibleTasks';
-import type { KeyboardShortcut } from '$types';
+import type { KeyboardShortcut } from '$types/shortcuts';
 import {
   getAltKeyLabel,
   getMetaKeyLabel,
@@ -31,6 +31,7 @@ import {
   getShiftKeyLabel,
   getSuperKeyLabel,
 } from '$utils/keyboard';
+import { getCurrentListIndex, getOrderedListItems, type ListItem } from '$utils/navigation';
 import { isMacPlatform } from '$utils/platform';
 
 // shortcuts that should NOT work when a modal is open
@@ -107,7 +108,7 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   const { onOpenSettings, onOpenKeyboardShortcuts, onOpenImport, onSync } = options;
   const { data: uiState } = useUIState();
   const flattenedTasks = useVisibleTasks();
-  const createTaskMutation = useCreateTask();
+  const createTaskMutation = useCreateTask('created', { selectCreatedTask: true });
   const setSearchQueryMutation = useSetSearchQuery();
   const toggleTaskCompleteMutation = useToggleTaskComplete();
   const setSelectedTaskMutation = useSetSelectedTask();
@@ -117,9 +118,6 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   const { selectedTaskIds, setSelection, clearSelection } = useTaskSelection();
 
   const selectedTaskId = uiState?.selectedTaskId ?? null;
-  const activeCalendarId = uiState?.activeCalendarId ?? null;
-  const activeTagId = uiState?.activeTagId ?? null;
-  const activeFilterId = uiState?.activeFilterId ?? null;
   const activeView = uiState?.activeView ?? 'tasks';
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
   const showUnstartedTasks = uiState?.showUnstartedTasks ?? true;
@@ -134,20 +132,13 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   const setActiveFilterMutation = useSetActiveFilter();
   const setAllTasksViewMutation = useSetAllTasksView();
   const setRecentlyDeletedViewMutation = useSetRecentlyDeletedView();
-  const { moveTaskToRecentlyDeleted } = useTaskDeletion();
+  const { moveTaskToRecentlyDeleted, deleteTasksPermanently } = useTaskDeletion();
   const { isOpen: isConfirmDialogOpen } = useConfirmDialog();
   const { isAnyModalOpen } = useModalState();
 
   const handleNewTask = useCallback(() => {
-    createTaskMutation.mutate(
-      { title: '' },
-      {
-        onSuccess: (task) => {
-          setSelectedTaskMutation.mutate({ id: task.id, focusTitle: true });
-        },
-      },
-    );
-  }, [createTaskMutation, setSelectedTaskMutation]);
+    createTaskMutation.mutate({ title: '' });
+  }, [createTaskMutation]);
 
   const handleSearch = useCallback(() => {
     const searchInput = document.querySelector<HTMLInputElement>('[data-search-input]');
@@ -162,14 +153,27 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   }, []);
 
   const handleDelete = useCallback(async () => {
-    if (activeView === 'recently-deleted') return;
     const taskIds =
       selectedTaskIds.length > 0 ? selectedTaskIds : selectedTaskId ? [selectedTaskId] : [];
+
+    if (activeView === 'recently-deleted') {
+      const deleted = await deleteTasksPermanently(taskIds);
+      if (deleted && selectedTaskIds.length > 0) clearSelection();
+      return;
+    }
+
     for (const taskId of taskIds) {
       await moveTaskToRecentlyDeleted(taskId);
     }
     if (selectedTaskIds.length > 0) clearSelection();
-  }, [activeView, clearSelection, selectedTaskId, selectedTaskIds, moveTaskToRecentlyDeleted]);
+  }, [
+    activeView,
+    clearSelection,
+    deleteTasksPermanently,
+    selectedTaskId,
+    selectedTaskIds,
+    moveTaskToRecentlyDeleted,
+  ]);
 
   const handleToggleComplete = useCallback(() => {
     if (activeView === 'recently-deleted') return;
@@ -231,48 +235,15 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
     }
   }, [selectedTaskId, flattenedTasks, setSelectedTaskMutation]);
 
-  type ListItem =
-    | { type: 'all' }
-    | { type: 'calendar'; accountId: string; calendarId: string }
-    | { type: 'tag'; tagId: string }
-    | { type: 'filter'; filterId: string }
-    | { type: 'recently-deleted' };
+  const orderedLists = useMemo(
+    () => getOrderedListItems(accounts, filters, tags),
+    [accounts, filters, tags],
+  );
 
-  const orderedLists = useMemo((): ListItem[] => {
-    const items: ListItem[] = [{ type: 'all' }, { type: 'recently-deleted' }];
-    for (const filter of filters) {
-      items.push({ type: 'filter', filterId: filter.id });
-    }
-    for (const account of accounts) {
-      for (const cal of account.calendars) {
-        items.push({ type: 'calendar', accountId: account.id, calendarId: cal.id });
-      }
-    }
-    for (const tag of tags) {
-      items.push({ type: 'tag', tagId: tag.id });
-    }
-    return items;
-  }, [accounts, filters, tags]);
-
-  const currentListIndex = useMemo(() => {
-    if (activeView === 'recently-deleted') {
-      return orderedLists.findIndex((item) => item.type === 'recently-deleted');
-    }
-    if (activeView === 'filter' && activeFilterId !== null) {
-      return orderedLists.findIndex(
-        (item) => item.type === 'filter' && item.filterId === activeFilterId,
-      );
-    }
-    if (activeTagId !== null) {
-      return orderedLists.findIndex((item) => item.type === 'tag' && item.tagId === activeTagId);
-    }
-    if (activeCalendarId !== null) {
-      return orderedLists.findIndex(
-        (item) => item.type === 'calendar' && item.calendarId === activeCalendarId,
-      );
-    }
-    return 0;
-  }, [orderedLists, activeCalendarId, activeFilterId, activeTagId, activeView]);
+  const currentListIndex = useMemo(
+    () => getCurrentListIndex(orderedLists, uiState),
+    [orderedLists, uiState],
+  );
 
   const activateListItem = useCallback(
     (item: ListItem) => {
@@ -398,13 +369,19 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
         return;
       }
 
-      // don't trigger shortcuts when typing in inputs
       const target = e.target as HTMLElement;
-      if (isInputElement(target)) {
+      const match = findMatchingShortcut(e, keyboardShortcuts, actionHandlers, isAnyModalOpen);
+
+      // keep Ctrl/Cmd+F inside Chiri's search field. if the input guard runs
+      // first, WebView2 handles the second press with its native Find on Page
+      // accelerator instead of letting Chiri toggle the search field
+      if (isInputElement(target) && target.matches('[data-search-input]')) {
+        if (match?.shortcut.id !== 'search') return;
+      } else if (isInputElement(target)) {
+        // don't trigger other shortcuts when typing in inputs
         return;
       }
 
-      const match = findMatchingShortcut(e, keyboardShortcuts, actionHandlers, isAnyModalOpen);
       if (match) {
         e.preventDefault();
         match.handler();

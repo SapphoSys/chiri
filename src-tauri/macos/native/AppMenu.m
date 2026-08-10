@@ -1,5 +1,37 @@
 #import <AppKit/AppKit.h>
 
+static id ChiriCmdQEventMonitor;
+
+extern void chiri_macos_cmd_q_pressed(void);
+
+void chiri_macos_install_cmd_q_monitor(void) {
+  if (ChiriCmdQEventMonitor != nil) {
+    return;
+  }
+
+  ChiriCmdQEventMonitor = [NSEvent
+      addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown
+                                    handler:^NSEvent *(NSEvent *event) {
+                                      NSEventModifierFlags modifiers =
+                                          event.modifierFlags &
+                                          NSEventModifierFlagDeviceIndependentFlagsMask;
+                                      NSEventModifierFlags extraModifiers =
+                                          NSEventModifierFlagShift |
+                                          NSEventModifierFlagOption |
+                                          NSEventModifierFlagControl |
+                                          NSEventModifierFlagFunction;
+
+                                      if (event.keyCode == 12 &&
+                                          (modifiers & NSEventModifierFlagCommand) != 0 &&
+                                          (modifiers & extraModifiers) == 0) {
+                                        chiri_macos_cmd_q_pressed();
+                                        return nil;
+                                      }
+
+                                      return event;
+                                    }];
+}
+
 static NSImage *ChiriFallbackSelectAllMenuIcon(void) {
   const CGFloat size = 16.0;
   NSImage *image =

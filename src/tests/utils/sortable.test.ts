@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Task } from '$types';
-import type { FlattenedTask } from '$types/store';
+import type { FlattenedTask } from '$types/store/tasks';
+import type { Task } from '$types/task/model';
 import {
   flattenTasks,
   getSortableItemDisabled,

@@ -1,6 +1,7 @@
 import type { MouseEvent } from 'react';
+import { TaskItemBadge } from '$components/taskItem/badges/TaskItemBadge';
 import { getIconByName } from '$constants/icons';
-import type { Calendar } from '$types';
+import type { Calendar } from '$types/calendar';
 
 export const TaskItemCalendarBadge = ({
   calendar,
@@ -17,11 +18,9 @@ export const TaskItemCalendarBadge = ({
   const content = (
     <>
       {calendar.emoji ? (
-        <span className="text-xs leading-none" style={{ color: calendarColor }}>
-          {calendar.emoji}
-        </span>
+        <span className="text-xs leading-none">{calendar.emoji}</span>
       ) : (
-        <CalendarIcon className="h-3 w-3" style={{ color: calendarColor }} />
+        <CalendarIcon className="h-3 w-3" />
       )}
       {calendar.displayName || 'Calendar'}
     </>
@@ -29,22 +28,26 @@ export const TaskItemCalendarBadge = ({
 
   if (readOnly) {
     return (
-      <span className="inline-flex cursor-not-allowed items-center gap-1 rounded-sm border border-surface-200 bg-surface-100 px-2 py-0.5 font-medium text-surface-700 text-xs dark:border-surface-600 dark:bg-surface-700 dark:text-surface-300">
+      <TaskItemBadge
+        color={calendarColor}
+        className="cursor-not-allowed"
+        tooltip={`Calendar: ${calendar.displayName || 'Calendar'}`}
+      >
         {content}
-      </span>
+      </TaskItemBadge>
     );
   }
 
   return (
-    <button
-      type="button"
+    <TaskItemBadge
+      color={calendarColor}
+      tooltip={`Open calendar: ${calendar.displayName || 'Calendar'}`}
       onClick={(e) => {
         e.stopPropagation();
         onCalendarClick(calendar.id, e);
       }}
-      className="inline-flex items-center gap-1 rounded-sm border border-surface-200 bg-surface-100 px-2 py-0.5 font-medium text-surface-700 text-xs outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
     >
       {content}
-    </button>
+    </TaskItemBadge>
   );
 };

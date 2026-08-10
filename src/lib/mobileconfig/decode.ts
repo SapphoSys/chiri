@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import type { MobileConfigDecodeResult } from '$types/mobileconfig';
+import type { MobileConfigDecodeResult } from '$types/mobileconfig/decode';
 
 /** decode a configuration profile into typed CalDAV payload candidates */
 export const decodeMobileConfig = async (bytes: Uint8Array) =>

@@ -35,7 +35,7 @@ describe('TaskItemRepeatBadge', () => {
     });
 
     const badge = container.querySelector<HTMLButtonElement>('button');
-    expect(badge?.getAttribute('aria-label')).toContain('Edit repeat: Weekly on Wed');
+    expect(badge?.getAttribute('aria-label')).toContain('Edit repeat rule: Weekly on Wed');
 
     await act(async () => badge?.click());
     expect(onClick).toHaveBeenCalledOnce();

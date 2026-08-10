@@ -1,39 +1,35 @@
-import AlertTriangle from 'lucide-react/icons/alert-triangle';
 import ArrowLeft from 'lucide-react/icons/arrow-left';
-import ArrowRight from 'lucide-react/icons/arrow-right';
-import Bell from 'lucide-react/icons/bell';
-import BellOff from 'lucide-react/icons/bell-off';
 import Check from 'lucide-react/icons/check';
-import Clock from 'lucide-react/icons/clock';
 import Cloud from 'lucide-react/icons/cloud';
-import EyeOff from 'lucide-react/icons/eye-off';
-import HardDrive from 'lucide-react/icons/hard-drive';
-import Loader2 from 'lucide-react/icons/loader-2';
-import LogIn from 'lucide-react/icons/log-in';
-import PanelTop from 'lucide-react/icons/panel-top';
-import Rocket from 'lucide-react/icons/rocket';
-import Sparkles from 'lucide-react/icons/sparkles';
-import { useEffect, useRef, useState } from 'react';
-import AppIcon from '$components/Icon';
-import { MacNotificationCard } from '$components/MacNotificationCard';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import AppIcon from '$components/AppIcon';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
-import { ActionCard } from '$components/modals/OnboardingModal/ActionCard';
-import { OnboardingAppearanceSettings } from '$components/modals/OnboardingModal/AppearanceSettings';
-import { RegionTimeSettings } from '$components/modals/OnboardingModal/RegionTimeSettings';
-import { ToggleRow } from '$components/modals/OnboardingModal/ToggleRow';
+import { OnboardingModalFooter } from '$components/modals/OnboardingModal/OnboardingModalFooter';
+import { OnboardingStepHeader } from '$components/modals/OnboardingModal/OnboardingStepHeader';
+import { NotificationsStep } from '$components/modals/OnboardingModal/steps/NotificationsStep';
+import { ReadyStep } from '$components/modals/OnboardingModal/steps/ReadyStep';
+import { RegionTimeStep } from '$components/modals/OnboardingModal/steps/RegionTimeStep';
+import { StartupWindowStep } from '$components/modals/OnboardingModal/steps/StartupWindowStep';
+import {
+  SyncSetupStep,
+  type TaskHome,
+} from '$components/modals/OnboardingModal/steps/SyncSetupStep';
+import { ThemeStep } from '$components/modals/OnboardingModal/steps/ThemeStep';
+import { WelcomeStep } from '$components/modals/OnboardingModal/steps/WelcomeStep';
 import { useNotificationContext } from '$context/notificationContext';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAutostart } from '$hooks/system/useAutostart';
-import { usePlatform } from '$hooks/system/usePlatform';
-import { isLinuxPlatform, isMacPlatform } from '$utils/platform';
+import { useTrayHostAvailability } from '$hooks/system/useTrayHostAvailability';
+import { toastManager } from '$lib/toastManager';
+import { isMacPlatform } from '$utils/platform';
 
 interface OnboardingModalProps {
   hasCalDAVAccount: boolean;
+  calDAVAccountCount: number;
+  isRerun: boolean;
   onAddAccount: () => void;
 }
-
-type TaskHome = 'local' | 'caldav';
 
 const STEP_COUNT = 7;
 const STEP_IDS = [
@@ -45,12 +41,94 @@ const STEP_IDS = [
   'startup-window',
   'ready',
 ] as const;
+const FINISH_ANIMATION_MS = 200;
 
-export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingModalProps) => {
+const renderOnboardingStepHeader = (
+  currentStep: number,
+  hasConnectedCalDAVHome: boolean,
+  calDAVAccountCount: number,
+) => {
+  switch (currentStep) {
+    case 0:
+      return (
+        <OnboardingStepHeader
+          icon={<AppIcon className="h-8 w-8" />}
+          title="Welcome to Chiri"
+          description="A cross-platform CalDAV task management app for desktop"
+          titleClassName="font-semibold text-3xl text-surface-950 dark:text-surface-50"
+          descriptionClassName="mt-3 max-w-xl text-sm text-surface-600 leading-6 dark:text-surface-400"
+          iconWrapperClassName="mb-5 flex h-14 w-14 items-center justify-center rounded-lg bg-primary-500 text-primary-contrast shadow-sm"
+        />
+      );
+    case 1:
+      return (
+        <OnboardingStepHeader
+          icon={hasConnectedCalDAVHome ? <Cloud className="h-8 w-8" /> : undefined}
+          title={hasConnectedCalDAVHome ? 'Connected' : 'Choose where tasks live'}
+          description={
+            hasConnectedCalDAVHome
+              ? `Your CalDAV ${calDAVAccountCount === 1 ? 'account has' : 'accounts have'} been added. You can add more accounts, or continue with onboarding.`
+              : 'Connect your CalDAV account now, or keep tasks local and add sync later.'
+          }
+        />
+      );
+    case 2:
+      return (
+        <OnboardingStepHeader
+          title="Set the vibe"
+          description="Pick the default theme and colors before Chiri opens."
+        />
+      );
+    case 3:
+      return (
+        <OnboardingStepHeader
+          title="Set your defaults"
+          description="Review the date and time defaults Chiri picked up from your system."
+        />
+      );
+    case 4:
+      return (
+        <OnboardingStepHeader
+          title="Notifications"
+          description="Choose how Chiri nudges you about due tasks."
+        />
+      );
+    case 5:
+      return (
+        <OnboardingStepHeader
+          title="Startup & window"
+          description="Choose how Chiri starts up and behaves in the background."
+        />
+      );
+    case 6:
+      return (
+        <OnboardingStepHeader
+          icon={<Check className="h-8 w-8" />}
+          title="Ready when you are"
+          description={
+            hasConnectedCalDAVHome
+              ? 'Finish setup and Chiri will open with your synced task lists.'
+              : 'Finish setup and Chiri will open straight into your local task list.'
+          }
+        />
+      );
+    default:
+      return null;
+  }
+};
+
+export const OnboardingModal = ({
+  hasCalDAVAccount,
+  calDAVAccountCount,
+  isRerun,
+  onAddAccount,
+}: OnboardingModalProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [taskHome, setTaskHome] = useState<TaskHome>('caldav');
-  const [caldavConnectionRequested, setCaldavConnectionRequested] = useState(false);
+  const [isFinishing, setIsFinishing] = useState(false);
   const appliedMacNotificationDefaultsRef = useRef(false);
+  const finishTimeoutRef = useRef<number | null>(null);
+  const stepContentRef = useRef<HTMLDivElement>(null);
   const {
     setOnboardingCompleted,
     notifications,
@@ -59,16 +137,17 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
     setNotifyReminders,
     notifyOverdue,
     setNotifyOverdue,
+    setShowAppIconBadge,
+    showAppIconBadge,
     enableSystemTray,
     setEnableSystemTray,
-    showWindowOnNormalLaunch,
-    setShowWindowOnNormalLaunch,
     showWindowOnLoginLaunch,
     setShowWindowOnLoginLaunch,
   } = useSettingsStore();
   const { permissionStatus, isCheckingPermission, requestPermission } = useNotificationContext();
-  const { isGNOME } = usePlatform();
   const autostart = useAutostart();
+  const { isAvailable: isTrayHostAvailable } = useTrayHostAvailability();
+  const startHiddenOptionsDisabled = !enableSystemTray || isTrayHostAvailable === false;
 
   const isMac = isMacPlatform();
   const macPermissionPending =
@@ -88,30 +167,40 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
   }, [currentStep, isMac, setNotifications, setNotifyOverdue, setNotifyReminders]);
 
   useEffect(() => {
-    if (
-      !caldavConnectionRequested ||
-      !hasCalDAVAccount ||
-      currentStep !== 1 ||
-      taskHome !== 'caldav'
-    ) {
-      return;
-    }
+    return () => {
+      if (finishTimeoutRef.current !== null) {
+        window.clearTimeout(finishTimeoutRef.current);
+      }
+    };
+  }, []);
 
-    setCaldavConnectionRequested(false);
-    setCurrentStep(2);
-  }, [caldavConnectionRequested, currentStep, hasCalDAVAccount, taskHome]);
+  useLayoutEffect(() => {
+    const content = stepContentRef.current;
+    if (currentStep >= 0 && content) {
+      content.scrollTop = 0;
+    }
+  }, [currentStep]);
 
   const completeOnboarding = () => {
     setOnboardingCompleted(true);
   };
 
-  const finishOnboarding = () => {
-    completeOnboarding();
+  const finishOnboarding = (onComplete = completeOnboarding) => {
+    if (isFinishing) return;
+
+    setIsFinishing(true);
+    finishTimeoutRef.current = window.setTimeout(onComplete, FINISH_ANIMATION_MS);
   };
 
-  const connectCalDAVNow = () => {
-    setCaldavConnectionRequested(true);
-    onAddAccount();
+  const handleSkip = () => {
+    finishOnboarding(() => {
+      completeOnboarding();
+      if (!isRerun) {
+        toastManager.info('Setup skipped', 'You can revisit these options in Settings.', {
+          groupKey: 'onboarding-skipped',
+        });
+      }
+    });
   };
 
   const handleNext = () => {
@@ -163,21 +252,27 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
       onClose={() => {}}
       preventClose
       zIndex="z-60"
-      className="max-w-2xl"
-      backdropClassName="bg-black/35 backdrop-blur-md"
+      className={`max-w-2xl transition-[opacity,transform] duration-200 ease-out ${isFinishing ? 'pointer-events-none scale-[0.98] opacity-0' : ''}`}
+      contentPadding={false}
+      contentOverflow="hidden"
+      backdropClassName={`bg-surface-50 transition-opacity duration-200 ease-out dark:bg-surface-900 ${isFinishing ? 'opacity-0' : 'opacity-100'}`}
+      animateBackdrop={false}
       dialogAnimationDelayMs={0}
       footerLeft={footerLeft}
       footer={
-        <ModalButton
-          onClick={needsCalDAVConnection ? connectCalDAVNow : handleNext}
-          className={footerButtonClassName}
-        >
-          {primaryLabel}
-          <ArrowRight className="h-4 w-4" />
-        </ModalButton>
+        <OnboardingModalFooter
+          needsCalDAVConnection={needsCalDAVConnection}
+          hasConnectedCalDAVHome={hasConnectedCalDAVHome}
+          isHomeStep={currentStep === 1}
+          primaryLabel={primaryLabel}
+          footerButtonClassName={footerButtonClassName}
+          onAddAccount={onAddAccount}
+          onNext={handleNext}
+          onSkip={handleSkip}
+        />
       }
     >
-      <div className="mx-auto flex min-h-90 w-full max-w-2xl flex-col gap-5">
+      <div className="mx-auto flex h-120 w-full max-w-2xl flex-col gap-5 px-4 pt-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             {STEP_IDS.map((stepId, index) => (
@@ -198,276 +293,64 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
           </div>
         </div>
 
-        {currentStep === 0 && (
-          <div className="flex flex-1 flex-col justify-between gap-6">
-            <div className="flex flex-col gap-5">
-              <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-primary-500 text-primary-contrast shadow-sm">
-                <AppIcon className="h-8 w-8" />
-              </div>
-              <div>
-                <h2 className="font-semibold text-3xl text-surface-950 dark:text-surface-50">
-                  Welcome to Chiri
-                </h2>
-                <p className="mt-3 max-w-xl text-sm text-surface-600 leading-6 dark:text-surface-400">
-                  A cross-platform CalDAV task management app for desktop
-                </p>
-              </div>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-lg border border-surface-200 p-3 dark:border-surface-700">
-                <HardDrive className="mb-3 h-5 w-5 text-primary-500" />
-                <div className="font-medium text-sm text-surface-900 dark:text-surface-100">
-                  Local first
-                </div>
-              </div>
-              <div className="rounded-lg border border-surface-200 p-3 dark:border-surface-700">
-                <Cloud className="mb-3 h-5 w-5 text-primary-500" />
-                <div className="font-medium text-sm text-surface-900 dark:text-surface-100">
-                  Sync ready
-                </div>
-              </div>
-              <div className="rounded-lg border border-surface-200 p-3 dark:border-surface-700">
-                <Sparkles className="mb-3 h-5 w-5 text-primary-500" />
-                <div className="font-medium text-sm text-surface-900 dark:text-surface-100">
-                  No fuss
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {renderOnboardingStepHeader(currentStep, hasConnectedCalDAVHome, calDAVAccountCount)}
 
-        {currentStep === 1 && (
-          <div className="flex flex-1 flex-col justify-between gap-5">
-            <div>
-              <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
-                Choose where tasks live
-              </h2>
-              <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
-                Connect your CalDAV account now, or keep tasks local and add sync later.
-              </p>
-            </div>
-            <div className="grid gap-3 md:grid-cols-2">
-              <ActionCard
-                icon={<Cloud className="h-6 w-6" />}
-                title="CalDAV sync"
-                description="Sync tasks with Nextcloud, Fastmail, Radicale, Baikal, RustiCal, or another CalDAV server."
-                selected={taskHome === 'caldav'}
-                onClick={() => setTaskHome('caldav')}
+        <div
+          key={currentStep}
+          ref={stepContentRef}
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+        >
+          <div className="flex min-h-full flex-col justify-end pb-4">
+            {currentStep === 0 && <WelcomeStep />}
+
+            {currentStep === 1 && (
+              <SyncSetupStep
+                taskHome={taskHome}
+                hasConnectedCalDAVHome={hasConnectedCalDAVHome}
+                calDAVAccountCount={calDAVAccountCount}
+                onTaskHomeChange={setTaskHome}
               />
-              <ActionCard
-                icon={<HardDrive className="h-6 w-6" />}
-                title="Local-only"
-                description="Keep tasks on this device and add sync later from settings."
-                selected={taskHome === 'local'}
-                onClick={() => setTaskHome('local')}
-              />
-            </div>
-          </div>
-        )}
+            )}
 
-        {currentStep === 2 && (
-          <div className="flex flex-1 flex-col justify-between gap-5">
-            <div>
-              <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
-                Set the vibe
-              </h2>
-              <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
-                Pick the default theme and colors before Chiri opens.
-              </p>
-            </div>
+            {currentStep === 2 && <ThemeStep />}
 
-            <OnboardingAppearanceSettings />
-          </div>
-        )}
+            {currentStep === 3 && <RegionTimeStep />}
 
-        {currentStep === 3 && (
-          <div className="flex flex-1 flex-col justify-between gap-5">
-            <div>
-              <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
-                Set your defaults
-              </h2>
-              <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
-                Review the date and time defaults Chiri picked up from your system.
-              </p>
-            </div>
-
-            <RegionTimeSettings />
-          </div>
-        )}
-
-        {currentStep === 4 && (
-          <div className="flex flex-1 flex-col justify-between gap-5">
-            <div>
-              <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
-                Notifications
-              </h2>
-              <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
-                Choose how Chiri nudges you about due tasks.
-              </p>
-            </div>
-
-            {isMac && permissionStatus !== null && (
-              <MacNotificationCard
+            {currentStep === 4 && (
+              <NotificationsStep
+                isMac={isMac}
                 permissionStatus={permissionStatus}
                 isCheckingPermission={isCheckingPermission}
                 requestPermission={requestPermission}
-                density="compact"
+                macPermissionPending={macPermissionPending}
+                notifications={notifications}
+                onNotificationsChange={handleNotificationsChange}
+                notifyReminders={notifyReminders}
+                onNotifyRemindersChange={setNotifyReminders}
+                notifyOverdue={notifyOverdue}
+                onNotifyOverdueChange={setNotifyOverdue}
+                showAppIconBadge={showAppIconBadge}
+                onShowAppIconBadgeChange={setShowAppIconBadge}
               />
             )}
 
-            <section className="space-y-2 rounded-lg border border-surface-200 p-3 dark:border-surface-700">
-              <div className="flex items-center gap-2">
-                <Bell className="h-4 w-4 text-primary-500" />
-                <h3 className="font-semibold text-sm text-surface-900 dark:text-surface-100">
-                  Alerts
-                </h3>
-              </div>
-              <ToggleRow
-                icon={<Bell className="h-4 w-4" />}
-                label="Desktop notifications"
-                description="Allow Chiri to send system notifications."
-                checked={notifications}
-                disabled={macPermissionPending}
-                onChange={handleNotificationsChange}
+            {currentStep === 5 && (
+              <StartupWindowStep
+                autostartEnabled={autostart.enabled}
+                autostartPending={autostart.pending}
+                autostartError={autostart.error}
+                onAutostartChange={(checked) => autostart.setEnabled(checked)}
+                startHiddenOptionsDisabled={startHiddenOptionsDisabled}
+                showWindowOnLoginLaunch={showWindowOnLoginLaunch}
+                onShowWindowOnLoginLaunchChange={(checked) => setShowWindowOnLoginLaunch(!checked)}
+                enableSystemTray={enableSystemTray}
+                onEnableSystemTrayChange={setEnableSystemTray}
               />
-              <ToggleRow
-                icon={<BellOff className="h-4 w-4" />}
-                label="Reminder alerts"
-                description="Use reminder times saved on tasks."
-                checked={notifyReminders}
-                disabled={!notifications || macPermissionPending}
-                onChange={setNotifyReminders}
-              />
-              <ToggleRow
-                icon={<Clock className="h-4 w-4" />}
-                label="Overdue tasks"
-                description="Notify when a task's due date has passed."
-                checked={notifyOverdue}
-                disabled={!notifications || macPermissionPending}
-                onChange={setNotifyOverdue}
-              />
-            </section>
-          </div>
-        )}
-        {currentStep === 5 && (
-          <div className="flex flex-1 flex-col justify-between gap-5">
-            <div>
-              <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
-                Startup & window
-              </h2>
-              <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
-                Choose how Chiri starts up and behaves in the background.
-              </p>
-            </div>
-
-            <section className="space-y-2 rounded-lg border border-surface-200 p-3 dark:border-surface-700">
-              <ToggleRow
-                icon={
-                  autostart.enabled === null || autostart.pending ? (
-                    <Loader2 className="h-4 w-4 motion-safe:animate-spin" />
-                  ) : (
-                    <Rocket className="h-4 w-4" />
-                  )
-                }
-                label="Launch at login"
-                description="Start Chiri automatically when you sign in."
-                checked={autostart.enabled ?? false}
-                disabled={autostart.enabled === null || autostart.pending}
-                onChange={(checked) => autostart.setEnabled(checked)}
-              />
-              <div className="border-surface-200 border-l-2 pl-4 dark:border-surface-600">
-                <ToggleRow
-                  icon={<LogIn className="h-4 w-4" />}
-                  label="Start quietly in tray at login"
-                  description="Hide the main window when Chiri starts automatically. Requires system tray."
-                  checked={!showWindowOnLoginLaunch}
-                  disabled={autostart.enabled !== true || !enableSystemTray}
-                  onChange={(checked) => setShowWindowOnLoginLaunch(!checked)}
-                />
-              </div>
-              <ToggleRow
-                icon={<EyeOff className="h-4 w-4" />}
-                label="Start hidden on normal launch"
-                description="Hide the main window when Chiri starts manually. Requires system tray."
-                checked={!showWindowOnNormalLaunch}
-                disabled={!enableSystemTray}
-                onChange={(checked) => setShowWindowOnNormalLaunch(!checked)}
-              />
-              <ToggleRow
-                icon={<PanelTop className="h-4 w-4" />}
-                label="Enable system tray"
-                description="Let Chiri stay open in the background when you close the window."
-                checked={enableSystemTray}
-                onChange={setEnableSystemTray}
-              />
-            </section>
-
-            {autostart.error && (
-              <div className="flex gap-2 rounded-lg border border-semantic-error/30 bg-semantic-error/10 p-3">
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-semantic-error" />
-                <p className="text-semantic-error text-xs">{autostart.error}</p>
-              </div>
             )}
 
-            {isLinuxPlatform() && isGNOME && (
-              <div className="flex gap-2 rounded-lg border border-semantic-warning/30 bg-semantic-warning/10 p-3">
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-semantic-warning" />
-                <p className="text-semantic-warning text-xs">
-                  <strong>GNOME detected:</strong> GNOME does not show tray icons by default. The
-                  system tray works only with the{' '}
-                  <a
-                    href="https://extensions.gnome.org/extension/615/appindicator-support/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline hover:opacity-80"
-                  >
-                    AppIndicator and KStatusNotifierItem Support
-                  </a>{' '}
-                  extension installed.
-                </p>
-              </div>
-            )}
+            {currentStep === 6 && <ReadyStep />}
           </div>
-        )}
-
-        {currentStep === 6 && (
-          <div className="flex flex-1 flex-col justify-between gap-6">
-            <div className="flex flex-col gap-5">
-              <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-primary-500 text-primary-contrast">
-                <Check className="h-8 w-8" />
-              </div>
-              <div>
-                <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
-                  Ready when you are
-                </h2>
-                <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
-                  {hasConnectedCalDAVHome
-                    ? 'Finish setup and Chiri will open with your synced task lists.'
-                    : 'Finish setup and Chiri will open straight into your local task list.'}
-                </p>
-              </div>
-            </div>
-            <div className="rounded-lg border border-surface-200 p-4 dark:border-surface-700">
-              <div className="flex items-center gap-3">
-                {hasConnectedCalDAVHome ? (
-                  <Cloud className="h-5 w-5 text-primary-500" />
-                ) : (
-                  <HardDrive className="h-5 w-5 text-primary-500" />
-                )}
-                <div>
-                  <div className="font-semibold text-sm text-surface-900 dark:text-surface-100">
-                    {hasConnectedCalDAVHome ? 'CalDAV sync' : 'Local-only'}
-                  </div>
-                  <div className="mt-1 text-surface-500 text-xs dark:text-surface-400">
-                    {hasConnectedCalDAVHome
-                      ? 'Your account is connected and ready to sync.'
-                      : 'No account needed. Sync can be added later.'}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
     </ModalWrapper>
   );

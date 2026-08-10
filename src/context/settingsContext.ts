@@ -5,36 +5,38 @@ import {
   clampSnoozeDurations,
   exportSettings,
   importSettings,
+  mergeEditorFieldOrder,
+  mergeEditorFieldVisibility,
   mergeOrder,
   mergeShortcuts,
 } from '$context/settingsImportExport';
 import { loggers } from '$lib/logger';
-import type {
-  DefaultDateOffset,
-  DefaultReminderOffset,
-  KeyboardShortcut,
-  Priority,
-  TaskStatus,
-} from '$types';
+import {
+  DEFAULT_MOZILLA_AUTOPUSH_ENDPOINT_URL,
+  DEFAULT_MOZILLA_AUTOPUSH_WEBSOCKET_URL,
+} from '$lib/push/providers/mozillaAutopush';
+import { DEFAULT_NTFY_SERVER_URL } from '$lib/push/providers/ntfy';
+import { getPercentCompleteForStatus } from '$lib/task/status';
 import type { AccentColor, Theme } from '$types/color';
-import type { DateFormat, StartOfWeek, TimeFormat, WorkingDay } from '$types/preference';
-import type { PushProviderId } from '$types/push';
+import type { NotificationActionSettings } from '$types/notifications/settings';
+import type { PushProviderId } from '$types/push/providers';
+import type { DefaultDateOffset, DefaultReminderOffset } from '$types/settings/categories/defaults';
 import type {
-  DefaultLaunchView,
   EditorFieldKey,
   EditorFieldVisibility,
-  NetworkProxyMode,
-  NotificationActionSettings,
-  QuickTimePresets,
-  SettingsState,
-  SettingsStore,
-  SidebarSectionKey,
-  SubtaskDeletionBehavior,
   TaskBadgeKey,
   TaskBadgeVisibility,
-  TaskListDensity,
-  WindowDecorationStyle,
-} from '$types/settings';
+} from '$types/settings/categories/editor';
+import type { TaskListDensity } from '$types/settings/categories/layout';
+import type { DefaultLaunchView, SidebarSectionKey } from '$types/settings/categories/navigation';
+import type { NetworkProxyMode } from '$types/settings/categories/network';
+import type { DateFormat, StartOfWeek, TimeFormat } from '$types/settings/categories/region';
+import type { SubtaskDeletionBehavior } from '$types/settings/categories/safety';
+import type { QuickTimePresets, WorkingDay } from '$types/settings/categories/scheduling';
+import type { WindowDecorationStyle } from '$types/settings/categories/system';
+import type { SettingsState, SettingsStore } from '$types/settings/state';
+import type { KeyboardShortcut } from '$types/shortcuts';
+import type { Priority, Status } from '$types/task/model';
 import { applyAccentColor, applySchemeAccentColor, resolveAccentColor } from '$utils/color/accent';
 import { applyColorScheme, getColorSchemeFlavor } from '$utils/color/scheme';
 import { applyTheme, resolveEffectiveTheme } from '$utils/color/theme';
@@ -64,16 +66,37 @@ const loadFromStorage = (): { state: SettingsState; migrated: boolean } => {
       } = parsed.state ?? {};
       const loadedState = { ...defaultState, ...storedState };
       loadedState.networkProxyPort = normalizeProxyPort(loadedState.networkProxyPort);
+      if (loadedState.syncStatusProgress) {
+        loadedState.defaultPercentComplete =
+          getPercentCompleteForStatus(
+            loadedState.defaultStatus,
+            loadedState.defaultPercentComplete,
+          ) ?? 0;
+      }
+
+      // keep built-in WebDAV provider defaults as placeholders instead of persisted values
+      const legacyDefaultPushUrls = [
+        ['ntfyServerUrl', DEFAULT_NTFY_SERVER_URL],
+        ['mozillaAutopushWebsocketUrl', DEFAULT_MOZILLA_AUTOPUSH_WEBSOCKET_URL],
+        ['mozillaAutopushEndpointUrl', DEFAULT_MOZILLA_AUTOPUSH_ENDPOINT_URL],
+      ] as const;
+      let migrated = false;
+      for (const [key, defaultUrl] of legacyDefaultPushUrls) {
+        if (loadedState[key] === defaultUrl) {
+          loadedState[key] = '';
+          migrated = true;
+        }
+      }
 
       // migrate old number[] quickTimePresets to object format
       if (Array.isArray(loadedState.quickTimePresets)) {
         loadedState.quickTimePresets = defaultState.quickTimePresets;
       }
 
-      loadedState.editorFieldVisibility = {
-        ...defaultState.editorFieldVisibility,
-        ...loadedState.editorFieldVisibility,
-      };
+      loadedState.editorFieldVisibility = mergeEditorFieldVisibility(
+        loadedState.editorFieldVisibility,
+        defaultState.editorFieldVisibility,
+      );
       loadedState.notificationActions = {
         ...defaultState.notificationActions,
         ...loadedState.notificationActions,
@@ -90,7 +113,7 @@ const loadFromStorage = (): { state: SettingsState; migrated: boolean } => {
         ...loadedState.taskBadgeVisibility,
       };
 
-      loadedState.editorFieldOrder = mergeOrder(
+      loadedState.editorFieldOrder = mergeEditorFieldOrder(
         loadedState.editorFieldOrder,
         defaultState.editorFieldOrder,
       );
@@ -104,7 +127,6 @@ const loadFromStorage = (): { state: SettingsState; migrated: boolean } => {
       );
 
       // merge keyboard shortcuts to include any new defaults
-      let migrated = false;
       if (parsed.state?.keyboardShortcuts) {
         const originalLength = parsed.state.keyboardShortcuts.length;
         const originalIds = parsed.state.keyboardShortcuts.map((s: KeyboardShortcut) => s.id);
@@ -289,9 +311,10 @@ export const settingsStore = {
     return false;
   },
   setDefaultPriority: (defaultPriority: Priority) => setState({ defaultPriority }),
-  setDefaultStatus: (defaultStatus: TaskStatus) => setState({ defaultStatus }),
+  setDefaultStatus: (defaultStatus: Status) => setState({ defaultStatus }),
   setDefaultPercentComplete: (defaultPercentComplete: number) =>
     setState({ defaultPercentComplete }),
+  setSyncStatusProgress: (syncStatusProgress: boolean) => setState({ syncStatusProgress }),
   setDefaultTags: (defaultTags: string[]) => setState({ defaultTags }),
   setDefaultStartDate: (defaultStartDate: DefaultDateOffset) => setState({ defaultStartDate }),
   setDefaultStartTime: (defaultStartTime: number | null) => setState({ defaultStartTime }),
@@ -333,13 +356,10 @@ export const settingsStore = {
     setState({ systemTrayAppliedValue }),
   setHideDockIconWhenWindowClosed: (hideDockIconWhenWindowClosed: boolean) =>
     setState({ hideDockIconWhenWindowClosed }),
-  setShowWindowOnNormalLaunch: (showWindowOnNormalLaunch: boolean) =>
-    setState({ showWindowOnNormalLaunch }),
   setShowWindowOnLoginLaunch: (showWindowOnLoginLaunch: boolean) =>
     setState({ showWindowOnLoginLaunch }),
   setEnableSystemTrayExplicitlySet: (enableSystemTrayExplicitlySet: boolean) =>
     setState({ enableSystemTrayExplicitlySet }),
-  setRestoreWindowState: (restoreWindowState: boolean) => setState({ restoreWindowState }),
   setWindowDecorationStyle: (windowDecorationStyle: WindowDecorationStyle) =>
     setState({ windowDecorationStyle }),
   setCheckForUpdatesAutomatically: (checkForUpdatesAutomatically: boolean) =>

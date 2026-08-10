@@ -1,5 +1,6 @@
+import Info from 'lucide-react/icons/info';
 import AlertTriangle from 'lucide-react/icons/triangle-alert';
-import { type SubmitEvent, useState } from 'react';
+import { type SubmitEvent, useMemo, useState } from 'react';
 import { ColorSwatchPicker } from '$components/ColorSwatchPicker';
 import { ComposedInput } from '$components/ComposedInput';
 import { IconEmojiPicker } from '$components/IconEmojiPicker';
@@ -14,7 +15,7 @@ import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useRes
 import { CalDAVClient } from '$lib/caldav';
 import { loggers } from '$lib/logger';
 import { enablePushForCalendar, isPushProviderAvailable } from '$lib/push';
-import type { Calendar } from '$types';
+import type { Calendar } from '$types/calendar';
 
 const log = loggers.caldav;
 
@@ -61,6 +62,18 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
   const [error, setError] = useState('');
   const [warning, setWarning] = useState('');
   const displayNameInputRef = useInitialFocusRef<HTMLInputElement>();
+  const hasCustomDefaultColor = !calendar && defaultCalendarColor !== 'accent';
+  const isUsingDefaultColor = hasCustomDefaultColor && color === initialColor;
+
+  const hasChanges = useMemo(() => {
+    if (!calendar) return true;
+    return (
+      displayName !== (calendar.displayName ?? '') ||
+      color !== initialColor ||
+      icon !== (calendar.icon || 'calendar') ||
+      emoji !== (calendar.emoji || '')
+    );
+  }, [calendar, displayName, color, icon, emoji, initialColor]);
 
   const account = accounts.find((a) => a.id === accountId);
   const isVikunja =
@@ -218,7 +231,7 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
           <ModalButton
             type="submit"
             form="calendar-form"
-            disabled={isLoading || !displayName.trim() || isVikunja}
+            disabled={isLoading || !displayName.trim() || isVikunja || !hasChanges}
             loading={isLoading}
           >
             {calendar ? 'Save' : 'Create Calendar'}
@@ -259,6 +272,30 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
           <p className="mb-2 block font-medium text-sm text-surface-700 dark:text-surface-300">
             Color
           </p>
+          {hasCustomDefaultColor && (
+            <div className="mb-3 flex items-start gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-sm text-surface-700 dark:text-surface-300">
+              <Info className="mt-0.5 size-4 shrink-0 text-semantic-info" />
+              <div className="min-w-0 flex-1">
+                <p>
+                  {isUsingDefaultColor
+                    ? 'The new calendar will use a default color as defined in Settings → Tasks → Defaults.'
+                    : 'A default calendar color is defined in Settings → Tasks → Defaults.'}
+                  {!isUsingDefaultColor && (
+                    <>
+                      {' '}
+                      <button
+                        type="button"
+                        onClick={() => setColor(resolvedDefaultCalendarColor)}
+                        className="font-medium text-semantic-info outline-hidden hover:underline focus-visible:underline"
+                      >
+                        Use default
+                      </button>
+                    </>
+                  )}
+                </p>
+              </div>
+            </div>
+          )}
           <ColorSwatchPicker
             options={colorPresets.map((preset) => ({
               id: preset,

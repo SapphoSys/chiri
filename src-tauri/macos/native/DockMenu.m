@@ -76,6 +76,7 @@ static NSMenu *ChiriBuildDockMenu(void) {
   [menu addItem:[NSMenuItem separatorItem]];
   [menu addItem:ChiriDockMenuItem(@"Views", @"", NO)];
   [menu addItem:ChiriDockMenuItem(@"All Tasks", @"all-tasks", YES)];
+  [menu addItem:ChiriDockMenuItem(@"Recently Deleted", @"recently-deleted", YES)];
 
   if (ChiriDockFilters.count > 0) {
     [menu addItem:[NSMenuItem separatorItem]];

@@ -35,6 +35,7 @@ export const tokyoNightColorScheme: ColorSchemeDefinition = {
       defaultAccent: 'Blue',
       semanticColors: {
         info: '#0da0ba',
+        dueToday: '#b15c00',
         warning: '#8c6c3e',
         success: '#33635c',
         error: '#bd4040',
@@ -78,6 +79,7 @@ export const tokyoNightColorScheme: ColorSchemeDefinition = {
       defaultAccent: 'Blue',
       semanticColors: {
         info: '#7aa2f7',
+        dueToday: '#ff9e64',
         warning: '#e0af68',
         success: '#9ece6a',
         error: '#f7768e',

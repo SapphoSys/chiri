@@ -7,16 +7,20 @@ license = "zlib"
 repository = "https://github.com/chiriapp/chiri.git"
 edition = "2021"
 
+[workspace]
+resolver = "2"
+
+[workspace.dependencies]
+tauri = { version = "2" }
+
 [build-dependencies]
 cc = "1"
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = ["tray-icon", "image-png"] }
 tauri-plugin-http = { version = "2", default-features = false, features = ["cookies", "charset", "http2"] }
 tauri-plugin-dialog = "2"
 tauri-plugin-fs = "2"
-tauri-plugin-notification = "2"
 tauri-plugin-sql = { version = "2", default-features = false, features = ["sqlite"] }
 tauri-plugin-log = { version = "2", features = ["colored"] }
 tauri-plugin-autostart = "2"
@@ -25,6 +29,7 @@ serde_json = "1.0"
 tauri-plugin-process = "2"
 tauri-plugin-os = "2"
 log = "0.4"
+parking_lot = "0.12"
 tauri-plugin-opener = "2"
 tauri-plugin-updater = "2.9.0"
 tauri-plugin-single-instance = "2"
@@ -45,6 +50,9 @@ sys-locale = "0.3"
 pulldown-cmark = "0.13.4"
 ammonia = "4.1.2"
 
+[target.'cfg(not(target_os = "linux"))'.dependencies]
+tauri = { workspace = true, features = ["tray-icon", "image-png"] }
+
 [target.'cfg(target_os = "windows")'.dependencies]
 tauri-plugin-http = { version = "2", default-features = false, features = ["native-tls"] }
 reqwest = { version = "0.12", features = ["native-tls", "socks"] }
@@ -60,9 +68,11 @@ objc2-user-notifications = "0.3"
 block2 = "0.6"
 
 [target.'cfg(target_os = "linux")'.dependencies]
+tauri = { workspace = true, features = ["image-png"] }
 tauri-plugin-http = { version = "2", default-features = false, features = ["rustls-tls-native-roots"] }
 reqwest = { version = "0.12", features = ["rustls-tls-native-roots", "socks"] }
 gtk = "0.18"
+ksni = { version = "0.3.6", default-features = false, features = ["tokio"] }
 notify-rust = "4"
 zbus = { version = "5.15.0", default-features = false, features = ["tokio"] }
 

@@ -5,7 +5,7 @@ import { ComposedTextarea } from '$components/ComposedTextarea';
 import { TaskEditorEmptyState } from '$components/taskEditor/TaskEditorEmptyState';
 import { useDebouncedTaskUpdate } from '$hooks/ui/useDebouncedTaskUpdate';
 import { filterCalDavDescription } from '$lib/ical/vtodo';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 
 interface DescriptionProps {
   task: Task;

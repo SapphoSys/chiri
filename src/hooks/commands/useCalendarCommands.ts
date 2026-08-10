@@ -3,7 +3,7 @@ import { useModalState } from '$context/modalStateContext';
 import { useCalendarDeletion } from '$hooks/deletion/useCalendarDeletion';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useUIState } from '$hooks/queries/useUIState';
-import type { AppModals } from '$types/controller';
+import type { AppModals } from '$types/modals';
 
 interface UseCalendarCommandsOptions {
   modals: AppModals;

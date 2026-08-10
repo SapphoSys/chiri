@@ -48,14 +48,14 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ];
 
   # cargo dependencies hash - update when Cargo.lock changes
-  cargoHash = "sha256-4P25ZWSompFxkpkje1bZX/QEWcrJyQy2Mv598l3HbL4=";
+  cargoHash = "sha256-EvWGkgsVZSN8qIxqJvbt1+80uslSu6Fsfg15bO4Ss6k=";
 
   # pnpm dependencies for the frontend
   pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
     inherit pnpm;
     fetcherVersion = 3;
-    hash = "sha256-n23iibe+j4oqKlNSZTE8VsS421Tr8i5BSOxk8NOe3LU="; # pnpmDeps
+    hash = "sha256-JS2OF/bwYs3U5X6fjzqdfi0apnU3Kav6ZZzw9A2RODk="; # pnpmDeps
   };
 
   nativeBuildInputs = [
@@ -82,7 +82,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   ]
   ++ lib.optionals stdenv.hostPlatform.isLinux [
     glib-networking
-    libayatana-appindicator # needed for tauri system tray on linux
+    libayatana-appindicator
     webkitgtk_4_1
   ];
 
@@ -90,22 +90,12 @@ rustPlatform.buildRustPackage (finalAttrs: {
   cargoRoot = "src-tauri";
   buildAndTestSubdir = "src-tauri";
 
-  # patch libappindicator path on Linux for tray icon support
-  postPatch =
-    lib.optionalString stdenv.hostPlatform.isLinux ''
-      for libappindicatorRs in $cargoDepsCopy/*/libappindicator-sys-*/src/lib.rs; do
-        if [[ -f "$libappindicatorRs" ]]; then
-          substituteInPlace "$libappindicatorRs" \
-            --replace-fail "libayatana-appindicator3.so.1" "${libayatana-appindicator}/lib/libayatana-appindicator3.so.1"
-        fi
-      done
-    ''
-    + ''
-      # disable updater artifact creation to avoid requiring signing keys
-      # regular users don't have the private signing key, and don't need updater artifacts
-      substituteInPlace src-tauri/tauri.conf.json \
-        --replace-fail '"createUpdaterArtifacts": true' '"createUpdaterArtifacts": false'
-    '';
+  postPatch = ''
+    # disable updater artifact creation to avoid requiring signing keys
+    # regular users don't have the private signing key, and don't need updater artifacts
+    substituteInPlace src-tauri/tauri.conf.json \
+      --replace-fail '"createUpdaterArtifacts": true' '"createUpdaterArtifacts": false'
+  '';
 
   # build the frontend before Tauri build
   # disable bundle signing since we don't have the signing keys

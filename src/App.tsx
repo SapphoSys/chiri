@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { AppModals } from '$components/AppModals';
 import { AppShell } from '$components/AppShell';
+import { useConnectionStore } from '$context/connectionContext';
 import { useModalState } from '$context/modalStateContext';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
@@ -18,6 +20,7 @@ import { useOnboardingVisibility } from '$hooks/useOnboardingVisibility';
 const App = () => {
   const { data: accounts = [], isPending: accountsPending } = useAccounts();
   const { data: tasks = [], isPending: tasksPending } = useTasks();
+  const [isOnboardingRerun, setIsOnboardingRerun] = useState(false);
   const {
     isSyncing,
     syncingCalendarId,
@@ -37,8 +40,10 @@ const App = () => {
     taskEditorWidth,
     setTaskEditorWidth,
     onboardingCompleted,
+    setOnboardingCompleted,
     syncOnReconnect,
   } = useSettingsStore();
+  const { isAnyTesting } = useConnectionStore();
 
   const updates = useAppUpdates();
   const { setShowUpdateModal, updateAvailable, checkForUpdatesFromMenu, showChangelogFromMenu } =
@@ -47,18 +52,27 @@ const App = () => {
     useAppSyncActions({ syncAll, syncCalendar });
   const { handleResizeStart: handleEditorResizeStart } = useTaskEditorResize(setTaskEditorWidth);
 
-  const showOnboarding = useOnboardingVisibility({
+  const { showOnboarding, requestOnboarding } = useOnboardingVisibility({
     onboardingCompleted,
     accountsPending,
     tasksPending,
     accounts,
     tasks,
   });
+
+  const runOnboarding = () => {
+    closeSettings();
+    setIsOnboardingRerun(true);
+    setOnboardingCompleted(false);
+    requestOnboarding();
+  };
   const appImageIntegration = useAppImageIntegration();
 
   // derived app state used by the shell and global integrations
   const isSyncInProgress = isSyncing || syncingCalendarId !== null;
+  const isConnectionTesting = isAnyTesting();
   const hasCalDAVAccounts = accounts.some((account) => account.caldav);
+  const calDAVAccountCount = accounts.filter((account) => account.caldav).length;
   const visibleTask = useVisibleEditorTask(tasks);
 
   const { modals, modalActions, commands } = useAppController(
@@ -68,7 +82,8 @@ const App = () => {
     syncCalendarFromMenu,
   );
   const { showImport } = modals;
-  const { openSettings, toggleSettings, openImport, closeImport, openAccount } = modalActions;
+  const { openSettings, toggleSettings, openImport, closeImport, closeSettings, openAccount } =
+    modalActions;
 
   const { isAnyModalOpen } = useModalState();
 
@@ -101,6 +116,7 @@ const App = () => {
       isOffline={isOffline}
       isReconnecting={isReconnecting}
       isSyncInProgress={isSyncInProgress}
+      isConnectionTesting={isConnectionTesting}
       isUnsupportedFile={isUnsupportedFile}
       lastSyncSource={lastSyncSource}
       lastSyncTime={lastSyncTime}
@@ -129,7 +145,13 @@ const App = () => {
         fileDrop={fileDrop}
         modals={modals}
         modalActions={modalActions}
-        onboarding={{ show: showOnboarding, hasCalDAVAccounts }}
+        onRunOnboarding={runOnboarding}
+        onboarding={{
+          show: showOnboarding,
+          hasCalDAVAccounts,
+          calDAVAccountCount,
+          isRerun: isOnboardingRerun,
+        }}
         appImageIntegration={{
           show: appImageIntegration.showPrompt && !showOnboarding,
           isIntegrating: appImageIntegration.isIntegrating,

@@ -4,8 +4,9 @@ import {
   DEFAULT_CALENDAR_SORT_CONFIG,
   DEFAULT_SORT_CONFIG,
   DEFAULT_TAG_SORT_CONFIG,
+  DEFAULT_TASK_GROUP_CONFIG,
 } from '$constants';
-import type { UIStateRow } from '$types/database';
+import type { UIStateRow } from '$lib/database/types';
 import type {
   AccountSortConfig,
   AccountSortMode,
@@ -16,8 +17,9 @@ import type {
   SortMode,
   TagSortConfig,
   TagSortMode,
+  TaskGroupConfig,
 } from '$types/sort';
-import type { UIState } from '$types/store';
+import type { UIState } from '$types/store/state';
 
 export const DEFAULT_UI_STATE: UIState = {
   activeView: 'tasks',
@@ -28,10 +30,12 @@ export const DEFAULT_UI_STATE: UIState = {
   selectedTaskId: null,
   searchQuery: '',
   sortConfig: DEFAULT_SORT_CONFIG,
+  taskGroupConfig: DEFAULT_TASK_GROUP_CONFIG,
   accountSortConfig: DEFAULT_ACCOUNT_SORT_CONFIG,
   calendarSortConfig: DEFAULT_CALENDAR_SORT_CONFIG,
   tagSortConfig: DEFAULT_TAG_SORT_CONFIG,
   showCompletedTasks: true,
+  moveCompletedTasksToBottom: false,
   showUnstartedTasks: true,
   isEditorOpen: false,
 };
@@ -58,6 +62,10 @@ export const getUIState = async (conn: DatabasePlugin): Promise<UIState> => {
       mode: row.sort_mode as SortMode,
       direction: row.sort_direction as SortDirection,
     },
+    taskGroupConfig: {
+      mode: (row.task_group_mode ?? DEFAULT_TASK_GROUP_CONFIG.mode) as TaskGroupConfig['mode'],
+      direction: (row.task_group_direction ?? DEFAULT_TASK_GROUP_CONFIG.direction) as SortDirection,
+    },
     accountSortConfig: {
       mode: (row.account_sort_mode ?? 'manual') as AccountSortMode,
       direction: (row.account_sort_direction ?? 'asc') as SortDirection,
@@ -71,6 +79,7 @@ export const getUIState = async (conn: DatabasePlugin): Promise<UIState> => {
       direction: (row.tag_sort_direction ?? 'asc') as SortDirection,
     },
     showCompletedTasks: row.show_completed_tasks === 1,
+    moveCompletedTasksToBottom: row.move_completed_tasks_to_bottom === 1,
     showUnstartedTasks: row.show_unstarted_tasks === 1,
     isEditorOpen: row.is_editor_open === 1,
   };
@@ -144,6 +153,13 @@ export const setSortConfig = async (conn: DatabasePlugin, config: SortConfig) =>
   ]);
 };
 
+export const setTaskGroupConfig = async (conn: DatabasePlugin, config: TaskGroupConfig) => {
+  await conn.execute(
+    'UPDATE ui_state SET task_group_mode = $1, task_group_direction = $2 WHERE id = 1',
+    [config.mode, config.direction],
+  );
+};
+
 export const setAccountSortConfig = async (conn: DatabasePlugin, config: AccountSortConfig) => {
   await conn.execute(
     'UPDATE ui_state SET account_sort_mode = $1, account_sort_direction = $2 WHERE id = 1',
@@ -167,6 +183,15 @@ export const setTagSortConfig = async (conn: DatabasePlugin, config: TagSortConf
 
 export const setShowCompletedTasks = async (conn: DatabasePlugin, show: boolean) => {
   await conn.execute('UPDATE ui_state SET show_completed_tasks = $1 WHERE id = 1', [show ? 1 : 0]);
+};
+
+export const setMoveCompletedTasksToBottom = async (
+  conn: DatabasePlugin,
+  moveToBottom: boolean,
+) => {
+  await conn.execute('UPDATE ui_state SET move_completed_tasks_to_bottom = $1 WHERE id = 1', [
+    moveToBottom ? 1 : 0,
+  ]);
 };
 
 export const setShowUnstartedTasks = async (conn: DatabasePlugin, show: boolean) => {

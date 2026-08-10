@@ -1,4 +1,5 @@
 import DatabasePlugin from '@tauri-apps/plugin-sql';
+import type { CalDAVTaskObject } from '$lib/caldav/types';
 import * as accountOps from '$lib/database/accounts';
 import * as caldavTaskObjectOps from '$lib/database/caldav';
 import * as calendarOps from '$lib/database/calendars';
@@ -11,11 +12,22 @@ import * as tagOps from '$lib/database/tags';
 import * as taskOps from '$lib/database/tasks';
 import * as uiOps from '$lib/database/ui';
 import { loggers } from '$lib/logger';
-import type { Account, CalDAVTaskObject, Calendar, Tag, Task } from '$types';
+import type { Account } from '$types/account';
+import type { Calendar } from '$types/calendar';
 import type { Filter } from '$types/filter';
-import type { PushSubscription } from '$types/push';
-import type { AccountSortConfig, CalendarSortConfig, SortConfig, TagSortConfig } from '$types/sort';
-import type { DataChangeListener, PendingDeletion } from '$types/store';
+import type { PushSubscription } from '$types/push/webdav';
+import type {
+  AccountSortConfig,
+  CalendarSortConfig,
+  SortConfig,
+  TagSortConfig,
+  TaskGroupConfig,
+} from '$types/sort';
+import type { DataChangeListener } from '$types/store/state';
+import type { PendingDeletion } from '$types/store/sync';
+import type { Tag } from '$types/tag';
+import type { TaskCreationOptions } from '$types/task/creation';
+import type { Task } from '$types/task/model';
 
 const DB_NAME = 'sqlite:chiri.db';
 
@@ -122,8 +134,8 @@ class Database {
     return taskOps.countChildren(await this.conn(), parentUid);
   }
 
-  async createTask(data: Partial<Task>) {
-    const result = await taskOps.createTask(await this.conn(), data);
+  async createTask(data: Partial<Task>, options: TaskCreationOptions = {}) {
+    const result = await taskOps.createTask(await this.conn(), data, options);
     this.notify();
     return result;
   }
@@ -271,6 +283,11 @@ class Database {
     this.notify();
   }
 
+  async setTaskGroupConfig(config: TaskGroupConfig) {
+    await uiOps.setTaskGroupConfig(await this.conn(), config);
+    this.notify();
+  }
+
   async setAccountSortConfig(config: AccountSortConfig) {
     await uiOps.setAccountSortConfig(await this.conn(), config);
     this.notify();
@@ -288,6 +305,11 @@ class Database {
 
   async setShowCompletedTasks(show: boolean) {
     await uiOps.setShowCompletedTasks(await this.conn(), show);
+    this.notify();
+  }
+
+  async setMoveCompletedTasksToBottom(moveToBottom: boolean) {
+    await uiOps.setMoveCompletedTasksToBottom(await this.conn(), moveToBottom);
     this.notify();
   }
 

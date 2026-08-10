@@ -2,12 +2,15 @@ import type DatabasePlugin from '@tauri-apps/plugin-sql';
 import { settingsStore } from '$context/settingsContext';
 import { getAllAccounts } from '$lib/database/accounts';
 import { rowToTask } from '$lib/database/converters';
+import type { TaskRow } from '$lib/database/types';
 import { getUIState, setSelectedTask } from '$lib/database/ui';
 import { toAppleEpoch } from '$lib/ical/vtodo';
-import type { Task, TaskStatus } from '$types';
-import type { TaskRow } from '$types/database';
+import { resolveTaskTags } from '$lib/task/creation';
+import { getRecentlyDeletedRetentionCutoff } from '$lib/task/deletion';
+import { buildStatusUpdates } from '$lib/task/status';
+import type { TaskCreationOptions } from '$types/task/creation';
+import type { Status, Task } from '$types/task/model';
 import { generateUUID } from '$utils/misc';
-import { getRecentlyDeletedRetentionCutoff } from '$utils/taskDeletion';
 
 export const getAllTasks = async (conn: DatabasePlugin) => {
   const rows = await conn.select<TaskRow[]>('SELECT * FROM tasks');
@@ -51,24 +54,6 @@ export const countChildren = async (conn: DatabasePlugin, parentUid: string) => 
     [parentUid],
   );
   return rows[0]?.count || 0;
-};
-
-/**
- * resolve tags for a new task, applying active tag and defaults
- */
-const resolveTaskTags = (
-  taskTags: string[] | undefined,
-  activeTagId: string | null,
-  defaultTags: string[],
-) => {
-  let tags = taskTags ?? [];
-  if (activeTagId && !tags.includes(activeTagId)) {
-    tags = [activeTagId, ...tags];
-  }
-  if (tags.length === 0 && defaultTags.length > 0) {
-    tags = [...defaultTags];
-  }
-  return tags;
 };
 
 /**
@@ -142,12 +127,16 @@ const buildTaskInsertParams = (task: Task): unknown[] => [
   task.repeatFrom ?? 0,
 ];
 
-export const createTask = async (conn: DatabasePlugin, taskData: Partial<Task>) => {
+export const createTask = async (
+  conn: DatabasePlugin,
+  taskData: Partial<Task>,
+  options: TaskCreationOptions = {},
+) => {
   const now = new Date();
   const { defaultCalendarId, defaultPriority, defaultTags } = settingsStore.getState();
   const uiState = await getUIState(conn);
 
-  const tags = resolveTaskTags(taskData.tags, uiState.activeTagId, defaultTags);
+  const tags = resolveTaskTags(taskData.tags, uiState.activeTagId, defaultTags, options);
 
   const { calendarId, accountId } = await resolveCalendarAndAccount(
     conn,
@@ -429,17 +418,16 @@ export const toggleTaskComplete = async (conn: DatabasePlugin, id: string) => {
   const task = await getTaskById(conn, id);
   if (!task) return;
 
-  const newStatus: TaskStatus =
+  const newStatus: Status =
     task.status === 'completed'
       ? 'needs-action'
       : task.status === 'cancelled' || task.status === 'in-process'
         ? 'needs-action'
         : 'completed';
 
-  await updateTask(conn, id, {
-    status: newStatus,
-    completed: newStatus === 'completed',
-    completedAt: newStatus === 'completed' ? new Date() : undefined,
-    percentComplete: newStatus === 'completed' ? 100 : 0,
-  });
+  await updateTask(
+    conn,
+    id,
+    buildStatusUpdates(newStatus, task, new Date(), settingsStore.getState().syncStatusProgress),
+  );
 };

@@ -2,6 +2,7 @@ import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { hasHttpUrlScheme } from '$lib/caldav/utils';
 import { loggers } from '$lib/logger';
+import type { ServerValidationResult } from '$types/account';
 
 const log = loggers.http;
 
@@ -97,6 +98,14 @@ export const initiateNextcloudLogin = async (serverUrl: string) => {
     // clear the controller on error
     if (activePollingController) {
       activePollingController = null;
+    }
+
+    if (
+      error instanceof Error &&
+      (error.message === 'Login flow cancelled' || error.name === 'AbortError')
+    ) {
+      log.info('Nextcloud login flow cancelled by user');
+      throw error;
     }
 
     log.error('Login flow failed', {
@@ -219,25 +228,51 @@ export const cancelNextcloudLogin = () => {
  * validates that the provided URL is a valid Nextcloud server
  * by attempting to fetch the status endpoint
  */
-export const validateNextcloudServer = async (serverUrl: string): Promise<boolean> => {
+export const validateNextcloudServer = async (
+  serverUrl: string,
+  signal?: AbortSignal,
+  timeoutMs = 15_000,
+): Promise<ServerValidationResult> => {
   const normalizedUrl = normalizeNextcloudUrl(serverUrl);
+  const controller = new AbortController();
+  let timedOut = false;
+  const timeoutId = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeoutMs);
+  const onParentAbort = () => controller.abort();
+  signal?.addEventListener('abort', onParentAbort);
 
   try {
     const response = await tauriFetch(`${normalizedUrl}/status.php`, {
       method: 'GET',
+      signal: controller.signal,
     });
 
     if (!response.ok) {
-      return false;
+      return { ok: false, reason: 'unreachable' };
     }
 
     const status = await response.json();
 
     // check if it's a Nextcloud server
-    return status && typeof status.installed === 'boolean' && typeof status.version === 'string';
+    return status && typeof status.installed === 'boolean' && typeof status.version === 'string'
+      ? { ok: true }
+      : { ok: false, reason: 'unreachable' };
   } catch (error) {
+    if (signal?.aborted) {
+      return { ok: false, reason: 'unreachable' };
+    }
+
+    if (timedOut || (error instanceof Error && error.name === 'AbortError')) {
+      return { ok: false, reason: 'timeout' };
+    }
+
     log.debug('Server validation failed', { error });
-    return false;
+    return { ok: false, reason: 'unreachable' };
+  } finally {
+    clearTimeout(timeoutId);
+    signal?.removeEventListener('abort', onParentAbort);
   }
 };
 

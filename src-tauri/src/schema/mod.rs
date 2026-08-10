@@ -29,6 +29,9 @@ mod v028_pending_deletion_metadata;
 mod v029_caldav_task_objects;
 mod v030_push_provider_distributor;
 mod v031_push_provider_metadata_json;
+mod v032_completed_tasks_to_bottom;
+mod v033_restore_filter_preset_ids;
+mod v034_task_group_mode;
 
 use tauri_plugin_sql::Migration;
 
@@ -66,5 +69,8 @@ pub fn get_migrations() -> Vec<Migration> {
         v029_caldav_task_objects::migration(),
         v030_push_provider_distributor::migration(),
         v031_push_provider_metadata_json::migration(),
+        v032_completed_tasks_to_bottom::migration(),
+        v033_restore_filter_preset_ids::migration(),
+        v034_task_group_mode::migration(),
     ]
 }

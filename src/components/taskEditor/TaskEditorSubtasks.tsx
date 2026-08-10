@@ -1,16 +1,18 @@
 import { closestCenter, DndContext, DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import ArrowRight from 'lucide-react/icons/arrow-right';
 import CheckCircle2 from 'lucide-react/icons/check-circle-2';
 import ListX from 'lucide-react/icons/list-x';
 import Plus from 'lucide-react/icons/plus';
-import { type KeyboardEvent, useMemo, useState } from 'react';
+import { type KeyboardEvent, type MouseEvent, useMemo, useRef, useState } from 'react';
 import { TaskEditorEmptyState } from '$components/taskEditor/TaskEditorEmptyState';
 import { TaskEditorSubtaskItem } from '$components/taskEditor/TaskEditorSubtaskItem';
 import { useChildTasks, useCreateTask, useTasks } from '$hooks/queries/useTasks';
+import { useSortConfig } from '$hooks/queries/useUIState';
 import { truncateName, useSortableDrag } from '$hooks/ui/useSortableDrag';
-import { getSortedTasks } from '$lib/store/filters';
-import type { Task } from '$types';
-import type { FlattenedTask } from '$types/store';
+import { getSortedTasks } from '$lib/store/tasks';
+import type { FlattenedTask } from '$types/store/tasks';
+import type { Task } from '$types/task/model';
 import { getSortableItemKey } from '$utils/sortable';
 
 interface SubtasksProps {
@@ -35,10 +37,12 @@ export const TaskEditorSubtasks = ({
   const { data: childTasks = [] } = useChildTasks(task.uid, childTaskFilter);
   const childCount = childTasks.length;
   const { data: allTasks = [] } = useTasks();
+  const sortConfig = useSortConfig();
 
-  const [showAddSubtask, setShowAddSubtask] = useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [expandedSubtasks, setExpandedSubtasks] = useState<Set<string>>(new Set());
+  const newSubtaskInputRef = useRef<HTMLInputElement>(null);
+  const hasNewSubtaskTitle = newSubtaskTitle.trim().length > 0;
 
   const flattenedSubtasks = useMemo<FlattenedTask[]>(() => {
     const getChildren = (uid: string) =>
@@ -47,6 +51,7 @@ export const TaskEditorSubtasks = ({
           if (t.parentUid !== uid) return false;
           return childTaskFilter === 'deleted' ? !!t.deletedAt : !t.deletedAt;
         }),
+        sortConfig,
       );
 
     const flatten = (tasks: Task[], ancestorIds: string[]) => {
@@ -60,9 +65,10 @@ export const TaskEditorSubtasks = ({
       return result;
     };
     return [{ ...task, depth: 0, ancestorIds: [] }, ...flatten(getChildren(task.uid), [task.id])];
-  }, [task, allTasks, childTaskFilter, expandedSubtasks]);
+  }, [task, allTasks, childTaskFilter, expandedSubtasks, sortConfig]);
 
-  const anySubtaskDragEnabled = !readOnly && flattenedSubtasks.length > 2;
+  const anySubtaskDragEnabled =
+    sortConfig.mode === 'manual' && !readOnly && flattenedSubtasks.length > 2;
 
   const {
     activeItem: activeDragSubtask,
@@ -90,27 +96,28 @@ export const TaskEditorSubtasks = ({
     });
   };
 
+  const handleCreateSubtaskFromInput = () => {
+    const title = newSubtaskTitle.trim();
+    if (!title) return;
+
+    handleAddChildTask(title);
+    setNewSubtaskTitle('');
+  };
+
   const handleSubtaskKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      if (newSubtaskTitle.trim()) {
-        handleAddChildTask(newSubtaskTitle.trim());
-        setNewSubtaskTitle('');
-      }
+      handleCreateSubtaskFromInput();
     } else if (e.key === 'Escape') {
       e.preventDefault();
       e.stopPropagation();
       setNewSubtaskTitle('');
-      setShowAddSubtask(false);
     }
   };
 
   const handleSubtaskBlur = () => {
-    if (newSubtaskTitle.trim()) {
-      handleAddChildTask(newSubtaskTitle.trim());
-    }
+    handleCreateSubtaskFromInput();
     setNewSubtaskTitle('');
-    setShowAddSubtask(false);
   };
 
   return (
@@ -207,36 +214,51 @@ export const TaskEditorSubtasks = ({
           <TaskEditorEmptyState icon={<ListX className="h-4 w-4 shrink-0" />}>
             No subtasks
           </TaskEditorEmptyState>
-        ) : showAddSubtask ? (
-          <div
-            className={`flex items-center gap-2 py-2 pr-3 pl-3 ${
-              childTasks.length > 0 ? 'border-surface-200 border-t dark:border-surface-700' : ''
-            }`}
-          >
-            <div className="h-4 w-4 shrink-0 rounded-sm border border-surface-300 border-dashed dark:border-surface-600" />
-            <input
-              // biome-ignore lint/a11y/noAutofocus: intentional. user just clicked "Add subtask"
-              autoFocus
-              type="text"
-              value={newSubtaskTitle}
-              onChange={(e) => setNewSubtaskTitle(e.target.value)}
-              onKeyDown={handleSubtaskKeyDown}
-              onBlur={handleSubtaskBlur}
-              placeholder="New subtask..."
-              className="flex-1 bg-transparent text-sm text-surface-700 outline-hidden placeholder:text-surface-400 dark:text-surface-300 dark:placeholder:text-surface-500"
-            />
-          </div>
         ) : !readOnly ? (
-          <button
-            type="button"
-            onClick={() => setShowAddSubtask(true)}
-            className={`flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-400 outline-hidden transition-colors hover:bg-surface-50 hover:text-surface-600 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-500 dark:hover:bg-surface-800/50 dark:hover:text-surface-400 ${
+          // biome-ignore lint/a11y/noStaticElementInteractions: wrapper focuses the nested input when clicking its non-interactive area
+          <div
+            onMouseDown={(event: MouseEvent<HTMLDivElement>) => {
+              const target = event.target as HTMLElement;
+              if (target.closest('button') || target === newSubtaskInputRef.current) return;
+              event.preventDefault();
+              newSubtaskInputRef.current?.focus();
+            }}
+            className={`flex cursor-text items-center gap-2 py-2 pr-3 pl-3 text-surface-400 transition-colors focus-within:bg-surface-50 dark:text-surface-500 dark:focus-within:bg-surface-800/50 ${
               childTasks.length > 0 ? 'border-surface-200 border-t dark:border-surface-700' : ''
             }`}
           >
-            <Plus className="h-4 w-4" />
-            Add subtask
-          </button>
+            <label
+              htmlFor="add-subtask-input"
+              className="flex min-w-0 flex-1 cursor-text items-center gap-2"
+            >
+              <Plus className="h-4 w-4 shrink-0" />
+              <input
+                ref={newSubtaskInputRef}
+                id="add-subtask-input"
+                type="text"
+                value={newSubtaskTitle}
+                onChange={(e) => setNewSubtaskTitle(e.target.value)}
+                onKeyDown={handleSubtaskKeyDown}
+                onBlur={handleSubtaskBlur}
+                placeholder="Add a subtask..."
+                aria-label="Add a subtask"
+                className="flex-1 bg-transparent text-sm text-surface-700 outline-hidden placeholder:text-surface-400 dark:text-surface-300 dark:placeholder:text-surface-500"
+              />
+            </label>
+            {hasNewSubtaskTitle ? (
+              <button
+                type="button"
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={handleCreateSubtaskFromInput}
+                aria-label="Add subtask"
+                className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-md text-surface-400 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-600 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-500 dark:hover:bg-surface-800 dark:hover:text-surface-400"
+              >
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            ) : (
+              <span className="h-5 w-5 shrink-0" aria-hidden="true" />
+            )}
+          </div>
         ) : null}
       </div>
     </div>

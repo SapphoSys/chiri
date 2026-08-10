@@ -1,4 +1,4 @@
-import type { WebPushKeyPair } from '$types/push';
+import type { WebPushKeyPair } from '$types/push/webdav';
 
 /**
  * generate a Web Push key pair using the Web Crypto API

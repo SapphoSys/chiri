@@ -23,6 +23,8 @@ export const queryKeys = {
     byCalendar: (calendarId: string) => ['tasks', 'calendar', calendarId] as const,
     byTag: (tagId: string) => ['tasks', 'tag', tagId] as const,
     byId: (id: string) => ['tasks', 'id', id] as const,
+    children: (parentUid: string, filter: string) =>
+      ['tasks', 'children', parentUid, filter] as const,
   },
   accounts: {
     all: ['accounts'] as const,
@@ -39,20 +41,34 @@ export const queryKeys = {
   pushSubscriptions: {
     all: ['pushSubscriptions'] as const,
     byCalendar: (calendarId: string) => ['pushSubscriptions', 'calendar', calendarId] as const,
+    byConfig: (providerKey: string, accountKey: string) =>
+      ['pushSubscriptions', providerKey, accountKey] as const,
   },
   pushDiagnostics: {
     all: ['pushDiagnostics'] as const,
+    byConfig: (providerKey: string, accountKey: string) =>
+      ['pushDiagnostics', providerKey, accountKey] as const,
     byAccount: (accountId: string) => ['pushDiagnostics', 'account', accountId] as const,
+    byAccountAndConfig: (accountId: string, providerKey: string) =>
+      ['pushDiagnostics', 'account', accountId, providerKey] as const,
+  },
+  pushProviderAvailability: {
+    byConfig: (providerConfigKey: string) =>
+      ['push-provider-availability', providerConfigKey] as const,
+  },
+  filteredTasks: ['filteredTasks'] as const,
+  taskHistory: {
+    byTask: (taskUid: string) => ['taskHistory', taskUid] as const,
+  },
+  platform: {
+    isGnomeDesktop: ['platform', 'isGnomeDesktop'] as const,
+    isKdeDesktop: ['platform', 'isKdeDesktop'] as const,
+    trayHostAvailable: ['platform', 'trayHostAvailable'] as const,
+    installType: ['platform', 'installType'] as const,
+    shouldDisableUpdates: ['platform', 'shouldDisableUpdates'] as const,
   },
   pendingDeletions: ['pendingDeletions'] as const,
-  ui: {
-    activeCalendar: ['ui', 'activeCalendar'] as const,
-    activeTag: ['ui', 'activeTag'] as const,
-    activeAccount: ['ui', 'activeAccount'] as const,
-    selectedTask: ['ui', 'selectedTask'] as const,
-    editorOpen: ['ui', 'editorOpen'] as const,
-    searchQuery: ['ui', 'searchQuery'] as const,
-    sortConfig: ['ui', 'sortConfig'] as const,
-    showCompleted: ['ui', 'showCompleted'] as const,
+  uiState: {
+    all: ['uiState'] as const,
   },
 } as const;

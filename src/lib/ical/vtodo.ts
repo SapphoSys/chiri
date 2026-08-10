@@ -10,7 +10,7 @@ import {
 } from '$lib/ical';
 import { loggers } from '$lib/logger';
 import { getAllTags } from '$lib/store/tags';
-import type { Priority, Reminder, Task, TaskStatus } from '$types';
+import type { Priority, Reminder, Status, Task } from '$types/task/model';
 import { generateUUID } from '$utils/misc';
 
 const log = loggers.iCal;
@@ -106,8 +106,8 @@ const formatICalDuration = (offsetMs: number) => {
   return result;
 };
 
-// status mapping: iCalendar VTODO STATUS ↔ TaskStatus
-const icalStatusToTaskStatus = (icalStatus: string | undefined): TaskStatus => {
+// status mapping: iCalendar VTODO STATUS ↔ Status
+const icalStatusToTaskStatus = (icalStatus: string | undefined): Status => {
   switch (icalStatus?.toUpperCase()) {
     case 'COMPLETED':
       return 'completed';
@@ -120,7 +120,7 @@ const icalStatusToTaskStatus = (icalStatus: string | undefined): TaskStatus => {
   }
 };
 
-const taskStatusToIcal = (status: TaskStatus) => {
+const taskStatusToIcal = (status: Status) => {
   switch (status) {
     case 'completed':
       return 'COMPLETED';

@@ -8,6 +8,7 @@ const tauriMocks = vi.hoisted(() => {
   return {
     handlers,
     invoke: vi.fn(() => Promise.resolve()),
+    importMobileConfig: vi.fn(async (): Promise<unknown> => ({ ok: true, candidates: [] })),
     listen: vi.fn(
       (eventName: string, handler: (event: { payload: { paths: string[] } }) => void) => {
         handlers.set(eventName, handler);
@@ -30,7 +31,7 @@ vi.mock('@tauri-apps/plugin-os', () => ({
 }));
 
 vi.mock('$lib/mobileconfig/import', () => ({
-  importMobileConfig: vi.fn(() => Promise.resolve({ ok: true, candidates: [] })),
+  importMobileConfig: tauriMocks.importMobileConfig,
 }));
 
 vi.mock('$lib/logger', () => ({
@@ -57,6 +58,8 @@ describe('useFileDrop', () => {
     document.body.append(container);
     root = createRoot(container);
     tauriMocks.invoke.mockClear();
+    tauriMocks.importMobileConfig.mockClear();
+    tauriMocks.importMobileConfig.mockResolvedValue({ ok: true, candidates: [] });
     tauriMocks.listen.mockClear();
     tauriMocks.handlers.clear();
   });
@@ -70,6 +73,7 @@ describe('useFileDrop', () => {
     callbacks: {
       onFileDrop?: (file: { name: string; content: string }) => void;
       onConfigProfileDrop?: (profile: { ok: true; candidates: unknown[] }) => void;
+      onConfigProfileError?: (message: string) => void;
       onUnsupportedFile?: (fileName: string) => void;
     } = {},
   ) => {
@@ -77,6 +81,7 @@ describe('useFileDrop', () => {
       const { handleFileDrop, handleDragOver, handleDragEnter, handleDragLeave } = useFileDrop({
         onFileDrop: callbacks.onFileDrop,
         onConfigProfileDrop: callbacks.onConfigProfileDrop,
+        onConfigProfileError: callbacks.onConfigProfileError,
         onUnsupportedFile: callbacks.onUnsupportedFile,
       });
 
@@ -170,5 +175,23 @@ describe('useFileDrop', () => {
 
     expect(onFileDrop).toHaveBeenCalledOnce();
     expect(onFileDrop).toHaveBeenCalledWith({ name: 'calendar.ics', content: 'BEGIN:VCALENDAR' });
+  });
+
+  it('explains that encrypted configuration profiles need an unencrypted alternative', async () => {
+    const onConfigProfileError = vi.fn();
+    tauriMocks.importMobileConfig.mockResolvedValueOnce({
+      ok: false,
+      reason: 'encrypted-profile-unsupported',
+    });
+    await renderHarness({ onConfigProfileError });
+
+    const file = new File(['encrypted'], 'account.mobileconfig', {
+      type: 'application/x-apple-aspen-config',
+    });
+    await dropFile(file);
+
+    expect(onConfigProfileError).toHaveBeenCalledWith(
+      'Encrypted configuration profiles are not supported yet. Ask the provider for an unsigned or signed profile instead.',
+    );
   });
 });

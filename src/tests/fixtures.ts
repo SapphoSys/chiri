@@ -1,6 +1,7 @@
 import type { Connection } from '$lib/caldav/connection';
-import type { Calendar, Task } from '$types';
-import type { FlattenedTask } from '$types/store';
+import type { Calendar } from '$types/calendar';
+import type { FlattenedTask } from '$types/store/tasks';
+import type { Task } from '$types/task/model';
 
 /**
  * typed test fixture factories. use these instead of `{} as unknown as Task`

@@ -10,7 +10,7 @@ import {
 } from '@tauri-apps/api/menu';
 import { MENU_EVENTS } from '$constants/menu';
 import { loggers } from '$lib/logger';
-import type { KeyboardShortcut } from '$types';
+import type { KeyboardShortcut } from '$types/shortcuts';
 import type { SortDirection, SortMode } from '$types/sort';
 import { isMacPlatform } from '$utils/platform';
 
@@ -20,6 +20,7 @@ const log = loggers.menu;
 const menuItemRefs: {
   sync?: MenuItem;
   toggleCompleted?: CheckMenuItem;
+  toggleCompletedToBottom?: CheckMenuItem;
   toggleUnstarted?: CheckMenuItem;
   sortManual?: MenuItem;
   sortSmart?: MenuItem;
@@ -84,6 +85,7 @@ const isEnabledOutsideModal = (isModalOpen: boolean, enabled = true) => !isModal
 interface MenuCalendar {
   id: string;
   displayName: string;
+  accountId?: string;
 }
 
 interface MenuAccount {
@@ -97,18 +99,220 @@ interface DockMenuFilter {
   label: string;
 }
 
+interface MenuNavigationCalendar extends MenuCalendar {
+  accountId: string;
+}
+
+interface MenuNavigationItem {
+  id: string;
+  label: string;
+}
+
+interface MenuNavigationOptions {
+  filters?: MenuNavigationItem[];
+  localCalendars?: MenuNavigationCalendar[];
+  accountCalendars?: MenuAccount[];
+  tags?: MenuNavigationItem[];
+  activeListKey?: string;
+  canGoPrevious?: boolean;
+  canGoNext?: boolean;
+}
+
+const createGoSubmenu = async ({
+  navigation,
+  shortcuts,
+  isModalOpen,
+}: {
+  navigation?: MenuNavigationOptions;
+  shortcuts?: KeyboardShortcut[];
+  isModalOpen: boolean;
+}) => {
+  const activeListKey = navigation?.activeListKey ?? 'all';
+  const canGoPrevious = navigation?.canGoPrevious ?? false;
+  const canGoNext = navigation?.canGoNext ?? false;
+  const isAppActionEnabled = (enabled = true) => isEnabledOutsideModal(isModalOpen, enabled);
+
+  const createGoDestinationItem = async ({
+    id,
+    text,
+    listKey,
+    action,
+  }: {
+    id: string;
+    text: string;
+    listKey: string;
+    action: () => void;
+  }) =>
+    CheckMenuItem.new({
+      id,
+      text,
+      checked: activeListKey === listKey,
+      enabled: isAppActionEnabled(),
+      action,
+    });
+
+  const allTasksItem = await createGoDestinationItem({
+    id: 'go-all-tasks',
+    text: 'All Tasks',
+    listKey: 'all',
+    action: () => {
+      emit(MENU_EVENTS.ALL_TASKS);
+    },
+  });
+
+  const recentlyDeletedItem = await createGoDestinationItem({
+    id: 'go-recently-deleted',
+    text: 'Recently Deleted',
+    listKey: 'recently-deleted',
+    action: () => {
+      emit(MENU_EVENTS.RECENTLY_DELETED);
+    },
+  });
+
+  const filterItems = await Promise.all(
+    (navigation?.filters ?? []).map((filter) =>
+      createGoDestinationItem({
+        id: `go-filter-${filter.id}`,
+        text: filter.label,
+        listKey: `filter:${filter.id}`,
+        action: () => {
+          emit(MENU_EVENTS.SELECT_FILTER, { filterId: filter.id });
+        },
+      }),
+    ),
+  );
+
+  const localCalendarItems = await Promise.all(
+    (navigation?.localCalendars ?? []).map((calendar) =>
+      createGoDestinationItem({
+        id: `go-calendar-${calendar.id}`,
+        text: calendar.displayName,
+        listKey: `calendar:${calendar.id}`,
+        action: () => {
+          emit(MENU_EVENTS.SELECT_CALENDAR, {
+            accountId: calendar.accountId,
+            calendarId: calendar.id,
+          });
+        },
+      }),
+    ),
+  );
+
+  const accountCalendarSubmenus = await Promise.all(
+    (navigation?.accountCalendars ?? [])
+      .filter((account) => (account.calendars?.length ?? 0) > 0)
+      .map(async (account) =>
+        Submenu.new({
+          text: account.name,
+          items: await Promise.all(
+            (account.calendars ?? []).map((calendar) =>
+              createGoDestinationItem({
+                id: `go-calendar-${calendar.id}`,
+                text: calendar.displayName,
+                listKey: `calendar:${calendar.id}`,
+                action: () => {
+                  emit(MENU_EVENTS.SELECT_CALENDAR, {
+                    accountId: account.id,
+                    calendarId: calendar.id,
+                  });
+                },
+              }),
+            ),
+          ),
+        }),
+      ),
+  );
+
+  const calendarSubmenuItems: Array<Submenu | PredefinedMenuItem> = [];
+  if (localCalendarItems.length > 0) {
+    calendarSubmenuItems.push(await Submenu.new({ text: 'Local', items: localCalendarItems }));
+  }
+  if (accountCalendarSubmenus.length > 0) {
+    if (calendarSubmenuItems.length > 0) {
+      calendarSubmenuItems.push(await PredefinedMenuItem.new({ item: 'Separator' }));
+    }
+    calendarSubmenuItems.push(...accountCalendarSubmenus);
+  }
+
+  const tagItems = await Promise.all(
+    (navigation?.tags ?? []).map((tag) =>
+      createGoDestinationItem({
+        id: `go-tag-${tag.id}`,
+        text: tag.label,
+        listKey: `tag:${tag.id}`,
+        action: () => {
+          emit(MENU_EVENTS.SELECT_TAG, { tagId: tag.id });
+        },
+      }),
+    ),
+  );
+
+  const viewsHeaderItem = await MenuItem.new({
+    id: 'go-views-header',
+    text: 'Views',
+    enabled: false,
+  });
+
+  const destinationItems: Array<Submenu | MenuItem | CheckMenuItem | PredefinedMenuItem> = [
+    viewsHeaderItem,
+    allTasksItem,
+    recentlyDeletedItem,
+  ];
+  if (filterItems.length > 0) {
+    destinationItems.push(await PredefinedMenuItem.new({ item: 'Separator' }));
+    destinationItems.push(await Submenu.new({ text: 'Filters', items: filterItems }));
+  }
+  if (calendarSubmenuItems.length > 0) {
+    destinationItems.push(await PredefinedMenuItem.new({ item: 'Separator' }));
+    destinationItems.push(await Submenu.new({ text: 'Calendars', items: calendarSubmenuItems }));
+  }
+  if (tagItems.length > 0) {
+    destinationItems.push(await PredefinedMenuItem.new({ item: 'Separator' }));
+    destinationItems.push(await Submenu.new({ text: 'Tags', items: tagItems }));
+  }
+
+  return Submenu.new({
+    text: 'Go',
+    items: [
+      await MenuItem.new({
+        id: 'nav-prev-list',
+        text: 'Previous List',
+        accelerator: getAcceleratorOrDefault(shortcuts, 'nav-prev-list', 'CmdOrCtrl+['),
+        enabled: isAppActionEnabled(canGoPrevious),
+        action: () => {
+          emit(MENU_EVENTS.NAV_PREV_LIST);
+        },
+      }),
+      await MenuItem.new({
+        id: 'nav-next-list',
+        text: 'Next List',
+        accelerator: getAcceleratorOrDefault(shortcuts, 'nav-next-list', 'CmdOrCtrl+]'),
+        enabled: isAppActionEnabled(canGoNext),
+        action: () => {
+          emit(MENU_EVENTS.NAV_NEXT_LIST);
+        },
+      }),
+      await PredefinedMenuItem.new({ item: 'Separator' }),
+      ...destinationItems,
+    ],
+  });
+};
+
 export const createMacMenu = async (options?: {
   showCompleted?: boolean;
+  moveCompletedTasksToBottom?: boolean;
   showUnstarted?: boolean;
   sortMode?: SortMode;
   sortDirection?: SortDirection;
   shortcuts?: KeyboardShortcut[];
   accounts?: MenuAccount[];
+  navigation?: MenuNavigationOptions;
   caldavAccountCount?: number;
   isSyncing?: boolean;
   isModalOpen?: boolean;
 }) => {
   const showCompleted = options?.showCompleted ?? true;
+  const moveCompletedTasksToBottom = options?.moveCompletedTasksToBottom ?? false;
   const showUnstarted = options?.showUnstarted ?? true;
   const sortMode = options?.sortMode ?? 'manual';
   const sortDirection = options?.sortDirection ?? 'asc';
@@ -117,6 +321,7 @@ export const createMacMenu = async (options?: {
   const hasAccounts = accounts.length > 0;
   const hasCaldavAccounts = (options?.caldavAccountCount ?? accounts.length) > 0;
   const isSyncing = options?.isSyncing ?? false;
+  const navigation = options?.navigation;
   const isAppActionEnabled = (enabled = true) =>
     isEnabledOutsideModal(options?.isModalOpen ?? false, enabled);
 
@@ -283,6 +488,17 @@ export const createMacMenu = async (options?: {
   });
   menuItemRefs.toggleCompleted = toggleCompletedItem;
 
+  const toggleCompletedToBottomItem = await CheckMenuItem.new({
+    id: 'toggle-completed-to-bottom',
+    text: 'Move Completed Tasks to Bottom',
+    checked: moveCompletedTasksToBottom,
+    enabled: isAppActionEnabled(showCompleted),
+    action: () => {
+      emit(MENU_EVENTS.TOGGLE_COMPLETED_TO_BOTTOM);
+    },
+  });
+  menuItemRefs.toggleCompletedToBottom = toggleCompletedToBottomItem;
+
   const toggleUnstartedItem = await CheckMenuItem.new({
     id: 'toggle-unstarted',
     text: 'Show Unstarted Tasks',
@@ -407,6 +623,7 @@ export const createMacMenu = async (options?: {
     items: [
       toggleCompletedItem,
       toggleUnstartedItem,
+      toggleCompletedToBottomItem,
       await PredefinedMenuItem.new({ item: 'Separator' }),
       await Submenu.new({
         text: 'Sort By',
@@ -576,29 +793,10 @@ export const createMacMenu = async (options?: {
     ],
   });
 
-  // go menu (list navigation)
-  const goSubmenu = await Submenu.new({
-    text: 'Go',
-    items: [
-      await MenuItem.new({
-        id: 'nav-prev-list',
-        text: 'Previous List',
-        accelerator: getAcceleratorOrDefault(shortcuts, 'nav-prev-list', 'CmdOrCtrl+['),
-        enabled: isAppActionEnabled(),
-        action: () => {
-          emit(MENU_EVENTS.NAV_PREV_LIST);
-        },
-      }),
-      await MenuItem.new({
-        id: 'nav-next-list',
-        text: 'Next List',
-        accelerator: getAcceleratorOrDefault(shortcuts, 'nav-next-list', 'CmdOrCtrl+]'),
-        enabled: isAppActionEnabled(),
-        action: () => {
-          emit(MENU_EVENTS.NAV_NEXT_LIST);
-        },
-      }),
-    ],
+  const goSubmenu = await createGoSubmenu({
+    navigation,
+    shortcuts,
+    isModalOpen: options?.isModalOpen ?? false,
   });
 
   // window menu
@@ -677,10 +875,12 @@ export const createMacMenu = async (options?: {
  */
 export const initAppMenu = async (options?: {
   showCompleted?: boolean;
+  moveCompletedTasksToBottom?: boolean;
   sortMode?: SortMode;
   sortDirection?: SortDirection;
   shortcuts?: KeyboardShortcut[];
   accounts?: MenuAccount[];
+  navigation?: MenuNavigationOptions;
   caldavAccountCount?: number;
   isSyncing?: boolean;
   isModalOpen?: boolean;
@@ -720,11 +920,13 @@ export const updateDockMenu = async (options: {
  */
 export const rebuildAppMenu = async (options?: {
   showCompleted?: boolean;
+  moveCompletedTasksToBottom?: boolean;
   showUnstarted?: boolean;
   sortMode?: SortMode;
   sortDirection?: SortDirection;
   shortcuts?: KeyboardShortcut[];
   accounts?: MenuAccount[];
+  navigation?: MenuNavigationOptions;
   caldavAccountCount?: number;
   isSyncing?: boolean;
   isModalOpen?: boolean;
@@ -753,6 +955,9 @@ export const updateMenuItem = async (
         break;
       case 'toggle-completed':
         item = menuItemRefs.toggleCompleted;
+        break;
+      case 'toggle-completed-to-bottom':
+        item = menuItemRefs.toggleCompletedToBottom;
         break;
       case 'sort-manual':
         item = menuItemRefs.sortManual;
@@ -813,6 +1018,7 @@ export const updateMenuItem = async (
 export const updateMenuState = async (options: {
   accountCount?: number;
   showCompleted?: boolean;
+  moveCompletedTasksToBottom?: boolean;
   showUnstarted?: boolean;
   sortMode?: SortMode;
   sortDirection?: SortDirection;
@@ -829,6 +1035,14 @@ export const updateMenuState = async (options: {
   }
   if (options.showCompleted !== undefined) {
     await updateMenuItem('toggle-completed', { checked: options.showCompleted });
+    await updateMenuItem('toggle-completed-to-bottom', {
+      enabled: isAppActionEnabled(options.showCompleted),
+    });
+  }
+  if (options.moveCompletedTasksToBottom !== undefined) {
+    await updateMenuItem('toggle-completed-to-bottom', {
+      checked: options.moveCompletedTasksToBottom,
+    });
   }
   if (options.showUnstarted !== undefined) {
     await updateMenuItem('toggle-unstarted', { checked: options.showUnstarted });

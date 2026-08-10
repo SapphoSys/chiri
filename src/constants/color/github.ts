@@ -33,6 +33,7 @@ export const githubColorScheme: ColorSchemeDefinition = {
       defaultAccent: 'Blue',
       semanticColors: {
         info: '#0969da',
+        dueToday: '#bc4c00',
         warning: '#9a6700',
         success: '#1a7f37',
         error: '#d1242f',
@@ -74,6 +75,7 @@ export const githubColorScheme: ColorSchemeDefinition = {
       defaultAccent: 'Blue',
       semanticColors: {
         info: '#58a6ff',
+        dueToday: '#db6d28',
         warning: '#d29922',
         success: '#3fb950',
         error: '#f85149',

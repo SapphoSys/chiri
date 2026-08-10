@@ -2,7 +2,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import GripVertical from 'lucide-react/icons/grip-vertical';
 import type { CSSProperties, ReactNode } from 'react';
-import type { EditorFieldKey } from '$types/settings';
+import type { EditorFieldKey } from '$types/settings/categories/editor';
 
 export type FieldConfig = {
   key: EditorFieldKey;

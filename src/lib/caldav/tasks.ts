@@ -25,10 +25,12 @@
  */
 
 import type { Connection } from '$lib/caldav/connection';
+import type { TaskWithCalDAVObject } from '$lib/caldav/types';
 import { cleanEtag, log, makeAbsoluteUrl, normalizeUrl } from '$lib/caldav/utils';
 import { del, parseMultiStatus, propfind, put, report } from '$lib/http';
 import { taskToVTodo, vtodoToTask } from '$lib/ical/vtodo';
-import type { Calendar, Task, TaskWithCalDAVObject } from '$types';
+import type { Calendar } from '$types/calendar';
+import type { Task } from '$types/task/model';
 
 const stripCalDAVObject = ({ caldavObject: _caldavObject, ...task }: TaskWithCalDAVObject): Task =>
   task;

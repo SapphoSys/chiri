@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Task } from '$types';
-import type { SettingsState } from '$types/settings';
-import type { PendingDeletion } from '$types/store';
+import type { Filter } from '$types/filter';
+import type { SettingsState } from '$types/settings/state';
+import type { PendingDeletion } from '$types/store/sync';
+import type { Task } from '$types/task/model';
 import { makeTask } from '../../fixtures';
 
 // vi.mock factories are hoisted; pre-create the mock fn refs via vi.hoisted
@@ -34,7 +35,6 @@ const { mockAddPendingDeletion, mockUpdateTask, mockGetSettingsState, mockSettin
   });
 
 vi.mock('@tauri-apps/plugin-sql', () => ({ default: { load: vi.fn() } }));
-vi.mock('@tauri-apps/plugin-notification', () => ({}));
 
 vi.mock('$lib/database', () => ({
   db: {
@@ -52,7 +52,7 @@ vi.mock('$context/settingsContext', () => ({
   },
 }));
 
-vi.mock('$hooks/ui/useToast', () => ({
+vi.mock('$lib/toastManager', () => ({
   toastManager: { success: vi.fn(), error: vi.fn() },
 }));
 
@@ -60,7 +60,7 @@ vi.mock('$lib/ical/vtodo', () => ({
   toAppleEpoch: vi.fn((ms: number) => ms),
 }));
 
-vi.mock('$utils/recurrence', () => ({
+vi.mock('$lib/task/recurrence', () => ({
   getNextOccurrence: vi.fn(),
   parseRRule: vi.fn(() => ({})),
 }));
@@ -432,6 +432,160 @@ describe('createTask: all-day reminder notifications', () => {
     expect(task.dueDateAllDay).toBe(false);
     expect(task.reminders).toHaveLength(1);
     expect(task.reminders?.[0].trigger).toEqual(dueDate);
+  });
+});
+
+describe('createTask: tag source handling', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    seedStore([]);
+  });
+
+  it('applies the active tag to user-created tasks', () => {
+    const activeTag = { id: 'tag-b', name: 'tag-b', color: '#fff', sortOrder: 0 };
+    dataStore.save({
+      ...defaultDataStore,
+      tags: [activeTag],
+      ui: { ...defaultUIState, activeTagId: activeTag.id },
+    });
+
+    const task = createTask({ title: 'User task' });
+
+    expect(task.tags).toEqual(['tag-b']);
+  });
+
+  it('preserves remote tags while a tag view is active', () => {
+    dataStore.save({
+      ...defaultDataStore,
+      ui: { ...defaultUIState, activeTagId: 'tag-b' },
+    });
+
+    const task = createTask(
+      { title: 'Remote task', tags: ['tag-a'], synced: true },
+      { source: 'remote' },
+    );
+
+    expect(task.tags).toEqual(['tag-a']);
+  });
+
+  it('does not apply active or default tags to an untagged remote task', () => {
+    mockGetSettingsState.mockReturnValue({
+      ...mockSettingsState,
+      defaultTags: ['default-tag'],
+    });
+    dataStore.save({
+      ...defaultDataStore,
+      ui: { ...defaultUIState, activeTagId: 'tag-b' },
+    });
+
+    const task = createTask({ title: 'Untagged remote task', synced: true }, { source: 'remote' });
+
+    expect(task.tags).toEqual([]);
+  });
+});
+
+describe('createTask: selected task publication', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    seedStore([]);
+  });
+
+  it('publishes the new task and its selection together', () => {
+    const previousTask = makeTask({ id: 'previous-task', uid: 'previous-uid' });
+    seedStore([previousTask], []);
+
+    let publishedState: { taskIds: string[]; selectedTaskId: string | null } | undefined;
+    const unsubscribe = dataStore.subscribe(() => {
+      const state = dataStore.load();
+      publishedState = {
+        taskIds: state.tasks.map((task) => task.id),
+        selectedTaskId: state.ui.selectedTaskId,
+      };
+    });
+
+    const createdTask = createTask({ title: 'New task' }, { selectCreatedTask: true });
+
+    unsubscribe();
+    expect(publishedState).toEqual({
+      taskIds: ['previous-task', createdTask.id],
+      selectedTaskId: createdTask.id,
+    });
+  });
+});
+
+describe('createTask: active filter defaults', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    seedStore([]);
+  });
+
+  it('applies a predefined priority to new tasks in a priority filter', () => {
+    const highPriorityFilter: Filter = {
+      id: 'filter-high-priority',
+      presetId: 'high-priority',
+      name: 'High Priority',
+      combinator: 'all',
+      criteria: [{ field: 'priority', op: 'is', value: 'high' }],
+      sortOrder: 100,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    dataStore.save({
+      ...defaultDataStore,
+      filters: [highPriorityFilter],
+      ui: { ...defaultUIState, activeView: 'filter', activeFilterId: highPriorityFilter.id },
+    });
+
+    expect(createTask({ title: 'Important task' }).priority).toBe('high');
+    expect(createTask({ title: 'Explicitly low task', priority: 'low' }).priority).toBe('low');
+  });
+
+  it('applies a predefined status to new tasks in the in-progress filter', () => {
+    const inProgressFilter: Filter = {
+      id: 'filter-in-progress',
+      presetId: 'in-progress',
+      name: 'In Progress',
+      combinator: 'all',
+      criteria: [{ field: 'status', op: 'is', value: 'in-process' }],
+      sortOrder: 100,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    dataStore.save({
+      ...defaultDataStore,
+      filters: [inProgressFilter],
+      ui: { ...defaultUIState, activeView: 'filter', activeFilterId: inProgressFilter.id },
+    });
+
+    expect(createTask({ title: 'Started task' })).toMatchObject({
+      status: 'in-process',
+      completed: false,
+      percentComplete: 1,
+    });
+  });
+
+  it('clears the configured start-date default in the no-start-date filter', () => {
+    mockGetSettingsState.mockReturnValue({
+      ...mockSettingsState,
+      defaultStartDate: 'today',
+    });
+    const noStartDateFilter: Filter = {
+      id: 'filter-no-start-date',
+      presetId: 'no-start-date',
+      name: 'No Start Date',
+      combinator: 'all',
+      criteria: [{ field: 'startDate', op: 'empty' }],
+      sortOrder: 100,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    dataStore.save({
+      ...defaultDataStore,
+      filters: [noStartDateFilter],
+      ui: { ...defaultUIState, activeView: 'filter', activeFilterId: noStartDateFilter.id },
+    });
+
+    expect(createTask({ title: 'Unscheduled task' }).startDate).toBeUndefined();
   });
 });
 

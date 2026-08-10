@@ -201,6 +201,7 @@ export const applyColorScheme = (
   }
 
   root.style.setProperty('--semantic-info', flavor.semanticColors.info);
+  root.style.setProperty('--semantic-due-today', flavor.semanticColors.dueToday);
   root.style.setProperty('--semantic-warning', flavor.semanticColors.warning);
   root.style.setProperty('--semantic-success', flavor.semanticColors.success);
   root.style.setProperty('--semantic-error', flavor.semanticColors.error);

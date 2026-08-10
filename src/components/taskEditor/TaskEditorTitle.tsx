@@ -7,7 +7,7 @@ import { ComposedTextarea } from '$components/ComposedTextarea';
 import { useToggleTaskComplete } from '$hooks/queries/useTasks';
 import { consumeSelectedTaskTitleAutofocus } from '$hooks/queries/useUIState';
 import { useDebouncedTaskUpdate } from '$hooks/ui/useDebouncedTaskUpdate';
-import type { Task } from '$types';
+import type { Task } from '$types/task/model';
 
 interface TaskEditorTitleProps {
   task: Task;
@@ -49,7 +49,7 @@ export const TaskEditorTitle = ({
   readOnly = false,
 }: TaskEditorTitleProps) => {
   const [pendingTitle, updatePendingTitle] = useDebouncedTaskUpdate(task.id, 'title', task.title);
-  const toggleTaskCompleteMutation = useToggleTaskComplete();
+  const toggleTaskCompleteMutation = useToggleTaskComplete({ completeInProcess: true });
   const titleRef = useRef<HTMLTextAreaElement>(null);
 
   // focus newly-created blank tasks once, without stealing focus on later visits
@@ -140,7 +140,9 @@ export const TaskEditorTitle = ({
         {readOnly ? (
           <div className="selectable flex-1 cursor-not-allowed whitespace-pre-wrap font-medium text-sm text-surface-700 dark:text-surface-300">
             {pendingTitle || (
-              <span className="text-surface-400 dark:text-surface-500">Untitled task</span>
+              <span className="text-surface-400 dark:text-surface-500">
+                {task.parentUid ? 'Untitled subtask' : 'Untitled task'}
+              </span>
             )}
           </div>
         ) : (

@@ -9,7 +9,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TASK_LIST_INDENT_SHIFT_SIZE } from '$constants';
 import { useReorderTasks } from '$hooks/queries/useTasks';
-import type { FlattenedTask } from '$types/store';
+import type { FlattenedTask } from '$types/store/tasks';
 
 export const truncateName = (name: string, maxLength = 20) => {
   if (name.length <= maxLength) return name;
@@ -22,12 +22,15 @@ interface UseSortableDragOptions {
   minIndent?: number;
   /** called with the new parent task's ID when an item is dropped into a parent that is itself in the list */
   onDropIntoParent?: (parentId: string) => void;
+  /** limits an active drag to items sharing the same scope */
+  getDragScope?: (item: FlattenedTask) => string;
 }
 
 export const useSortableDrag = ({
   flattenedItems,
   minIndent = 0,
   onDropIntoParent,
+  getDragScope,
 }: UseSortableDragOptions) => {
   const reorderTasksMutation = useReorderTasks();
 
@@ -43,6 +46,12 @@ export const useSortableDrag = ({
     if (!activeItem) return flattenedItems;
     return flattenedItems.filter((t) => !t.ancestorIds.includes(activeItem.id));
   }, [flattenedItems, activeItem]);
+
+  const dragItems = useMemo(() => {
+    if (!activeItem || !getDragScope) return visibleItems;
+    const activeScope = getDragScope(activeItem);
+    return visibleItems.filter((item) => getDragScope(item) === activeScope);
+  }, [activeItem, getDragScope, visibleItems]);
 
   // clear active item if it no longer exists (e.g. deleted during drag)
   useEffect(() => {
@@ -79,8 +88,8 @@ export const useSortableDrag = ({
       const { active, over } = event;
       if (!activeItem || !over) return;
 
-      const activeIndex = visibleItems.findIndex((t) => t.id === active.id);
-      const overIndex = visibleItems.findIndex((t) => t.id === over.id);
+      const activeIndex = dragItems.findIndex((t) => t.id === active.id);
+      const overIndex = dragItems.findIndex((t) => t.id === over.id);
       if (activeIndex === -1 || overIndex === -1) return;
 
       const taskAboveIndex =
@@ -92,7 +101,7 @@ export const useSortableDrag = ({
 
       let maxIndent = minIndent;
       for (let i = taskAboveIndex; i >= 0; i--) {
-        const t = visibleItems[i];
+        const t = dragItems[i];
         if (t.id !== active.id) {
           maxIndent = t.depth + 1;
           break;
@@ -108,7 +117,7 @@ export const useSortableDrag = ({
 
       let parentName: string | null = null;
       for (let i = taskAboveIndex; i >= 0; i--) {
-        const t = visibleItems[i];
+        const t = dragItems[i];
         if (t.id !== active.id && t.depth === newIndent - 1) {
           parentName = t.title || 'Untitled';
           break;
@@ -116,7 +125,7 @@ export const useSortableDrag = ({
       }
       setTargetParentName(parentName);
     },
-    [activeItem, visibleItems, minIndent],
+    [activeItem, dragItems, minIndent],
   );
 
   const handleDragCancel = useCallback(() => {
@@ -138,24 +147,24 @@ export const useSortableDrag = ({
       const overAncestorIds = (over.data.current?.ancestorIds as string[]) ?? [];
       if (overAncestorIds.includes(active.id as string)) return;
 
-      const activeIndex = visibleItems.findIndex((t) => t.id === active.id);
-      const overIndex = visibleItems.findIndex((t) => t.id === over.id);
+      const activeIndex = dragItems.findIndex((t) => t.id === active.id);
+      const overIndex = dragItems.findIndex((t) => t.id === over.id);
       if (activeIndex === -1 || overIndex === -1) return;
 
-      const activeListItem = visibleItems[activeIndex];
+      const activeListItem = dragItems[activeIndex];
       if (active.id === over.id && activeListItem.depth === finalIndent) return;
 
       reorderTasksMutation.mutate({
         activeId: active.id as string,
         overId: over.id as string,
-        flattenedItems: visibleItems,
+        flattenedItems: dragItems,
         targetIndent: finalIndent,
       });
 
       if (onDropIntoParent && finalIndent > minIndent) {
         const taskAboveIndex = activeIndex < overIndex ? overIndex : overIndex - 1;
         for (let i = taskAboveIndex; i >= 0; i--) {
-          const t = visibleItems[i];
+          const t = dragItems[i];
           if (t.id !== active.id && t.depth === finalIndent - 1) {
             onDropIntoParent(t.id);
             break;
@@ -163,7 +172,7 @@ export const useSortableDrag = ({
         }
       }
     },
-    [visibleItems, reorderTasksMutation, targetIndent, minIndent, onDropIntoParent],
+    [dragItems, reorderTasksMutation, targetIndent, minIndent, onDropIntoParent],
   );
 
   return {

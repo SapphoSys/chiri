@@ -1,4 +1,5 @@
-import type { Account, Task } from '$types';
+import type { Account } from '$types/account';
+import type { Task } from '$types/task/model';
 
 interface ShouldShowOnboardingInput {
   onboardingCompleted: boolean;

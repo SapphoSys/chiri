@@ -1,8 +1,8 @@
-import type { TaskStatus } from '$types';
+import type { Status } from '$types/task/model';
 
 interface TaskItemTitleProps {
   title: string;
-  status: TaskStatus;
+  status: Status;
   isUnstarted: boolean;
   isSubtask?: boolean;
   className?: string;

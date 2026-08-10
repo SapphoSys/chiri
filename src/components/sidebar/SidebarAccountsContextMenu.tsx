@@ -33,7 +33,7 @@ export const SidebarAccountsContextMenu = ({
         onCollapseAll();
         onClose();
       }}
-      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+      className="flex w-full items-center gap-2 rounded-b-md px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
     >
       <ChevronRight className="h-4 w-4" />
       Collapse All

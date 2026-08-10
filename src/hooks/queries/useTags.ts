@@ -9,7 +9,7 @@ import { dataStore } from '$lib/store';
 import { moveItem } from '$lib/store/reorder';
 import { reorderTags } from '$lib/store/reorder/tags';
 import { createTag, deleteTag, getAllTags, updateTag } from '$lib/store/tags';
-import type { Tag } from '$types';
+import type { Tag } from '$types/tag';
 
 /**
  * hook to get all tags

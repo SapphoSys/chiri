@@ -1,16 +1,31 @@
 import CalendarClock from 'lucide-react/icons/calendar-clock';
+import type { MouseEvent } from 'react';
+import { TaskItemBadge } from '$components/taskItem/badges/TaskItemBadge';
 import type { formatStartDate } from '$utils/date';
 
 export const TaskItemStartDateBadge = ({
   startDateDisplay,
+  onClick,
 }: {
   startDateDisplay: ReturnType<typeof formatStartDate>;
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
 }) => (
-  <span
-    className="inline-flex items-center gap-1 rounded-sm border bg-surface-100 px-2 py-0.5 font-medium text-surface-600 text-xs dark:bg-surface-700 dark:text-surface-400"
-    style={{ borderColor: startDateDisplay.borderColor }}
+  <TaskItemBadge
+    color={startDateDisplay.color}
+    tooltip={
+      onClick ? `Edit start date: ${startDateDisplay.text}` : `Starts: ${startDateDisplay.text}`
+    }
+    ariaLabel={onClick ? `Edit start date: ${startDateDisplay.text}` : undefined}
+    onClick={
+      onClick
+        ? (event) => {
+            event.stopPropagation();
+            onClick(event);
+          }
+        : undefined
+    }
   >
-    <CalendarClock className="h-3 w-3" style={{ color: startDateDisplay.borderColor }} />
+    <CalendarClock className="h-3 w-3" />
     {startDateDisplay.text}
-  </span>
+  </TaskItemBadge>
 );

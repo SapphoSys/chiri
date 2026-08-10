@@ -1,7 +1,7 @@
 import { Select } from '$components/Select';
 import { DATE_FORMAT_OPTIONS, WEEK_START_OPTIONS } from '$constants/settings';
 import { useSettingsStore } from '$context/settingsContext';
-import type { DateFormat, StartOfWeek } from '$types/preference';
+import type { DateFormat, StartOfWeek } from '$types/settings/categories/region';
 
 export const RegionAndTimeSettings = () => {
   const { startOfWeek, setStartOfWeek, timeFormat, setTimeFormat, dateFormat, setDateFormat } =

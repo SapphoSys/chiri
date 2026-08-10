@@ -4,10 +4,11 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
+import { settingsStore } from '$context/settingsContext';
+import { requestSelectedTaskTitleAutofocus } from '$hooks/queries/useUIState';
 import { db } from '$lib/database';
 import { queryKeys } from '$lib/queryClient';
 import { dataStore } from '$lib/store';
-import { getFilteredTasks, getSortedTasks } from '$lib/store/filters';
 import { addReminder, removeReminder, updateReminder } from '$lib/store/reminders';
 import { reorderTaskList, reorderTasks } from '$lib/store/reorder/tasks';
 import {
@@ -17,6 +18,8 @@ import {
   deleteTask,
   getAllTasks,
   getChildTasks,
+  getFilteredTasks,
+  getSortedTasks,
   getTaskById,
   permanentlyDeleteTask,
   removeTagFromTask,
@@ -24,8 +27,10 @@ import {
   toggleTaskComplete,
   updateTask,
 } from '$lib/store/tasks';
-import type { Task } from '$types';
-import type { FlattenedTask } from '$types/store';
+import { buildStatusUpdates, getTaskStatusAfterCompletionToggle } from '$lib/task/status';
+import type { FlattenedTask } from '$types/store/tasks';
+import type { TaskCreationOptions } from '$types/task/creation';
+import type { Task } from '$types/task/model';
 
 const dateTime = (date: Date | undefined) => date?.getTime();
 
@@ -48,7 +53,7 @@ const hasReorderPersistenceChange = (before: Task | undefined, after: Task) => {
  */
 export const useChildTasks = (parentUid: string, filter: ChildTaskFilter = 'all') => {
   return useQuery({
-    queryKey: [...queryKeys.tasks.all, 'children', parentUid, filter] as const,
+    queryKey: queryKeys.tasks.children(parentUid, filter),
     queryFn: () => getSortedTasks(getChildTasks(parentUid, filter)),
     staleTime: Infinity,
   });
@@ -69,6 +74,7 @@ export const useTasks = () => {
   return useQuery({
     queryKey: queryKeys.tasks.all,
     queryFn: () => getAllTasks(),
+    initialData: getAllTasks,
     staleTime: Infinity, // Data is managed by our data layer
   });
 };
@@ -81,12 +87,12 @@ export const useFilteredTasks = () => {
 
   useEffect(() => {
     return dataStore.subscribe(() => {
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
     });
   }, [queryClient]);
 
   return useQuery({
-    queryKey: ['filteredTasks'],
+    queryKey: queryKeys.filteredTasks,
     queryFn: () => getFilteredTasks(),
     staleTime: Infinity,
   });
@@ -95,13 +101,22 @@ export const useFilteredTasks = () => {
 /**
  * hook to create a task
  */
-export const useCreateTask = () => {
+export const useCreateTask = (
+  historyField: 'created' | 'imported' = 'created',
+  creationOptions: TaskCreationOptions = {},
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (taskInput: Partial<Task>) => {
-      const task = createTask(taskInput);
-      await db.logTaskChange(task.uid, 'created', null, task.title);
+      const task = createTask(
+        taskInput,
+        creationOptions,
+        creationOptions.selectCreatedTask
+          ? (createdTask) => requestSelectedTaskTitleAutofocus(createdTask.id)
+          : undefined,
+      );
+      await db.logTaskChange(task.uid, historyField, null, task.title);
       if (task.parentUid) {
         await db.logTaskChange(task.parentUid, 'subtask', null, task.title);
       }
@@ -110,10 +125,12 @@ export const useCreateTask = () => {
     onSuccess: (newTask) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       if (newTask?.uid) {
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', newTask.uid] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.taskHistory.byTask(newTask.uid) });
       }
       if (newTask?.parentUid) {
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', newTask.parentUid] });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.taskHistory.byTask(newTask.parentUid),
+        });
       }
     },
   });
@@ -138,7 +155,7 @@ export const useUpdateTask = () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.byId(id) });
       if (updatedTask?.uid) {
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', updatedTask.uid] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.taskHistory.byTask(updatedTask.uid) });
       }
     },
   });
@@ -167,11 +184,11 @@ export const useBatchUpdateTasks = () => {
     },
     onSuccess: (updatedTasks) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
 
       for (const task of updatedTasks) {
         queryClient.invalidateQueries({ queryKey: queryKeys.tasks.byId(task.id) });
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', task.uid] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.taskHistory.byTask(task.uid) });
       }
     },
   });
@@ -195,7 +212,9 @@ export const useDeleteTask = () => {
     onSuccess: (deletedTask) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       if (deletedTask?.parentUid) {
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', deletedTask.parentUid] });
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.taskHistory.byTask(deletedTask.parentUid),
+        });
       }
     },
   });
@@ -220,9 +239,9 @@ export const useRestoreTask = () => {
     },
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
       if (task?.uid) {
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', task.uid] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.taskHistory.byTask(task.uid) });
       }
     },
   });
@@ -242,9 +261,9 @@ export const usePermanentDeleteTask = () => {
     },
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.filteredTasks });
       if (task?.parentUid) {
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', task.parentUid] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.taskHistory.byTask(task.parentUid) });
       }
     },
   });
@@ -253,27 +272,32 @@ export const usePermanentDeleteTask = () => {
 /**
  * hook to toggle task completion
  */
-export const useToggleTaskComplete = () => {
+export const useToggleTaskComplete = (options: { completeInProcess?: boolean } = {}) => {
   const queryClient = useQueryClient();
+  const { completeInProcess = false } = options;
 
   return useMutation({
     mutationFn: async (id: string) => {
       const task = getTaskById(id);
       if (!task) return task;
-      const newStatus =
-        task.status === 'completed' || task.status === 'cancelled' || task.status === 'in-process'
-          ? 'needs-action'
-          : 'completed';
-      toggleTaskComplete(id);
-      await db.logHistoryForTaskUpdate(task.uid, task, {
-        status: newStatus,
-      });
+      const newStatus = getTaskStatusAfterCompletionToggle(task.status, completeInProcess);
+      toggleTaskComplete(id, completeInProcess);
+      await db.logHistoryForTaskUpdate(
+        task.uid,
+        task,
+        buildStatusUpdates(
+          newStatus,
+          task,
+          new Date(),
+          settingsStore.getState().syncStatusProgress,
+        ),
+      );
       return task;
     },
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       if (task?.uid) {
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', task.uid] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.taskHistory.byTask(task.uid) });
       }
     },
   });
@@ -307,7 +331,7 @@ export const useReorderTasks = () => {
       };
 
       queryClient.setQueryData<Task[]>(queryKeys.tasks.all, reorderCachedTasks);
-      queryClient.setQueryData<Task[]>(['filteredTasks'], reorderCachedTasks);
+      queryClient.setQueryData<Task[]>(queryKeys.filteredTasks, reorderCachedTasks);
     },
     mutationFn: async ({
       activeId,
@@ -351,10 +375,10 @@ export const useReorderTasks = () => {
     onSuccess: ({ oldParentUid, newParentUid }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       if (oldParentUid) {
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', oldParentUid] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.taskHistory.byTask(oldParentUid) });
       }
       if (newParentUid) {
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', newParentUid] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.taskHistory.byTask(newParentUid) });
       }
     },
   });
@@ -376,7 +400,7 @@ export const useAddTagToTask = () => {
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       if (task?.uid) {
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', task.uid] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.taskHistory.byTask(task.uid) });
       }
     },
   });
@@ -398,7 +422,7 @@ export const useRemoveTagFromTask = () => {
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       if (task?.uid) {
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', task.uid] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.taskHistory.byTask(task.uid) });
       }
     },
   });
@@ -420,7 +444,7 @@ export const useAddReminder = () => {
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       if (task?.uid) {
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', task.uid] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.taskHistory.byTask(task.uid) });
       }
     },
   });
@@ -442,7 +466,7 @@ export const useRemoveReminder = () => {
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       if (task?.uid) {
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', task.uid] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.taskHistory.byTask(task.uid) });
       }
     },
   });
@@ -472,7 +496,7 @@ export const useUpdateReminder = () => {
     onSuccess: (task) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
       if (task?.uid) {
-        queryClient.invalidateQueries({ queryKey: ['taskHistory', task.uid] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.taskHistory.byTask(task.uid) });
       }
     },
   });

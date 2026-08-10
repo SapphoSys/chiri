@@ -8,16 +8,15 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { log } from '$lib/caldav/utils';
 import { base64UrlEncode, generateWebPushKeyPair } from '$lib/push/keys';
-import type { Calendar } from '$types';
-import {
-  NTFY_DIRECT_PROVIDER_ID,
-  type NtfyProviderConfig,
-  type PushEndpointSubscription,
-  type PushMessageHandler,
-  type PushProviderSubscriptionDiagnostics,
-  type PushSubscription,
-  type WebPushKeyPair,
-} from '$types/push';
+import type { Calendar } from '$types/calendar';
+import type { PushProviderSubscriptionDiagnostics } from '$types/push/diagnostics';
+import type { NtfyProviderConfig, PushMessageHandler } from '$types/push/providers';
+import { NTFY_DIRECT_PROVIDER_ID } from '$types/push/providers';
+import type {
+  PushEndpointSubscription,
+  PushSubscription,
+  WebPushKeyPair,
+} from '$types/push/webdav';
 
 export const DEFAULT_NTFY_SERVER_URL = 'https://ntfy.sh';
 const DEFAULT_NTFY_PROVIDER_CONFIG: NtfyProviderConfig = {

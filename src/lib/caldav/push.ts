@@ -11,7 +11,7 @@
 
 import { log } from '$lib/caldav/utils';
 import { type CalDAVCredentials, tauriRequest } from '$lib/http';
-import type { PushRegistration, PushTrigger, WebPushSubscription } from '$types/push';
+import type { PushRegistration, PushTrigger, WebPushSubscription } from '$types/push/webdav';
 
 // WebDAV Push XML namespace
 export const NS_WEBDAV_PUSH = 'https://bitfire.at/webdav-push';
