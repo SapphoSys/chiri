@@ -326,7 +326,6 @@ jobs:
     name: Publish to WinGet
     needs:
       - version-metadata
-      - finalize
     if: (github.event_name == 'release' || inputs.publish-winget == true) && vars.WINGET_ENABLED == 'true'
     runs-on: ubuntu-latest
     steps:
