@@ -49,6 +49,7 @@ export const TaskDefaultsSettingsStatusSection = () => {
     defaultPercentComplete,
     setDefaultPercentComplete,
     syncStatusProgress,
+    useAccentColorForCheckboxes,
   } = useSettingsStore();
 
   const handleStatusChange = (status: Status) => {
@@ -112,8 +113,10 @@ export const TaskDefaultsSettingsStatusSection = () => {
                 onClick={() => handleStatusChange(value as Status)}
                 className={`flex items-center gap-2 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
                   defaultStatus === value
-                    ? activeClass
-                    : `border-surface-300 text-surface-600 ${hoverBorderColor} hover:bg-surface-50 hover:text-surface-700 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-300`
+                    ? value === 'completed' && useAccentColorForCheckboxes
+                      ? 'border-primary-ink bg-primary-500/15 text-surface-900 dark:text-surface-100'
+                      : activeClass
+                    : `border-surface-300 text-surface-600 ${value === 'completed' && useAccentColorForCheckboxes ? 'hover:border-primary-ink/70' : hoverBorderColor} hover:bg-surface-50 hover:text-surface-700 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-300`
                 }`}
               >
                 <Icon className="h-4 w-4 shrink-0" />

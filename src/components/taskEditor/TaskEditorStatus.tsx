@@ -8,12 +8,14 @@ import type { Status, Task } from '$types/task/model';
 interface TaskEditorStatusProps {
   task: Task;
   onStatusChange: (status: Status) => void;
+  useAccentColorForCheckboxes: boolean;
   readOnly?: boolean;
 }
 
 export const TaskEditorStatus = ({
   task,
   onStatusChange,
+  useAccentColorForCheckboxes,
   readOnly = false,
 }: TaskEditorStatusProps) => {
   return (
@@ -65,15 +67,22 @@ export const TaskEditorStatus = ({
         ).map((s) => {
           const Icon = s.icon;
           const isActive = task.status === s.value;
+          const activeClass =
+            s.value === 'completed' && useAccentColorForCheckboxes
+              ? 'border-primary-ink bg-primary-500/15 text-surface-900 dark:text-surface-100'
+              : `${s.borderColor} ${s.bgColor} text-surface-900 dark:text-surface-100`;
+          const hoverBorderColor =
+            s.value === 'completed' && useAccentColorForCheckboxes
+              ? 'hover:border-primary-ink/70'
+              : s.hoverBorderColor;
+          const inactiveClass = `border-surface-200 text-surface-600 dark:border-surface-700 dark:text-surface-400 ${readOnly ? 'opacity-60' : `${hoverBorderColor} hover:bg-surface-50 hover:text-surface-700 dark:hover:bg-surface-800 dark:hover:text-surface-300`}`;
           return (
             <button
               type="button"
               key={s.value}
               onClick={() => onStatusChange(s.value)}
               disabled={readOnly}
-              className={`flex items-center gap-2 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${readOnly ? 'disabled:cursor-not-allowed' : ''}
-                  ${isActive ? `${s.borderColor} ${s.bgColor} text-surface-900 dark:text-surface-100` : `border-surface-200 text-surface-600 dark:border-surface-700 dark:text-surface-400 ${readOnly ? 'opacity-60' : `${s.hoverBorderColor} hover:bg-surface-50 hover:text-surface-700 dark:hover:bg-surface-800 dark:hover:text-surface-300`}`}
-                `}
+              className={`flex items-center gap-2 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${readOnly ? 'disabled:cursor-not-allowed' : ''} ${isActive ? activeClass : inactiveClass}`}
             >
               <Icon className="h-4 w-4 shrink-0" />
               <span>{s.label}</span>

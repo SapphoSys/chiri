@@ -83,6 +83,7 @@ export const TaskEditorFields = ({
         <TaskEditorStatus
           task={task}
           onStatusChange={actions.handleStatusChange}
+          useAccentColorForCheckboxes={useAccentColorForCheckboxes}
           readOnly={isReadOnly}
         />
       ) : null,
