@@ -12,7 +12,7 @@ body:
     id: version
     attributes:
       label: Chiri version
-      description: Found in Settings → About, or the title bar.
+      description: Found in Settings → About.
       placeholder: "e.g. 0.8.1"
     validations:
       required: true
