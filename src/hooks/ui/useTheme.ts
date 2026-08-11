@@ -24,10 +24,10 @@ export const useTheme = () => {
 
     const scheme = COLOR_SCHEMES.find((s) => s.id === colorScheme);
     const effectiveMode = resolveEffectiveTheme(theme);
-    if (scheme && scheme.flavors.length > 0) {
+    if (scheme && scheme.id !== DEFAULT_COLOR_SCHEME_ID && scheme.flavors.length > 0) {
       const currentFlavor = scheme.flavors.find((f) => f.id === colorSchemeFlavor);
 
-      if (currentFlavor && currentFlavor.mode !== effectiveMode) {
+      if (!currentFlavor || currentFlavor.mode !== effectiveMode) {
         const compatible = scheme.flavors.find((f) => f.mode === effectiveMode);
         if (compatible) {
           // pass the compatible flavor's defaultAccent as the fallback so that
@@ -49,12 +49,20 @@ export const useTheme = () => {
         const currentScheme = COLOR_SCHEMES.find((s) => s.id === colorScheme);
         const currentFlavor = currentScheme?.flavors.find((f) => f.id === colorSchemeFlavor);
 
-        if (currentScheme && currentFlavor && currentFlavor.mode !== nextMode) {
+        if (
+          currentScheme &&
+          currentScheme.id !== DEFAULT_COLOR_SCHEME_ID &&
+          currentScheme.flavors.length > 0 &&
+          (!currentFlavor || currentFlavor.mode !== nextMode)
+        ) {
           const compatible = currentScheme.flavors.find((f) => f.mode === nextMode);
           if (compatible) {
             setColorScheme(colorScheme, compatible.id, compatible.defaultAccent);
             return;
           }
+
+          setColorScheme(DEFAULT_COLOR_SCHEME_ID, null);
+          return;
         }
 
         applyColorScheme(colorScheme, colorSchemeFlavor, nextMode);
