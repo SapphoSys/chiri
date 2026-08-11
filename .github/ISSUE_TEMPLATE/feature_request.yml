@@ -1,7 +1,7 @@
 name: Feature Request
 description: Request a new feature for Chiri.
 title: "FR: "
-labels: ["feature request"]
+type: Feature request
 body:
   - type: markdown
     attributes:

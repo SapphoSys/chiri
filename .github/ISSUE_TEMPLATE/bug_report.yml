@@ -1,7 +1,7 @@
 name: Bug Report
 description: Something isn't working correctly in Chiri.
 title: "Bug: "
-labels: ["bug"]
+type: Bug
 body:
   - type: markdown
     attributes:

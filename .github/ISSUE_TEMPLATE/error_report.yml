@@ -1,7 +1,7 @@
 name: Error Report
 description: Report a startup or runtime error in Chiri.
 title: "Error: "
-labels: ["bug"]
+type: Bug
 body:
   - type: markdown
     attributes:

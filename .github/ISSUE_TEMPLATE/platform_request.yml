@@ -1,7 +1,7 @@
 name: Platform / Distribution Request
 description: Request support for a new platform or distribution format.
 title: "PR: "
-labels: ["platform request"]
+type: Platform request
 body:
   - type: markdown
     attributes:

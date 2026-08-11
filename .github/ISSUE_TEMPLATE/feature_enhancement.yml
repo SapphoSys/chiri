@@ -1,7 +1,7 @@
 name: Feature Enhancement
 description: Suggest an improvement to existing functionality in Chiri.
 title: "FE: "
-labels: ["feature enhancement"]
+type: Feature enhancement
 body:
   - type: markdown
     attributes:
