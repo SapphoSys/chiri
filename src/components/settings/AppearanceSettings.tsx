@@ -136,7 +136,7 @@ export const AppearanceSettings = () => {
         <label className="flex cursor-pointer items-center justify-between gap-4 p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">
-              Use accent color for completed checkboxes
+              Use accent color for completed task checkboxes
             </p>
             <p className="text-surface-500 text-xs dark:text-surface-400">
               Completed tasks use your selected accent
