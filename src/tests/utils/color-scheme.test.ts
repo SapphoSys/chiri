@@ -13,6 +13,7 @@ describe('getAppearanceColorState', () => {
     const schemeIds = schemeOptions.map((option) => option.id);
 
     expect(schemeIds).not.toContain('nord');
+    expect(schemeIds).not.toContain('everforest');
     expect(schemeIds).toContain('tokyo-night');
   });
 
@@ -24,6 +25,9 @@ describe('getAppearanceColorState', () => {
       colorSchemeFlavor: null,
     });
 
-    expect(schemeOptions.map((option) => option.id)).toContain('nord');
+    const schemeIds = schemeOptions.map((option) => option.id);
+
+    expect(schemeIds).toContain('nord');
+    expect(schemeIds).toContain('everforest');
   });
 });
