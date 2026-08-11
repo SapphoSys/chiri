@@ -82,11 +82,15 @@ Free code signing on Windows is graciously provided by [<span aria-hidden="true"
 [<img src="./.github/assets/download/macos_dmg_applesilicon.png" width="200">][release-macos-dmg-applesilicon]
 [<img src="./.github/assets/download/macos_dmg_intel.png" width="200">][release-macos-dmg-intel]
 
+---
+
 ### Method 2: via Homebrew
 
 ```bash
 brew install --cask chiri
 ```
+
+---
 
 ### Method 3: via Nix (nix-darwin)
 Chiri is available via nixpkgs.
@@ -113,6 +117,8 @@ yay -S chiri-bin  # (pre-built binary)
 ---
 
 ### Debian (.deb)
+Chiri is available for Debian-based systems as a direct package via GitHub releases.
+
 [<img src="./.github/assets/download/linux_deb_x86_64.png" width="200">][release-linux-deb-x86_64]
 [<img src="./.github/assets/download/linux_deb_arm.png" width="200">][release-linux-deb-arm]
 
