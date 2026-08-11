@@ -106,6 +106,14 @@ Chiri is available via nixpkgs.
 ```
 
 ## Linux
+### AppImage
+Chiri is available as an AppImage via GitHub releases.
+
+[<img src="./.github/assets/download/linux_appimage_x86_64.png" width="200">][release-linux-appimage-x86_64]
+[<img src="./.github/assets/download/linux_appimage_arm.png" width="200">][release-linux-appimage-arm]
+
+---
+
 ### Arch Linux
 Chiri is available on the AUR (Arch User Repository).
 
@@ -185,6 +193,8 @@ Found a security issue? Please report it privately. See [<span aria-hidden="true
 [release-macos-dmg-applesilicon]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_aarch64.dmg
 [release-macos-dmg-intel]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_x64.dmg
 
+[release-linux-appimage-x86_64]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_aarch64.AppImage
+[release-linux-appimage-arm]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_amd64.AppImage
 [release-linux-deb-x86_64]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_amd64.deb
 [release-linux-deb-arm]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_arm64.deb
 [release-linux-rpm-x86_64]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri-0.9.2-1.x86_64.rpm
