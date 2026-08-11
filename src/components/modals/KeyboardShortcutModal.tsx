@@ -163,14 +163,14 @@ export const KeyboardShortcutModal = ({
             hasShortcutError
               ? 'border-semantic-error border-dashed focus:border-semantic-error'
               : isRecording
-                ? 'border-primary-500 border-dashed focus:border-primary-500'
-                : 'border-surface-200 border-dashed hover:border-surface-300 focus:border-primary-500 dark:border-surface-700 dark:hover:border-surface-600'
+                ? 'border-primary-ink border-dashed focus:border-primary-ink'
+                : 'border-surface-200 border-dashed hover:border-surface-300 focus:border-primary-ink dark:border-surface-700 dark:hover:border-surface-600'
           }`}
           aria-label="Press keys to set shortcut"
         >
           {isRecording && (
             <span
-              className="absolute top-2 right-3 inline-flex items-center gap-1.5 font-medium text-[11px] text-primary-600 dark:text-primary-400"
+              className="absolute top-2 right-3 inline-flex items-center gap-1.5 font-medium text-[11px] text-primary-ink dark:text-primary-400"
               aria-live="polite"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-primary-500" />
@@ -186,7 +186,7 @@ export const KeyboardShortcutModal = ({
                     <kbd
                       className={`rounded-lg px-3 py-2 font-mono text-sm shadow-xs ${
                         pendingShortcut
-                          ? 'border-2 border-primary-500 bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100'
+                          ? 'border-2 border-primary-ink bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100'
                           : 'border border-surface-300 bg-surface-100 text-surface-700 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-300'
                       }`}
                     >

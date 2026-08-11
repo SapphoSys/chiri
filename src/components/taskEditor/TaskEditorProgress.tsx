@@ -52,7 +52,7 @@ export const TaskEditorProgress = ({
   return (
     <div
       ref={containerRef}
-      className={`rounded-lg ring-2 ring-transparent transition-colors ${isHighlightVisible ? 'bg-primary-50/60 ring-primary-500 dark:bg-primary-900/20' : ''}`}
+      className={`rounded-lg ring-2 ring-transparent transition-colors ${isHighlightVisible ? 'bg-primary-50/60 ring-primary-ink dark:bg-primary-900/20' : ''}`}
     >
       <label
         htmlFor="task-percent-complete"

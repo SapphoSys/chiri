@@ -59,7 +59,7 @@ export const TaskEditorDescription = ({ task, readOnly = false }: DescriptionPro
           onChange={handleDescriptionChange}
           placeholder="Add a description..."
           rows={4}
-          className="w-full resize-none rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-700 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-800 dark:text-surface-300 dark:focus:bg-surface-800"
+          className="w-full resize-none rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-700 transition-colors focus:border-primary-ink focus:bg-white focus:outline-hidden dark:bg-surface-800 dark:text-surface-300 dark:focus:bg-surface-800"
         />
       )}
     </div>

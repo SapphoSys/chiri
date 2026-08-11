@@ -146,7 +146,7 @@ export const ThirdPartyLicensesModal = ({ onClose }: ThirdPartyLicensesModalProp
               onChange={(event) => setSearchQuery(event.target.value)}
               placeholder="Search dependencies..."
               aria-label="Search dependencies"
-              className="w-full rounded-lg border border-transparent bg-surface-100 py-2 pr-9 pl-9 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+              className="w-full rounded-lg border border-transparent bg-surface-100 py-2 pr-9 pl-9 text-sm text-surface-800 transition-colors focus:border-primary-ink focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
             />
             {searchQuery && (
               <button
@@ -165,7 +165,7 @@ export const ThirdPartyLicensesModal = ({ onClose }: ThirdPartyLicensesModalProp
               type="checkbox"
               checked={onlyDirect}
               onChange={(event) => setOnlyDirect(event.target.checked)}
-              className="h-4 w-4 rounded border-surface-300 text-primary-500 focus:ring-primary-500 dark:border-surface-600"
+              className="h-4 w-4 rounded border-surface-300 text-primary-ink focus:ring-primary-ink dark:border-surface-600"
             />
             Show direct dependencies only
           </label>
@@ -177,7 +177,7 @@ export const ThirdPartyLicensesModal = ({ onClose }: ThirdPartyLicensesModalProp
                   type="button"
                   key={`${license.ecosystem}:${license.name}:${license.version}`}
                   onClick={() => setSelectedLicense(license)}
-                  className="group flex w-full items-center gap-2 px-4 py-3 text-left outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-700/60"
+                  className="group flex w-full items-center gap-2 px-4 py-3 text-left outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:hover:bg-surface-700/60"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex min-w-0 items-center gap-1">

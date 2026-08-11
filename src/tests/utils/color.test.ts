@@ -124,10 +124,22 @@ describe('getContrastTextColor', () => {
 
 describe('applyAccentColor', () => {
   it('anchors primary-500 to the exact selected accent color', () => {
-    applyAccentColor('#f085cc');
+    applyAccentColor('#f085cc', 'light');
 
     expect(document.documentElement.style.getPropertyValue('--primary-rgb-500')).toBe(
       '240 133 204',
     );
+  });
+
+  it('derives a darker ink color for light mode', () => {
+    applyAccentColor('#f085cc', 'light');
+
+    expect(document.documentElement.style.getPropertyValue('--primary-ink')).toBe('#d8229b');
+  });
+
+  it('keeps the selected accent as ink in dark mode', () => {
+    applyAccentColor('#f085cc', 'dark');
+
+    expect(document.documentElement.style.getPropertyValue('--primary-ink')).toBe('#f085cc');
   });
 });

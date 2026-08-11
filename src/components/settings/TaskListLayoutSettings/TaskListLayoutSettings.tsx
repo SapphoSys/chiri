@@ -11,7 +11,7 @@ const DENSITY_OPTIONS: { value: TaskListDensity; label: string; icon: ReactNode 
 ];
 
 const SWITCHER_CLASS =
-  'flex flex-1 items-center justify-center gap-2 px-4 py-2 rounded-lg border text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset';
+  'flex flex-1 items-center justify-center gap-2 px-4 py-2 rounded-lg border text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset';
 const SWITCHER_ACTIVE =
   'border-surface-300 dark:border-surface-500 bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100';
 const SWITCHER_INACTIVE =

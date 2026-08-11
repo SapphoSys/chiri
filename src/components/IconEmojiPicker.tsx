@@ -50,9 +50,9 @@ export const IconEmojiPicker = ({
         <button
           type="button"
           onClick={() => setActiveTab('icon')}
-          className={`flex-1 px-4 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+          className={`flex-1 px-4 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
             activeTab === 'icon'
-              ? 'border-primary-500 border-b-2 text-primary-500'
+              ? 'border-primary-ink border-b-2 text-primary-ink'
               : 'text-surface-600 hover:text-surface-800 dark:text-surface-400 dark:hover:text-surface-200'
           }`}
         >
@@ -61,9 +61,9 @@ export const IconEmojiPicker = ({
         <button
           type="button"
           onClick={() => setActiveTab('emoji')}
-          className={`flex-1 px-4 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+          className={`flex-1 px-4 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
             activeTab === 'emoji'
-              ? 'border-primary-500 border-b-2 text-primary-500'
+              ? 'border-primary-ink border-b-2 text-primary-ink'
               : 'text-surface-600 hover:text-surface-800 dark:text-surface-400 dark:hover:text-surface-200'
           }`}
         >
@@ -87,7 +87,7 @@ export const IconEmojiPicker = ({
                 placeholder="Search..."
                 value={iconSearch}
                 onChange={(e) => setIconSearch(e.target.value)}
-                className="w-full appearance-none rounded-md border border-transparent bg-surface-100 py-2 pr-2.5 pl-8 text-sm text-surface-800 transition-colors placeholder:text-surface-400 focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                className="w-full appearance-none rounded-md border border-transparent bg-surface-100 py-2 pr-2.5 pl-8 text-sm text-surface-800 transition-colors placeholder:text-surface-400 focus:border-primary-ink focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
               />
             </div>
           </div>
@@ -111,7 +111,7 @@ export const IconEmojiPicker = ({
                         onEmojiChange(''); // Clear emoji when selecting icon
                         setIsOpen(false);
                       }}
-                      className="flex h-8 w-full cursor-pointer items-center justify-center rounded-lg text-surface-600 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
+                      className="flex h-8 w-full cursor-pointer items-center justify-center rounded-lg text-surface-600 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
                     >
                       <Icon className="h-4 w-4" />
                     </button>
@@ -142,7 +142,7 @@ export const IconEmojiPicker = ({
                 <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-surface-400" />
                 <EmojiPicker.Search
                   placeholder="Search..."
-                  className="w-full appearance-none rounded-md border border-transparent bg-surface-100 py-2 pr-2.5 pl-8 text-sm text-surface-800 transition-colors placeholder:text-surface-400 focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                  className="w-full appearance-none rounded-md border border-transparent bg-surface-100 py-2 pr-2.5 pl-8 text-sm text-surface-800 transition-colors placeholder:text-surface-400 focus:border-primary-ink focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                 />
               </div>
             </div>
@@ -173,7 +173,7 @@ export const IconEmojiPicker = ({
                   Emoji: ({ emoji, ...props }) => (
                     <button
                       type="button"
-                      className="flex h-8 max-w-1/9 flex-1 items-center justify-center rounded-lg text-lg outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-700"
+                      className="flex h-8 max-w-1/9 flex-1 items-center justify-center rounded-lg text-lg outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:hover:bg-surface-700"
                       {...props}
                     >
                       {emoji.emoji}
@@ -214,9 +214,9 @@ export const IconEmojiPicker = ({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
-        className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border text-surface-600 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-300 ${
+        className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border text-surface-600 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink dark:text-surface-300 ${
           isOpen
-            ? 'border-primary-500 bg-primary-500/10 ring-2 ring-primary-500/30 dark:bg-primary-500/15'
+            ? 'border-primary-ink bg-primary-500/10 ring-2 ring-primary-ink/30 dark:bg-primary-500/15'
             : 'border-surface-200 bg-surface-50 hover:border-surface-300 dark:border-surface-600 dark:bg-surface-700 dark:hover:border-surface-500'
         }`}
         style={color ? { color } : undefined}

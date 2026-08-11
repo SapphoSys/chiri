@@ -40,7 +40,7 @@ export const Select = ({ className = '', children, onMouseDown, ...props }: AppS
   return (
     <div className={`relative ${isFullWidth ? 'block w-full' : 'inline-flex items-center'}`}>
       <select
-        className={`appearance-none rounded-md px-3 py-0.5 pr-7 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 ${sanitizedClassName}`}
+        className={`appearance-none rounded-md px-3 py-0.5 pr-7 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink ${sanitizedClassName}`}
         onMouseDown={handleMouseDown}
         {...props}
       >

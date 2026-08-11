@@ -10,7 +10,7 @@ export const BrowserAuthStep = ({ providerName, phase }: BrowserAuthStepProps) =
   if (phase === 'validating') {
     return (
       <div className="py-8 text-center">
-        <Loader2 className="mx-auto mb-3 h-10 w-10 text-primary-500 motion-safe:animate-spin" />
+        <Loader2 className="mx-auto mb-3 h-10 w-10 text-primary-ink motion-safe:animate-spin" />
         <h3 className="mb-1 font-medium text-base text-surface-800 dark:text-surface-200">
           Validating server...
         </h3>
@@ -24,7 +24,7 @@ export const BrowserAuthStep = ({ providerName, phase }: BrowserAuthStepProps) =
   if (phase === 'browser') {
     return (
       <div className="py-8 text-center">
-        <Loader2 className="mx-auto mb-3 h-10 w-10 text-primary-500 motion-safe:animate-spin" />
+        <Loader2 className="mx-auto mb-3 h-10 w-10 text-primary-ink motion-safe:animate-spin" />
         <h3 className="mb-1 font-medium text-base text-surface-800 dark:text-surface-200">
           Waiting for authorization...
         </h3>
@@ -38,7 +38,7 @@ export const BrowserAuthStep = ({ providerName, phase }: BrowserAuthStepProps) =
   if (phase === 'connecting') {
     return (
       <div className="py-8 text-center">
-        <Loader2 className="mx-auto mb-3 h-10 w-10 text-primary-500 motion-safe:animate-spin" />
+        <Loader2 className="mx-auto mb-3 h-10 w-10 text-primary-ink motion-safe:animate-spin" />
         <h3 className="mb-1 font-medium text-base text-surface-800 dark:text-surface-200">
           Setting up your account...
         </h3>
@@ -50,7 +50,7 @@ export const BrowserAuthStep = ({ providerName, phase }: BrowserAuthStepProps) =
   if (phase === 'done') {
     return (
       <div className="py-8 text-center">
-        <Loader2 className="mx-auto mb-3 h-10 w-10 text-primary-500 motion-safe:animate-spin" />
+        <Loader2 className="mx-auto mb-3 h-10 w-10 text-primary-ink motion-safe:animate-spin" />
         <h3 className="mb-1 font-medium text-base text-surface-800 dark:text-surface-200">
           Finishing up...
         </h3>

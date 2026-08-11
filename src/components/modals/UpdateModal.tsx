@@ -177,7 +177,7 @@ export const UpdateModal = ({
                   <div className="relative max-h-44 overflow-hidden">
                     <div
                       ref={contentRef}
-                      className="prose prose-sm dark:prose-invert max-w-none text-sm [&_a]:text-primary-600 hover:[&_a]:underline dark:[&_a]:text-primary-400 [&_code]:rounded-sm [&_code]:bg-surface-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs dark:[&_code]:bg-surface-800 [&_h2:first-child]:mt-0 [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:font-semibold [&_h2]:text-sm [&_h2]:text-surface-800 dark:[&_h2]:text-surface-200 [&_h3]:mt-3 [&_h3]:mb-1.5 [&_h3]:font-semibold [&_h3]:text-surface-700 [&_h3]:text-xs dark:[&_h3]:text-surface-300 [&_p]:my-1.5 [&_p]:text-surface-600 dark:[&_p]:text-surface-400 [&_strong]:font-semibold [&_ul]:mt-1.5 [&_ul]:mb-0 [&_ul]:ml-6 [&_ul]:list-outside [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:text-surface-600 dark:[&_ul]:text-surface-400"
+                      className="prose prose-sm dark:prose-invert max-w-none text-sm [&_a]:text-primary-ink hover:[&_a]:underline dark:[&_a]:text-primary-400 [&_code]:rounded-sm [&_code]:bg-surface-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs dark:[&_code]:bg-surface-800 [&_h2:first-child]:mt-0 [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:font-semibold [&_h2]:text-sm [&_h2]:text-surface-800 dark:[&_h2]:text-surface-200 [&_h3]:mt-3 [&_h3]:mb-1.5 [&_h3]:font-semibold [&_h3]:text-surface-700 [&_h3]:text-xs dark:[&_h3]:text-surface-300 [&_p]:my-1.5 [&_p]:text-surface-600 dark:[&_p]:text-surface-400 [&_strong]:font-semibold [&_ul]:mt-1.5 [&_ul]:mb-0 [&_ul]:ml-6 [&_ul]:list-outside [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:text-surface-600 dark:[&_ul]:text-surface-400"
                       // biome-ignore lint/security/noDangerouslySetInnerHtml: Sanitized by Rust backend
                       dangerouslySetInnerHTML={{ __html: changelogHtml }}
                     />
@@ -186,7 +186,7 @@ export const UpdateModal = ({
                   <button
                     type="button"
                     onClick={() => setShowChangelogModal(true)}
-                    className="font-medium text-primary-600 text-xs outline-hidden hover:underline focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-primary-400"
+                    className="font-medium text-primary-ink text-xs outline-hidden hover:underline focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-primary-400"
                   >
                     Show all
                   </button>

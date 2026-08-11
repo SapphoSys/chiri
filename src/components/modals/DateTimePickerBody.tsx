@@ -33,18 +33,18 @@ const CATEGORY_PRESETS: {
 ];
 
 const btnClass = (active: boolean) =>
-  `w-full flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset data-[keyboard-navigation-focus=true]:ring-2 data-[keyboard-navigation-focus=true]:ring-primary-500 data-[keyboard-navigation-focus=true]:ring-inset ${
+  `w-full flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset data-[keyboard-navigation-focus=true]:ring-2 data-[keyboard-navigation-focus=true]:ring-primary-ink data-[keyboard-navigation-focus=true]:ring-inset ${
     active
       ? 'bg-primary-500 text-primary-contrast'
       : 'text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600'
   }`;
 
 const quickDateBtnClass = (matches: boolean, active: boolean, multipleMatches: boolean) =>
-  `w-full flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset data-[keyboard-navigation-focus=true]:ring-2 data-[keyboard-navigation-focus=true]:ring-primary-500 data-[keyboard-navigation-focus=true]:ring-inset ${
+  `w-full flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset data-[keyboard-navigation-focus=true]:ring-2 data-[keyboard-navigation-focus=true]:ring-primary-ink data-[keyboard-navigation-focus=true]:ring-inset ${
     matches && (active || !multipleMatches)
       ? 'bg-primary-500 text-primary-contrast'
       : matches && multipleMatches
-        ? 'bg-primary-500/15 text-primary-500 dark:bg-primary-500/20 dark:text-primary-400'
+        ? 'bg-primary-500/15 text-primary-ink dark:bg-primary-500/20 dark:text-primary-400'
         : 'text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600'
   }`;
 
@@ -56,7 +56,7 @@ const minutesToTimeLabel = (minutes: number) => {
 
 const getDayButtonClass = (selected: boolean, today: boolean, currentMonth: boolean): string => {
   if (selected) return 'bg-primary-500 text-primary-contrast';
-  if (today) return 'bg-primary-500/15 text-primary-500 font-medium';
+  if (today) return 'bg-primary-500/15 text-primary-ink font-medium';
   if (currentMonth)
     return 'text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700';
   return 'text-surface-400 dark:text-surface-600';
@@ -206,7 +206,7 @@ export const DateTimePickerBody = ({
           <button
             type="button"
             onClick={draft.handlePreviousMonth}
-            className="rounded-sm p-1 text-surface-600 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
+            className="rounded-sm p-1 text-surface-600 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -216,7 +216,7 @@ export const DateTimePickerBody = ({
           <button
             type="button"
             onClick={draft.handleNextMonth}
-            className="rounded-sm p-1 text-surface-600 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
+            className="rounded-sm p-1 text-surface-600 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -251,7 +251,7 @@ export const DateTimePickerBody = ({
                   data-calendar-day-time={day.getTime()}
                   style={index === 0 ? { gridColumnStart: draft.startPadding + 1 } : undefined}
                   onClick={() => draft.handleDayClick(day)}
-                  className={`flex h-8 w-8 items-center justify-center rounded-full text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset data-[keyboard-navigation-focus=true]:ring-2 data-[keyboard-navigation-focus=true]:ring-primary-500 data-[keyboard-navigation-focus=true]:ring-inset ${getDayButtonClass(selected, today, currentMonth)}`}
+                  className={`flex h-8 w-8 items-center justify-center rounded-full text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset data-[keyboard-navigation-focus=true]:ring-2 data-[keyboard-navigation-focus=true]:ring-primary-ink data-[keyboard-navigation-focus=true]:ring-inset ${getDayButtonClass(selected, today, currentMonth)}`}
                 >
                   {day.getDate()}
                 </button>

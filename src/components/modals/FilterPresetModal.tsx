@@ -68,7 +68,7 @@ export const FilterPresetModal = ({
                       onCreatePreset(preset);
                       onClose();
                     }}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-not-allowed disabled:text-surface-400 disabled:hover:bg-transparent dark:text-surface-300 dark:disabled:text-surface-500 dark:hover:bg-surface-700 dark:disabled:hover:bg-transparent"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset disabled:cursor-not-allowed disabled:text-surface-400 disabled:hover:bg-transparent dark:text-surface-300 dark:disabled:text-surface-500 dark:hover:bg-surface-700 dark:disabled:hover:bg-transparent"
                   >
                     <PresetIcon className="size-4 shrink-0" style={{ color: accentColor }} />
                     <span className="min-w-0 flex-1 truncate">{preset.name}</span>

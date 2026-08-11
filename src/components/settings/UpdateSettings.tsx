@@ -98,7 +98,7 @@ export const UpdateSettings = () => {
                 type="checkbox"
                 checked={checkForUpdatesAutomatically}
                 onChange={(e) => setCheckForUpdatesAutomatically(e.target.checked)}
-                className="rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                className="rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2"
               />
             </label>
 
@@ -115,7 +115,7 @@ export const UpdateSettings = () => {
                 type="button"
                 onClick={handleManualCheck}
                 disabled={isChecking}
-                className="flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
+                className="flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
               >
                 {isChecking ? (
                   <>
@@ -145,7 +145,7 @@ export const UpdateSettings = () => {
                 type="button"
                 onClick={() => setIsStatusDismissed(true)}
                 aria-label="Dismiss update message"
-                className="-mr-1 rounded-sm p-1 text-semantic-error outline-hidden transition-colors hover:bg-semantic-error/10 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                className="-mr-1 rounded-sm p-1 text-semantic-error outline-hidden transition-colors hover:bg-semantic-error/10 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -163,7 +163,7 @@ export const UpdateSettings = () => {
                 type="button"
                 onClick={() => setIsStatusDismissed(true)}
                 aria-label="Dismiss update message"
-                className="-mr-1 rounded-sm p-1 text-semantic-success outline-hidden transition-colors hover:bg-semantic-success/10 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                className="-mr-1 rounded-sm p-1 text-semantic-success outline-hidden transition-colors hover:bg-semantic-success/10 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -175,7 +175,7 @@ export const UpdateSettings = () => {
       {!isManagedInstallLoading && !isManagedInstall && updateAvailable && (
         <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
           <div className="flex items-start gap-3 p-4">
-            <Download className="mt-0.5 h-5 w-5 shrink-0 text-primary-500" />
+            <Download className="mt-0.5 h-5 w-5 shrink-0 text-primary-ink" />
             <div>
               <p className="font-semibold text-sm text-surface-800 dark:text-surface-200">
                 Update available: {updateAvailable.version}
@@ -214,7 +214,7 @@ export const UpdateSettings = () => {
             <button
               type="button"
               onClick={() => setShowChangelogModal(true)}
-              className="flex items-center gap-2 rounded-lg border border-surface-300 bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
+              className="flex items-center gap-2 rounded-lg border border-surface-300 bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
             >
               <FileText className="h-4 w-4" />
               Changelog
@@ -224,7 +224,7 @@ export const UpdateSettings = () => {
               type="button"
               onClick={downloadAndInstall}
               disabled={isDownloading}
-              className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary-500 px-3 py-1.5 font-medium text-primary-contrast text-sm outline-hidden transition-colors hover:bg-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary-500 px-3 py-1.5 font-medium text-primary-contrast text-sm outline-hidden transition-colors hover:bg-primary-600 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isDownloading ? (
                 <>

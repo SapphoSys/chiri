@@ -19,7 +19,7 @@ const BASE_CLASS_NAME =
 
 const TONE_CLASS_NAMES: Record<BadgeTone, string> = {
   neutral: 'border-surface-400 bg-surface-100 dark:border-surface-600 dark:bg-surface-700',
-  primary: 'border-primary-500 bg-primary-500/15',
+  primary: 'border-primary-ink bg-primary-500/15',
   info: 'border-semantic-info bg-semantic-info/10',
   'due-today': 'border-semantic-due-today bg-semantic-due-today/10',
   warning: 'border-semantic-warning bg-semantic-warning/10',
@@ -58,7 +58,7 @@ export const TaskItemBadge = ({
       {...sharedProps}
       onClick={onClick}
       aria-label={ariaLabel}
-      className={`${sharedProps.className} cursor-pointer outline-hidden transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
+      className={`${sharedProps.className} cursor-pointer outline-hidden transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset`}
     >
       {children}
     </button>

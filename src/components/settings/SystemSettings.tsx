@@ -62,7 +62,7 @@ export const SystemSettings = () => {
       : 'Start Chiri automatically when you sign in';
   const launchAtLoginSpinnerClass =
     autostart.pending && autostart.enabled === true
-      ? 'text-primary-500 dark:text-primary-400'
+      ? 'text-primary-ink dark:text-primary-400'
       : 'text-surface-500 dark:text-surface-400';
   const { isAvailable: isTrayHostAvailable } = useTrayHostAvailability();
   const startHiddenOptionsDisabled = !enableSystemTray || isTrayHostAvailable === false;
@@ -157,7 +157,7 @@ export const SystemSettings = () => {
             checked={autostart.enabled ?? false}
             disabled={launchAtLoginBusy}
             onChange={(e) => autostart.setEnabled(e.target.checked)}
-            className={`shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${launchAtLoginBusy ? 'checkbox-busy' : ''}`}
+            className={`shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${launchAtLoginBusy ? 'checkbox-busy' : ''}`}
           />
         </label>
 
@@ -179,7 +179,7 @@ export const SystemSettings = () => {
                 checked={!showWindowOnLoginLaunch}
                 disabled={startQuietlyAtLoginDisabled}
                 onChange={(e) => setShowWindowOnLoginLaunch(!e.target.checked)}
-                className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+                className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
               />
             </label>
           </div>
@@ -193,7 +193,7 @@ export const SystemSettings = () => {
               <button
                 type="button"
                 onClick={handleOpenLoginItemsSettings}
-                className="inline-flex items-center gap-2 rounded-lg border border-surface-300 bg-surface-100 px-3 py-1.5 text-sm text-surface-800 outline-hidden transition-colors hover:border-surface-400 hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:hover:border-surface-500 dark:hover:bg-surface-600"
+                className="inline-flex items-center gap-2 rounded-lg border border-surface-300 bg-surface-100 px-3 py-1.5 text-sm text-surface-800 outline-hidden transition-colors hover:border-surface-400 hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:hover:border-surface-500 dark:hover:bg-surface-600"
               >
                 Open macOS Settings
               </button>
@@ -223,7 +223,7 @@ export const SystemSettings = () => {
             type="checkbox"
             checked={enableSystemTray}
             onChange={(e) => handleSystemTrayChange(e.target.checked)}
-            className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2"
           />
         </label>
 
@@ -244,7 +244,7 @@ export const SystemSettings = () => {
                   checked={hideDockIconWhenWindowClosed}
                   disabled={!enableSystemTray}
                   onChange={(e) => handleHideDockIconWhenWindowClosedChange(e.target.checked)}
-                  className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50"
+                  className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2 disabled:opacity-50"
                 />
               </label>
             </div>
@@ -276,7 +276,7 @@ export const SystemSettings = () => {
               onChange={(event) =>
                 setWindowDecorationStyle(event.target.value as 'integrated' | 'native')
               }
-              className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-500 focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+              className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-ink focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
             >
               <option value="integrated">Integrated</option>
               <option value="native">Standard</option>
@@ -300,7 +300,7 @@ export const SystemSettings = () => {
               type="checkbox"
               checked={confirmBeforeQuit}
               onChange={(e) => setConfirmBeforeQuit(e.target.checked)}
-              className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+              className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2"
             />
           </label>
         </div>
@@ -315,7 +315,7 @@ export const SystemSettings = () => {
             <button
               type="button"
               onClick={handleRestart}
-              className="shrink-0 rounded-lg bg-primary-500 px-3 py-1.5 font-medium text-primary-contrast text-sm outline-hidden transition-colors hover:bg-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+              className="shrink-0 rounded-lg bg-primary-500 px-3 py-1.5 font-medium text-primary-contrast text-sm outline-hidden transition-colors hover:bg-primary-600 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset"
             >
               Restart now
             </button>
@@ -338,7 +338,7 @@ export const SystemSettings = () => {
               checked={isDesktopFileInstalled === true}
               disabled={isDesktopFileInstalled === null || isTogglingIntegration}
               onChange={() => void handleToggleDesktopIntegration()}
-              className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </label>
         </div>

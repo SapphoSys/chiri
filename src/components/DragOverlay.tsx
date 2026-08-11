@@ -13,7 +13,7 @@ export const DragOverlay = ({ isUnsupportedFile }: DragOverlayProps) => {
         className={`rounded-lg border px-4 py-3 font-medium text-sm shadow-lg ${
           isUnsupportedFile
             ? 'border-semantic-error/30 bg-surface-100/90 text-semantic-error dark:bg-surface-800/90'
-            : 'border-primary-500/30 bg-white/90 text-surface-800 dark:bg-surface-800/90 dark:text-surface-200'
+            : 'border-primary-ink/30 bg-white/90 text-surface-800 dark:bg-surface-800/90 dark:text-surface-200'
         }`}
       >
         {isUnsupportedFile

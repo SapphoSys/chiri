@@ -56,7 +56,7 @@ export const SafetySettings = () => {
               type="checkbox"
               checked={confirmBeforeMoveToRecentlyDeleted}
               onChange={(event) => setConfirmBeforeMoveToRecentlyDeleted(event.target.checked)}
-              className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+              className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2"
             />
           </label>
 
@@ -72,7 +72,7 @@ export const SafetySettings = () => {
               onChange={(event) =>
                 setDeleteSubtasksWithParent(event.target.value as SubtaskDeletionBehavior)
               }
-              className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-500 focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+              className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-ink focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
             >
               <option value="delete">Delete subtasks</option>
               <option value="keep">Keep subtasks</option>
@@ -92,7 +92,7 @@ export const SafetySettings = () => {
               type="checkbox"
               checked={autoEmptyRecentlyDeleted}
               onChange={(event) => setAutoEmptyRecentlyDeleted(event.target.checked)}
-              className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+              className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2"
             />
           </label>
 
@@ -109,7 +109,7 @@ export const SafetySettings = () => {
                     onChange={(event) =>
                       setRecentlyDeletedRetentionDays(Number(event.target.value))
                     }
-                    className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-500 focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                    className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-ink focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                   >
                     {RETENTION_OPTIONS.map((days) => (
                       <option key={days} value={days}>

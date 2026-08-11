@@ -85,10 +85,11 @@ export const useTheme = () => {
       resolveEffectiveTheme(theme),
     );
     const resolved = resolveAccentColor(accentColor, flavor.accentColors);
+    const effectiveMode = resolveEffectiveTheme(theme);
     if (isDefaultScheme) {
-      applyAccentColor(resolved);
+      applyAccentColor(resolved, effectiveMode);
     } else {
-      applySchemeAccentColor(resolved);
+      applySchemeAccentColor(resolved, effectiveMode);
     }
   }, [accentColor, isDefaultScheme, colorScheme, colorSchemeFlavor, theme]);
 

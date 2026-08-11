@@ -106,7 +106,7 @@ export const SyncSettings = () => {
               type="button"
               onClick={requestSync}
               disabled={!hasCalDAVAccounts || isSyncInProgress}
-              className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-surface-700 dark:text-surface-200 dark:hover:bg-surface-600"
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink disabled:cursor-not-allowed disabled:opacity-60 dark:bg-surface-700 dark:text-surface-200 dark:hover:bg-surface-600"
             >
               {isSyncInProgress ? (
                 <Loader2 className="size-4 motion-safe:animate-spin" />
@@ -177,7 +177,7 @@ export const SyncSettings = () => {
               type="checkbox"
               checked={autoSync}
               onChange={(event) => setAutoSync(event.target.checked)}
-              className="shrink-0 rounded border-surface-300 outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-surface-600"
+              className="shrink-0 rounded border-surface-300 outline-none focus:ring-2 focus:ring-primary-ink focus:ring-offset-2 dark:border-surface-600"
             />
           </label>
 
@@ -195,7 +195,7 @@ export const SyncSettings = () => {
               value={syncInterval.toString()}
               onChange={(event) => setSyncInterval(Number(event.target.value))}
               disabled={!autoSync}
-              className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+              className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-ink focus:bg-white disabled:cursor-not-allowed disabled:opacity-60 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
             >
               {SYNC_INTERVAL_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -221,7 +221,7 @@ export const SyncSettings = () => {
               type="checkbox"
               checked={syncOnStartup}
               onChange={(event) => setSyncOnStartup(event.target.checked)}
-              className="shrink-0 rounded border-surface-300 outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-surface-600"
+              className="shrink-0 rounded border-surface-300 outline-none focus:ring-2 focus:ring-primary-ink focus:ring-offset-2 dark:border-surface-600"
             />
           </label>
 
@@ -238,7 +238,7 @@ export const SyncSettings = () => {
               type="checkbox"
               checked={syncOnReconnect}
               onChange={(event) => setSyncOnReconnect(event.target.checked)}
-              className="shrink-0 rounded border-surface-300 outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-surface-600"
+              className="shrink-0 rounded border-surface-300 outline-none focus:ring-2 focus:ring-primary-ink focus:ring-offset-2 dark:border-surface-600"
             />
           </label>
         </div>

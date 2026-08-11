@@ -25,7 +25,7 @@ export const AboutSettingsLinkRow = ({
     type="button"
     onClick={onClick}
     disabled={loading}
-    className="group flex w-full items-center gap-3 px-4 py-3 text-left outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-60 dark:hover:bg-surface-700/60"
+    className="group flex w-full items-center gap-3 px-4 py-3 text-left outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-60 dark:hover:bg-surface-700/60"
   >
     <span className="shrink-0 text-surface-500 dark:text-surface-500">{icon}</span>
 

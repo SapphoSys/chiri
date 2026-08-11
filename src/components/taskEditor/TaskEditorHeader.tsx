@@ -32,7 +32,7 @@ export const TaskEditorHeader = ({
               <button
                 type="button"
                 onClick={onRestore}
-                className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-800 dark:hover:text-surface-300"
+                className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:hover:bg-surface-800 dark:hover:text-surface-300"
                 aria-label="Restore task"
               >
                 <RotateCcw className="h-5 w-5" />
@@ -43,7 +43,7 @@ export const TaskEditorHeader = ({
               <button
                 type="button"
                 onClick={onDeletePermanently}
-                className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-semantic-error/10 hover:text-semantic-error focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-semantic-error/10 hover:text-semantic-error focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset"
                 aria-label="Delete task permanently"
               >
                 <Trash2 className="h-5 w-5" />
@@ -55,7 +55,7 @@ export const TaskEditorHeader = ({
             <button
               type="button"
               onClick={onDelete}
-              className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-semantic-error/10 hover:text-semantic-error focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+              className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-semantic-error/10 hover:text-semantic-error focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset"
               aria-label="Delete task"
             >
               <Trash2 className="h-5 w-5" />
@@ -67,7 +67,7 @@ export const TaskEditorHeader = ({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-800 dark:hover:text-surface-300"
+            className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:hover:bg-surface-800 dark:hover:text-surface-300"
             aria-label="Close editor"
           >
             <X className="h-5 w-5" />

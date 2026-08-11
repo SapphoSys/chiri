@@ -77,7 +77,7 @@ export const TaskDefaultsSettingsTagsSection = () => {
                   <button
                     type="button"
                     onClick={() => handleRemoveTag(tag.id)}
-                    className="rounded-full p-0.5 outline-hidden transition-colors hover:bg-black/10 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-white/10"
+                    className="rounded-full p-0.5 outline-hidden transition-colors hover:bg-black/10 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:hover:bg-white/10"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -87,7 +87,7 @@ export const TaskDefaultsSettingsTagsSection = () => {
             <button
               type="button"
               onClick={() => setShowTagsModal(true)}
-              className="inline-flex items-center gap-1 rounded-sm border border-surface-300 bg-surface-100 px-2.5 py-1.5 text-surface-700 text-xs leading-none outline-hidden transition-colors hover:border-surface-400 hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-300 dark:hover:border-surface-500 dark:hover:bg-surface-700"
+              className="inline-flex items-center gap-1 rounded-sm border border-surface-300 bg-surface-100 px-2.5 py-1.5 text-surface-700 text-xs leading-none outline-hidden transition-colors hover:border-surface-400 hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-300 dark:hover:border-surface-500 dark:hover:bg-surface-700"
             >
               <Plus className="h-3 w-3" />
               Add tag

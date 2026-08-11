@@ -108,7 +108,7 @@ export const MacNotificationCard = ({
             type="button"
             onClick={handleRequestPermission}
             disabled={isCheckingPermission}
-            className="flex items-center gap-2 rounded-lg bg-primary-500 px-3 py-1.5 text-primary-contrast text-sm outline-hidden transition-colors hover:bg-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg bg-primary-500 px-3 py-1.5 text-primary-contrast text-sm outline-hidden transition-colors hover:bg-primary-600 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isCheckingPermission ? 'Waiting for permission...' : 'Request permission'}
           </button>
@@ -117,7 +117,7 @@ export const MacNotificationCard = ({
         <button
           type="button"
           onClick={handleOpenSystemSettings}
-          className="flex items-center gap-2 rounded-lg border border-surface-300 bg-surface-100 px-3 py-1.5 text-sm text-surface-800 outline-hidden transition-colors hover:border-surface-400 hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:hover:border-surface-500 dark:hover:bg-surface-600"
+          className="flex items-center gap-2 rounded-lg border border-surface-300 bg-surface-100 px-3 py-1.5 text-sm text-surface-800 outline-hidden transition-colors hover:border-surface-400 hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:hover:border-surface-500 dark:hover:bg-surface-600"
         >
           Open macOS Settings
         </button>

@@ -22,10 +22,10 @@ interface ActionCardProps {
 }
 
 const primaryButtonClasses =
-  'inline-flex items-center justify-center gap-2 rounded-md border border-transparent bg-primary-500 px-4 py-2 text-sm font-medium text-primary-contrast transition-colors hover:bg-primary-600 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-surface-800';
+  'inline-flex items-center justify-center gap-2 rounded-md border border-transparent bg-primary-500 px-4 py-2 text-sm font-medium text-primary-contrast transition-colors hover:bg-primary-600 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-offset-2 dark:focus-visible:ring-offset-surface-800';
 
 const secondaryButtonClasses =
-  'inline-flex items-center justify-center gap-2 rounded-md border border-surface-200 bg-surface-50 px-4 py-2 text-sm font-medium text-surface-800 transition-colors hover:bg-surface-100 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:border-surface-600 dark:bg-surface-700/60 dark:text-surface-200 dark:hover:bg-surface-700 dark:focus-visible:ring-offset-surface-800';
+  'inline-flex items-center justify-center gap-2 rounded-md border border-surface-200 bg-surface-50 px-4 py-2 text-sm font-medium text-surface-800 transition-colors hover:bg-surface-100 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-offset-2 dark:border-surface-600 dark:bg-surface-700/60 dark:text-surface-200 dark:hover:bg-surface-700 dark:focus-visible:ring-offset-surface-800';
 
 const warningButtonClasses =
   'inline-flex items-center justify-center gap-2 rounded-md border border-transparent bg-semantic-warning px-4 py-2 text-sm font-medium text-surface-900 transition-colors hover:opacity-90 outline-hidden focus-visible:ring-2 focus-visible:ring-semantic-warning focus-visible:ring-offset-2 dark:focus-visible:ring-offset-surface-800';
@@ -34,7 +34,7 @@ const destructiveButtonClasses =
   'inline-flex items-center justify-center gap-2 rounded-md border border-transparent bg-semantic-error px-4 py-2 text-sm font-medium text-primary-contrast transition-colors hover:opacity-90 outline-hidden focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:focus-visible:ring-offset-surface-800';
 
 const cancelButtonClasses =
-  'inline-flex items-center justify-center rounded-md border border-surface-200 bg-white px-4 py-2 text-sm font-medium text-surface-700 transition-colors hover:bg-surface-100 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:border-surface-600 dark:bg-surface-800 dark:text-surface-300 dark:hover:bg-surface-700 dark:focus-visible:ring-offset-surface-800';
+  'inline-flex items-center justify-center rounded-md border border-surface-200 bg-white px-4 py-2 text-sm font-medium text-surface-700 transition-colors hover:bg-surface-100 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-offset-2 dark:border-surface-600 dark:bg-surface-800 dark:text-surface-300 dark:hover:bg-surface-700 dark:focus-visible:ring-offset-surface-800';
 
 const cardClasses =
   'rounded-lg border border-surface-200 bg-white shadow-lg dark:border-surface-700 dark:bg-surface-800';

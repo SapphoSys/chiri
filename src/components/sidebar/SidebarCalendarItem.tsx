@@ -48,7 +48,7 @@ export const SidebarCalendarItem = ({
       data-context-menu
       onClick={onSelect}
       onContextMenu={onContextMenu}
-      className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+      className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
         isActive
           ? 'bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100'
           : `text-surface-600 dark:text-surface-400 ${

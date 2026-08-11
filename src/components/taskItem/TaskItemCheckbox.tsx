@@ -17,7 +17,7 @@ interface TaskItemCheckboxProps {
 }
 
 const checkboxBaseClass =
-  'w-5 h-5 rounded-sm border-2 flex items-center justify-center transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset';
+  'w-5 h-5 rounded-sm border-2 flex items-center justify-center transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset';
 
 const getSelectionClass = (selected: boolean) =>
   selected
@@ -68,7 +68,7 @@ export const TaskItemCheckbox = ({
     if (isCompleted) return `${checkboxBaseClass} ${getCompletedClass(useAccentColor)}`;
     if (isCancelled) return `${checkboxBaseClass} bg-status-cancelled border-status-cancelled`;
     if (isInProcess) return `${checkboxBaseClass} bg-status-in-process border-status-in-process`;
-    return `${checkboxBaseClass} border-surface-400 dark:border-surface-600 hover:border-primary-500 hover:bg-surface-100 dark:hover:bg-surface-700`;
+    return `${checkboxBaseClass} border-surface-400 dark:border-surface-600 hover:border-primary-ink hover:bg-surface-100 dark:hover:bg-surface-700`;
   };
 
   return (

@@ -8,7 +8,7 @@ export const RegionAndTimeSettings = () => {
     useSettingsStore();
 
   const selectClassName =
-    'text-sm border border-transparent bg-surface-100 dark:bg-surface-700 text-surface-800 dark:text-surface-200 rounded-lg outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors shrink-0';
+    'text-sm border border-transparent bg-surface-100 dark:bg-surface-700 text-surface-800 dark:text-surface-200 rounded-lg outline-hidden focus:border-primary-ink focus:bg-white dark:focus:bg-surface-800 transition-colors shrink-0';
 
   return (
     <div className="space-y-4">
@@ -56,7 +56,7 @@ export const RegionAndTimeSettings = () => {
                 key={value}
                 type="button"
                 onClick={() => setTimeFormat(value)}
-                className={`flex items-center rounded-lg border px-3 py-1.5 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                className={`flex items-center rounded-lg border px-3 py-1.5 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
                   timeFormat === value
                     ? 'border-surface-300 bg-surface-200 text-surface-900 dark:border-surface-500 dark:bg-surface-700 dark:text-surface-100'
                     : 'border-transparent bg-surface-100 text-surface-500 hover:bg-surface-100 hover:text-surface-700 dark:bg-surface-700/50 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-300'

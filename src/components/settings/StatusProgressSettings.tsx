@@ -31,7 +31,7 @@ export const StatusProgressSettings = () => {
                     type="button"
                     aria-label="Status and progress synchronization rules"
                     onClick={(event) => event.preventDefault()}
-                    className="flex size-5 shrink-0 items-center justify-center rounded-md p-0 text-surface-500 leading-none outline-hidden transition-colors hover:text-surface-600 focus-visible:bg-primary-500/15 focus-visible:text-primary-500 dark:text-surface-500 dark:focus-visible:bg-primary-400/15 dark:focus-visible:text-primary-400 dark:hover:text-surface-300"
+                    className="flex size-5 shrink-0 items-center justify-center rounded-md p-0 text-surface-500 leading-none outline-hidden transition-colors hover:text-surface-600 focus-visible:bg-primary-500/15 focus-visible:text-primary-ink dark:text-surface-500 dark:focus-visible:bg-primary-400/15 dark:focus-visible:text-primary-400 dark:hover:text-surface-300"
                   >
                     <HelpCircle className="h-4 w-4" />
                   </button>
@@ -47,7 +47,7 @@ export const StatusProgressSettings = () => {
             type="checkbox"
             checked={syncStatusProgress}
             onChange={(event) => setSyncStatusProgress(event.target.checked)}
-            className="mt-0.5 shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            className="mt-0.5 shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2"
           />
         </label>
       </div>

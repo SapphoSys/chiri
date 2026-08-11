@@ -42,7 +42,7 @@ export const BadgesSettingsSortableBadges = ({
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
-            className="shrink-0 cursor-grab rounded-sm text-surface-500 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 active:cursor-grabbing dark:text-surface-500"
+            className="shrink-0 cursor-grab rounded-sm text-surface-500 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink active:cursor-grabbing dark:text-surface-500"
             aria-label={`Reorder ${badge.label}`}
             {...attributes}
             {...listeners}
@@ -59,7 +59,7 @@ export const BadgesSettingsSortableBadges = ({
           type="checkbox"
           checked={checked}
           onChange={(e) => onToggle(badge.key, e.target.checked)}
-          className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+          className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2"
         />
       </div>
     </div>

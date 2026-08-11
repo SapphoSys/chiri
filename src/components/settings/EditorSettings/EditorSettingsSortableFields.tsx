@@ -42,7 +42,7 @@ export const EditorSettingsSortableFields = ({
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
-            className="shrink-0 cursor-grab rounded-sm text-surface-500 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 active:cursor-grabbing dark:text-surface-400"
+            className="shrink-0 cursor-grab rounded-sm text-surface-500 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink active:cursor-grabbing dark:text-surface-400"
             aria-label={`Reorder ${field.label}`}
             {...attributes}
             {...listeners}
@@ -59,7 +59,7 @@ export const EditorSettingsSortableFields = ({
           type="checkbox"
           checked={checked}
           onChange={(e) => onToggle(field.key, e.target.checked)}
-          className="shrink-0 rounded-sm border-surface-400 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+          className="shrink-0 rounded-sm border-surface-400 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2"
         />
       </div>
     </div>

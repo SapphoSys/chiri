@@ -37,7 +37,7 @@ export const RepeatFrequencyList = ({ value, dueDate, onChange }: RepeatFrequenc
                   : [];
             onChange(option.value, byday);
           }}
-          className={`w-full rounded-lg px-2 py-1.5 text-left font-medium text-xs outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+          className={`w-full rounded-lg px-2 py-1.5 text-left font-medium text-xs outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
             value === option.value
               ? 'bg-primary-500 text-primary-contrast'
               : 'bg-surface-100 text-surface-700 hover:bg-surface-200 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600'

@@ -16,7 +16,7 @@ import type { Task } from '$types/task/model';
 type TagSelectionState = 'all' | 'some' | 'none';
 
 const tagRowButtonClass =
-  "relative w-full text-sm rounded-lg transition-colors outline-hidden before:content-[''] before:pointer-events-none before:absolute before:inset-y-0 before:left-1.5 before:right-1.5 before:rounded-lg before:transition-colors hover:before:bg-surface-100 dark:hover:before:bg-surface-700 focus-visible:before:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset";
+  "relative w-full text-sm rounded-lg transition-colors outline-hidden before:content-[''] before:pointer-events-none before:absolute before:inset-y-0 before:left-1.5 before:right-1.5 before:rounded-lg before:transition-colors hover:before:bg-surface-100 dark:hover:before:bg-surface-700 focus-visible:before:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset";
 const tagRowContentClass = 'relative z-10 flex items-center gap-3 px-3 py-2.5';
 
 interface BatchTaskTagsModalProps {
@@ -216,7 +216,7 @@ export const BatchTaskTagsModal = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search tags, or type to create..."
-              className="w-full rounded-lg border border-transparent bg-surface-100 py-2 pr-3 pl-9 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+              className="w-full rounded-lg border border-transparent bg-surface-100 py-2 pr-3 pl-9 text-sm text-surface-800 transition-colors focus:border-primary-ink focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
             />
           </div>
         </div>

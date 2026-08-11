@@ -56,7 +56,7 @@ export const StepIndicator = ({ currentStep, hasFile, hasDestination }: StepIndi
                   status === 'completed'
                     ? 'bg-primary-500 text-primary-contrast'
                     : status === 'active'
-                      ? 'bg-surface-200 text-surface-900 ring-2 ring-primary-500 dark:bg-surface-700 dark:text-surface-100'
+                      ? 'bg-surface-200 text-surface-900 ring-2 ring-primary-ink dark:bg-surface-700 dark:text-surface-100'
                       : 'bg-surface-200 text-surface-500 dark:bg-surface-700 dark:text-surface-400'
                 }`}
               >

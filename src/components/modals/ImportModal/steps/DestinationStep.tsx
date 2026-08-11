@@ -70,7 +70,7 @@ export const DestinationStep = ({
       <button
         type="button"
         onClick={() => setIsPickerOpen(true)}
-        className="flex w-full items-center gap-3 rounded-lg border border-transparent bg-surface-50 p-3 text-left outline-hidden transition-colors hover:border-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-surface-700/50 dark:hover:border-surface-600"
+        className="flex w-full items-center gap-3 rounded-lg border border-transparent bg-surface-50 p-3 text-left outline-hidden transition-colors hover:border-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink dark:bg-surface-700/50 dark:hover:border-surface-600"
       >
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-200 dark:bg-surface-700">
           {selectedCalendar?.calendar.emoji ? (

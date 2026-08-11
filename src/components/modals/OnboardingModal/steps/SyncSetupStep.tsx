@@ -23,7 +23,7 @@ export const SyncSetupStep = ({
         <p className="text-surface-500 text-xs dark:text-surface-400">Summary</p>
         <div className="rounded-lg border border-surface-200 p-4 dark:border-surface-700">
           <div className="flex items-center gap-3">
-            <Cloud className="h-5 w-5 text-primary-500" />
+            <Cloud className="h-5 w-5 text-primary-ink" />
             <div>
               <div className="font-semibold text-sm text-surface-900 dark:text-surface-100">
                 CalDAV sync

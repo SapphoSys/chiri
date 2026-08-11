@@ -110,7 +110,7 @@ export const TaskDefaultsSettingsStatusSection = () => {
                 key={value}
                 type="button"
                 onClick={() => handleStatusChange(value as Status)}
-                className={`flex items-center gap-2 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                className={`flex items-center gap-2 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
                   defaultStatus === value
                     ? activeClass
                     : `border-surface-300 text-surface-600 ${hoverBorderColor} hover:bg-surface-50 hover:text-surface-700 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-300`

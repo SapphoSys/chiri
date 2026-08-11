@@ -132,7 +132,7 @@ export const SidebarCollapsedView = ({
           <button
             type="button"
             onClick={navigation.onAllTasks}
-            className={`flex size-10 shrink-0 items-center justify-center rounded-lg outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+            className={`flex size-10 shrink-0 items-center justify-center rounded-lg outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
               navigation.activeView === 'tasks' &&
               navigation.activeCalendarId === null &&
               navigation.activeTagId === null
@@ -157,7 +157,7 @@ export const SidebarCollapsedView = ({
           <button
             type="button"
             onClick={navigation.onRecentlyDeleted}
-            className={`flex size-10 shrink-0 items-center justify-center rounded-lg outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+            className={`flex size-10 shrink-0 items-center justify-center rounded-lg outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
               navigation.activeView === 'recently-deleted'
                 ? 'bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100'
                 : 'text-surface-500 hover:bg-surface-200 dark:text-surface-400 dark:hover:bg-surface-700'
@@ -236,9 +236,9 @@ export const SidebarCollapsedView = ({
             <button
               type="button"
               onClick={() => footer.onUpdateClick?.()}
-              className="flex size-10 shrink-0 items-center justify-center rounded-lg text-surface-500 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
+              className="flex size-10 shrink-0 items-center justify-center rounded-lg text-surface-500 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
             >
-              <Download className="h-5 w-5 text-primary-500" />
+              <Download className="h-5 w-5 text-primary-ink" />
             </button>
           </Tooltip>
         )}
@@ -246,7 +246,7 @@ export const SidebarCollapsedView = ({
           <button
             type="button"
             onClick={() => footer.onOpenImport?.()}
-            className="flex size-10 shrink-0 items-center justify-center rounded-lg text-surface-500 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
+            className="flex size-10 shrink-0 items-center justify-center rounded-lg text-surface-500 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
           >
             <Import className="h-5 w-5" />
           </button>
@@ -255,7 +255,7 @@ export const SidebarCollapsedView = ({
           <button
             type="button"
             onClick={() => footer.onOpenSettings?.()}
-            className="flex size-10 shrink-0 items-center justify-center rounded-lg text-surface-500 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
+            className="flex size-10 shrink-0 items-center justify-center rounded-lg text-surface-500 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
           >
             <Settings className="h-5 w-5" />
           </button>

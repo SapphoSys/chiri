@@ -118,7 +118,7 @@ export const NavigationSettings = () => {
             id="default-launch-view"
             value={defaultLaunchView}
             onChange={(event) => setDefaultLaunchView(event.target.value as DefaultLaunchView)}
-            className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-500 focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+            className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-ink focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
           >
             <option value="last-view">Last view</option>
             <optgroup label="Views">
@@ -150,7 +150,7 @@ export const NavigationSettings = () => {
             type="checkbox"
             checked={showSidebarTaskCounts}
             onChange={(e) => setShowSidebarTaskCounts(e.target.checked)}
-            className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2"
           />
         </label>
       </div>

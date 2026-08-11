@@ -201,7 +201,7 @@ export const SidebarCollapsedCalendarGroups = ({
                             onContextMenu={(event) =>
                               onContextMenu(event, 'calendar', calendar.id, account.id)
                             }
-                            className={`flex size-10 shrink-0 items-center justify-center rounded-lg outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                            className={`flex size-10 shrink-0 items-center justify-center rounded-lg outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
                               isActive
                                 ? 'bg-surface-200 dark:bg-surface-700'
                                 : contextMenu?.type === 'calendar' && contextMenu.id === calendar.id

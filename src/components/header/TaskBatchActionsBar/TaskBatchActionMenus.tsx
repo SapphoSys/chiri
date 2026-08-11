@@ -24,7 +24,7 @@ const getMenuItemClass = (index: number, itemCount: number) => {
         ? 'rounded-b-lg'
         : 'border-b border-surface-300 dark:border-surface-700';
 
-  return `w-full flex items-center gap-2 px-3 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${positionClass}`;
+  return `w-full flex items-center gap-2 px-3 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${positionClass}`;
 };
 
 interface TaskBatchActionMenusProps {
@@ -65,7 +65,7 @@ export const TaskBatchActionMenus = ({
             <Icon className="h-4 w-4 shrink-0" />
             <span className="flex-1 text-left">{label}</span>
             {selectedTasks.every((task) => task.status === value) && (
-              <Check className="h-3.5 w-3.5 shrink-0 text-primary-500" />
+              <Check className="h-3.5 w-3.5 shrink-0 text-primary-ink" />
             )}
           </button>
         ))}
@@ -89,7 +89,7 @@ export const TaskBatchActionMenus = ({
           >
             <span className={`flex-1 text-left ${priority.color}`}>{priority.label}</span>
             {selectedTasks.every((task) => task.priority === priority.value) && (
-              <Check className="h-3.5 w-3.5 shrink-0 text-primary-500" />
+              <Check className="h-3.5 w-3.5 shrink-0 text-primary-ink" />
             )}
           </button>
         ))}

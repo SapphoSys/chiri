@@ -40,7 +40,7 @@ export const ConnectionNoticeBanner = ({
               type="button"
               onClick={onDismiss}
               aria-label="Dismiss connection test message"
-              className="-m-1 self-center rounded-sm p-1 text-semantic-success outline-hidden transition-colors hover:bg-semantic-success/10 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+              className="-m-1 self-center rounded-sm p-1 text-semantic-success outline-hidden transition-colors hover:bg-semantic-success/10 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset"
             >
               <X className="h-4 w-4" />
             </button>
@@ -99,7 +99,7 @@ export const ConnectionNoticeBanner = ({
             type="button"
             onClick={onDismiss}
             aria-label="Dismiss connection test message"
-            className="-m-1 self-start rounded-sm p-1 text-semantic-error outline-hidden transition-colors hover:bg-semantic-error/10 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+            className="-m-1 self-start rounded-sm p-1 text-semantic-error outline-hidden transition-colors hover:bg-semantic-error/10 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset"
           >
             <X className="h-4 w-4" />
           </button>

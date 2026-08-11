@@ -62,15 +62,15 @@ export const ColorSwatchPicker = ({
   const selectedClass =
     selectedVariant === 'border'
       ? 'border-surface-800 dark:border-white scale-110'
-      : 'border-transparent ring-2 ring-offset-2 ring-primary-500 dark:ring-offset-surface-800 scale-110';
+      : 'border-transparent ring-2 ring-offset-2 ring-primary-ink dark:ring-offset-surface-800 scale-110';
   const inactiveClass =
     selectedVariant === 'border'
       ? 'border-transparent hover:scale-105'
       : 'border-transparent hover:scale-110';
   const focusClass =
-    'focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500';
+    'focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-ink';
   const customFocusClass =
-    'peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-primary-500';
+    'peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-primary-ink';
   const customInactiveClass = selectedVariant === 'border' ? 'hover:scale-105' : 'hover:scale-110';
   const customSwatchBackground = customSelected
     ? customPickerValue

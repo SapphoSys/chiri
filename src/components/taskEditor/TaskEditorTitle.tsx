@@ -30,7 +30,7 @@ const getCheckboxStateClass = (
   if (task.status === 'in-process') return 'bg-status-in-process border-status-in-process';
 
   return `border-surface-400 dark:border-surface-600 ${
-    readOnly ? '' : 'hover:border-primary-500 hover:bg-surface-100 dark:hover:bg-surface-700'
+    readOnly ? '' : 'hover:border-primary-ink hover:bg-surface-100 dark:hover:bg-surface-700'
   }`;
 };
 
@@ -112,7 +112,7 @@ export const TaskEditorTitle = ({
         className={`flex items-start gap-3 rounded-lg border border-transparent bg-surface-100 px-3 py-3 transition-colors dark:bg-surface-800 ${
           readOnly
             ? 'cursor-not-allowed'
-            : 'cursor-text focus-within:border-primary-500 focus-within:bg-white dark:focus-within:bg-surface-800'
+            : 'cursor-text focus-within:border-primary-ink focus-within:bg-white dark:focus-within:bg-surface-800'
         }`}
       >
         <button
@@ -120,7 +120,7 @@ export const TaskEditorTitle = ({
           onClick={handleCheckboxClick}
           disabled={readOnly}
           aria-label={getCheckboxAriaLabel(task, readOnly)}
-          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 outline-hidden transition-all focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-not-allowed ${checkboxStateClass}
+          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 outline-hidden transition-all focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset disabled:cursor-not-allowed ${checkboxStateClass}
           `}
         >
           {task.status === 'completed' && (

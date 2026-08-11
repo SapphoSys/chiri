@@ -13,6 +13,7 @@
   --color-primary-900: rgb(var(--primary-rgb-900, 30 58 138));
   --color-primary-950: rgb(var(--primary-rgb-950, 23 37 84));
   --color-primary-contrast: var(--primary-contrast-color, #ffffff);
+  --color-primary-ink: var(--primary-ink, #2563eb);
 
   --color-surface-50: var(--surface-50, #fafafa);
   --color-surface-100: var(--surface-100, #f4f4f5);

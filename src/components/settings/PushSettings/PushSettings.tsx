@@ -202,7 +202,7 @@ export const PushSettings = () => {
             checked={enablePush}
             disabled={pushGated}
             onChange={(e) => setEnablePush(e.target.checked)}
-            className="rounded border-surface-300 outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed dark:border-surface-600"
+            className="rounded border-surface-300 outline-none focus:ring-2 focus:ring-primary-ink focus:ring-offset-2 disabled:cursor-not-allowed dark:border-surface-600"
           />
         </label>
 
@@ -229,7 +229,7 @@ export const PushSettings = () => {
               <Select
                 value={pushProvider}
                 onChange={(e) => setPushProvider(e.target.value as PushProviderId)}
-                className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-500 focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-ink focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
               >
                 <option value={NTFY_DIRECT_PROVIDER_ID}>ntfy</option>
                 <option value={MOZILLA_AUTOPUSH_PROVIDER_ID}>Mozilla Autopush</option>
@@ -258,7 +258,7 @@ export const PushSettings = () => {
                     onBlur={commitDraftNtfyServerUrl}
                     onChange={(e) => setDraftNtfyServerUrl(e.target.value)}
                     placeholder={DEFAULT_NTFY_SERVER_URL}
-                    className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                    className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-ink focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                   />
                 </div>
               </>
@@ -284,7 +284,7 @@ export const PushSettings = () => {
                       onBlur={commitDraftMozillaAutopushWebsocketUrl}
                       onChange={(e) => setDraftMozillaAutopushWebsocketUrl(e.target.value)}
                       placeholder={DEFAULT_MOZILLA_AUTOPUSH_WEBSOCKET_URL}
-                      className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                      className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-ink focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                     />
                   </div>
 
@@ -301,7 +301,7 @@ export const PushSettings = () => {
                       onBlur={commitDraftMozillaAutopushEndpointUrl}
                       onChange={(e) => setDraftMozillaAutopushEndpointUrl(e.target.value)}
                       placeholder={DEFAULT_MOZILLA_AUTOPUSH_ENDPOINT_URL}
-                      className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                      className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-ink focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                     />
                   </div>
                 </div>
@@ -324,7 +324,7 @@ export const PushSettings = () => {
               type="button"
               onClick={handleTestProvider}
               disabled={providerAvailability.isFetching || isResolvingKUnifiedPush}
-              className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-surface-700 dark:text-surface-200 dark:hover:bg-surface-600"
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink disabled:cursor-not-allowed disabled:opacity-60 dark:bg-surface-700 dark:text-surface-200 dark:hover:bg-surface-600"
             >
               {providerAvailability.isFetching ? (
                 <Loader2 className="size-4 motion-safe:animate-spin" />
@@ -387,7 +387,7 @@ export const PushSettings = () => {
               type="checkbox"
               checked={enforceVapid}
               onChange={(e) => setEnforceVapid(e.target.checked)}
-              className="rounded border-surface-300 outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-surface-600"
+              className="rounded border-surface-300 outline-none focus:ring-2 focus:ring-primary-ink focus:ring-offset-2 dark:border-surface-600"
             />
           </label>
 

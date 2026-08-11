@@ -40,7 +40,7 @@ export const TaskDefaultsSettingsPrioritySection = () => {
                 key={priority.value}
                 onClick={() => setDefaultPriority(priority.value)}
                 aria-pressed={defaultPriority === priority.value}
-                className={`flex-1 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                className={`flex-1 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
                   defaultPriority === priority.value
                     ? `${priority.borderColor} ${priority.bgColor} text-surface-900 dark:text-surface-100`
                     : `border-surface-300 text-surface-600 ${priority.hoverBorderColor} hover:bg-surface-50 hover:text-surface-700 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-300`

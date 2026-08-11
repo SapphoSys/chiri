@@ -33,7 +33,7 @@ export const SidebarSortDirectionButton = ({
         onClick={disabled ? undefined : onToggle}
         disabled={disabled}
         aria-label={disabled ? 'Sort direction unavailable' : `Sort direction: ${directionLabel}`}
-        className={`flex size-7 shrink-0 items-center justify-center rounded-md p-1 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+        className={`flex size-7 shrink-0 items-center justify-center rounded-md p-1 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
           disabled
             ? 'cursor-not-allowed text-surface-400 dark:text-surface-600'
             : 'text-surface-700 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-surface-700'

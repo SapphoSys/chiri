@@ -84,9 +84,9 @@ const getSyncButtonClass = (
   isAnyModalOpen: boolean,
 ) => {
   const base =
-    'w-9 h-9 rounded-lg border text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset flex items-center justify-center';
+    'w-9 h-9 rounded-lg border text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset flex items-center justify-center';
   if (isSyncing) {
-    return `${base} text-primary-500 border-transparent cursor-not-allowed`;
+    return `${base} text-primary-ink border-transparent cursor-not-allowed`;
   }
   if (isOffline || disableSync) {
     return `${base} text-surface-500 dark:text-surface-600 border-transparent cursor-not-allowed`;
@@ -184,7 +184,7 @@ export const Header = ({
       type="button"
       onClick={handleNewTask}
       disabled={activeView === 'recently-deleted'}
-      className={`ml-2 flex items-center gap-2 rounded-lg border border-transparent bg-primary-500 px-4 py-1.5 font-medium text-primary-contrast text-sm transition-colors ${!isAnyModalOpen ? 'hover:bg-primary-600' : ''} shadow-xs outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50`}
+      className={`ml-2 flex items-center gap-2 rounded-lg border border-transparent bg-primary-500 px-4 py-1.5 font-medium text-primary-contrast text-sm transition-colors ${!isAnyModalOpen ? 'hover:bg-primary-600' : ''} shadow-xs outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50`}
     >
       <Plus className="h-4 w-4" />
       New Task
@@ -267,7 +267,7 @@ export const Header = ({
             placeholder={`Search tasks... (${searchShortcut})`}
             value={searchQuery}
             onChange={(value) => setSearchQueryMutation.mutate(value)}
-            className="w-full rounded-lg border border-surface-300 bg-white py-2 pr-4 pl-9 text-sm text-surface-800 outline-hidden transition-colors placeholder:text-surface-400 hover:border-surface-400 focus:border-primary-500 focus:bg-white dark:border-surface-700 dark:bg-surface-800/80 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:border-surface-600"
+            className="w-full rounded-lg border border-surface-300 bg-white py-2 pr-4 pl-9 text-sm text-surface-800 outline-hidden transition-colors placeholder:text-surface-400 hover:border-surface-400 focus:border-primary-ink focus:bg-white dark:border-surface-700 dark:bg-surface-800/80 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:border-surface-600"
           />
         </div>
 

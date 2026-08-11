@@ -11,9 +11,9 @@ export type ToastType = 'error' | 'warning' | 'info' | 'success' | 'loading';
 const TYPE_ICONS: Record<ToastType, { icon: LucideIcon; colorClass: string }> = {
   error: { icon: CircleX, colorClass: 'text-semantic-error' },
   warning: { icon: TriangleAlert, colorClass: 'text-semantic-warning' },
-  info: { icon: Info, colorClass: 'text-primary-500' },
-  success: { icon: Check, colorClass: 'text-primary-500' },
-  loading: { icon: Loader2, colorClass: 'text-primary-500' },
+  info: { icon: Info, colorClass: 'text-primary-ink' },
+  success: { icon: Check, colorClass: 'text-primary-ink' },
+  loading: { icon: Loader2, colorClass: 'text-primary-ink' },
 };
 
 interface ToastTitleProps {

@@ -182,7 +182,7 @@ export const TimePickerModal = ({
             onMouseDown={() => startHold(incrementHour)}
             onMouseUp={stopHold}
             onMouseLeave={stopHold}
-            className="flex w-14 select-none items-center justify-center rounded-lg p-3 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 hover:text-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-primary-400"
+            className="flex w-14 select-none items-center justify-center rounded-lg p-3 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 hover:text-primary-ink focus-visible:ring-2 focus-visible:ring-primary-ink dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-primary-400"
             aria-label="Increment hour"
           >
             <ChevronUp className="h-5 w-5" />
@@ -195,7 +195,7 @@ export const TimePickerModal = ({
             onChange={(e) => handleHourInputChange(e.target.value)}
             onBlur={handleHourInputBlur}
             onKeyDown={handleHourKeyDown}
-            className="w-14 rounded-lg border border-surface-200 bg-surface-50 px-2 py-2 text-center font-bold text-2xl text-surface-800 tabular-nums outline-hidden focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-surface-600 dark:bg-surface-700/50 dark:text-surface-200"
+            className="w-14 rounded-lg border border-surface-200 bg-surface-50 px-2 py-2 text-center font-bold text-2xl text-surface-800 tabular-nums outline-hidden focus:border-primary-ink focus:ring-2 focus:ring-primary-ink/20 dark:border-surface-600 dark:bg-surface-700/50 dark:text-surface-200"
             aria-label="Hour"
           />
           <button
@@ -203,7 +203,7 @@ export const TimePickerModal = ({
             onMouseDown={() => startHold(decrementHour)}
             onMouseUp={stopHold}
             onMouseLeave={stopHold}
-            className="flex w-14 select-none items-center justify-center rounded-lg p-3 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 hover:text-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-primary-400"
+            className="flex w-14 select-none items-center justify-center rounded-lg p-3 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 hover:text-primary-ink focus-visible:ring-2 focus-visible:ring-primary-ink dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-primary-400"
             aria-label="Decrement hour"
           >
             <ChevronDown className="h-5 w-5" />
@@ -222,7 +222,7 @@ export const TimePickerModal = ({
             onMouseDown={() => startHold(incrementMinute)}
             onMouseUp={stopHold}
             onMouseLeave={stopHold}
-            className="flex w-14 select-none items-center justify-center rounded-lg p-3 text-surface-600 outline-hidden transition-colors hover:bg-surface-100 hover:text-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-primary-400"
+            className="flex w-14 select-none items-center justify-center rounded-lg p-3 text-surface-600 outline-hidden transition-colors hover:bg-surface-100 hover:text-primary-ink focus-visible:ring-2 focus-visible:ring-primary-ink dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-primary-400"
             aria-label="Increment minute"
           >
             <ChevronUp className="h-5 w-5" />
@@ -235,7 +235,7 @@ export const TimePickerModal = ({
             onChange={(e) => handleMinuteInputChange(e.target.value)}
             onBlur={handleMinuteInputBlur}
             onKeyDown={handleMinuteKeyDown}
-            className="w-14 rounded-lg border border-surface-200 bg-surface-50 px-2 py-2 text-center font-bold text-2xl text-surface-800 tabular-nums outline-hidden focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-surface-600 dark:bg-surface-700/50 dark:text-surface-200"
+            className="w-14 rounded-lg border border-surface-200 bg-surface-50 px-2 py-2 text-center font-bold text-2xl text-surface-800 tabular-nums outline-hidden focus:border-primary-ink focus:ring-2 focus:ring-primary-ink/20 dark:border-surface-600 dark:bg-surface-700/50 dark:text-surface-200"
             aria-label="Minute"
           />
           <button
@@ -243,7 +243,7 @@ export const TimePickerModal = ({
             onMouseDown={() => startHold(decrementMinute)}
             onMouseUp={stopHold}
             onMouseLeave={stopHold}
-            className="flex w-14 select-none items-center justify-center rounded-lg p-3 text-surface-600 outline-hidden transition-colors hover:bg-surface-100 hover:text-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-primary-400"
+            className="flex w-14 select-none items-center justify-center rounded-lg p-3 text-surface-600 outline-hidden transition-colors hover:bg-surface-100 hover:text-primary-ink focus-visible:ring-2 focus-visible:ring-primary-ink dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-primary-400"
             aria-label="Decrement minute"
           >
             <ChevronDown className="h-5 w-5" />

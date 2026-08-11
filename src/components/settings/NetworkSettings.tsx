@@ -143,7 +143,7 @@ export const NetworkSettings = () => {
             type="checkbox"
             checked={connectivityCheckEnabled}
             onChange={(e) => setConnectivityCheckEnabled(e.target.checked)}
-            className="shrink-0 rounded border-surface-300 outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-surface-600"
+            className="shrink-0 rounded border-surface-300 outline-none focus:ring-2 focus:ring-primary-ink focus:ring-offset-2 dark:border-surface-600"
           />
         </label>
 
@@ -175,7 +175,7 @@ export const NetworkSettings = () => {
                 value={connectivityCheckUrl}
                 onChange={(e) => setConnectivityCheckUrl(e.target.value)}
                 placeholder={DEFAULT_CONNECTIVITY_CHECK_URL}
-                className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-ink focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
               />
             </div>
           </>
@@ -194,7 +194,7 @@ export const NetworkSettings = () => {
             type="button"
             onClick={handleTestConnectivity}
             disabled={isCheckingConnectivity}
-            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-surface-700 dark:text-surface-200 dark:hover:bg-surface-600"
+            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink disabled:cursor-not-allowed disabled:opacity-60 dark:bg-surface-700 dark:text-surface-200 dark:hover:bg-surface-600"
           >
             {isCheckingConnectivity ? (
               <Loader2 className="h-4 w-4 motion-safe:animate-spin" />
@@ -263,7 +263,7 @@ export const NetworkSettings = () => {
             id="connectivity-check-interval"
             value={connectivityCheckInterval.toString()}
             onChange={(e) => setConnectivityCheckInterval(Number(e.target.value))}
-            className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+            className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-none transition-colors focus:border-primary-ink focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
           >
             {CONNECTIVITY_CHECK_INTERVAL_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -291,7 +291,7 @@ export const NetworkSettings = () => {
             onChange={(e) =>
               setConnectivityRequestTimeout(Math.min(60, Math.max(1, Number(e.target.value) || 1)))
             }
-            className="w-20 shrink-0 rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+            className="w-20 shrink-0 rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-ink focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
           />
         </label>
       </div>
@@ -307,7 +307,7 @@ export const NetworkSettings = () => {
           <Select
             value={networkProxyMode}
             onChange={(event) => handleProxyModeChange(event.target.value as NetworkProxyMode)}
-            className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+            className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-none transition-colors focus:border-primary-ink focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
           >
             <option value="system">System</option>
             <option value="none">None</option>
@@ -333,7 +333,7 @@ export const NetworkSettings = () => {
                   value={networkProxyHost}
                   onChange={(event) => setNetworkProxyHost(event.target.value)}
                   placeholder={DEFAULT_PROXY_HOST}
-                  className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                  className="w-full rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-ink focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                 />
               </div>
 
@@ -352,7 +352,7 @@ export const NetworkSettings = () => {
                   value={networkProxyPort}
                   onChange={(event) => handleProxyPortChange(event.target.value)}
                   placeholder={String(defaultProxyPort)}
-                  className="w-28 shrink-0 rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                  className="w-28 shrink-0 rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-ink focus:bg-white dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                 />
               </div>
             </div>

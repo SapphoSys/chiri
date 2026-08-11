@@ -203,7 +203,7 @@ export const SettingsModal = ({
                         setActiveSelection({ category: category.id, subtab: tab.id });
                         resetContentScroll();
                       }}
-                      className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                      className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
                         isActiveTab
                           ? 'bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100'
                           : 'text-surface-600 hover:bg-surface-200 dark:text-surface-400 dark:hover:bg-surface-700'

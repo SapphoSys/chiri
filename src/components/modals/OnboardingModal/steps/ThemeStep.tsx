@@ -60,7 +60,7 @@ export const ThemeStep = () => {
     <div className="space-y-3">
       <section className="rounded-lg border border-surface-200 p-3 dark:border-surface-700">
         <div className="mb-3 flex items-center gap-2">
-          <SunMoon className="h-4 w-4 text-primary-500" />
+          <SunMoon className="h-4 w-4 text-primary-ink" />
           <h3 className="font-semibold text-sm text-surface-900 dark:text-surface-100">Theme</h3>
         </div>
         <div className="flex gap-2">
@@ -80,7 +80,7 @@ export const ThemeStep = () => {
       <section className="overflow-hidden rounded-lg border border-surface-200 dark:border-surface-700">
         <div className="p-3">
           <div className="mb-3 flex items-center gap-2">
-            <Palette className="h-4 w-4 text-primary-500" />
+            <Palette className="h-4 w-4 text-primary-ink" />
             <h3 className="font-semibold text-sm text-surface-900 dark:text-surface-100">Colors</h3>
           </div>
 

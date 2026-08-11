@@ -117,7 +117,7 @@ export const SidebarAccountItem = ({
           data-context-menu
           onClick={() => onToggleAccount(account.id)}
           onContextMenu={(e) => onContextMenu(e, 'account', account.id)}
-          className={`flex h-9 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${accountButtonBackgroundClass(
+          className={`flex h-9 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${accountButtonBackgroundClass(
             isAccountContextMenuOpen,
             isAccountMenuButtonContextMenuOpen,
             isAnyModalOpen,
@@ -158,7 +158,7 @@ export const SidebarAccountItem = ({
               onContextMenu={(e) => {
                 onContextMenu(e, 'account', account.id);
               }}
-              className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg bg-transparent ${!isAnyModalOpen ? 'hover:bg-surface-300 hover:text-surface-600 dark:hover:bg-surface-600 dark:hover:text-surface-300' : ''} text-surface-400 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
+              className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg bg-transparent ${!isAnyModalOpen ? 'hover:bg-surface-300 hover:text-surface-600 dark:hover:bg-surface-600 dark:hover:text-surface-300' : ''} text-surface-400 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset`}
             >
               <Plus className="h-4 w-4" />
             </button>
@@ -175,7 +175,7 @@ export const SidebarAccountItem = ({
               onContextMenu={(e) => {
                 onContextMenu(e, 'account', account.id);
               }}
-              className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${accountMenuButtonStateClass}`}
+              className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${accountMenuButtonStateClass}`}
             >
               <MoreVertical className="h-4 w-4" />
             </button>

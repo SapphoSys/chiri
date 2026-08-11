@@ -72,7 +72,7 @@ export const RegionTimeStep = () => {
     <section className="space-y-3 rounded-lg border border-surface-200 p-3 dark:border-surface-700">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Globe className="h-4 w-4 text-primary-500" />
+          <Globe className="h-4 w-4 text-primary-ink" />
           <h3 className="font-semibold text-sm text-surface-900 dark:text-surface-100">
             Region & time
           </h3>
@@ -102,7 +102,7 @@ export const RegionTimeStep = () => {
           <Select
             value={dateFormat}
             onChange={(event) => handleDateFormatChange(event.target.value as DateFormat)}
-            className="max-w-44 shrink-0 rounded-lg border border-surface-200 bg-surface-50 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-500 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-200"
+            className="max-w-44 shrink-0 rounded-lg border border-surface-200 bg-surface-50 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-ink dark:border-surface-700 dark:bg-surface-800 dark:text-surface-200"
           >
             {DATE_FORMAT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -137,9 +137,9 @@ export const RegionTimeStep = () => {
                 key={value}
                 type="button"
                 onClick={() => handleTimeFormatChange(value)}
-                className={`rounded-lg border px-3 py-1.5 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                className={`rounded-lg border px-3 py-1.5 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
                   timeFormat === value
-                    ? 'border-primary-500/60 bg-primary-500/10 text-surface-950 dark:text-surface-50'
+                    ? 'border-primary-ink/60 bg-primary-500/10 text-surface-950 dark:text-surface-50'
                     : 'border-surface-200 bg-surface-50 text-surface-600 hover:bg-surface-100 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-400 dark:hover:bg-surface-700'
                 }`}
               >
@@ -167,7 +167,7 @@ export const RegionTimeStep = () => {
           <Select
             value={startOfWeek}
             onChange={(event) => handleStartOfWeekChange(event.target.value as StartOfWeek)}
-            className="max-w-40 shrink-0 rounded-lg border border-surface-200 bg-surface-50 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-500 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-200"
+            className="max-w-40 shrink-0 rounded-lg border border-surface-200 bg-surface-50 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-ink dark:border-surface-700 dark:bg-surface-800 dark:text-surface-200"
           >
             {WEEK_START_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>

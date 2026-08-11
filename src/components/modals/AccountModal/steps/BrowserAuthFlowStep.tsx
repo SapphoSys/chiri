@@ -205,7 +205,7 @@ export const BrowserAuthFlowStep = forwardRef<BrowserAuthFlowStepHandle, Browser
                 onChange={onUrlChange ?? (() => {})}
                 onKeyDown={handleKeyDown}
                 disabled={isLoading}
-                className="w-full rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+                className="w-full rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-800 transition-colors focus:border-primary-ink focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
               />
               {idleExtra}
             </div>

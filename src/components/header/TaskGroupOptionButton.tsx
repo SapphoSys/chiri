@@ -19,7 +19,7 @@ export const TaskGroupOptionButton = ({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`flex w-full items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+      className={`flex w-full items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
         disabled
           ? 'cursor-not-allowed text-surface-500 dark:text-surface-500'
           : isActive

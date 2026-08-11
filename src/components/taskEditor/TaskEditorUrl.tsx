@@ -50,7 +50,7 @@ export const TaskEditorUrl = ({ task, readOnly = false }: UrlProps) => {
           <button
             type="button"
             onClick={() => openUrl(pendingUrl)}
-            className="flex items-center gap-1 rounded-sm text-primary-500 text-xs outline-hidden transition-colors hover:text-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:hover:text-primary-300"
+            className="flex items-center gap-1 rounded-sm text-primary-ink text-xs outline-hidden transition-colors hover:text-primary-ink focus-visible:ring-2 focus-visible:ring-primary-ink dark:hover:text-primary-300"
             aria-label="Open URL in browser"
           >
             <ExternalLink className="h-3.5 w-3.5" />
@@ -76,7 +76,7 @@ export const TaskEditorUrl = ({ task, readOnly = false }: UrlProps) => {
           onChange={handleUrlChange}
           placeholder="https://example.com"
           rows={1}
-          className="max-h-24 w-full resize-none overflow-hidden rounded-lg border border-transparent bg-surface-100 px-3 py-2.5 text-sm text-surface-700 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-800 dark:text-surface-300 dark:focus:bg-surface-800"
+          className="max-h-24 w-full resize-none overflow-hidden rounded-lg border border-transparent bg-surface-100 px-3 py-2.5 text-sm text-surface-700 transition-colors focus:border-primary-ink focus:bg-white focus:outline-hidden dark:bg-surface-800 dark:text-surface-300 dark:focus:bg-surface-800"
         />
       )}
     </div>

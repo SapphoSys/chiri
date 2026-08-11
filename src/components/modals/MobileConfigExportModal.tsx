@@ -91,7 +91,7 @@ export const MobileConfigExportModal = ({
       <div className="space-y-4">
         <div className="grid grid-cols-3 gap-2">
           <div className="flex flex-col items-center gap-2 rounded-lg border border-surface-200 bg-surface-50 px-2 py-3 text-center dark:border-surface-700 dark:bg-surface-900/50">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-500/10 text-primary-500">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-500/10 text-primary-ink">
               <Download className="h-4 w-4" />
             </div>
             <p className="text-surface-700 text-xs leading-snug dark:text-surface-300">
@@ -99,7 +99,7 @@ export const MobileConfigExportModal = ({
             </p>
           </div>
           <div className="flex flex-col items-center gap-2 rounded-lg border border-surface-200 bg-surface-50 px-2 py-3 text-center dark:border-surface-700 dark:bg-surface-900/50">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-500/10 text-primary-500">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-500/10 text-primary-ink">
               <Wifi className="h-4 w-4" />
             </div>
             <p className="text-surface-700 text-xs leading-snug dark:text-surface-300">
@@ -107,7 +107,7 @@ export const MobileConfigExportModal = ({
             </p>
           </div>
           <div className="flex flex-col items-center gap-2 rounded-lg border border-surface-200 bg-surface-50 px-2 py-3 text-center dark:border-surface-700 dark:bg-surface-900/50">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-500/10 text-primary-500">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-500/10 text-primary-ink">
               <Smartphone className="h-4 w-4" />
             </div>
             <p className="text-surface-700 text-xs leading-snug dark:text-surface-300">
@@ -128,7 +128,7 @@ export const MobileConfigExportModal = ({
             href="https://support.apple.com/guide/mdm/intro-to-device-management-profiles-mdm0d350920d/1/web/1.0"
             target="_blank"
             rel="noreferrer"
-            className="font-medium text-primary-500 hover:underline hover:opacity-80"
+            className="font-medium text-primary-ink hover:underline hover:opacity-80"
           >
             Learn more about .mobileconfig files
           </a>
@@ -153,7 +153,7 @@ export const MobileConfigExportModal = ({
               type="checkbox"
               checked={includePassword}
               onChange={(e) => setIncludePassword(e.target.checked)}
-              className="mt-0.5 h-4 w-4 shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-surface-600"
+              className="mt-0.5 h-4 w-4 shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2 dark:border-surface-600"
             />
             <div>
               <p className="flex items-center gap-1.5 font-medium text-sm text-surface-700 dark:text-surface-300">

@@ -3,7 +3,7 @@ import Wand2 from 'lucide-react/icons/wand-2';
 import { ColorSwatchPicker } from '$components/ColorSwatchPicker';
 
 const SWITCHER_CLASS =
-  'flex min-w-0 flex-1 basis-0 items-center justify-center gap-2 px-4 py-2 rounded-lg border text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset';
+  'flex min-w-0 flex-1 basis-0 items-center justify-center gap-2 px-4 py-2 rounded-lg border text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset';
 const SWITCHER_ACTIVE =
   'border-surface-300 dark:border-surface-500 bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100';
 const SWITCHER_INACTIVE =

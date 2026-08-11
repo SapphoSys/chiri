@@ -19,19 +19,19 @@ interface RepeatRuleEditorProps {
 
 const inputCls =
   'h-9 px-3 py-2 text-sm bg-surface-100 dark:bg-surface-700 border border-surface-200 dark:border-surface-600 rounded-lg ' +
-  'focus:outline-hidden focus:border-primary-500 ' +
+  'focus:outline-hidden focus:border-primary-ink ' +
   'focus:bg-white dark:focus:bg-surface-800 transition-colors ' +
   'text-surface-800 dark:text-surface-200';
 
 const selectCls =
   'h-9 text-sm border border-surface-200 dark:border-surface-600 bg-surface-100 dark:bg-surface-700 ' +
   'text-surface-800 dark:text-surface-200 rounded-lg focus:outline-hidden ' +
-  'focus:border-primary-500 ' +
+  'focus:border-primary-ink ' +
   'focus:bg-white dark:focus:bg-surface-800 transition-colors';
 
 const btnBase =
   'flex-1 px-3 py-2 text-sm font-medium rounded-lg border transition-colors ' +
-  'outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500';
+  'outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-ink';
 
 const btnActive =
   'border-surface-300 dark:border-surface-500 bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100';
@@ -126,7 +126,7 @@ export const RepeatRuleEditor = ({
                           : [...ui.byday, value],
                       })
                     }
-                    className={`h-9 w-9 rounded-full border font-medium text-xs outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 ${
+                    className={`h-9 w-9 rounded-full border font-medium text-xs outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink ${
                       active
                         ? 'border-surface-300 bg-surface-200 text-surface-900 dark:border-surface-500 dark:bg-surface-700 dark:text-surface-100'
                         : 'border-surface-200 text-surface-600 hover:border-surface-300 hover:bg-surface-50 dark:border-surface-700 dark:text-surface-400 dark:hover:bg-surface-700'
@@ -249,7 +249,7 @@ export const RepeatRuleEditor = ({
               <button
                 type="button"
                 onClick={onOpenUntilPicker}
-                className="flex h-9 w-full items-center gap-2 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-left text-sm transition-colors hover:border-surface-300 focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:focus:bg-surface-800 dark:hover:border-surface-500"
+                className="flex h-9 w-full items-center gap-2 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-left text-sm transition-colors hover:border-surface-300 focus:border-primary-ink focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:focus:bg-surface-800 dark:hover:border-surface-500"
               >
                 {ui.until ? (
                   <Calendar className="h-4 w-4 shrink-0 text-surface-400" />

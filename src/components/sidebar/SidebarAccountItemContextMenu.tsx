@@ -76,7 +76,7 @@ export const SidebarAccountItemContextMenu = ({
               }
             }}
             disabled={isAccountSyncing}
-            className={`flex w-full items-center gap-2 rounded-t-md px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+            className={`flex w-full items-center gap-2 rounded-t-md px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
               isAccountSyncing
                 ? 'cursor-not-allowed text-surface-400 dark:text-surface-500'
                 : 'text-surface-700 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-surface-700'
@@ -99,7 +99,7 @@ export const SidebarAccountItemContextMenu = ({
               }
             }}
             disabled={isAccountTesting || isAccountSyncing}
-            className={`flex w-full items-center gap-2 px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+            className={`flex w-full items-center gap-2 px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
               isAccountTesting || isAccountSyncing
                 ? 'cursor-not-allowed text-surface-400 dark:text-surface-500'
                 : 'text-surface-700 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-surface-700'
@@ -123,7 +123,7 @@ export const SidebarAccountItemContextMenu = ({
           onCreateCalendar(accountId);
           onClose();
         }}
-        className={`flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700 ${isLocal ? 'rounded-t-md' : ''}`}
+        className={`flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700 ${isLocal ? 'rounded-t-md' : ''}`}
       >
         <Plus className="h-4 w-4" />
         New Calendar
@@ -139,7 +139,7 @@ export const SidebarAccountItemContextMenu = ({
           }
           onClose();
         }}
-        className="flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+        className="flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
       >
         <Edit2 className="h-4 w-4" />
         Edit Account
@@ -155,7 +155,7 @@ export const SidebarAccountItemContextMenu = ({
               onMobileConfigExport(accountId);
               onClose();
             }}
-            className="flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+            className="flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
           >
             <Download className="h-4 w-4" />
             Export to .mobileconfig
@@ -171,7 +171,7 @@ export const SidebarAccountItemContextMenu = ({
           onExportAccount(accountId);
           onClose();
         }}
-        className="flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+        className="flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
       >
         <Share2 className="h-4 w-4" />
         Export Calendars

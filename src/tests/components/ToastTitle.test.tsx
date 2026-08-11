@@ -50,8 +50,8 @@ const TYPE_CASES: Array<{
 }> = [
   { type: 'error', colorClass: 'text-semantic-error', lucideClass: 'lucide-circle-x' },
   { type: 'warning', colorClass: 'text-semantic-warning', lucideClass: 'lucide-triangle-alert' },
-  { type: 'info', colorClass: 'text-primary-500', lucideClass: 'lucide-info' },
-  { type: 'success', colorClass: 'text-primary-500', lucideClass: 'lucide-check' },
+  { type: 'info', colorClass: 'text-primary-ink', lucideClass: 'lucide-info' },
+  { type: 'success', colorClass: 'text-primary-ink', lucideClass: 'lucide-check' },
 ];
 
 describe('ToastTitle', () => {

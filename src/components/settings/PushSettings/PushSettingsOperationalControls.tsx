@@ -301,7 +301,7 @@ export const PushSettingsOperationalControls = ({
             supportedPushCalendars.length === 0 ||
             isResolvingProvider
           }
-          className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-surface-700 dark:text-surface-200 dark:hover:bg-surface-600"
+          className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink disabled:cursor-not-allowed disabled:opacity-60 dark:bg-surface-700 dark:text-surface-200 dark:hover:bg-surface-600"
         >
           {isResubscribing ? (
             <Loader2 className="size-4 motion-safe:animate-spin" />
@@ -320,7 +320,7 @@ export const PushSettingsOperationalControls = ({
               type="button"
               onClick={handleDismissResubscribeError}
               aria-label="Dismiss resubscribe error"
-              className="-mr-1 rounded-sm p-1 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-600"
+              className="-mr-1 rounded-sm p-1 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-600"
             >
               <X className="size-4" />
             </button>

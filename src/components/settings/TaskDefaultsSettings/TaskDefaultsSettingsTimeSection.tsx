@@ -106,7 +106,7 @@ export const TaskDefaultsSettingsTimeSection = () => {
             disabled={startTimeUnavailableReason !== null}
             aria-labelledby="default-start-time-label"
             aria-describedby="default-start-time-description"
-            className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-surface-100 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600 dark:disabled:hover:bg-surface-700"
+            className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-ink focus:bg-white disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-surface-100 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600 dark:disabled:hover:bg-surface-700"
           >
             {startTimeUnavailableReason && defaultStartTime === null
               ? startTimeUnavailableReason
@@ -137,7 +137,7 @@ export const TaskDefaultsSettingsTimeSection = () => {
             disabled={dueTimeUnavailableReason !== null}
             aria-labelledby="default-due-time-label"
             aria-describedby="default-due-time-description"
-            className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-surface-100 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600"
+            className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-ink focus:bg-white disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-surface-100 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600"
           >
             {dueTimeUnavailableReason && defaultDueTime === null
               ? dueTimeUnavailableReason

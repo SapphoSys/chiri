@@ -153,7 +153,7 @@ export const ConnectionsSettings = ({
           <button
             type="button"
             onClick={handleAddAccount}
-            className="flex items-center gap-1.5 rounded-sm bg-surface-100 px-2 py-1 text-surface-700 text-xs outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
+            className="flex items-center gap-1.5 rounded-sm bg-surface-100 px-2 py-1 text-surface-700 text-xs outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
           >
             <Plus className="h-3.5 w-3.5" />
             Add Account
@@ -232,7 +232,7 @@ export const ConnectionsSettings = ({
                         <button
                           type="button"
                           onClick={() => handleEditAccount(account.id)}
-                          className="rounded-sm p-1.5 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-600"
+                          className="rounded-sm p-1.5 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-600"
                         >
                           <Edit2 className="h-5 w-5" />
                         </button>
@@ -241,7 +241,7 @@ export const ConnectionsSettings = ({
                         <button
                           type="button"
                           onClick={() => handleExportMobileConfig(account)}
-                          className="rounded-sm p-1.5 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-600"
+                          className="rounded-sm p-1.5 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-600"
                         >
                           <Download className="h-5 w-5" />
                         </button>
@@ -251,7 +251,7 @@ export const ConnectionsSettings = ({
                           type="button"
                           onClick={() => handleTestConnection(account)}
                           disabled={isTesting}
-                          className="rounded-sm p-1.5 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:opacity-50 dark:text-surface-400 dark:hover:bg-surface-600"
+                          className="rounded-sm p-1.5 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset disabled:opacity-50 dark:text-surface-400 dark:hover:bg-surface-600"
                         >
                           {isTesting ? (
                             <Loader2 className="h-5 w-5 motion-safe:animate-spin" />
@@ -264,7 +264,7 @@ export const ConnectionsSettings = ({
                         <button
                           type="button"
                           onClick={() => handleDeleteAccount(account)}
-                          className="rounded-sm p-1.5 text-semantic-error outline-hidden transition-colors hover:bg-semantic-error/10 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                          className="rounded-sm p-1.5 text-semantic-error outline-hidden transition-colors hover:bg-semantic-error/10 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset"
                         >
                           <Trash2 className="h-5 w-5" />
                         </button>

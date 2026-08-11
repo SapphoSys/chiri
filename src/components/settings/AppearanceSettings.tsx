@@ -9,7 +9,7 @@ import {
 } from '$utils/color/scheme';
 
 const SWITCHER_CLASS =
-  'flex flex-1 items-center justify-center gap-2 px-4 py-2 rounded-lg border text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset';
+  'flex flex-1 items-center justify-center gap-2 px-4 py-2 rounded-lg border text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset';
 const SWITCHER_ACTIVE =
   'border-surface-300 dark:border-surface-500 bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100';
 const SWITCHER_INACTIVE =
@@ -146,7 +146,7 @@ export const AppearanceSettings = () => {
             type="checkbox"
             checked={useAccentColorForCheckboxes}
             onChange={(e) => setUseAccentColorForCheckboxes(e.target.checked)}
-            className="shrink-0 rounded-sm border-surface-400 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            className="shrink-0 rounded-sm border-surface-400 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2"
           />
         </label>
 
@@ -165,7 +165,7 @@ export const AppearanceSettings = () => {
             type="checkbox"
             checked={showCursorPointers}
             onChange={(e) => setShowCursorPointers(e.target.checked)}
-            className="shrink-0 rounded-sm border-surface-400 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            className="shrink-0 rounded-sm border-surface-400 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2"
           />
         </label>
       </div>

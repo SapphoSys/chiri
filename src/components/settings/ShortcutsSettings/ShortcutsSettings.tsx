@@ -96,7 +96,7 @@ export const ShortcutsSettings = ({
               onClick={resetShortcuts}
               disabled={!hasCustomShortcuts}
               aria-label={resetTitle}
-              className="flex items-center gap-1.5 rounded-sm bg-surface-100 px-2 py-1 text-surface-700 text-xs outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset enabled:hover:bg-surface-200 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-surface-700 dark:text-surface-300 dark:enabled:hover:bg-surface-600"
+              className="flex items-center gap-1.5 rounded-sm bg-surface-100 px-2 py-1 text-surface-700 text-xs outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset enabled:hover:bg-surface-200 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-surface-700 dark:text-surface-300 dark:enabled:hover:bg-surface-600"
             >
               <RotateCcw className="h-3 w-3" />
               Reset to defaults
@@ -113,7 +113,7 @@ export const ShortcutsSettings = ({
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search shortcuts..."
             aria-label="Search keyboard shortcuts"
-            className="w-full rounded-lg border border-transparent bg-surface-100 py-2 pr-9 pl-9 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+            className="w-full rounded-lg border border-transparent bg-surface-100 py-2 pr-9 pl-9 text-sm text-surface-800 transition-colors focus:border-primary-ink focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
           />
           {searchQuery && (
             <button

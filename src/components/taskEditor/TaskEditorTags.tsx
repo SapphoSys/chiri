@@ -66,7 +66,7 @@ export const TaskEditorTags = ({
                 <button
                   type="button"
                   onClick={() => onRemoveTag(tag.id)}
-                  className="rounded-sm p-0.5 outline-hidden transition-colors hover:bg-black/10 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-white/10"
+                  className="rounded-sm p-0.5 outline-hidden transition-colors hover:bg-black/10 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:hover:bg-white/10"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -85,7 +85,7 @@ export const TaskEditorTags = ({
           <button
             type="button"
             onClick={onOpenTagsModal}
-            className="box-border inline-flex h-6.5 items-center gap-1 rounded-sm border border-surface-200 bg-surface-50 px-2 text-surface-500 text-xs leading-none outline-hidden transition-colors hover:border-surface-400 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400 dark:hover:border-surface-500"
+            className="box-border inline-flex h-6.5 items-center gap-1 rounded-sm border border-surface-200 bg-surface-50 px-2 text-surface-500 text-xs leading-none outline-hidden transition-colors hover:border-surface-400 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400 dark:hover:border-surface-500"
           >
             {taskTags.length > 0 ? <Pencil className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
             {taskTags.length > 0 ? 'Edit tags' : 'Add tag'}

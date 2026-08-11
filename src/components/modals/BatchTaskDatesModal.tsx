@@ -208,7 +208,7 @@ export const BatchTaskDatesModal = ({
         <button
           type="button"
           onClick={() => setEditingField(field)}
-          className="flex w-full items-center gap-2 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-left text-sm transition-colors hover:border-surface-300 focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:focus:bg-surface-700 dark:hover:border-surface-500"
+          className="flex w-full items-center gap-2 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-left text-sm transition-colors hover:border-surface-300 focus:border-primary-ink focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:focus:bg-surface-700 dark:hover:border-surface-500"
         >
           {date ? (
             <span className="text-surface-700 dark:text-surface-300">
@@ -233,7 +233,7 @@ export const BatchTaskDatesModal = ({
                 if (isDue) setHasSetDueDate(true);
                 else setHasSetStartDate(true);
               }}
-              className="h-4 w-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500 dark:border-surface-600"
+              className="h-4 w-4 rounded border-surface-300 text-primary-ink focus:ring-primary-ink dark:border-surface-600"
             />
             Preserve each task&apos;s existing time
           </label>

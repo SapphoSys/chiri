@@ -62,7 +62,7 @@ export const TaskDefaultsSettingsCalendarSection = () => {
             value={defaultCalendarId || ''}
             onChange={(e) => setDefaultCalendarId(e.target.value || null)}
             disabled={accountsWithCalendars.length === 0}
-            className="max-w-50 shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-50 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
+            className="max-w-50 shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-ink focus:bg-white disabled:cursor-not-allowed disabled:opacity-50 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
           >
             {accountsWithCalendars.length === 0 ? (
               <option value="">No accounts available</option>
@@ -98,7 +98,7 @@ export const TaskDefaultsSettingsCalendarSection = () => {
                   type="checkbox"
                   checked={preferCalDAVCalendarForNewTasks}
                   onChange={(e) => setPreferCalDAVCalendarForNewTasks(e.target.checked)}
-                  className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                  className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-ink focus:ring-offset-2"
                 />
               </label>
             </div>

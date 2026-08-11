@@ -25,7 +25,7 @@ export const ToastProvider = () => {
           success: 'text-semantic-success!',
           error: 'text-semantic-error!',
           warning: 'text-semantic-warning!',
-          info: 'text-primary-500!',
+          info: 'text-primary-ink!',
         },
       }}
     />

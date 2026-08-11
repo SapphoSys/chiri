@@ -26,9 +26,9 @@ export const ActionCard = ({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`group flex min-h-36 flex-col rounded-lg border p-3 text-left outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+      className={`group flex min-h-36 flex-col rounded-lg border p-3 text-left outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
         isPrimary
-          ? 'border-primary-500/60 bg-primary-500/10 hover:bg-primary-500/15'
+          ? 'border-primary-ink/60 bg-primary-500/10 hover:bg-primary-500/15'
           : 'border-surface-200 bg-white hover:bg-surface-50 dark:border-surface-700 dark:bg-surface-800 dark:hover:bg-surface-700'
       }`}
     >
@@ -52,7 +52,7 @@ export const ActionCard = ({
         <span
           className={`mt-auto pt-4 font-medium text-sm ${
             isPrimary
-              ? 'text-primary-700 dark:text-primary-300'
+              ? 'text-primary-ink dark:text-primary-300'
               : 'text-surface-700 dark:text-surface-300'
           }`}
         >

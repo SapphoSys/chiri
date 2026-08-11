@@ -98,30 +98,30 @@ export const FileUploadStep = ({
         }}
         onDragEnter={onDragEnter}
         onDragLeave={handleDragLeave}
-        className={`relative cursor-pointer rounded-xl border-2 border-dashed p-6 text-center outline-hidden transition-all focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
+        className={`relative cursor-pointer rounded-xl border-2 border-dashed p-6 text-center outline-hidden transition-all focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-offset-2 ${
           isDraggingOver
-            ? 'scale-[1.02] border-primary-500 bg-primary-500/10'
+            ? 'scale-[1.02] border-primary-ink bg-primary-500/10'
             : fileName
-              ? 'border-primary-500 bg-primary-500/5'
-              : 'border-surface-300 hover:border-primary-400 hover:bg-surface-50 dark:border-surface-600 dark:hover:border-primary-500 dark:hover:bg-surface-700/50'
+              ? 'border-primary-ink bg-primary-500/5'
+              : 'border-surface-300 hover:border-primary-ink hover:bg-surface-50 dark:border-surface-600 dark:hover:border-primary-500 dark:hover:bg-surface-700/50'
         }`}
       >
         {isProcessing ? (
           <div className="pointer-events-none flex flex-col items-center gap-2">
-            <div className="h-8 w-8 rounded-full border-2 border-primary-500 border-t-transparent motion-safe:animate-spin" />
+            <div className="h-8 w-8 rounded-full border-2 border-primary-ink border-t-transparent motion-safe:animate-spin" />
             <p className="text-sm text-surface-600 dark:text-surface-400">Reading file...</p>
           </div>
         ) : fileName ? (
           <div className="pointer-events-none flex items-center justify-center gap-3">
             <div className="flex items-center gap-2 rounded-lg border border-surface-200 bg-white px-3 py-2 shadow-xs dark:border-surface-600 dark:bg-surface-800">
-              <span className="text-primary-500">{getFileIcon()}</span>
+              <span className="text-primary-ink">{getFileIcon()}</span>
               <span className="max-w-50 truncate font-medium text-sm text-surface-700 dark:text-surface-300">
                 {fileName}
               </span>
               <button
                 type="button"
                 onClick={handleRemoveFile}
-                className="pointer-events-auto rounded-sm p-1 text-surface-400 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:hover:bg-surface-700 dark:hover:text-surface-300"
+                className="pointer-events-auto rounded-sm p-1 text-surface-400 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-600 focus-visible:ring-2 focus-visible:ring-primary-ink dark:hover:bg-surface-700 dark:hover:text-surface-300"
                 aria-label="Remove file"
               >
                 <X className="h-4 w-4" />
@@ -133,7 +133,7 @@ export const FileUploadStep = ({
             <div
               className={`pointer-events-none mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full transition-colors ${
                 isDraggingOver
-                  ? 'bg-primary-500/15 text-primary-500'
+                  ? 'bg-primary-500/15 text-primary-ink'
                   : 'bg-surface-100 text-surface-400 dark:bg-surface-700'
               }`}
             >

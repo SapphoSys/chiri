@@ -109,7 +109,7 @@ export const ReviewStep = ({
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-1 rounded-sm font-medium text-sm text-surface-600 outline-hidden transition-colors hover:text-surface-800 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:text-surface-200"
+          className="flex items-center gap-1 rounded-sm font-medium text-sm text-surface-600 outline-hidden transition-colors hover:text-surface-800 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:text-surface-200"
         >
           {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
           <span>Preview tasks</span>
@@ -134,7 +134,7 @@ export const ReviewStep = ({
               >
                 <div className="shrink-0">
                   {task.importStatus === 'importing' ? (
-                    <Loader2 className="h-4 w-4 text-primary-500 motion-safe:animate-spin" />
+                    <Loader2 className="h-4 w-4 text-primary-ink motion-safe:animate-spin" />
                   ) : task.importStatus === 'success' ? (
                     <CheckCircle className="h-4 w-4 text-semantic-success" />
                   ) : task.importStatus === 'error' ? (
@@ -178,7 +178,7 @@ export const ReviewStep = ({
               <button
                 type="button"
                 onClick={() => setIsExpanded(true)}
-                className="w-full py-2 font-medium text-primary-600 text-xs outline-hidden hover:text-primary-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-primary-400 dark:hover:text-primary-300"
+                className="w-full py-2 font-medium text-primary-ink text-xs outline-hidden hover:text-primary-ink focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-primary-400 dark:hover:text-primary-300"
               >
                 Show {tasks.length - MAX_VISIBLE} more tasks
               </button>

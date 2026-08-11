@@ -18,7 +18,7 @@ const QUICK_CONNECT_CONFIG: Partial<Record<ServerType, QuickConnectConfig>> = {
     label: 'Use RustiCal Login Flow',
     description: 'Automatically authenticate via browser',
     buttonClassName:
-      'bg-primary-500/10 hover:bg-primary-500/20 border border-primary-500/30 text-surface-800 dark:text-surface-200 [&_svg]:text-primary-500',
+      'bg-primary-500/10 hover:bg-primary-500/20 border border-primary-ink/30 text-surface-800 dark:text-surface-200 [&_svg]:text-primary-ink',
   },
 };
 
@@ -41,7 +41,7 @@ export const QuickConnectSectionStep = ({ serverType, onClick }: QuickConnectSec
       <button
         type="button"
         onClick={onClick}
-        className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${config.buttonClassName}`}
+        className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${config.buttonClassName}`}
       >
         <Cloud className="h-4 w-4" />
         {config.label}

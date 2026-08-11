@@ -53,7 +53,7 @@ export const NotificationsStep = ({
 
     <section className="space-y-2 rounded-lg border border-surface-200 p-3 dark:border-surface-700">
       <div className="flex items-center gap-2">
-        <Bell className="h-4 w-4 text-primary-500" />
+        <Bell className="h-4 w-4 text-primary-ink" />
         <h3 className="font-semibold text-sm text-surface-900 dark:text-surface-100">Alerts</h3>
       </div>
       <ToggleRow
@@ -88,7 +88,7 @@ export const NotificationsStep = ({
 
     <section className="space-y-2 rounded-lg border border-surface-200 p-3 dark:border-surface-700">
       <div className="flex items-center gap-2">
-        <Hash className="h-4 w-4 text-primary-500" />
+        <Hash className="h-4 w-4 text-primary-ink" />
         <h3 className="font-semibold text-sm text-surface-900 dark:text-surface-100">Badge</h3>
       </div>
       <ToggleRow

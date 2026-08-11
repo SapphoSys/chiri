@@ -203,9 +203,9 @@ export const ExportModal = ({
               type="button"
               key={format.id}
               onClick={() => setSelectedFormat(format.id)}
-              className={`flex items-start gap-3 rounded-lg border p-3 text-left outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+              className={`flex items-start gap-3 rounded-lg border p-3 text-left outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
                 selectedFormat === format.id
-                  ? 'border-primary-500 bg-primary-500/10'
+                  ? 'border-primary-ink bg-primary-500/10'
                   : 'border-surface-200 hover:border-surface-300 dark:border-surface-700 dark:hover:border-surface-600'
               }`}
             >
@@ -213,7 +213,7 @@ export const ExportModal = ({
                 <div
                   className={`font-medium text-sm ${
                     selectedFormat === format.id
-                      ? 'text-primary-700 dark:text-primary-300'
+                      ? 'text-primary-ink dark:text-primary-300'
                       : 'text-surface-700 dark:text-surface-300'
                   }`}
                 >
@@ -224,7 +224,7 @@ export const ExportModal = ({
                 </div>
               </div>
               {selectedFormat === format.id && (
-                <div className="shrink-0 text-primary-500 dark:text-primary-400">
+                <div className="shrink-0 text-primary-ink dark:text-primary-400">
                   <CheckCircle2 className="h-5 w-5" />
                 </div>
               )}

@@ -127,7 +127,7 @@ export const ConnectionsSettingsPushAccountStatus = ({
             onClick={() => setDetailsOpen((open) => !open)}
             aria-haspopup="dialog"
             aria-expanded={detailsOpen}
-            className={`-ml-1.5 inline-flex items-center rounded-md px-1.5 py-0.5 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-700 ${detailsOpen ? 'bg-surface-200 dark:bg-surface-700' : ''} ${toneClass}`}
+            className={`-ml-1.5 inline-flex items-center rounded-md px-1.5 py-0.5 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:hover:bg-surface-700 ${detailsOpen ? 'bg-surface-200 dark:bg-surface-700' : ''} ${toneClass}`}
           >
             <span className="inline-flex items-center gap-1.5">
               <WebDAVPushStatusIcon icon={status.icon} />

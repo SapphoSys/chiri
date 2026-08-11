@@ -170,7 +170,7 @@ export const ModalWrapper = ({
               <button
                 type="button"
                 onClick={handleClose}
-                className="shrink-0 rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-700 dark:hover:text-surface-300"
+                className="shrink-0 rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:hover:bg-surface-700 dark:hover:text-surface-300"
                 aria-label="Close"
               >
                 <X className="h-5 w-5" />

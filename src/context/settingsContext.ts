@@ -196,9 +196,9 @@ const _initFlavor = getColorSchemeFlavor(
 );
 const _initAccent = resolveAccentColor(state.accentColor, _initFlavor.accentColors);
 if (state.colorScheme === DEFAULT_COLOR_SCHEME_ID) {
-  applyAccentColor(_initAccent);
+  applyAccentColor(_initAccent, _initEffectiveMode);
 } else {
-  applySchemeAccentColor(_initAccent);
+  applySchemeAccentColor(_initAccent, _initEffectiveMode);
 }
 
 const listeners = new Set<() => void>();

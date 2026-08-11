@@ -35,7 +35,7 @@ const getRowClassName = (isDragEnabled: boolean, isOverlay: boolean, readOnly: b
   ${isDragEnabled ? 'cursor-grab active:cursor-grabbing' : ''}
   ${!isDragEnabled && !readOnly ? 'cursor-pointer' : ''}
   ${readOnly ? 'cursor-not-allowed' : ''}
-  focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-surface-900
+  focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-offset-1 dark:focus-visible:ring-offset-surface-900
   ${isOverlay ? 'bg-surface-50 dark:bg-surface-800 shadow-lg' : 'hover:bg-surface-50 dark:hover:bg-surface-800/60'}
 `;
 
@@ -51,9 +51,9 @@ const getStatusButtonClassName = (
         : 'bg-status-completed border-status-completed'
       : task.status === 'cancelled'
         ? 'bg-status-cancelled border-status-cancelled'
-        : `border-surface-400 dark:border-surface-600 ${readOnly ? '' : 'hover:border-primary-400 dark:hover:border-primary-500'}`;
+        : `border-surface-400 dark:border-surface-600 ${readOnly ? '' : 'hover:border-primary-ink dark:hover:border-primary-500'}`;
 
-  return `w-4 h-4 rounded border-[1.5px] flex items-center justify-center shrink-0 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${statusClass} ${
+  return `w-4 h-4 rounded border-[1.5px] flex items-center justify-center shrink-0 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-offset-1 ${statusClass} ${
     readOnly ? 'cursor-not-allowed' : 'cursor-pointer'
   }`;
 };
@@ -206,7 +206,7 @@ export const TaskEditorSubtaskItem = ({
           <button
             type="button"
             onClick={toggleExpanded}
-            className="flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-surface-500 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-300"
+            className="flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-surface-500 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-600 focus-visible:ring-2 focus-visible:ring-primary-ink dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-300"
             aria-label={isExpanded ? 'Collapse subtasks' : 'Expand subtasks'}
           >
             <ChevronRight

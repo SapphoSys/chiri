@@ -57,7 +57,7 @@ export const RepeatRulePreview = ({
         disabled={readOnly}
         aria-labelledby={labelId}
         title={`Repeat: ${fullSummary}`}
-        className={`flex min-w-0 flex-1 items-center gap-3 px-3 py-2 text-left outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${readOnly ? 'cursor-not-allowed' : ''}`}
+        className={`flex min-w-0 flex-1 items-center gap-3 px-3 py-2 text-left outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${readOnly ? 'cursor-not-allowed' : ''}`}
       >
         <RepeatIcon className="h-5 w-5 shrink-0 text-surface-500 dark:text-surface-300" />
         <span className="min-w-0 flex-1">

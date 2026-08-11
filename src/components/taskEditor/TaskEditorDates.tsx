@@ -37,7 +37,7 @@ export const TaskEditorDates = ({
           onClick={onOpenStartDate}
           disabled={readOnly}
           aria-labelledby="start-date-label"
-          className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:focus:bg-surface-800 ${
+          className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors focus:border-primary-ink focus:bg-white focus:outline-hidden dark:focus:bg-surface-800 ${
             readOnly && !task.startDate
               ? 'cursor-not-allowed border-surface-400 border-dashed text-surface-500 dark:border-surface-700 dark:text-surface-500'
               : 'border-transparent bg-surface-100 focus:bg-white dark:bg-surface-800'
@@ -80,7 +80,7 @@ export const TaskEditorDates = ({
           onClick={onOpenDueDate}
           disabled={readOnly}
           aria-labelledby="due-date-label"
-          className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:focus:bg-surface-800 ${
+          className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors focus:border-primary-ink focus:bg-white focus:outline-hidden dark:focus:bg-surface-800 ${
             readOnly && !task.dueDate
               ? 'cursor-not-allowed border-surface-400 border-dashed text-surface-500 dark:border-surface-700 dark:text-surface-500'
               : 'border-transparent bg-surface-100 focus:bg-white dark:bg-surface-800'

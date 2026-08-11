@@ -12,7 +12,7 @@ interface RepeatPresetMenuProps {
 }
 
 const menuItemClass =
-  'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:bg-surface-100 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 dark:text-surface-300 dark:hover:bg-surface-700 dark:focus-visible:bg-surface-700';
+  'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:bg-surface-100 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-ink dark:text-surface-300 dark:hover:bg-surface-700 dark:focus-visible:bg-surface-700';
 
 export const RepeatPresetMenu = ({
   anchorRef,

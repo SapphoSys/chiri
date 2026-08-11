@@ -296,7 +296,7 @@ export const ColorSchemeSelect = ({ label, value, options, onChange }: ColorSche
           }
         }}
         onKeyDown={handleTriggerKeyDown}
-        className={`flex w-full items-center gap-3 rounded-lg border p-2 text-left outline-hidden transition-colors hover:border-surface-300 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:border-surface-600 ${
+        className={`flex w-full items-center gap-3 rounded-lg border p-2 text-left outline-hidden transition-colors hover:border-surface-300 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:hover:border-surface-600 ${
           isOpen
             ? 'border-surface-300 dark:border-surface-600'
             : 'border-surface-300 dark:border-surface-700'
@@ -346,7 +346,7 @@ export const ColorSchemeSelect = ({ label, value, options, onChange }: ColorSche
                     selectOption(option);
                   }}
                   onFocus={() => setActiveIndex(index)}
-                  className="w-full rounded-md border p-2 text-left outline-hidden transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                  className="w-full rounded-md border p-2 text-left outline-hidden transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset"
                   style={getRowStyle(option, isSelected, isActive)}
                 >
                   <OptionContent option={option} isSelected={isSelected} />

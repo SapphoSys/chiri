@@ -30,7 +30,7 @@ export const SidebarHeader = ({
           <button
             type="button"
             onClick={onToggleCollapse}
-            className="app-sidebar-toggle rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-200"
+            className="app-sidebar-toggle rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-200"
             aria-label="Expand sidebar"
           >
             <PanelLeftOpen className="h-5 w-5" />
@@ -44,14 +44,14 @@ export const SidebarHeader = ({
         className={`app-sidebar-header-content flex items-center px-2 motion-safe:transition-opacity motion-safe:duration-150 ${showExpandedContent ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
       >
         <h1 className="app-sidebar-brand flex min-w-0 flex-1 items-center gap-2 font-semibold text-lg text-surface-900 dark:text-surface-100">
-          <AppIcon className="h-5 w-5 shrink-0 text-primary-500" />
+          <AppIcon className="h-5 w-5 shrink-0 text-primary-ink" />
           <span className="truncate">Chiri</span>
         </h1>
         <Tooltip content="Collapse sidebar" position="bottom">
           <button
             type="button"
             onClick={onToggleCollapse}
-            className="app-sidebar-toggle shrink-0 rounded-lg p-1.5 text-surface-500 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-200"
+            className="app-sidebar-toggle shrink-0 rounded-lg p-1.5 text-surface-500 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-200"
             aria-label="Collapse sidebar"
           >
             <PanelLeftClose className="h-5 w-5" />

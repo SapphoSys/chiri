@@ -35,16 +35,16 @@ export const SidebarFooter = ({
         <button
           type="button"
           onClick={() => onUpdateClick?.()}
-          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 font-medium text-sm text-surface-600 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
+          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 font-medium text-sm text-surface-600 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
         >
-          <Download className="h-4 w-4 text-primary-500" />
+          <Download className="h-4 w-4 text-primary-ink" />
           Update available!
         </button>
       )}
       <button
         type="button"
         onClick={() => onOpenImport?.()}
-        className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-surface-600 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-200 dark:hover:bg-surface-700' : ''} outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
+        className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-surface-600 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-200 dark:hover:bg-surface-700' : ''} outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset`}
       >
         <Import className="h-4 w-4" />
         Import tasks...
@@ -57,7 +57,7 @@ export const SidebarFooter = ({
       <button
         type="button"
         onClick={() => onOpenSettings?.()}
-        className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-surface-600 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-200 dark:hover:bg-surface-700' : ''} outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
+        className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-surface-600 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-200 dark:hover:bg-surface-700' : ''} outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset`}
       >
         <Settings className="h-4 w-4" />
         Settings

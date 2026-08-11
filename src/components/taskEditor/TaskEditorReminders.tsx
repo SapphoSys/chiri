@@ -63,7 +63,7 @@ export const TaskEditorReminders = ({
                     }
                   },
                 })}
-            className={`group flex items-center gap-2 rounded-lg bg-surface-50 px-3 py-2 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-800 ${
+            className={`group flex items-center gap-2 rounded-lg bg-surface-50 px-3 py-2 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:bg-surface-800 ${
               readOnly
                 ? 'cursor-not-allowed'
                 : 'cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-700'
@@ -81,7 +81,7 @@ export const TaskEditorReminders = ({
                   e.stopPropagation();
                   onRemoveReminder(reminder.id);
                 }}
-                className="invisible rounded-full p-1 text-surface-500 outline-hidden hover:bg-surface-100 hover:text-semantic-error focus-visible:visible focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset group-hover:visible dark:text-surface-400 dark:hover:bg-surface-800"
+                className="invisible rounded-full p-1 text-surface-500 outline-hidden hover:bg-surface-100 hover:text-semantic-error focus-visible:visible focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset group-hover:visible dark:text-surface-400 dark:hover:bg-surface-800"
                 title="Remove reminder"
               >
                 <X className="h-4 w-4" />
@@ -100,7 +100,7 @@ export const TaskEditorReminders = ({
           <button
             type="button"
             onClick={onOpenReminderPicker}
-            className="inline-flex items-center gap-1 rounded-sm border border-surface-200 bg-surface-50 px-2 py-1 text-surface-500 text-xs outline-hidden transition-colors hover:border-surface-400 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400 dark:hover:border-surface-500"
+            className="inline-flex items-center gap-1 rounded-sm border border-surface-200 bg-surface-50 px-2 py-1 text-surface-500 text-xs outline-hidden transition-colors hover:border-surface-400 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400 dark:hover:border-surface-500"
           >
             <Plus className="h-3 w-3" />
             Add reminder

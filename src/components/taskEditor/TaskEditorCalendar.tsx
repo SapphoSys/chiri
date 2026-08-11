@@ -101,7 +101,7 @@ export const TaskEditorCalendar = ({
             type="button"
             onClick={onOpenMoveCalendar}
             aria-labelledby="task-calendar-label"
-            className="flex w-full items-center gap-3 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-left text-sm transition-colors hover:border-surface-300 focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-800 dark:focus:bg-surface-800 dark:hover:border-surface-500"
+            className="flex w-full items-center gap-3 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-left text-sm transition-colors hover:border-surface-300 focus:border-primary-ink focus:bg-white focus:outline-hidden dark:bg-surface-800 dark:focus:bg-surface-800 dark:hover:border-surface-500"
           >
             {currentCalendar?.emoji ? (
               <span
