@@ -1,9 +1,9 @@
 import AlertTriangle from 'lucide-react/icons/alert-triangle';
-import Loader2 from 'lucide-react/icons/loader-2';
 import LogIn from 'lucide-react/icons/log-in';
 import PanelTop from 'lucide-react/icons/panel-top';
 import Rocket from 'lucide-react/icons/rocket';
 import { TrayHostWarningBanner } from '$components/banners/TrayHostWarningBanner';
+import { LoadingSpinner } from '$components/LoadingSpinner';
 import { ToggleRow } from '$components/modals/OnboardingModal/ToggleRow';
 
 interface StartupWindowStepProps {
@@ -34,7 +34,7 @@ export const StartupWindowStep = ({
       <ToggleRow
         icon={
           autostartEnabled === null || autostartPending ? (
-            <Loader2 className="h-4 w-4 motion-safe:animate-spin" />
+            <LoadingSpinner className="h-4 w-4" />
           ) : (
             <Rocket className="h-4 w-4" />
           )

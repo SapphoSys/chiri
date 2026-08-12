@@ -1,5 +1,5 @@
 import CloudOff from 'lucide-react/icons/cloud-off';
-import Loader2 from 'lucide-react/icons/loader-2';
+import { LoadingSpinner } from '$components/LoadingSpinner';
 import { Tooltip } from '$components/Tooltip';
 import { useConnectionStore } from '$context/connectionContext';
 
@@ -28,7 +28,7 @@ export const SidebarAccountItemDisconnectedIndicator = ({
         {status === 'disconnected' ? (
           <CloudOff className="h-3.5 w-3.5 text-semantic-warning" />
         ) : (
-          <Loader2 className="h-3.5 w-3.5 text-surface-400 motion-safe:animate-spin" />
+          <LoadingSpinner className="h-3.5 w-3.5 text-surface-400" />
         )}
       </span>
     </Tooltip>

@@ -1,7 +1,7 @@
 import ChevronRight from 'lucide-react/icons/chevron-right';
 import ExternalLink from 'lucide-react/icons/external-link';
-import Loader2 from 'lucide-react/icons/loader-2';
 import type { ReactNode } from 'react';
+import { LoadingSpinner } from '$components/LoadingSpinner';
 
 interface AboutSettingsLinkRowProps {
   icon: ReactNode;
@@ -37,7 +37,7 @@ export const AboutSettingsLinkRow = ({
     </div>
 
     {loading ? (
-      <Loader2 className="h-3.5 w-3.5 shrink-0 text-surface-500 motion-safe:animate-spin dark:text-surface-500" />
+      <LoadingSpinner className="h-3.5 w-3.5 text-surface-500 dark:text-surface-500" />
     ) : variant === 'internal' ? (
       <ChevronRight className="h-5 w-5 shrink-0 text-surface-500 transition-colors group-hover:text-surface-600 dark:text-surface-500 dark:group-hover:text-surface-300" />
     ) : (

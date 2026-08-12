@@ -1,14 +1,14 @@
 import CircleAlert from 'lucide-react/icons/circle-alert';
-import Loader2 from 'lucide-react/icons/loader-2';
 import TriangleAlert from 'lucide-react/icons/triangle-alert';
 import Zap from 'lucide-react/icons/zap';
 import ZapOff from 'lucide-react/icons/zap-off';
+import { LoadingSpinner } from '$components/LoadingSpinner';
 import type { WebDAVPushStatus } from '$lib/push/status';
 
 export const WebDAVPushStatusIcon = ({ icon }: { icon: WebDAVPushStatus['icon'] }) => {
   switch (icon) {
     case 'checking':
-      return <Loader2 className="size-3.5 shrink-0 motion-safe:animate-spin" />;
+      return <LoadingSpinner className="size-3.5" />;
     case 'alert':
       return <TriangleAlert className="size-3.5 shrink-0" />;
     case 'warning':

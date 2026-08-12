@@ -1,6 +1,6 @@
 import Check from 'lucide-react/icons/check';
-import Loader2 from 'lucide-react/icons/loader-2';
 import Upload from 'lucide-react/icons/upload';
+import { LoadingSpinner } from '$components/LoadingSpinner';
 import { ModalButton } from '$components/ModalButton';
 import type { ImportStep } from '$components/modals/ImportModal/StepIndicator';
 import { pluralize } from '$utils/misc';
@@ -61,7 +61,7 @@ export const ImportModalFooter = ({
             </>
           ) : isImporting ? (
             <>
-              <Loader2 className="h-4 w-4 motion-safe:animate-spin" />
+              <LoadingSpinner className="h-4 w-4" />
               Importing...
             </>
           ) : (

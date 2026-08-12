@@ -1,9 +1,9 @@
 import CheckCircle2 from 'lucide-react/icons/check-circle-2';
 import Info from 'lucide-react/icons/info';
-import Loader2 from 'lucide-react/icons/loader-2';
 import Play from 'lucide-react/icons/play';
 import XCircle from 'lucide-react/icons/x-circle';
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
+import { LoadingSpinner } from '$components/LoadingSpinner';
 import { Select } from '$components/Select';
 import {
   CONNECTIVITY_CHECK_INTERVAL_OPTIONS,
@@ -197,7 +197,7 @@ export const NetworkSettings = () => {
             className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink disabled:cursor-not-allowed disabled:opacity-60 dark:bg-surface-700 dark:text-surface-200 dark:hover:bg-surface-600"
           >
             {isCheckingConnectivity ? (
-              <Loader2 className="h-4 w-4 motion-safe:animate-spin" />
+              <LoadingSpinner className="h-4 w-4" />
             ) : (
               <Play className="h-4 w-4" />
             )}
@@ -209,7 +209,7 @@ export const NetworkSettings = () => {
           <div className="mx-4 mb-4 rounded-lg border border-surface-300 bg-surface-50 px-3 py-2 text-xs dark:border-surface-700 dark:bg-surface-900/60">
             {isCheckingConnectivity && !lastResult && (
               <div className="flex gap-2">
-                <Loader2 className="mt-px h-4 w-4 shrink-0 text-semantic-info motion-safe:animate-spin" />
+                <LoadingSpinner className="mt-px h-4 w-4 text-semantic-info" />
                 <div className="min-w-0 space-y-1">
                   <p className="font-medium text-surface-700 dark:text-surface-200">
                     Checking connectivity

@@ -6,6 +6,7 @@ import Loader from 'lucide-react/icons/loader-circle';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
 import X from 'lucide-react/icons/x';
 import { useState } from 'react';
+import { LoadingSpinner } from '$components/LoadingSpinner';
 import { ChangelogModal } from '$components/modals/ChangelogModal';
 import { useSettingsStore } from '$context/settingsContext';
 import { useManagedInstallation } from '$hooks/system/useManagedInstallation';
@@ -119,7 +120,7 @@ export const UpdateSettings = () => {
               >
                 {isChecking ? (
                   <>
-                    <Loader className="h-4 w-4 motion-safe:animate-spin" />
+                    <LoadingSpinner className="h-4 w-4" />
                     Checking...
                   </>
                 ) : (

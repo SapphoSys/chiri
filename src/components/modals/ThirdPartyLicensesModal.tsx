@@ -2,10 +2,10 @@ import { openUrl } from '@tauri-apps/plugin-opener';
 import ArrowLeft from 'lucide-react/icons/arrow-left';
 import ChevronRight from 'lucide-react/icons/chevron-right';
 import ExternalLink from 'lucide-react/icons/external-link';
-import Loader2 from 'lucide-react/icons/loader-2';
 import Search from 'lucide-react/icons/search';
 import X from 'lucide-react/icons/x';
 import { useEffect, useMemo, useState } from 'react';
+import { LoadingSpinner } from '$components/LoadingSpinner';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
 
@@ -133,7 +133,7 @@ export const ThirdPartyLicensesModal = ({ onClose }: ThirdPartyLicensesModalProp
         </div>
       ) : !manifest ? (
         <div className="flex items-center justify-center gap-2 py-12 text-sm text-surface-500 dark:text-surface-400">
-          <Loader2 className="h-4 w-4 motion-safe:animate-spin" />
+          <LoadingSpinner className="h-4 w-4" />
           Loading license manifest…
         </div>
       ) : (

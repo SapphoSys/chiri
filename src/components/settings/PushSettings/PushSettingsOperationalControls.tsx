@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import CircleAlert from 'lucide-react/icons/circle-alert';
-import Loader2 from 'lucide-react/icons/loader-2';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
 import X from 'lucide-react/icons/x';
 import { useMemo, useState } from 'react';
+import { LoadingSpinner } from '$components/LoadingSpinner';
 import { Tooltip } from '$components/Tooltip';
 import { WebDAVPushStatusIcon } from '$components/WebDAVPushStatusIcon';
 import { getIconByName } from '$constants/icons';
@@ -50,7 +50,7 @@ const renderSubscriptionContent = (
   if (isLoading) {
     return (
       <div className="flex items-center gap-2 p-4 text-sm text-surface-500 dark:text-surface-400">
-        <Loader2 className="size-4 motion-safe:animate-spin" />
+        <LoadingSpinner className="size-4" />
         Loading subscriptions
       </div>
     );
@@ -304,7 +304,7 @@ export const PushSettingsOperationalControls = ({
           className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink disabled:cursor-not-allowed disabled:opacity-60 dark:bg-surface-700 dark:text-surface-200 dark:hover:bg-surface-600"
         >
           {isResubscribing ? (
-            <Loader2 className="size-4 motion-safe:animate-spin" />
+            <LoadingSpinner className="size-4" />
           ) : (
             <RefreshCw className="size-4" />
           )}

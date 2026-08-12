@@ -2,9 +2,9 @@ import { invoke } from '@tauri-apps/api/core';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { relaunch } from '@tauri-apps/plugin-process';
 import AlertTriangle from 'lucide-react/icons/alert-triangle';
-import Loader2 from 'lucide-react/icons/loader-2';
 import { useEffect, useState } from 'react';
 import { TrayHostWarningBanner } from '$components/banners/TrayHostWarningBanner';
+import { LoadingSpinner } from '$components/LoadingSpinner';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAutostart } from '$hooks/system/useAutostart';
 import { useTrayHostAvailability } from '$hooks/system/useTrayHostAvailability';
@@ -145,9 +145,7 @@ export const SystemSettings = () => {
             <p className="text-sm text-surface-700 dark:text-surface-300">Launch at login</p>
             <p className="flex items-center gap-1.5 text-surface-500 text-xs dark:text-surface-400">
               {launchAtLoginBusy && (
-                <Loader2
-                  className={`size-3 shrink-0 motion-safe:animate-spin ${launchAtLoginSpinnerClass}`}
-                />
+                <LoadingSpinner className={`size-3 ${launchAtLoginSpinnerClass}`} />
               )}
               {launchAtLoginDescription}
             </p>

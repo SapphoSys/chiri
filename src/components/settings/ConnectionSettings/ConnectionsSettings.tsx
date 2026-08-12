@@ -1,12 +1,12 @@
 import Activity from 'lucide-react/icons/activity';
 import Download from 'lucide-react/icons/download';
 import Edit2 from 'lucide-react/icons/edit-2';
-import Loader2 from 'lucide-react/icons/loader-2';
 import Plus from 'lucide-react/icons/plus';
 import Trash2 from 'lucide-react/icons/trash-2';
 import User from 'lucide-react/icons/user';
 import { useMemo, useState } from 'react';
 import { ConnectionNoticeBanner } from '$components/banners/ConnectionNoticeBanner';
+import { LoadingSpinner } from '$components/LoadingSpinner';
 import { MobileConfigExportModal } from '$components/modals/MobileConfigExportModal';
 import { ConnectionsSettingsPushAccountStatus } from '$components/settings/ConnectionSettings/ConnectionsSettingsPushAccountStatus';
 import { Tooltip } from '$components/Tooltip';
@@ -198,7 +198,7 @@ export const ConnectionsSettings = ({
                             }`}
                           >
                             {connectionStatus === 'disconnected' ? null : (
-                              <Loader2 className="h-3 w-3 motion-safe:animate-spin" />
+                              <LoadingSpinner className="h-3 w-3" />
                             )}
                             {connectionStatus === 'connecting'
                               ? 'Connecting…'
@@ -254,7 +254,7 @@ export const ConnectionsSettings = ({
                           className="rounded-sm p-1.5 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset disabled:opacity-50 dark:text-surface-400 dark:hover:bg-surface-600"
                         >
                           {isTesting ? (
-                            <Loader2 className="h-5 w-5 motion-safe:animate-spin" />
+                            <LoadingSpinner className="h-5 w-5" />
                           ) : (
                             <Activity className="h-5 w-5" />
                           )}

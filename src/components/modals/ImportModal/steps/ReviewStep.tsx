@@ -6,8 +6,8 @@ import ChevronDown from 'lucide-react/icons/chevron-down';
 import ChevronRight from 'lucide-react/icons/chevron-right';
 import Circle from 'lucide-react/icons/circle';
 import Flag from 'lucide-react/icons/flag';
-import Loader2 from 'lucide-react/icons/loader-2';
 import { useState } from 'react';
+import { LoadingSpinner } from '$components/LoadingSpinner';
 import type { Calendar } from '$types/calendar';
 import type { ParsedTaskWithStatus } from '$types/task/import';
 
@@ -134,7 +134,7 @@ export const ReviewStep = ({
               >
                 <div className="shrink-0">
                   {task.importStatus === 'importing' ? (
-                    <Loader2 className="h-4 w-4 text-primary-ink motion-safe:animate-spin" />
+                    <LoadingSpinner className="h-4 w-4 text-primary-ink" />
                   ) : task.importStatus === 'success' ? (
                     <CheckCircle className="h-4 w-4 text-semantic-success" />
                   ) : task.importStatus === 'error' ? (
