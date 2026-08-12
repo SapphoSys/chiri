@@ -32,8 +32,11 @@ describe('TaskItemBadge', () => {
     expect(badge.className).toContain('dark:text-surface-300');
     expect(badge.className).not.toContain('text-primary');
     expect(badge.style.borderColor).toBe('rgb(59, 130, 246)');
-    expect(badge.style.backgroundColor).toBe(
-      'color-mix(in oklab, rgb(59, 130, 246) 15%, transparent)',
+    expect(badge.style.getPropertyValue('--task-item-badge-background')).toBe(
+      'color-mix(in oklab, #3b82f6 15%, transparent)',
+    );
+    expect(badge.style.getPropertyValue('--task-item-badge-hover-background')).toBe(
+      'color-mix(in oklab, #3b82f6 25%, transparent)',
     );
   });
 
@@ -81,6 +84,18 @@ describe('TaskItemBadge', () => {
 
     await act(async () => badge?.click());
     expect(onClick).toHaveBeenCalledOnce();
+  });
+
+  it('does not animate the whole badge through opacity on hover', async () => {
+    await act(async () => {
+      root.render(createElement(TaskItemBadge, { onClick: vi.fn() }, 'Home'));
+    });
+
+    const badge = container.querySelector('button');
+    expect(badge?.className).toContain('task-item-badge-interactive');
+    expect(badge?.className).toContain('transition-colors');
+    expect(badge?.className).not.toContain('transition-opacity');
+    expect(badge?.className).not.toContain('hover:opacity-80');
   });
 
   it('uses the shared tooltip instead of a native title when provided', async () => {

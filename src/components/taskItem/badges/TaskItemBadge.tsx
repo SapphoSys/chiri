@@ -14,6 +14,11 @@ interface TaskItemBadgeProps {
   onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
 }
 
+type TaskItemBadgeStyle = CSSProperties & {
+  '--task-item-badge-background'?: string;
+  '--task-item-badge-hover-background'?: string;
+};
+
 const BASE_CLASS_NAME =
   'inline-flex items-center gap-1 rounded-sm border px-2 py-0.5 font-medium text-surface-700 text-xs dark:text-surface-300';
 
@@ -27,10 +32,23 @@ const TONE_CLASS_NAMES: Record<BadgeTone, string> = {
   'in-process': 'border-status-in-process bg-status-in-process/15',
 };
 
-const getColorTint = (color: string) => `color-mix(in oklab, ${color} 15%, transparent)`;
+const TONE_HOVER_CLASS_NAMES: Record<BadgeTone, string> = {
+  neutral: 'hover:bg-surface-200 dark:hover:bg-surface-600',
+  primary: 'hover:bg-primary-500/25',
+  info: 'hover:bg-semantic-info/20',
+  'due-today': 'hover:bg-semantic-due-today/20',
+  warning: 'hover:bg-semantic-warning/20',
+  error: 'hover:bg-semantic-error/20',
+  'in-process': 'hover:bg-status-in-process/20',
+};
+
+const getColorTint = (color: string, percentage: number) =>
+  `color-mix(in oklab, ${color} ${percentage}%, transparent)`;
 
 const getClassName = (color: string | undefined, tone: BadgeTone, className: string | undefined) =>
-  [BASE_CLASS_NAME, color ? '' : TONE_CLASS_NAMES[tone], className ?? ''].filter(Boolean).join(' ');
+  [BASE_CLASS_NAME, color ? 'task-item-badge-colored' : TONE_CLASS_NAMES[tone], className ?? '']
+    .filter(Boolean)
+    .join(' ');
 
 export const TaskItemBadge = ({
   children,
@@ -43,8 +61,12 @@ export const TaskItemBadge = ({
   ariaLabel,
   onClick,
 }: TaskItemBadgeProps) => {
-  const style: CSSProperties | undefined = color
-    ? { borderColor: color, backgroundColor: getColorTint(color) }
+  const style: TaskItemBadgeStyle | undefined = color
+    ? {
+        borderColor: color,
+        '--task-item-badge-background': getColorTint(color, 15),
+        '--task-item-badge-hover-background': getColorTint(color, 25),
+      }
     : undefined;
   const sharedProps = {
     className: getClassName(color, tone, className),
@@ -58,7 +80,7 @@ export const TaskItemBadge = ({
       {...sharedProps}
       onClick={onClick}
       aria-label={ariaLabel}
-      className={`${sharedProps.className} cursor-pointer outline-hidden transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset`}
+      className={`${sharedProps.className} ${color ? '' : TONE_HOVER_CLASS_NAMES[tone]} task-item-badge-interactive cursor-pointer outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset`}
     >
       {children}
     </button>
