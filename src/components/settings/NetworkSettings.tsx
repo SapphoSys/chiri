@@ -1,6 +1,7 @@
 import CheckCircle2 from 'lucide-react/icons/check-circle-2';
 import Info from 'lucide-react/icons/info';
 import Play from 'lucide-react/icons/play';
+import TriangleAlert from 'lucide-react/icons/triangle-alert';
 import XCircle from 'lucide-react/icons/x-circle';
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { LoadingSpinner } from '$components/LoadingSpinner';
@@ -148,8 +149,8 @@ export const NetworkSettings = () => {
         </label>
 
         {!connectivityCheckEnabled && (
-          <div className="mx-4 mb-4 flex gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
-            <Info className="mt-px size-3.5 shrink-0 text-semantic-info" />
+          <div className="mx-4 mb-4 flex gap-2 rounded-lg border border-semantic-warning/30 bg-semantic-warning/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
+            <TriangleAlert className="mt-px size-3.5 shrink-0 text-semantic-warning" />
             <span>
               Only CalDAV probes will be used. If every configured server is unreachable, Chiri will
               report offline.
