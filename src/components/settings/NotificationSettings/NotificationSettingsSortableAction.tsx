@@ -65,6 +65,7 @@ export const NotificationSettingsSortableAction = ({
   };
 
   const isSnooze = action.key === 'snooze';
+  const toggleId = `notification-action-${action.key}-${isOverlay ? 'overlay' : 'setting'}`;
 
   const updateSnoozeDuration = (id: string, value: number, unit: SnoozeDuration['unit']) => {
     if (!snoozeDurations) return;
@@ -129,23 +130,24 @@ export const NotificationSettingsSortableAction = ({
     <div ref={setNodeRef} style={style} className="bg-white dark:bg-surface-800">
       {showBorder && <div className="border-surface-300 border-t dark:border-surface-700" />}
       <div className="flex items-center justify-between gap-4 p-4">
-        <div className="flex min-w-0 items-center gap-3">
-          <button
-            type="button"
-            className="shrink-0 cursor-grab rounded-sm text-surface-500 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink active:cursor-grabbing dark:text-surface-500"
-            aria-label={`Reorder ${action.label}`}
-            {...attributes}
-            {...listeners}
-          >
-            <GripVertical className="h-4 w-4" />
-          </button>
+        <button
+          type="button"
+          className="shrink-0 cursor-grab rounded-sm text-surface-500 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink active:cursor-grabbing dark:text-surface-500"
+          aria-label={`Reorder ${action.label}`}
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical className="h-4 w-4" />
+        </button>
+        <label htmlFor={toggleId} className="flex min-w-0 flex-1 cursor-pointer items-center gap-3">
           <span className="shrink-0 text-surface-500 dark:text-surface-500">{action.icon}</span>
           <div className="min-w-0">
             <p className="text-sm text-surface-700 dark:text-surface-300">{action.label}</p>
             <p className="text-surface-500 text-xs dark:text-surface-400">{action.description}</p>
           </div>
-        </div>
+        </label>
         <input
+          id={toggleId}
           type="checkbox"
           checked={checked}
           onChange={(e) => onToggle(action.key, e.target.checked)}
