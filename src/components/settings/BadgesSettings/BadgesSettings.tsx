@@ -2,6 +2,7 @@ import {
   closestCenter,
   DndContext,
   type DragEndEvent,
+  type Modifier,
   PointerSensor,
   useSensor,
   useSensors,
@@ -17,6 +18,7 @@ import RefreshCw from 'lucide-react/icons/refresh-cw';
 import RotateCcw from 'lucide-react/icons/rotate-ccw';
 import Tag from 'lucide-react/icons/tag';
 import Timer from 'lucide-react/icons/timer';
+import { useCallback, useRef } from 'react';
 import { BadgesSettingsPreview } from '$components/settings/BadgesSettings/BadgesSettingsPreview';
 import {
   type BadgeConfig,
@@ -89,6 +91,7 @@ export const BadgesSettings = () => {
   const { taskBadgeVisibility, taskBadgeOrder, setTaskBadgeVisibility, setTaskBadgeOrder } =
     useSettingsStore();
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  const badgesDragBoundsRef = useRef<HTMLDivElement>(null);
   const orderedBadges = taskBadgeOrder
     .map((key) => BADGE_MAP.get(key))
     .filter(Boolean) as BadgeConfig[];
@@ -104,6 +107,23 @@ export const BadgesSettings = () => {
     if (oldIndex === -1 || newIndex === -1) return;
     setTaskBadgeOrder(arrayMove(taskBadgeOrder, oldIndex, newIndex));
   };
+
+  const restrictBadgeDragToSection = useCallback<Modifier>(({ draggingNodeRect, transform }) => {
+    const bounds = badgesDragBoundsRef.current?.getBoundingClientRect();
+    if (!bounds || !draggingNodeRect) return transform;
+
+    return {
+      ...transform,
+      x: Math.min(
+        Math.max(transform.x, bounds.left - draggingNodeRect.left),
+        bounds.right - draggingNodeRect.right,
+      ),
+      y: Math.min(
+        Math.max(transform.y, bounds.top - draggingNodeRect.top),
+        bounds.bottom - draggingNodeRect.bottom,
+      ),
+    };
+  }, []);
 
   const handleReset = () => {
     setTaskBadgeVisibility(defaultState.taskBadgeVisibility);
@@ -131,8 +151,16 @@ export const BadgesSettings = () => {
         )}
       </div>
       <BadgesSettingsPreview />
-      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <div
+        ref={badgesDragBoundsRef}
+        className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800"
+      >
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          modifiers={[restrictBadgeDragToSection]}
+          onDragEnd={handleDragEnd}
+        >
           <SortableContext items={taskBadgeOrder} strategy={verticalListSortingStrategy}>
             {orderedBadges.map((badge, index) => (
               <BadgesSettingsSortableBadges

@@ -2,6 +2,7 @@ import {
   closestCenter,
   DndContext,
   type DragEndEvent,
+  type Modifier,
   PointerSensor,
   useSensor,
   useSensors,
@@ -19,6 +20,7 @@ import RefreshCw from 'lucide-react/icons/refresh-cw';
 import RotateCcw from 'lucide-react/icons/rotate-ccw';
 import Tag from 'lucide-react/icons/tag';
 import Timer from 'lucide-react/icons/timer';
+import { useCallback, useRef } from 'react';
 import {
   EditorSettingsSortableFields,
   type FieldConfig,
@@ -102,6 +104,7 @@ export const EditorSettings = () => {
   const { editorFieldVisibility, editorFieldOrder, setEditorFieldVisibility, setEditorFieldOrder } =
     useSettingsStore();
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  const editorFieldsDragBoundsRef = useRef<HTMLDivElement>(null);
   const orderedFields = editorFieldOrder
     .map((key) => FIELD_MAP.get(key))
     .filter(Boolean) as FieldConfig[];
@@ -117,6 +120,26 @@ export const EditorSettings = () => {
     if (oldIndex === -1 || newIndex === -1) return;
     setEditorFieldOrder(arrayMove(editorFieldOrder, oldIndex, newIndex));
   };
+
+  const restrictEditorFieldDragToSection = useCallback<Modifier>(
+    ({ draggingNodeRect, transform }) => {
+      const bounds = editorFieldsDragBoundsRef.current?.getBoundingClientRect();
+      if (!bounds || !draggingNodeRect) return transform;
+
+      return {
+        ...transform,
+        x: Math.min(
+          Math.max(transform.x, bounds.left - draggingNodeRect.left),
+          bounds.right - draggingNodeRect.right,
+        ),
+        y: Math.min(
+          Math.max(transform.y, bounds.top - draggingNodeRect.top),
+          bounds.bottom - draggingNodeRect.bottom,
+        ),
+      };
+    },
+    [],
+  );
 
   const handleReset = () => {
     setEditorFieldVisibility(defaultState.editorFieldVisibility);
@@ -146,8 +169,16 @@ export const EditorSettings = () => {
         )}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <div
+        ref={editorFieldsDragBoundsRef}
+        className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800"
+      >
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          modifiers={[restrictEditorFieldDragToSection]}
+          onDragEnd={handleDragEnd}
+        >
           <SortableContext items={editorFieldOrder} strategy={verticalListSortingStrategy}>
             {orderedFields.map((field, index) => (
               <EditorSettingsSortableFields

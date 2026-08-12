@@ -2,6 +2,7 @@ import {
   closestCenter,
   DndContext,
   type DragEndEvent,
+  type Modifier,
   PointerSensor,
   useSensor,
   useSensors,
@@ -11,6 +12,7 @@ import Cloud from 'lucide-react/icons/cloud';
 import Filter from 'lucide-react/icons/filter';
 import HardDrive from 'lucide-react/icons/hard-drive';
 import Tags from 'lucide-react/icons/tags';
+import { useCallback, useRef } from 'react';
 import { Select } from '$components/Select';
 import {
   type NavigationSectionConfig,
@@ -68,6 +70,7 @@ export const NavigationSettings = () => {
   } = useSettingsStore();
   const { data: filters = [] } = useFilters();
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  const sidebarSectionsDragBoundsRef = useRef<HTMLDivElement>(null);
   const orderedSections = sidebarSectionOrder
     .map((key) => SECTION_MAP.get(key))
     .filter(Boolean) as NavigationSectionConfig[];
@@ -98,6 +101,23 @@ export const NavigationSettings = () => {
     if (oldIndex === -1 || newIndex === -1) return;
     setSidebarSectionOrder(arrayMove(sidebarSectionOrder, oldIndex, newIndex));
   };
+
+  const restrictSectionDragToSection = useCallback<Modifier>(({ draggingNodeRect, transform }) => {
+    const bounds = sidebarSectionsDragBoundsRef.current?.getBoundingClientRect();
+    if (!bounds || !draggingNodeRect) return transform;
+
+    return {
+      ...transform,
+      x: Math.min(
+        Math.max(transform.x, bounds.left - draggingNodeRect.left),
+        bounds.right - draggingNodeRect.right,
+      ),
+      y: Math.min(
+        Math.max(transform.y, bounds.top - draggingNodeRect.top),
+        bounds.bottom - draggingNodeRect.bottom,
+      ),
+    };
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -159,10 +179,14 @@ export const NavigationSettings = () => {
         Sidebar sections
       </h4>
 
-      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
+      <div
+        ref={sidebarSectionsDragBoundsRef}
+        className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800"
+      >
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
+          modifiers={[restrictSectionDragToSection]}
           onDragEnd={handleSectionDragEnd}
         >
           <SortableContext items={sidebarSectionOrder} strategy={verticalListSortingStrategy}>
