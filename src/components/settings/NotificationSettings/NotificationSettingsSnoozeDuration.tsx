@@ -21,6 +21,7 @@ export const NotificationSettingsSnoozeDuration = ({
 }: NotificationSettingsSnoozeDurationProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: duration.id,
+    disabled,
   });
 
   const style: CSSProperties = {
@@ -35,7 +36,7 @@ export const NotificationSettingsSnoozeDuration = ({
       <div className="flex min-w-0 items-center gap-2">
         <button
           type="button"
-          className="shrink-0 cursor-grab rounded-sm text-surface-500 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink active:cursor-grabbing dark:text-surface-400"
+          className={`shrink-0 rounded-sm text-surface-500 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink dark:text-surface-400 ${disabled ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'}`}
           aria-label={`Reorder snooze duration ${duration.value} ${duration.unit}`}
           {...attributes}
           {...listeners}

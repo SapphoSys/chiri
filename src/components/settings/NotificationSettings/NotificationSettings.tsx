@@ -12,6 +12,7 @@ import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-ki
 import AlarmClock from 'lucide-react/icons/alarm-clock';
 import CheckSquare from 'lucide-react/icons/check-square';
 import Info from 'lucide-react/icons/info';
+import TriangleAlert from 'lucide-react/icons/triangle-alert';
 import { useState } from 'react';
 import { MacNotificationCard } from '$components/MacNotificationCard';
 import { TimePickerModal } from '$components/modals/TimePickerModal';
@@ -330,18 +331,30 @@ export const NotificationSettings = () => {
       <h4 className="font-semibold text-sm text-surface-700 dark:text-surface-300">
         Notification actions
       </h4>
-      <div className="flex items-start gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
-        <Info className="mt-0.5 size-3.5 shrink-0 text-semantic-info" />
-        <div className="space-y-1">
-          <p>{platformActionWarning}</p>
-          <p>
-            Chiri limits notifications to {MAX_NOTIFICATION_ACTIONS} actions (for example, Complete
-            plus up to {MAX_NOTIFICATION_ACTIONS - 1} snooze durations). For practical purposes,
-            it's recommended to keep the number of notification actions active short.
-          </p>
+      {macPermissionPending ? (
+        <div className="flex items-start gap-2 rounded-lg border border-semantic-warning/30 bg-semantic-warning/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
+          <TriangleAlert className="mt-0.5 size-3.5 shrink-0 text-semantic-warning" />
+          <span>
+            Notification actions are disabled until notification permissions are granted. Use the
+            controls above to grant permission.
+          </span>
         </div>
-      </div>
-      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
+      ) : (
+        <div className="flex items-start gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
+          <Info className="mt-0.5 size-3.5 shrink-0 text-semantic-info" />
+          <div className="space-y-1">
+            <p>{platformActionWarning}</p>
+            <p>
+              Chiri limits notifications to {MAX_NOTIFICATION_ACTIONS} actions (for example,
+              Complete plus up to {MAX_NOTIFICATION_ACTIONS - 1} snooze durations). For practical
+              purposes, it's recommended to keep the number of notification actions active short.
+            </p>
+          </div>
+        </div>
+      )}
+      <div
+        className={`overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800 ${macPermissionPending ? 'cursor-not-allowed opacity-50' : ''}`}
+      >
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}

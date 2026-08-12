@@ -54,6 +54,7 @@ export const NotificationSettingsSortableAction = ({
 }: NotificationSettingsSortableActionProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: action.key,
+    disabled,
   });
   const snoozeDurationDragBoundsRef = useRef<HTMLDivElement>(null);
 
@@ -132,14 +133,17 @@ export const NotificationSettingsSortableAction = ({
       <div className="flex items-center justify-between gap-4 p-4">
         <button
           type="button"
-          className="shrink-0 cursor-grab rounded-sm text-surface-500 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink active:cursor-grabbing dark:text-surface-500"
+          className={`shrink-0 rounded-sm text-surface-500 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink dark:text-surface-500 ${disabled ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'}`}
           aria-label={`Reorder ${action.label}`}
           {...attributes}
           {...listeners}
         >
           <GripVertical className="h-4 w-4" />
         </button>
-        <label htmlFor={toggleId} className="flex min-w-0 flex-1 cursor-pointer items-center gap-3">
+        <label
+          htmlFor={toggleId}
+          className={`flex min-w-0 flex-1 items-center gap-3 ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+        >
           <span className="shrink-0 text-surface-500 dark:text-surface-500">{action.icon}</span>
           <div className="min-w-0">
             <p className="text-sm text-surface-700 dark:text-surface-300">{action.label}</p>
