@@ -23,7 +23,7 @@ export const AppImageIntegrationModal = ({
       backdropClassName="bg-black/35 backdrop-blur-md"
       footer={
         <div className="flex w-full justify-end gap-2">
-          <ModalButton variant="secondary" onClick={onSkip} disabled={isIntegrating}>
+          <ModalButton variant="ghost" onClick={onSkip} disabled={isIntegrating}>
             Not now
           </ModalButton>
           <ModalButton onClick={onIntegrate} disabled={isIntegrating}>

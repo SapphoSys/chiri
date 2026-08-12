@@ -1,4 +1,3 @@
-import X from 'lucide-react/icons/x';
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
@@ -130,14 +129,13 @@ export const KeyboardShortcutModal = ({
       footerLeft={
         canClear ? (
           <ModalButton variant="ghost" onClick={handleClear}>
-            <X className="h-4 w-4" />
-            Clear shortcut
+            Clear
           </ModalButton>
         ) : undefined
       }
       footer={
         <>
-          <ModalButton variant="secondary" onClick={onClose}>
+          <ModalButton variant="ghost" onClick={onClose}>
             Cancel
           </ModalButton>
           <ModalButton

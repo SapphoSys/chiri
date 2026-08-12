@@ -174,18 +174,14 @@ export const ExportModal = ({
       size="md"
       zIndex="z-60"
       footerLeft={
-        <ModalButton
-          variant="secondary"
-          onClick={handleCopyToClipboard}
-          disabled={tasks.length === 0}
-        >
+        <ModalButton variant="ghost" onClick={handleCopyToClipboard} disabled={tasks.length === 0}>
           <Copy className="h-4 w-4" />
           {copied ? 'Copied!' : 'Copy'}
         </ModalButton>
       }
       footer={
         <>
-          <ModalButton variant="secondary" onClick={onClose}>
+          <ModalButton variant="ghost" onClick={onClose}>
             Cancel
           </ModalButton>
           <ModalButton onClick={handleExportToFile} disabled={exporting || tasks.length === 0}>

@@ -100,7 +100,7 @@ export const ConfirmDialogModal = ({
       escapeLayerType="confirm-dialog"
       footer={
         <>
-          <ModalButton variant="secondary" onClick={onCancel} disabled={isLoading}>
+          <ModalButton variant="ghost" onClick={onCancel} disabled={isLoading}>
             {cancelLabel}
           </ModalButton>
           {alternateLabel && onAlternate && (

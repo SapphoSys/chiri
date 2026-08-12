@@ -1,5 +1,4 @@
 import ArrowRight from 'lucide-react/icons/arrow-right';
-import Plus from 'lucide-react/icons/plus';
 import { ModalButton } from '$components/ModalButton';
 
 interface OnboardingModalFooterProps {
@@ -25,9 +24,8 @@ export const OnboardingModalFooter = ({
 }: OnboardingModalFooterProps) => (
   <div className="flex items-center gap-2">
     {hasConnectedCalDAVHome && isHomeStep && (
-      <ModalButton variant="secondary" onClick={onAddAccount} className={footerButtonClassName}>
+      <ModalButton variant="ghost" onClick={onAddAccount} className={footerButtonClassName}>
         Add more
-        <Plus className="h-4 w-4" />
       </ModalButton>
     )}
     <ModalButton variant="ghost" onClick={onSkip} className={footerButtonClassName}>

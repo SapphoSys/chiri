@@ -68,7 +68,7 @@ export const MobileConfigExportModal = ({
       initialFocus="dialog"
       footerLeft={
         <ModalButton
-          variant="secondary"
+          variant="ghost"
           onClick={handleShare}
           disabled={!eligibility.eligible || isSharing}
         >
@@ -78,7 +78,7 @@ export const MobileConfigExportModal = ({
       }
       footer={
         <>
-          <ModalButton variant="secondary" onClick={onClose}>
+          <ModalButton variant="ghost" onClick={onClose}>
             Cancel
           </ModalButton>
           <ModalButton onClick={() => onConfirm(includePassword)} disabled={!eligibility.eligible}>

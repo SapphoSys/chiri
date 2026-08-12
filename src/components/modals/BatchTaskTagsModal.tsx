@@ -198,7 +198,7 @@ export const BatchTaskTagsModal = ({
         contentPadding={false}
         footer={
           <>
-            <ModalButton variant="secondary" onClick={handleCancel}>
+            <ModalButton variant="ghost" onClick={handleCancel}>
               Cancel
             </ModalButton>
             <ModalButton variant="primary" onClick={handleDone} disabled={!hasChanges}>

@@ -66,7 +66,7 @@ export const renderAccountModalFooter = ({
 }: AccountModalFooterProps): ReactNode => {
   const testConnectionButton = (
     <ModalButton
-      variant="secondary"
+      variant="ghost"
       onClick={onTestConnection}
       disabled={
         isTesting ||
@@ -92,7 +92,7 @@ export const renderAccountModalFooter = ({
     if (account && step === 'credentials') return testConnectionButton;
     if (!account && step !== 'pick-type' && !isProcessing && onBack) {
       return (
-        <ModalButton variant="secondary" onClick={onBack}>
+        <ModalButton variant="ghost" onClick={onBack}>
           <ArrowLeft className="h-4 w-4" />
           Back
         </ModalButton>
@@ -158,7 +158,7 @@ export const renderAccountModalFooter = ({
   if (account) {
     return (
       <>
-        <ModalButton variant="secondary" onClick={onClose}>
+        <ModalButton variant="ghost" onClick={onClose}>
           Cancel
         </ModalButton>
         <ModalButton

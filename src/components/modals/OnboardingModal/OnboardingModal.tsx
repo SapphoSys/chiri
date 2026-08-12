@@ -235,7 +235,7 @@ export const OnboardingModal = ({
   const footerButtonClassName = 'h-9';
   const footerLeft = (
     <ModalButton
-      variant="secondary"
+      variant="ghost"
       onClick={handleBack}
       disabled={currentStep === 0}
       className={`${footerButtonClassName} ${currentStep === 0 ? 'pointer-events-none invisible' : ''}`}
