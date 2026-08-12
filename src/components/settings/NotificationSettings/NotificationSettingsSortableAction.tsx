@@ -1,15 +1,25 @@
-import { useSortable } from '@dnd-kit/sortable';
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  type Modifier,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import GripVertical from 'lucide-react/icons/grip-vertical';
 import TriangleAlert from 'lucide-react/icons/triangle-alert';
-import type { CSSProperties, ReactNode } from 'react';
-import { Select } from '$components/Select';
+import { type CSSProperties, type ReactNode, useCallback, useRef } from 'react';
+import { NotificationSettingsSnoozeDuration } from '$components/settings/NotificationSettings/NotificationSettingsSnoozeDuration';
 import { MAX_NOTIFICATION_ACTIONS } from '$constants';
-import {
-  clampSnoozeDurationValue,
-  getMaxSnoozeDurationValue,
-  SNOOZE_DURATION_UNITS,
-} from '$lib/notifications/duration';
+import { clampSnoozeDurationValue } from '$lib/notifications/duration';
 import type { NotificationActionKey, SnoozeDuration } from '$types/notifications/settings';
 
 export type NotificationActionConfig = {
@@ -45,6 +55,7 @@ export const NotificationSettingsSortableAction = ({
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: action.key,
   });
+  const snoozeDurationDragBoundsRef = useRef<HTMLDivElement>(null);
 
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -65,20 +76,6 @@ export const NotificationSettingsSortableAction = ({
     onSnoozeDurationsChange?.(next);
   };
 
-  const updateSnoozeValue = (id: string, value: number) => {
-    if (!snoozeDurations) return;
-    const duration = snoozeDurations.find((d) => d.id === id);
-    if (!duration) return;
-    updateSnoozeDuration(id, value, duration.unit);
-  };
-
-  const updateSnoozeUnit = (id: string, unit: SnoozeDuration['unit']) => {
-    if (!snoozeDurations) return;
-    const duration = snoozeDurations.find((d) => d.id === id);
-    if (!duration) return;
-    updateSnoozeDuration(id, duration.value, unit);
-  };
-
   const removeSnoozeDuration = (id: string) => {
     if (!snoozeDurations) return;
     const next = snoozeDurations.filter((duration) => duration.id !== id);
@@ -87,6 +84,37 @@ export const NotificationSettingsSortableAction = ({
 
   const maxSnoozeDurations = complete ? MAX_NOTIFICATION_ACTIONS - 1 : MAX_NOTIFICATION_ACTIONS;
   const canAddSnoozeDuration = !snoozeDurations || snoozeDurations.length < maxSnoozeDurations;
+  const snoozeDurationSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+  );
+
+  const handleSnoozeDurationDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id || !snoozeDurations) return;
+    const oldIndex = snoozeDurations.findIndex((duration) => duration.id === active.id);
+    const newIndex = snoozeDurations.findIndex((duration) => duration.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+    onSnoozeDurationsChange?.(arrayMove(snoozeDurations, oldIndex, newIndex));
+  };
+
+  const restrictSnoozeDurationDragToSection = useCallback<Modifier>(
+    ({ draggingNodeRect, transform }) => {
+      const bounds = snoozeDurationDragBoundsRef.current?.getBoundingClientRect();
+      if (!bounds || !draggingNodeRect) return transform;
+
+      return {
+        ...transform,
+        x: Math.min(
+          Math.max(transform.x, bounds.left - draggingNodeRect.left),
+          bounds.right - draggingNodeRect.right,
+        ),
+        y: Math.min(
+          Math.max(transform.y, bounds.top - draggingNodeRect.top),
+          bounds.bottom - draggingNodeRect.bottom,
+        ),
+      };
+    },
+    [],
+  );
 
   const addSnoozeDuration = () => {
     if (!canAddSnoozeDuration) return;
@@ -145,49 +173,29 @@ export const NotificationSettingsSortableAction = ({
                   </span>
                 </div>
               )}
-              {snoozeDurations?.map((duration) => (
-                <div key={duration.id} className="flex items-center justify-between gap-2">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      min={1}
-                      max={getMaxSnoozeDurationValue(duration.unit)}
-                      value={duration.value}
-                      onChange={(e) => {
-                        const parsed = parseInt(e.target.value, 10);
-                        updateSnoozeValue(
-                          duration.id,
-                          Number.isInteger(parsed) && parsed > 0 ? parsed : 1,
-                        );
-                      }}
-                      disabled={disabled}
-                      className="w-20 shrink-0 rounded-lg border border-surface-300 bg-surface-50 px-3 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-ink focus:bg-white disabled:cursor-not-allowed dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
-                    />
-                    <Select
-                      value={duration.unit}
-                      onChange={(e) =>
-                        updateSnoozeUnit(duration.id, e.target.value as SnoozeDuration['unit'])
-                      }
-                      disabled={disabled}
-                      className="shrink-0 rounded-lg border border-surface-300 bg-surface-50 px-2 py-1.5 text-sm text-surface-800 outline-none transition-colors focus:border-primary-ink focus:bg-white disabled:cursor-not-allowed dark:border-surface-600 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
-                    >
-                      {SNOOZE_DURATION_UNITS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </Select>
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => removeSnoozeDuration(duration.id)}
-                    disabled={disabled}
-                    className="text-sm text-surface-500 hover:text-red-500 disabled:cursor-not-allowed dark:text-surface-400 dark:hover:text-red-400"
+              <DndContext
+                sensors={snoozeDurationSensors}
+                collisionDetection={closestCenter}
+                modifiers={[restrictSnoozeDurationDragToSection]}
+                onDragEnd={handleSnoozeDurationDragEnd}
+              >
+                <div ref={snoozeDurationDragBoundsRef} className="space-y-2">
+                  <SortableContext
+                    items={snoozeDurations?.map((duration) => duration.id) ?? []}
+                    strategy={verticalListSortingStrategy}
                   >
-                    Remove
-                  </button>
+                    {snoozeDurations?.map((duration) => (
+                      <NotificationSettingsSnoozeDuration
+                        key={duration.id}
+                        duration={duration}
+                        disabled={disabled}
+                        onChange={updateSnoozeDuration}
+                        onRemove={removeSnoozeDuration}
+                      />
+                    ))}
+                  </SortableContext>
                 </div>
-              ))}
+              </DndContext>
               <button
                 type="button"
                 onClick={addSnoozeDuration}
