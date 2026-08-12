@@ -67,7 +67,7 @@ export const setNotificationActionConfig = async (config: NotificationActionSett
   await invoke('set_notification_action_config', {
     config: {
       showComplete: config.complete,
-      showSnooze: config.snooze,
+      showSnooze: config.snooze && config.snoozeDurations.length > 0,
       snoozeDurations: config.snoozeDurations.map((duration) => snoozeDurationToSeconds(duration)),
       actionOrder: config.order,
     },

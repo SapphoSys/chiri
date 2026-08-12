@@ -1,6 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import GripVertical from 'lucide-react/icons/grip-vertical';
+import TriangleAlert from 'lucide-react/icons/triangle-alert';
 import type { CSSProperties, ReactNode } from 'react';
 import { Select } from '$components/Select';
 import { MAX_NOTIFICATION_ACTIONS } from '$constants';
@@ -79,7 +80,7 @@ export const NotificationSettingsSortableAction = ({
   };
 
   const removeSnoozeDuration = (id: string) => {
-    if (!snoozeDurations || snoozeDurations.length <= 1) return;
+    if (!snoozeDurations) return;
     const next = snoozeDurations.filter((duration) => duration.id !== id);
     onSnoozeDurationsChange?.(next);
   };
@@ -136,6 +137,14 @@ export const NotificationSettingsSortableAction = ({
                   </p>
                 </div>
               </div>
+              {snoozeDurations?.length === 0 && (
+                <div className="flex gap-2 rounded-lg border border-semantic-warning/30 bg-semantic-warning/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
+                  <TriangleAlert className="mt-px size-3.5 shrink-0 text-semantic-warning" />
+                  <span>
+                    Snooze is disabled as a notification action until you add at least one duration.
+                  </span>
+                </div>
+              )}
               {snoozeDurations?.map((duration) => (
                 <div key={duration.id} className="flex items-center justify-between gap-2">
                   <label className="flex items-center gap-2">
@@ -169,16 +178,14 @@ export const NotificationSettingsSortableAction = ({
                       ))}
                     </Select>
                   </label>
-                  {snoozeDurations.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeSnoozeDuration(duration.id)}
-                      disabled={disabled}
-                      className="text-sm text-surface-500 hover:text-red-500 disabled:cursor-not-allowed dark:text-surface-400 dark:hover:text-red-400"
-                    >
-                      Remove
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeSnoozeDuration(duration.id)}
+                    disabled={disabled}
+                    className="text-sm text-surface-500 hover:text-red-500 disabled:cursor-not-allowed dark:text-surface-400 dark:hover:text-red-400"
+                  >
+                    Remove
+                  </button>
                 </div>
               ))}
               <button
