@@ -267,7 +267,7 @@ export const Header = ({
             placeholder={`Search tasks... (${searchShortcut})`}
             value={searchQuery}
             onChange={(value) => setSearchQueryMutation.mutate(value)}
-            className="w-full rounded-lg border border-surface-300 bg-white py-2 pr-4 pl-9 text-sm text-surface-800 outline-hidden transition-colors placeholder:text-surface-400 hover:border-surface-400 focus:border-primary-ink focus:bg-white dark:border-surface-700 dark:bg-surface-800/80 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:border-surface-600"
+            className="w-full rounded-lg border border-surface-300 bg-white py-2 pr-4 pl-9 text-sm text-surface-800 outline-hidden transition-colors placeholder:text-surface-400 hover:border-surface-400 focus:border-primary-ink focus:bg-white focus:hover:border-primary-ink dark:border-surface-700 dark:bg-surface-800/80 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:border-surface-600 dark:focus:hover:border-primary-ink"
           />
         </div>
 
