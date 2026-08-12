@@ -46,6 +46,7 @@ export default defineConfig({
             'src/tests/components/MobileConfigSignatureWarning.test.tsx',
             'src/tests/components/ToastTitle.test.tsx',
             'src/tests/components/TaskDefaultsSettings.test.tsx',
+            'src/tests/components/SyncSettings.test.tsx',
             'src/tests/components/TaskLayoutSettings.test.tsx',
             'src/tests/components/ModalWrapper.test.tsx',
             'src/tests/components/Tooltip.test.tsx',

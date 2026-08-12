@@ -78,12 +78,15 @@ export const SyncSettings = () => {
   const { data: accounts = [] } = useAccounts();
   const caldavAccounts = accounts.filter((account) => account.caldav);
   const hasCalDAVAccounts = caldavAccounts.length > 0;
-  const isSyncInProgress = isSyncing || syncingCalendarId !== null;
-  const syncingCalendarName = syncingCalendarId
-    ? (caldavAccounts
-        .flatMap((account) => account.calendars)
-        .find((calendar) => calendar.id === syncingCalendarId)?.displayName ?? null)
+  const syncingAccount = syncingCalendarId
+    ? (caldavAccounts.find((account) =>
+        account.calendars.some((calendar) => calendar.id === syncingCalendarId),
+      ) ?? null)
     : null;
+  const syncingCalendarName = syncingAccount?.calendars.find(
+    (calendar) => calendar.id === syncingCalendarId,
+  )?.displayName;
+  const isSyncInProgress = isSyncing || syncingCalendarId !== null;
   const lastSyncSourceLabel = lastSyncSource ? SYNC_SOURCE_LABELS[lastSyncSource] : null;
 
   return (
@@ -109,11 +112,12 @@ export const SyncSettings = () => {
               className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-ink disabled:cursor-not-allowed disabled:opacity-60 dark:bg-surface-700 dark:text-surface-200 dark:hover:bg-surface-600"
             >
               {isSyncInProgress ? (
-                <LoadingSpinner className="size-4" />
+                <RefreshCw className="size-4 animate-spin" />
               ) : (
                 <RefreshCw className="size-4" />
               )}
-              Sync now
+
+              {isSyncInProgress ? 'Syncing...' : 'Sync now'}
             </button>
           </div>
 
@@ -126,6 +130,7 @@ export const SyncSettings = () => {
                     {syncingCalendarName ? `Syncing ${syncingCalendarName}` : 'Syncing'}
                   </p>
                   <p className="text-surface-500 dark:text-surface-400">
+                    {syncingAccount ? `${syncingAccount.name} · ` : ''}
                     {syncProgress
                       ? `${syncProgress.current}/${syncProgress.total} calendars`
                       : 'Checking CalDAV accounts'}
