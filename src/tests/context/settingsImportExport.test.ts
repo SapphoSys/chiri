@@ -132,3 +132,25 @@ describe('editor field migration', () => {
     expect(imported?.editorFieldOrder.slice(0, 2)).toEqual(['progress', 'status']);
   });
 });
+
+describe('snooze duration limits', () => {
+  it('clamps imported durations to one year', async () => {
+    const { importSettings } = await import('$context/settingsImportExport');
+    const { defaultState } = await import('$context/settingsDefaults');
+
+    const imported = importSettings(
+      JSON.stringify({
+        version: 1,
+        notificationActions: {
+          complete: true,
+          snooze: true,
+          snoozeDurations: [{ id: 'too-long', value: Number.MAX_SAFE_INTEGER, unit: 'weeks' }],
+          order: ['complete', 'snooze'],
+        },
+      }),
+      defaultState,
+    );
+
+    expect(imported?.notificationActions.snoozeDurations[0].value).toBe(52);
+  });
+});

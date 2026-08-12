@@ -4,7 +4,11 @@ import GripVertical from 'lucide-react/icons/grip-vertical';
 import type { CSSProperties, ReactNode } from 'react';
 import { Select } from '$components/Select';
 import { MAX_NOTIFICATION_ACTIONS } from '$constants';
-import { SNOOZE_DURATION_UNITS } from '$lib/notifications/duration';
+import {
+  clampSnoozeDurationValue,
+  getMaxSnoozeDurationValue,
+  SNOOZE_DURATION_UNITS,
+} from '$lib/notifications/duration';
 import type { NotificationActionKey, SnoozeDuration } from '$types/notifications/settings';
 
 export type NotificationActionConfig = {
@@ -53,7 +57,9 @@ export const NotificationSettingsSortableAction = ({
   const updateSnoozeDuration = (id: string, value: number, unit: SnoozeDuration['unit']) => {
     if (!snoozeDurations) return;
     const next = snoozeDurations.map((duration) =>
-      duration.id === id ? { ...duration, value, unit } : duration,
+      duration.id === id
+        ? { ...duration, value: clampSnoozeDurationValue(value, unit), unit }
+        : duration,
     );
     onSnoozeDurationsChange?.(next);
   };
@@ -85,7 +91,7 @@ export const NotificationSettingsSortableAction = ({
     if (!canAddSnoozeDuration) return;
     const next = snoozeDurations ? [...snoozeDurations] : [];
     const last = next[next.length - 1];
-    const value = last ? last.value * 2 : 15;
+    const value = last ? clampSnoozeDurationValue(last.value * 2, last.unit) : 15;
     const unit = last?.unit ?? 'minutes';
     onSnoozeDurationsChange?.([...next, { id: crypto.randomUUID(), value, unit }]);
   };
@@ -126,7 +132,7 @@ export const NotificationSettingsSortableAction = ({
                 <div className="min-w-0">
                   <p className="text-sm text-surface-700 dark:text-surface-300">Snooze durations</p>
                   <p className="text-surface-500 text-xs dark:text-surface-400">
-                    Remind again after each duration
+                    Remind again after each duration. Each duration can be up to 1 year.
                   </p>
                 </div>
               </div>
@@ -136,6 +142,7 @@ export const NotificationSettingsSortableAction = ({
                     <input
                       type="number"
                       min={1}
+                      max={getMaxSnoozeDurationValue(duration.unit)}
                       value={duration.value}
                       onChange={(e) => {
                         const parsed = parseInt(e.target.value, 10);

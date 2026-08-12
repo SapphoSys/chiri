@@ -8,6 +8,9 @@ const SECONDS_PER_UNIT: Record<SnoozeDurationUnit, number> = {
   weeks: 60 * 60 * 24 * 7,
 };
 
+// keep snooze durations useful while ensuring they stay well within the native u32 limit
+export const MAX_SNOOZE_DURATION_SECONDS = 365 * 24 * 60 * 60;
+
 export const SNOOZE_DURATION_UNITS: Array<{ value: SnoozeDurationUnit; label: string }> = [
   { value: 'seconds', label: 'seconds' },
   { value: 'minutes', label: 'minutes' },
@@ -16,8 +19,16 @@ export const SNOOZE_DURATION_UNITS: Array<{ value: SnoozeDurationUnit; label: st
   { value: 'weeks', label: 'weeks' },
 ];
 
+export const getMaxSnoozeDurationValue = (unit: SnoozeDurationUnit) =>
+  Math.floor(MAX_SNOOZE_DURATION_SECONDS / SECONDS_PER_UNIT[unit]);
+
+export const clampSnoozeDurationValue = (value: number, unit: SnoozeDurationUnit) => {
+  const normalizedValue = Number.isFinite(value) ? Math.trunc(value) : 1;
+  return Math.min(Math.max(normalizedValue, 1), getMaxSnoozeDurationValue(unit));
+};
+
 export const snoozeDurationToSeconds = (duration: SnoozeDuration): number => {
-  return duration.value * SECONDS_PER_UNIT[duration.unit];
+  return clampSnoozeDurationValue(duration.value, duration.unit) * SECONDS_PER_UNIT[duration.unit];
 };
 
 export const secondsToSnoozeDuration = (totalSeconds: number): SnoozeDuration => {

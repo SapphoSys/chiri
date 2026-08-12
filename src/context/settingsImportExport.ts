@@ -1,5 +1,6 @@
 import { DEFAULT_SHORTCUTS, MAX_NOTIFICATION_ACTIONS } from '$constants';
 import { loggers } from '$lib/logger';
+import { clampSnoozeDurationValue } from '$lib/notifications/duration';
 import { getPercentCompleteForStatus } from '$lib/task/status';
 import type { NotificationActionSettings } from '$types/notifications/settings';
 import type { EditorFieldKey, EditorFieldVisibility } from '$types/settings/categories/editor';
@@ -74,7 +75,10 @@ export const clampSnoozeDurations = (actions: NotificationActionSettings) => {
   const maxSnoozeDurations = actions.complete
     ? MAX_NOTIFICATION_ACTIONS - 1
     : MAX_NOTIFICATION_ACTIONS;
-  return actions.snoozeDurations.slice(0, maxSnoozeDurations);
+  return actions.snoozeDurations.slice(0, maxSnoozeDurations).map((duration) => ({
+    ...duration,
+    value: clampSnoozeDurationValue(duration.value, duration.unit),
+  }));
 };
 
 export const exportSettings = (state: SettingsState) => {
