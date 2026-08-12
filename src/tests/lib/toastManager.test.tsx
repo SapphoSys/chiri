@@ -57,7 +57,6 @@ const TYPE_METHODS: Array<{ method: ToastType; mock: ToastMock }> = [
 ];
 
 beforeEach(() => {
-  // show() schedules a 6s setTimeout to forget group keys — keep it off the real clock
   vi.useFakeTimers();
   vi.clearAllMocks();
 });
@@ -172,10 +171,25 @@ describe('toastManager', () => {
     expect(toastDismiss).not.toHaveBeenCalled();
   });
 
-  it('forgets the groupKey after 6s so a later dismiss is a no-op', () => {
-    toastManager.info('Title', 'Message', { groupKey: 'auto-forget' });
+  it('keeps a grouped loading toast dismissible after 6s', () => {
+    const id = toastManager.loading('Title', 'Message', {
+      groupKey: 'long-running-test',
+      duration: 30_000,
+    });
 
     vi.advanceTimersByTime(6000);
+    toastManager.dismiss('long-running-test');
+
+    expect(toastDismiss).toHaveBeenCalledWith(id);
+  });
+
+  it('forgets a groupKey when Sonner reports that toast was removed', () => {
+    const id = toastManager.info('Title', 'Message', { groupKey: 'auto-forget' });
+
+    const [, options] = getOnlyCall(toastInfo);
+    const onDismiss = (options as { onDismiss?: (toast: { id: string | number }) => void })
+      .onDismiss;
+    onDismiss?.({ id });
     toastManager.dismiss('auto-forget');
 
     expect(toastDismiss).not.toHaveBeenCalled();

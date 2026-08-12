@@ -1,5 +1,5 @@
 import { createElement, type ReactNode } from 'react';
-import { toast } from 'sonner';
+import { type ToastT, toast } from 'sonner';
 import { ToastTitle, type ToastType } from '$components/ToastTitle';
 import { loggers } from '$lib/logger';
 
@@ -56,6 +56,14 @@ class ToastManager {
     const toastFn = toast[type];
 
     // render every title with the standardized icon row and suppress sonner's default type icon
+    const onToastRemoved = groupKey
+      ? (removedToast: Pick<ToastT, 'id'>) => {
+          if (this.activeToastIds.get(groupKey) === removedToast.id) {
+            this.activeToastIds.delete(groupKey);
+          }
+        }
+      : undefined;
+
     const toastId = toastFn(createElement(ToastTitle, { type }, title), {
       description: message,
       duration: duration ?? 5000,
@@ -67,15 +75,17 @@ class ToastManager {
             onClick: action.onClick,
           }
         : undefined,
+      ...(onToastRemoved
+        ? {
+            onAutoClose: onToastRemoved,
+            onDismiss: onToastRemoved,
+          }
+        : {}),
     });
 
     // track the toast ID if groupKey is provided
     if (groupKey && toastId) {
       this.activeToastIds.set(groupKey, toastId);
-      // clean up after toast is dismissed
-      setTimeout(() => {
-        this.activeToastIds.delete(groupKey);
-      }, 6000);
     }
 
     return toastId;
