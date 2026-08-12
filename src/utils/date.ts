@@ -103,7 +103,7 @@ export const formatDueDate = (date: Date, timeFormat?: TimeFormat) => {
   }
 
   if (isThisWeek(d)) {
-    return { text: `${format(d, 'EEE')} ${time}`, tone: neutral };
+    return { text: `${format(d, 'EEE')} ${time}`, tone: isOverdue ? overdue : neutral };
   }
 
   if (isSameYear(d, now)) {
