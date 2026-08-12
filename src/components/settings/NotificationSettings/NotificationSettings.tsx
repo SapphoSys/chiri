@@ -155,6 +155,14 @@ export const NotificationSettings = () => {
         Notifications
       </h3>
 
+      {isMacPlatform() && permissionStatus !== null && (
+        <MacNotificationCard
+          permissionStatus={permissionStatus}
+          isCheckingPermission={isCheckingPermission}
+          requestPermission={requestPermission}
+        />
+      )}
+
       <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="p-4">
           <label
@@ -177,7 +185,9 @@ export const NotificationSettings = () => {
           {macPermissionPending && (
             <div className="mt-3 flex gap-2 rounded-lg border border-semantic-warning/30 bg-semantic-warning/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
               <TriangleAlert className="mt-px size-3.5 shrink-0 text-semantic-warning" />
-              <span>Notification permission is required. Use the controls below to grant it.</span>
+              <span>
+                Notification permissions are required. Use the controls above to grant them.
+              </span>
             </div>
           )}
         </div>
@@ -224,14 +234,6 @@ export const NotificationSettings = () => {
           </div>
         )}
       </div>
-
-      {isMacPlatform() && permissionStatus !== null && (
-        <MacNotificationCard
-          permissionStatus={permissionStatus}
-          isCheckingPermission={isCheckingPermission}
-          requestPermission={requestPermission}
-        />
-      )}
 
       <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label className="flex cursor-pointer items-center justify-between p-4">
