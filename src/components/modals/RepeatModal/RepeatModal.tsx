@@ -61,7 +61,7 @@ export const RepeatModal = ({
         footerLeft={
           rrule ? (
             <ModalButton
-              variant="ghost"
+              variant="secondary"
               onClick={() => {
                 onSave(undefined, draft.localRepeatFrom);
                 onClose();
@@ -74,7 +74,7 @@ export const RepeatModal = ({
         }
         footer={
           <>
-            <ModalButton variant="ghost" onClick={onClose}>
+            <ModalButton variant="secondary" onClick={onClose}>
               Cancel
             </ModalButton>
             <ModalButton onClick={handleDone} disabled={draft.isActionDisabled}>

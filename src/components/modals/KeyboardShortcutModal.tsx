@@ -128,14 +128,14 @@ export const KeyboardShortcutModal = ({
       onEscape={handleEscape}
       footerLeft={
         canClear ? (
-          <ModalButton variant="ghost" onClick={handleClear}>
+          <ModalButton variant="secondary" onClick={handleClear}>
             Clear
           </ModalButton>
         ) : undefined
       }
       footer={
         <>
-          <ModalButton variant="ghost" onClick={onClose}>
+          <ModalButton variant="secondary" onClick={onClose}>
             Cancel
           </ModalButton>
           <ModalButton

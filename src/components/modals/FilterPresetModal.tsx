@@ -34,7 +34,7 @@ export const FilterPresetModal = ({
       contentPadding={false}
       contentOverflow="auto"
       footer={
-        <ModalButton variant="ghost" onClick={onClose}>
+        <ModalButton variant="secondary" onClick={onClose}>
           Cancel
         </ModalButton>
       }

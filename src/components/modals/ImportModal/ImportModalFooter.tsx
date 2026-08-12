@@ -43,7 +43,7 @@ export const ImportModalFooter = ({
   return (
     <>
       {!importSuccess && (
-        <ModalButton variant="ghost" onClick={onClose} disabled={isImporting}>
+        <ModalButton variant="secondary" onClick={onClose} disabled={isImporting}>
           Cancel
         </ModalButton>
       )}

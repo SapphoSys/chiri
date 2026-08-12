@@ -67,7 +67,7 @@ export const FilterModal = ({ filterId, onClose }: FilterModalProps) => {
       contentPadding={false}
       footer={
         <>
-          <ModalButton variant="ghost" onClick={onClose}>
+          <ModalButton variant="secondary" onClick={onClose}>
             Cancel
           </ModalButton>
           <ModalButton type="submit" form="filter-form" disabled={!name.trim() || !hasChanges}>

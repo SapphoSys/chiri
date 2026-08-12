@@ -41,7 +41,7 @@ export const MoveToCalendarModal = ({
       className="max-w-sm"
       contentPadding={false}
       footer={
-        <ModalButton variant="ghost" onClick={onClose}>
+        <ModalButton variant="secondary" onClick={onClose}>
           Cancel
         </ModalButton>
       }

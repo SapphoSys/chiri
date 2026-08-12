@@ -167,7 +167,7 @@ export const TimePickerModal = ({
       zIndex="z-70"
       footer={
         <>
-          <ModalButton variant="ghost" onClick={onClose}>
+          <ModalButton variant="secondary" onClick={onClose}>
             Cancel
           </ModalButton>
           <ModalButton onClick={handleConfirm}>Confirm</ModalButton>

@@ -254,7 +254,7 @@ export const BatchTaskDatesModal = ({
         footerLeft={
           hasAnyExistingDate ? (
             <ModalButton
-              variant="ghost"
+              variant="secondary"
               onClick={handleClear}
               className="text-surface-500 hover:bg-semantic-error/10 hover:text-semantic-error dark:text-surface-400"
             >
@@ -264,7 +264,7 @@ export const BatchTaskDatesModal = ({
         }
         footer={
           <>
-            <ModalButton variant="ghost" onClick={onClose}>
+            <ModalButton variant="secondary" onClick={onClose}>
               Cancel
             </ModalButton>
             <ModalButton onClick={handleSave} disabled={!hasChanges}>

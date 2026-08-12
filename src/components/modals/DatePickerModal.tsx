@@ -48,7 +48,7 @@ export const DatePickerModal = ({
   const clearButton =
     draft.localValue || draft.initialValue ? (
       <ModalButton
-        variant="ghost"
+        variant="secondary"
         onClick={handleClear}
         className="text-surface-500 hover:bg-semantic-error/10 hover:text-semantic-error dark:text-surface-400"
       >
@@ -68,7 +68,7 @@ export const DatePickerModal = ({
       footerLeft={clearButton}
       footer={
         <>
-          <ModalButton variant="ghost" onClick={onClose}>
+          <ModalButton variant="secondary" onClick={onClose}>
             Cancel
           </ModalButton>
           <ModalButton onClick={handleDone} disabled={!draft.localValue && !draft.initialValue}>

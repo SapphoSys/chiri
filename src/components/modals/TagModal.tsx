@@ -81,7 +81,7 @@ export const TagModal = ({ tagId, initialName, onClose, onSave }: TagModalProps)
       contentPadding={false}
       footer={
         <>
-          <ModalButton variant="ghost" onClick={onClose}>
+          <ModalButton variant="secondary" onClick={onClose}>
             Cancel
           </ModalButton>
           <ModalButton type="submit" form="tag-form" disabled={!name.trim() || !hasChanges}>

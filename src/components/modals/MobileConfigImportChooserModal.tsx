@@ -44,7 +44,7 @@ export const MobileConfigImportChooserModal = ({
     description="This configuration profile contains more than one CalDAV account."
     size="md"
     footer={
-      <ModalButton variant="ghost" onClick={onClose}>
+      <ModalButton variant="secondary" onClick={onClose}>
         Cancel
       </ModalButton>
     }

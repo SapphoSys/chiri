@@ -24,11 +24,11 @@ export const OnboardingModalFooter = ({
 }: OnboardingModalFooterProps) => (
   <div className="flex items-center gap-2">
     {hasConnectedCalDAVHome && isHomeStep && (
-      <ModalButton variant="ghost" onClick={onAddAccount} className={footerButtonClassName}>
+      <ModalButton variant="secondary" onClick={onAddAccount} className={footerButtonClassName}>
         Add more
       </ModalButton>
     )}
-    <ModalButton variant="ghost" onClick={onSkip} className={footerButtonClassName}>
+    <ModalButton variant="secondary" onClick={onSkip} className={footerButtonClassName}>
       Set up later
     </ModalButton>
     <ModalButton

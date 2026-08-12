@@ -81,7 +81,7 @@ export const ThirdPartyLicensesModal = ({ onClose }: ThirdPartyLicensesModalProp
       headerLeft={
         selectedLicense ? (
           <ModalButton
-            variant="ghost"
+            variant="secondary"
             size="sm"
             onClick={() => setSelectedLicense(null)}
             aria-label="Back"
@@ -96,7 +96,7 @@ export const ThirdPartyLicensesModal = ({ onClose }: ThirdPartyLicensesModalProp
       contentOverflow={selectedLicense ? 'hidden' : 'auto'}
       footerLeft={
         selectedLicense ? (
-          <ModalButton variant="ghost" onClick={() => openUrl(selectedLicense.url)}>
+          <ModalButton variant="secondary" onClick={() => openUrl(selectedLicense.url)}>
             <ExternalLink className="h-4 w-4" />
             Open upstream project
           </ModalButton>

@@ -68,7 +68,7 @@ export const ChangelogModal = ({ version, changelog, date, onClose }: ChangelogM
       className="max-h-[80vh] max-w-2xl"
       footerLeft={
         <ModalButton
-          variant="ghost"
+          variant="secondary"
           onClick={() => {
             openUrl(`https://github.com/chiriapp/chiri/releases/tag/app-v${version}`);
           }}

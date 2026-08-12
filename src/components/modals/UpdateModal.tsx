@@ -102,7 +102,7 @@ export const UpdateModal = ({
         preventClose={isDownloading}
         footer={
           <>
-            <ModalButton variant="ghost" onClick={onDismiss} disabled={isDownloading}>
+            <ModalButton variant="secondary" onClick={onDismiss} disabled={isDownloading}>
               Remind me later
             </ModalButton>
             <ModalButton onClick={onDownload} disabled={isDownloading} loading={isDownloading}>

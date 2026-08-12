@@ -225,7 +225,7 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
       contentOverflow="auto"
       footer={
         <>
-          <ModalButton variant="ghost" onClick={onClose}>
+          <ModalButton variant="secondary" onClick={onClose}>
             Cancel
           </ModalButton>
           <ModalButton
