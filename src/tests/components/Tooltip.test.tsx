@@ -67,6 +67,11 @@ describe('Tooltip', () => {
       globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }
     ).IS_REACT_ACT_ENVIRONMENT = true;
     vi.useFakeTimers();
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+      callback(0);
+      return 0;
+    });
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
     container = document.createElement('div');
     document.body.append(container);
     root = createRoot(container);
@@ -75,6 +80,7 @@ describe('Tooltip', () => {
   afterEach(() => {
     act(() => root.unmount());
     container.remove();
+    vi.unstubAllGlobals();
     vi.useRealTimers();
   });
 
@@ -156,5 +162,40 @@ describe('Tooltip', () => {
       mouseEnter(wrapper);
     });
     expect(tooltip.classList.contains('invisible')).toBe(false);
+  });
+
+  it('repositions the arrow when visible content changes size', () => {
+    act(() => {
+      root.render(renderTooltip({ content: 'Short tooltip' }));
+    });
+
+    const button = getButton(container);
+    const wrapper = getTriggerWrapper(button);
+    const tooltip = getDescribedTooltip(button);
+    let tooltipWidth = 100;
+
+    vi.spyOn(wrapper, 'getBoundingClientRect').mockReturnValue({
+      left: 100,
+      top: 100,
+      right: 140,
+      bottom: 124,
+      width: 40,
+      height: 24,
+    } as DOMRect);
+    vi.spyOn(tooltip, 'getBoundingClientRect').mockImplementation(
+      () => ({ width: tooltipWidth, height: 32 }) as DOMRect,
+    );
+
+    act(() => {
+      mouseEnter(wrapper);
+    });
+    expect(tooltip.querySelector('div')?.getAttribute('style')).toContain('left: 50px');
+
+    tooltipWidth = 200;
+    act(() => {
+      root.render(renderTooltip({ content: 'A much longer tooltip' }));
+    });
+
+    expect(tooltip.querySelector('div')?.getAttribute('style')).toContain('left: 100px');
   });
 });

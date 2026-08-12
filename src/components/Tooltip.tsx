@@ -8,6 +8,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
@@ -273,6 +274,13 @@ export const Tooltip = ({
       window.removeEventListener('scroll', handleReposition, true);
     };
   }, [isVisible, updatePosition]);
+
+  // tooltip content can change while the trigger remains hovered. re-measure after the
+  // new content has been laid out so the arrow stays aligned with the trigger
+  useLayoutEffect(() => {
+    if (!isVisible || !content) return;
+    updatePosition();
+  }, [content, isVisible, updatePosition]);
 
   const getTransformOrigin = () => {
     switch (position) {

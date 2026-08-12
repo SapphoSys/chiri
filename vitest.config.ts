@@ -48,6 +48,7 @@ export default defineConfig({
             'src/tests/components/TaskDefaultsSettings.test.tsx',
             'src/tests/components/TaskLayoutSettings.test.tsx',
             'src/tests/components/ModalWrapper.test.tsx',
+            'src/tests/components/Tooltip.test.tsx',
             'src/tests/components/RepeatModal.test.tsx',
             'src/tests/components/TaskEditorRepeat.test.tsx',
             'src/tests/components/TaskEditorCalendar.test.tsx',
