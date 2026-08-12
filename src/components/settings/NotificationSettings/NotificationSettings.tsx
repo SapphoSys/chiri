@@ -138,16 +138,16 @@ export const NotificationSettings = () => {
   const { isGNOME, isKDE } = usePlatform();
 
   const platformActionWarning = isMac
-    ? 'macOS supports up to 30 notification actions at once.'
+    ? null
     : isWindows
-      ? 'Windows supports up to 5 notification actions at once, though the notification layout becomes cramped and button text may be cut off at larger action amounts. More than 5 actions can result in the notification appearing incorrectly.'
+      ? 'Windows supports up to 5 action buttons, though labels may become cramped or truncated.'
       : isLinux && isGNOME
-        ? 'GNOME only supports up to 3 notification actions at once. Past that, additional actions may not be displayed correctly, or at all.'
+        ? 'GNOME usually displays up to 3 action buttons; extra buttons may be hidden.'
         : isLinux && isKDE
-          ? 'KDE supports up to about 30 notification actions at once, though the notification layout may be uncomfortable to read due to its large width and button text may be cut off at larger action amounts.'
+          ? 'KDE supports many action buttons, but larger sets may make notifications wide or truncate labels.'
           : isLinux
-            ? 'Linux desktop environments vary in how many notification actions they display.'
-            : 'Different platforms support different numbers of notification actions.';
+            ? 'Notification action support varies across Linux desktop environments; extra buttons may be hidden.'
+            : 'Notification action support varies by platform; extra buttons may be hidden.';
 
   return (
     <div className="space-y-4">
@@ -346,11 +346,10 @@ export const NotificationSettings = () => {
         <div className="flex items-start gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
           <Info className="mt-0.5 size-3.5 shrink-0 text-semantic-info" />
           <div className="space-y-1">
-            <p>{platformActionWarning}</p>
+            {platformActionWarning && <p>{platformActionWarning}</p>}
             <p>
-              Chiri limits notifications to {MAX_NOTIFICATION_ACTIONS} actions (for example,
-              Complete plus up to {MAX_NOTIFICATION_ACTIONS - 1} snooze durations). For practical
-              purposes, it's recommended to keep the number of notification actions active short.
+              Chiri allows up to {MAX_NOTIFICATION_ACTIONS} actions per notification. Complete uses
+              one slot, and each snooze duration uses one slot.
             </p>
           </div>
         </div>
