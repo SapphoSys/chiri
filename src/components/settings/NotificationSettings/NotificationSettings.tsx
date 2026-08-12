@@ -175,9 +175,10 @@ export const NotificationSettings = () => {
             />
           </label>
           {macPermissionPending && (
-            <p className="mt-1 text-semantic-warning text-xs">
-              Notification permission is required. Use the controls below to grant it.
-            </p>
+            <div className="mt-3 flex gap-2 rounded-lg border border-semantic-warning/30 bg-semantic-warning/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
+              <TriangleAlert className="mt-px size-3.5 shrink-0 text-semantic-warning" />
+              <span>Notification permission is required. Use the controls below to grant it.</span>
+            </div>
           )}
         </div>
 
