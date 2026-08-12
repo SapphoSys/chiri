@@ -179,7 +179,12 @@ export const TaskEditorSubtasks = ({
 
                 <DragOverlay dropAnimation={null}>
                   {activeDragSubtask ? (
-                    <div className="relative">
+                    <div
+                      className="drag-overlay relative"
+                      style={{
+                        marginLeft: `${Math.max(0, targetSubtaskIndent - 1) * 24}px`,
+                      }}
+                    >
                       {targetSubtaskIndent !== subtaskOriginalIndentRef.current && (
                         <div className="absolute -top-6 left-2 whitespace-nowrap rounded-sm bg-primary-500 px-2 py-0.5 text-primary-contrast text-xs shadow-sm">
                           {targetSubtaskIndent > subtaskOriginalIndentRef.current
@@ -191,7 +196,7 @@ export const TaskEditorSubtasks = ({
                       )}
                       <TaskEditorSubtaskItem
                         task={activeDragSubtask}
-                        depth={targetSubtaskIndent - 1}
+                        depth={0}
                         checkmarkColor={checkmarkColor}
                         useAccentColorForCheckboxes={useAccentColorForCheckboxes}
                         expandedSubtasks={expandedSubtasks}
