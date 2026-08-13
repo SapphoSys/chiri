@@ -18,11 +18,10 @@ import { ExportModal } from '$components/modals/ExportModal';
 import { MoveToCalendarModal } from '$components/modals/MoveToCalendar/MoveToCalendarModal';
 import { PRIORITIES } from '$constants/priority';
 import { useSettingsStore } from '$context/settingsContext';
-import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
-import { useAccounts } from '$hooks/queries/useAccounts';
-import { useTags } from '$hooks/queries/useTags';
-import { useCreateTask, useRestoreTask, useUpdateTask } from '$hooks/queries/useTasks';
+import { useTaskSelection } from '$context/taskSelectionContext';
+import { useCreateTask, useTasks, useUpdateTask } from '$hooks/queries/useTasks';
 import { useSetSelectedTask } from '$hooks/queries/useUIState';
+import { useTaskBatchActions } from '$hooks/ui/useTaskBatchActions';
 import { exportTaskAndChildren } from '$lib/store/tasks';
 import { buildStatusUpdates } from '$lib/task/status';
 import type { Priority, Status, Task } from '$types/task/model';
@@ -36,20 +35,38 @@ interface TaskItemContextMenuProps {
 
 const FLYOUT_HIDE_DELAY_MS = 40;
 
+const getSelectionHeader = (taskCount: number) =>
+  taskCount > 1 ? (
+    <div className="px-3 py-2 font-medium text-surface-500 text-xs dark:text-surface-400">
+      {taskCount} selected tasks
+    </div>
+  ) : null;
+
 export const TaskItemContextMenu = ({
   task,
   contextMenu,
   onClose,
   setContextMenu,
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Single and multi-task menus intentionally share the same action surface.
 }: TaskItemContextMenuProps) => {
-  const { data: accounts = [] } = useAccounts();
-  const { data: tags = [] } = useTags();
+  const { data: tasks = [] } = useTasks();
+  const { selectedTaskIds, clearSelection } = useTaskSelection();
   const updateTaskMutation = useUpdateTask();
   const createTaskMutation = useCreateTask('created', { selectCreatedTask: true });
-  const restoreTaskMutation = useRestoreTask();
   const setSelectedTaskMutation = useSetSelectedTask();
-  const { moveTaskToRecentlyDeleted, deleteTaskPermanently } = useTaskDeletion();
   const { syncStatusProgress } = useSettingsStore();
+
+  const contextTaskIds = selectedTaskIds.includes(task.id) ? selectedTaskIds : [task.id];
+  const contextTasks = contextTaskIds
+    .map((taskId) => tasks.find((candidate) => candidate.id === taskId))
+    .filter((candidate): candidate is Task => candidate !== undefined);
+  const targetTasks = contextTasks.length > 0 ? contextTasks : [task];
+  const isMultiTaskContext = targetTasks.length > 1;
+  const batchActions = useTaskBatchActions({
+    selectedTasks: targetTasks,
+    onClearSelection: clearSelection,
+  });
+  const { accounts, tags } = batchActions;
 
   const [showExportModal, setShowExportModal] = useState(false);
   const [showTagsModal, setShowTagsModal] = useState(false);
@@ -81,22 +98,24 @@ export const TaskItemContextMenu = ({
 
   const handleDelete = async () => {
     setContextMenu(null);
-    await moveTaskToRecentlyDeleted(task.id);
+    await batchActions.handleDelete();
   };
 
   const handleRestore = () => {
-    restoreTaskMutation.mutate({ id: task.id });
+    batchActions.handleRestore();
     setContextMenu(null);
   };
 
   const handlePermanentDelete = async () => {
     setContextMenu(null);
-    await deleteTaskPermanently(task.id);
+    await batchActions.handlePermanentDelete();
   };
 
   const handleExport = () => {
-    const result = exportTaskAndChildren(task.id);
-    if (result) {
+    const exportTasks = isMultiTaskContext
+      ? batchActions.exportTasks
+      : [task, ...(exportTaskAndChildren(task.id)?.descendants || [])];
+    if (exportTasks.length > 0) {
       setIsMenuHidden(true);
       setShowExportModal(true);
     } else {
@@ -106,14 +125,26 @@ export const TaskItemContextMenu = ({
 
   const handleMoveToCalendar = (calendarId: string) => {
     const target = allCalendars.find((c) => c.id === calendarId);
-    if (target) {
-      const updates: Partial<Task> = { calendarId: target.id, accountId: target.accountId };
-      if (task.parentUid) updates.parentUid = undefined;
-      updateTaskMutation.mutate({ id: task.id, updates });
+    if (!target) return;
+
+    if (isMultiTaskContext) {
+      batchActions.handleMoveToCalendar(calendarId);
+      return;
     }
+
+    const updates: Partial<Task> = { calendarId: target.id, accountId: target.accountId };
+    if (task.parentUid) updates.parentUid = undefined;
+    updateTaskMutation.mutate({ id: task.id, updates });
   };
 
   const handleChangePriority = (priority: Priority) => {
+    if (isMultiTaskContext) {
+      batchActions.handlePriorityChange(priority);
+      setPriorityFlyoutPos(null);
+      setContextMenu(null);
+      return;
+    }
+
     updateTaskMutation.mutate({ id: task.id, updates: { priority } });
     setPriorityFlyoutPos(null);
     setContextMenu(null);
@@ -139,6 +170,13 @@ export const TaskItemContextMenu = ({
   };
 
   const handleChangeStatus = (status: Status) => {
+    if (isMultiTaskContext) {
+      batchActions.handleStatusChange(status);
+      setStatusFlyoutPos(null);
+      setContextMenu(null);
+      return;
+    }
+
     updateTaskMutation.mutate({
       id: task.id,
       updates: buildStatusUpdates(status, task, new Date(), syncStatusProgress),
@@ -194,6 +232,8 @@ export const TaskItemContextMenu = ({
           layerClassName="z-50 min-w-50"
           dataAttribute="data-context-menu-content"
         >
+          {getSelectionHeader(targetTasks.length)}
+
           {task.deletedAt ? (
             <>
               <button
@@ -202,7 +242,7 @@ export const TaskItemContextMenu = ({
                 className={`${menuItemClass} rounded-t-md`}
               >
                 <RotateCcw className="h-4 w-4" />
-                Restore
+                {isMultiTaskContext ? 'Restore selected tasks' : 'Restore'}
               </button>
 
               <div className="border-surface-300 border-t dark:border-surface-700" />
@@ -212,29 +252,34 @@ export const TaskItemContextMenu = ({
                 className="flex w-full items-center gap-2 rounded-b-md px-3 py-2 text-semantic-error text-sm outline-hidden hover:bg-semantic-error/15 focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
               >
                 <Trash2 className="h-4 w-4" />
-                Delete permanently
+                {isMultiTaskContext ? 'Delete selected tasks permanently' : 'Delete permanently'}
               </button>
             </>
           ) : (
             <>
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedTaskMutation.mutate(task.id);
-                  setContextMenu(null);
-                }}
-                className={`${menuItemClass} rounded-t-md`}
-              >
-                <Edit2 className="h-4 w-4" />
-                Edit
-              </button>
+              {!isMultiTaskContext && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedTaskMutation.mutate(task.id);
+                      setContextMenu(null);
+                    }}
+                    className={`${menuItemClass} rounded-t-md`}
+                  >
+                    <Edit2 className="h-4 w-4" />
+                    Edit
+                  </button>
 
-              <div className="border-surface-300 border-t dark:border-surface-700" />
+                  <div className="border-surface-300 border-t dark:border-surface-700" />
+                </>
+              )}
+
               <button
                 type="button"
                 onMouseEnter={handleStatusMouseEnter}
                 onMouseLeave={handleStatusMouseLeave}
-                className={menuItemClass}
+                className={`${menuItemClass} ${isMultiTaskContext ? 'rounded-t-md' : ''}`}
               >
                 <CheckCircle2 className="h-4 w-4" />
                 <span className="flex-1 text-left">Set status</span>
@@ -279,27 +324,31 @@ export const TaskItemContextMenu = ({
                 Manage tags
               </button>
 
-              <div className="border-surface-300 border-t dark:border-surface-700" />
-              <button
-                type="button"
-                onClick={() => {
-                  createTaskMutation.mutate(
-                    {
-                      title: '',
-                      parentUid: task.uid,
-                      accountId: task.accountId,
-                      calendarId: task.calendarId,
-                    },
-                    {
-                      onSuccess: () => setContextMenu(null),
-                    },
-                  );
-                }}
-                className={menuItemClass}
-              >
-                <ListPlus className="h-4 w-4" />
-                Add subtask
-              </button>
+              {!isMultiTaskContext && (
+                <>
+                  <div className="border-surface-300 border-t dark:border-surface-700" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      createTaskMutation.mutate(
+                        {
+                          title: '',
+                          parentUid: task.uid,
+                          accountId: task.accountId,
+                          calendarId: task.calendarId,
+                        },
+                        {
+                          onSuccess: () => setContextMenu(null),
+                        },
+                      );
+                    }}
+                    className={menuItemClass}
+                  >
+                    <ListPlus className="h-4 w-4" />
+                    Add subtask
+                  </button>
+                </>
+              )}
 
               <div className="border-surface-300 border-t dark:border-surface-700" />
               <button type="button" onClick={handleExport} className={menuItemClass}>
@@ -314,7 +363,7 @@ export const TaskItemContextMenu = ({
                 className="flex w-full items-center gap-2 rounded-b-md px-3 py-2 text-semantic-error text-sm outline-hidden hover:bg-semantic-error/15 focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {isMultiTaskContext ? 'Delete selected tasks' : 'Delete'}
               </button>
             </>
           )}
@@ -346,7 +395,7 @@ export const TaskItemContextMenu = ({
                   }`}
                 >
                   <span className={`flex-1 text-left ${p.color}`}>{p.label}</span>
-                  {task.priority === p.value && (
+                  {targetTasks.every((targetTask) => targetTask.priority === p.value) && (
                     <Check className="h-3.5 w-3.5 shrink-0 text-primary-ink" />
                   )}
                 </button>
@@ -382,7 +431,7 @@ export const TaskItemContextMenu = ({
                 >
                   <Icon className="h-4 w-4 shrink-0" />
                   <span className="flex-1 text-left">{label}</span>
-                  {task.status === value && (
+                  {targetTasks.every((targetTask) => targetTask.status === value) && (
                     <Check className="h-3.5 w-3.5 shrink-0 text-primary-ink" />
                   )}
                 </button>
@@ -394,8 +443,16 @@ export const TaskItemContextMenu = ({
 
       {showExportModal && (
         <ExportModal
-          tasks={[task, ...(exportTaskAndChildren(task.id)?.descendants || [])]}
-          fileName={task.title.replace(/[^a-z0-9]/gi, '-').toLowerCase() || 'task'}
+          tasks={
+            isMultiTaskContext
+              ? batchActions.exportTasks
+              : [task, ...(exportTaskAndChildren(task.id)?.descendants || [])]
+          }
+          fileName={
+            isMultiTaskContext
+              ? 'selected-tasks'
+              : task.title.replace(/[^a-z0-9]/gi, '-').toLowerCase() || 'task'
+          }
           type="tasks"
           onClose={() => {
             setShowExportModal(false);
@@ -411,15 +468,22 @@ export const TaskItemContextMenu = ({
             setShowTagsModal(false);
             setContextMenu(null);
           }}
-          tasks={[task]}
+          tasks={targetTasks}
           tags={tags}
         />
       )}
 
       {showMoveToCalendarModal && (
         <MoveToCalendarModal
-          task={task}
+          task={isMultiTaskContext ? undefined : task}
           accounts={accounts}
+          currentCalendarIds={isMultiTaskContext ? batchActions.currentCalendarIds : undefined}
+          title={isMultiTaskContext ? 'Move selected tasks' : undefined}
+          description={
+            isMultiTaskContext
+              ? `${targetTasks.length} selected ${targetTasks.length === 1 ? 'task' : 'tasks'}`
+              : undefined
+          }
           onMove={handleMoveToCalendar}
           onClose={() => {
             setShowMoveToCalendarModal(false);

@@ -136,10 +136,10 @@ export const useTaskListSelection = ({ visibleTasks }: UseTaskListSelectionOptio
   const handleTaskContextMenu = useCallback(
     (task: Task) => {
       if (selectedTaskIds.length > 0 && !selectedTaskIdSet.has(task.id)) {
-        clearSelection();
+        setSelection([task.id], task.id);
       }
     },
-    [clearSelection, selectedTaskIdSet, selectedTaskIds.length],
+    [selectedTaskIdSet, selectedTaskIds.length, setSelection],
   );
 
   return {
