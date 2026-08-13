@@ -122,7 +122,7 @@ jobs:
           CHANGELOG="${CHANGELOG}- [Intel (.dmg)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_x64.dmg)"$'\n\n'
           CHANGELOG="${CHANGELOG}### Linux"$'\n'
           CHANGELOG="${CHANGELOG}- [AppImage (x86_64)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_amd64.AppImage)"$'\n'
-          CHANGELOG="${CHANGELOG}- [AppImage (ARM64)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_aarch64.AppImage)"
+          CHANGELOG="${CHANGELOG}- [AppImage (ARM64)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_aarch64.AppImage)"$'\n'
           CHANGELOG="${CHANGELOG}- [Debian/Ubuntu x86_64 (.deb)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_amd64.deb)"$'\n'
           CHANGELOG="${CHANGELOG}- [Debian/Ubuntu ARM64 (.deb)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_arm64.deb)"$'\n'
           CHANGELOG="${CHANGELOG}- [Fedora/RHEL x86_64 (.rpm)](https://github.com/${REPO}/releases/download/${TAG}/Chiri-${VERSION}-1.x86_64.rpm)"$'\n'
