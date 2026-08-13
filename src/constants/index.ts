@@ -99,12 +99,12 @@ export const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [
 export const TASK_GROUP_OPTIONS: Array<{ value: TaskGroupMode; label: string }> = [
   { value: 'none', label: 'None' },
   { value: 'status', label: 'Status' },
-  { value: 'priority', label: 'Priority' },
   { value: 'calendar', label: 'Calendar' },
-  { value: 'due-date', label: 'Due Date' },
   { value: 'start-date', label: 'Start Date' },
-  { value: 'created', label: 'Created' },
+  { value: 'due-date', label: 'Due Date' },
+  { value: 'priority', label: 'Priority' },
   { value: 'modified', label: 'Last Modified' },
+  { value: 'created', label: 'Created' },
 ];
 
 export const DEFAULT_SHORTCUTS: KeyboardShortcut[] = [
