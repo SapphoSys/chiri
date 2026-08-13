@@ -1,4 +1,5 @@
 import { format, isToday, isTomorrow, startOfDay } from 'date-fns';
+import { STATUS_ORDER } from '$constants';
 import type { SortDirection, TaskGroupConfig, TaskGroupMode } from '$types/sort';
 import type { Task } from '$types/task/model';
 
@@ -31,10 +32,18 @@ export const getEffectiveTaskGroupConfig = (
     : config;
 
 const STATUS_GROUPS: Record<Task['status'], GroupDetails> = {
-  'needs-action': { key: 'status:needs-action', label: 'Needs Action', order: 0 },
-  'in-process': { key: 'status:in-process', label: 'In Process', order: 1 },
-  completed: { key: 'status:completed', label: 'Completed', order: 2 },
-  cancelled: { key: 'status:cancelled', label: 'Cancelled', order: 3 },
+  'needs-action': {
+    key: 'status:needs-action',
+    label: 'Needs Action',
+    order: STATUS_ORDER['needs-action'],
+  },
+  'in-process': {
+    key: 'status:in-process',
+    label: 'In Process',
+    order: STATUS_ORDER['in-process'],
+  },
+  completed: { key: 'status:completed', label: 'Completed', order: STATUS_ORDER.completed },
+  cancelled: { key: 'status:cancelled', label: 'Cancelled', order: STATUS_ORDER.cancelled },
 };
 
 const PRIORITY_GROUPS: Record<Task['priority'], GroupDetails> = {

@@ -1,3 +1,4 @@
+import { STATUS_ORDER } from '$constants';
 import { isCompletedTask } from '$lib/task/filtering';
 import type { SortConfig } from '$types/sort';
 import type { Priority, Task } from '$types/task/model';
@@ -22,6 +23,9 @@ export const sortTasks = (
       case 'manual':
       case 'smart':
         return (a.sortOrder - b.sortOrder) * multiplier;
+
+      case 'status':
+        return (STATUS_ORDER[a.status] - STATUS_ORDER[b.status]) * multiplier;
 
       case 'due-date':
         if (!a.dueDate && !b.dueDate) return 0;

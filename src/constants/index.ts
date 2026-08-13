@@ -8,6 +8,7 @@ import type {
   TaskGroupConfig,
   TaskGroupMode,
 } from '$types/sort';
+import type { Status } from '$types/task/model';
 
 export const DEFAULT_DAY_OF_WEEK = 'monday';
 
@@ -35,6 +36,13 @@ export const MODAL_SIZE_CLASSES = {
 } as const;
 
 export const JUST_NOW_SYNC_TEXT_MS_THRESHOLD = 60000;
+
+export const STATUS_ORDER: Record<Status, number> = {
+  'needs-action': 0,
+  'in-process': 1,
+  completed: 2,
+  cancelled: 3,
+};
 
 export const DEFAULT_SORT_CONFIG = {
   mode: 'manual' as const satisfies SortMode,
@@ -88,6 +96,7 @@ export const TAG_SORT_OPTIONS: Array<{ value: TagSortMode; label: string }> = [
 export const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [
   { value: 'manual', label: 'Manual' },
   { value: 'smart', label: 'Smart Sort' },
+  { value: 'status', label: 'Status' },
   { value: 'start-date', label: 'Start Date' },
   { value: 'due-date', label: 'Due Date' },
   { value: 'priority', label: 'Priority' },

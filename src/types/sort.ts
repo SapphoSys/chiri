@@ -1,6 +1,7 @@
 export type SortMode =
   | 'manual' // uses x-apple-sort-order
   | 'smart' // smart sort using x-apple-sort-order
+  | 'status'
   | 'due-date'
   | 'start-date'
   | 'priority'

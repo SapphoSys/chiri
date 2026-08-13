@@ -3,6 +3,28 @@ import { sortTasks } from '$lib/task/sorting';
 import { makeTask } from '../../fixtures';
 
 describe('sortTasks', () => {
+  it('sorts by status in the configured direction', () => {
+    const tasks = [
+      makeTask({ id: 'cancelled', status: 'cancelled' }),
+      makeTask({ id: 'in-process', status: 'in-process' }),
+      makeTask({ id: 'needs-action', status: 'needs-action' }),
+      makeTask({ id: 'completed', status: 'completed' }),
+    ];
+
+    expect(sortTasks(tasks, { mode: 'status', direction: 'asc' }).map((task) => task.id)).toEqual([
+      'needs-action',
+      'in-process',
+      'completed',
+      'cancelled',
+    ]);
+    expect(sortTasks(tasks, { mode: 'status', direction: 'desc' }).map((task) => task.id)).toEqual([
+      'cancelled',
+      'completed',
+      'in-process',
+      'needs-action',
+    ]);
+  });
+
   it('sorts by the configured field and direction', () => {
     const tasks = [
       makeTask({ id: 'low', priority: 'low' }),
