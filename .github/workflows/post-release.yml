@@ -209,10 +209,10 @@ jobs:
             rm -f "$tmpfile"
           }
 
-          X64_LINUX_HASH=$(get_hash "${BASE_URL}/Chiri_${VERSION}_Linux_x64.deb")
-          ARM64_LINUX_HASH=$(get_hash "${BASE_URL}/Chiri_${VERSION}_Linux_ARM.deb")
-          X64_DARWIN_HASH=$(get_hash "${BASE_URL}/Chiri_${VERSION}_macOS_x64.dmg")
-          ARM64_DARWIN_HASH=$(get_hash "${BASE_URL}/Chiri_${VERSION}_macOS_ARM.dmg")
+          X64_LINUX_HASH=$(get_hash "${BASE_URL}/Chiri_${VERSION}_amd64.deb")
+          ARM64_LINUX_HASH=$(get_hash "${BASE_URL}/Chiri_${VERSION}_arm64.deb")
+          X64_DARWIN_HASH=$(get_hash "${BASE_URL}/Chiri_${VERSION}_x64.dmg")
+          ARM64_DARWIN_HASH=$(get_hash "${BASE_URL}/Chiri_${VERSION}_aarch64.dmg")
 
           sed -i "s/version ? \"[^\"]*\"/version ? \"$VERSION\"/" "$BIN_PACKAGE_FILE"
 
@@ -335,6 +335,6 @@ jobs:
           version: ${{ needs.version-metadata.outputs.version }}
           release-tag: app-v${{ needs.version-metadata.outputs.version }}
           installers-regex: '(_en-US\.msi|-setup\.exe)$'
-          fork-user: ${{ vars.WINGET_FORK_USER || github.repository_owner }}
+          fork-user: SapphoSys
           token: ${{ secrets.WINGET_TOKEN }}
           max-versions-to-keep: 5
