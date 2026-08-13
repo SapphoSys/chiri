@@ -20,18 +20,18 @@ require_signature() {
 }
 
 signature_assets=(
-  "Chiri_aarch64.app.tar.gz.sig"
-  "Chiri_x64.app.tar.gz.sig"
-  "Chiri_${VERSION}_amd64.AppImage.sig"
-  "Chiri_${VERSION}_aarch64.AppImage.sig"
-  "Chiri_${VERSION}_amd64.deb.sig"
-  "Chiri_${VERSION}_arm64.deb.sig"
-  "Chiri-${VERSION}-1.x86_64.rpm.sig"
-  "Chiri-${VERSION}-1.aarch64.rpm.sig"
-  "Chiri_${VERSION}_x64_en-US.msi.sig"
-  "Chiri_${VERSION}_x64-setup.exe.sig"
-  "Chiri_${VERSION}_arm64_en-US.msi.sig"
-  "Chiri_${VERSION}_arm64-setup.exe.sig"
+  "signature-Chiri_aarch64.app.tar.gz.sig"
+  "signature-Chiri_x64.app.tar.gz.sig"
+  "signature-Chiri_${VERSION}_amd64.AppImage.sig"
+  "signature-Chiri_${VERSION}_aarch64.AppImage.sig"
+  "signature-Chiri_${VERSION}_amd64.deb.sig"
+  "signature-Chiri_${VERSION}_arm64.deb.sig"
+  "signature-Chiri-${VERSION}-1.x86_64.rpm.sig"
+  "signature-Chiri-${VERSION}-1.aarch64.rpm.sig"
+  "signature-Chiri_${VERSION}_x64_en-US.msi.sig"
+  "signature-Chiri_${VERSION}_x64-setup.exe.sig"
+  "signature-Chiri_${VERSION}_arm64_en-US.msi.sig"
+  "signature-Chiri_${VERSION}_arm64-setup.exe.sig"
 )
 
 for asset in "${signature_assets[@]}"; do
@@ -46,18 +46,18 @@ jq -n \
   --arg version "$VERSION" \
   --arg pub_date "$PUB_DATE" \
   --arg base "$BASE_URL" \
-  --rawfile darwin_aarch64_sig "${ASSET_DIR}/Chiri_aarch64.app.tar.gz.sig" \
-  --rawfile darwin_x86_64_sig "${ASSET_DIR}/Chiri_x64.app.tar.gz.sig" \
-  --rawfile linux_x86_64_appimage_sig "${ASSET_DIR}/Chiri_${VERSION}_amd64.AppImage.sig" \
-  --rawfile linux_aarch64_appimage_sig "${ASSET_DIR}/Chiri_${VERSION}_aarch64.AppImage.sig" \
-  --rawfile linux_x86_64_deb_sig "${ASSET_DIR}/Chiri_${VERSION}_amd64.deb.sig" \
-  --rawfile linux_aarch64_deb_sig "${ASSET_DIR}/Chiri_${VERSION}_arm64.deb.sig" \
-  --rawfile linux_x86_64_rpm_sig "${ASSET_DIR}/Chiri-${VERSION}-1.x86_64.rpm.sig" \
-  --rawfile linux_aarch64_rpm_sig "${ASSET_DIR}/Chiri-${VERSION}-1.aarch64.rpm.sig" \
-  --rawfile windows_x86_64_msi_sig "${ASSET_DIR}/Chiri_${VERSION}_x64_en-US.msi.sig" \
-  --rawfile windows_x86_64_nsis_sig "${ASSET_DIR}/Chiri_${VERSION}_x64-setup.exe.sig" \
-  --rawfile windows_aarch64_msi_sig "${ASSET_DIR}/Chiri_${VERSION}_arm64_en-US.msi.sig" \
-  --rawfile windows_aarch64_nsis_sig "${ASSET_DIR}/Chiri_${VERSION}_arm64-setup.exe.sig" \
+  --rawfile darwin_aarch64_sig "${ASSET_DIR}/signature-Chiri_aarch64.app.tar.gz.sig" \
+  --rawfile darwin_x86_64_sig "${ASSET_DIR}/signature-Chiri_x64.app.tar.gz.sig" \
+  --rawfile linux_x86_64_appimage_sig "${ASSET_DIR}/signature-Chiri_${VERSION}_amd64.AppImage.sig" \
+  --rawfile linux_aarch64_appimage_sig "${ASSET_DIR}/signature-Chiri_${VERSION}_aarch64.AppImage.sig" \
+  --rawfile linux_x86_64_deb_sig "${ASSET_DIR}/signature-Chiri_${VERSION}_amd64.deb.sig" \
+  --rawfile linux_aarch64_deb_sig "${ASSET_DIR}/signature-Chiri_${VERSION}_arm64.deb.sig" \
+  --rawfile linux_x86_64_rpm_sig "${ASSET_DIR}/signature-Chiri-${VERSION}-1.x86_64.rpm.sig" \
+  --rawfile linux_aarch64_rpm_sig "${ASSET_DIR}/signature-Chiri-${VERSION}-1.aarch64.rpm.sig" \
+  --rawfile windows_x86_64_msi_sig "${ASSET_DIR}/signature-Chiri_${VERSION}_x64_en-US.msi.sig" \
+  --rawfile windows_x86_64_nsis_sig "${ASSET_DIR}/signature-Chiri_${VERSION}_x64-setup.exe.sig" \
+  --rawfile windows_aarch64_msi_sig "${ASSET_DIR}/signature-Chiri_${VERSION}_arm64_en-US.msi.sig" \
+  --rawfile windows_aarch64_nsis_sig "${ASSET_DIR}/signature-Chiri_${VERSION}_arm64-setup.exe.sig" \
   '
     def platform($signature; $asset): {
       signature: $signature,
