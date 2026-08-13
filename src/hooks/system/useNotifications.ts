@@ -250,7 +250,7 @@ export const useNotifications = () => {
       const now = new Date();
 
       for (const task of tasks) {
-        if (task.completed) continue;
+        if (task.completed || task.status === 'cancelled') continue;
         if (task.deletedAt) continue;
 
         const snoozeStatus = getTaskSnoozeStatus(task.id, now.getTime());

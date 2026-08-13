@@ -3,6 +3,7 @@ import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useNotifications } from '$hooks/system/useNotifications';
 import type { NotificationActionEvent } from '$types/notifications/events';
+import type { Task } from '$types/task/model';
 
 const tauriMocks = vi.hoisted(() => {
   const handlers = new Map<string, (event: { payload: NotificationActionEvent }) => void>();
@@ -75,10 +76,11 @@ vi.mock('$context/settingsContext', () => ({
 
 const taskMocks = vi.hoisted(() => ({
   toggleTaskComplete: vi.fn(),
+  tasks: [] as Task[],
 }));
 
 vi.mock('$hooks/queries/useTasks', () => ({
-  useTasks: () => ({ data: [] }),
+  useTasks: () => ({ data: taskMocks.tasks }),
   useToggleTaskComplete: () => ({ mutate: taskMocks.toggleTaskComplete }),
 }));
 
@@ -119,7 +121,9 @@ describe('useNotifications notification-action listener', () => {
     tauriMocks.listen.mockClear();
     tauriMocks.handlers.clear();
     notificationMocks.setNotificationActionConfig.mockClear();
+    notificationMocks.sendNotification.mockClear();
     taskMocks.toggleTaskComplete.mockClear();
+    taskMocks.tasks = [];
     snoozeMocks.snoozeTaskFor.mockClear();
     taskHighlightMocks.highlightTask.mockClear();
     taskSelectionMocks.clearSelection.mockClear();
@@ -142,6 +146,28 @@ describe('useNotifications notification-action listener', () => {
     handler?.({ payload: event });
   };
 
+  const makeTask = (overrides: Partial<Task> = {}): Task => {
+    const now = new Date();
+    return {
+      id: 'task-1',
+      uid: 'uid-1',
+      title: 'Cancelled task',
+      description: '',
+      status: 'cancelled',
+      completed: false,
+      priority: 'none',
+      createdAt: now,
+      modifiedAt: now,
+      dueDate: new Date(now.getTime() - 1_000),
+      reminders: [{ id: 'reminder-1', trigger: new Date(now.getTime() - 1_000) }],
+      sortOrder: 0,
+      accountId: 'account-1',
+      calendarId: 'calendar-1',
+      synced: true,
+      ...overrides,
+    };
+  };
+
   it('syncs notification action config on mount', async () => {
     await renderHarness();
     expect(notificationMocks.setNotificationActionConfig).toHaveBeenCalledOnce();
@@ -154,6 +180,14 @@ describe('useNotifications notification-action listener', () => {
       ],
       order: ['complete', 'snooze'],
     });
+  });
+
+  it('does not notify cancelled tasks', async () => {
+    taskMocks.tasks = [makeTask()];
+
+    await renderHarness();
+
+    expect(notificationMocks.sendNotification).not.toHaveBeenCalled();
   });
 
   it('completes the task when the action is complete', async () => {
