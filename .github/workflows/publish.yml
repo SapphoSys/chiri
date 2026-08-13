@@ -150,6 +150,27 @@ jobs:
           gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/releases" > releases.json
           RELEASE_ID=$(jq -r --arg tag "$TAG" '[.[][] | select(.tag_name == $tag)][0].id // empty' releases.json)
 
+          # a draft release can become `untagged-*` if its tag is deleted.
+          # reuse a same-name draft instead of attempting to create a duplicate
+          if [ -z "$RELEASE_ID" ]; then
+            RELEASE_ID=$(jq -r --arg name "$RELEASE_NAME" \
+              '[.[][] | select(.draft == true and .name == $name)][0].id // empty' \
+              releases.json)
+
+            if [ -n "$RELEASE_ID" ]; then
+              echo "Found untagged draft release $RELEASE_ID; restoring tag $TAG"
+
+              if ! gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${TAG}" > /dev/null 2>&1; then
+                gh api \
+                  --method POST \
+                  "repos/${GITHUB_REPOSITORY}/git/refs" \
+                  -f "ref=refs/tags/${TAG}" \
+                  -f "sha=${GITHUB_SHA}" \
+                  > /dev/null
+              fi
+            fi
+          fi
+
           if [ -n "$RELEASE_ID" ]; then
             gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" > release.json
 
@@ -159,9 +180,11 @@ jobs:
             fi
 
             jq -n \
+              --arg tag "$TAG" \
+              --arg target "$GITHUB_SHA" \
               --arg name "$RELEASE_NAME" \
               --arg body "$RELEASE_BODY" \
-              '{name: $name, body: $body, draft: true, prerelease: false}' \
+              '{tag_name: $tag, target_commitish: $target, name: $name, body: $body, draft: true, prerelease: false}' \
               > release-payload.json
 
             gh api \
