@@ -26,19 +26,19 @@ let
   platformInfo = {
     "x86_64-linux" = {
       asset = "Chiri_${version}_amd64.deb";
-      hash = "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=";
+      hash = "sha256-58qTnJ/gOgTYFXgOg43etPp+yn8erRLc9nJUoJ/i1Bc=";
     };
     "aarch64-linux" = {
       asset = "Chiri_${version}_arm64.deb";
-      hash = "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=";
+      hash = "sha256-ySfUVz2XBoQz7kVETfCNgLb+2+Mk75qS4cMmpMopdPM=";
     };
     "x86_64-darwin" = {
       asset = "Chiri_${version}_x64.dmg";
-      hash = "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=";
+      hash = "sha256-QVCQLDvVAQ1NFqFFUMqUfhGiC0DC2XbbuTjmC11XMGw=";
     };
     "aarch64-darwin" = {
       asset = "Chiri_${version}_aarch64.dmg";
-      hash = "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=";
+      hash = "sha256-MvubDmWqNGTQSE44WMJ/xZuceZNzjTxA7g5ul6QOxVY=";
     };
   };
 
