@@ -217,7 +217,6 @@ export const TaskList = () => {
   const isRecentlyDeleted = activeView === 'recently-deleted';
   const isFilterView = activeView === 'filter';
   const isDragEnabled = sortConfig.mode === 'manual' && !isRecentlyDeleted;
-  const isDraggingTask = activeTask !== null;
 
   const visibleTaskCount = visibleTaskGroups.reduce(
     (count, group) => count + group.tasks.length,
@@ -248,7 +247,7 @@ export const TaskList = () => {
               className="flex items-center gap-2 rounded-lg bg-primary-500 px-4 py-2 font-medium text-primary-contrast text-sm outline-hidden transition-colors hover:bg-primary-600 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset"
             >
               <Plus className="h-4 w-4" />
-              Create Task
+              New Task
             </button>
           )}
         </div>
