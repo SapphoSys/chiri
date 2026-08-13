@@ -710,6 +710,83 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --clobber
 
+  label-release-assets:
+    name: Label release assets
+    needs:
+      - prepare-release
+      - refresh-updater-metadata
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Set and verify release asset labels
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ needs.prepare-release.outputs.release_id }}
+          VERSION: ${{ needs.prepare-release.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$RELEASE_ID" ]; then
+            echo "::error::Release ID was empty"
+            exit 1
+          fi
+
+          API_PATH="repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets"
+          gh api "$API_PATH?per_page=100" > release-assets.json
+
+          while IFS='|' read -r name label; do
+            [ -n "$name" ] || continue
+
+            asset_id=$(jq -r --arg name "$name" \
+              'first(.[] | select(.name == $name) | .id) // empty' \
+              release-assets.json)
+
+            if [ -z "$asset_id" ]; then
+              echo "::error::Release asset not found: $name"
+              exit 1
+            fi
+
+            echo "Labeling $name as $label"
+            updated_asset=$(gh api \
+              --method PATCH \
+              "${API_PATH}/${asset_id}" \
+              -f "label=$label" \
+            )
+
+            actual_label=$(jq -r '.label // empty' <<< "$updated_asset")
+            if [ "$actual_label" != "$label" ]; then
+              echo "::error::Unexpected label for $name: $actual_label"
+              exit 1
+            fi
+          done <<EOF
+          latest.json|Chiri v${VERSION} updater metadata
+          Chiri_${VERSION}_x64-setup.exe|Chiri v${VERSION} Windows x64 EXE Installer
+          Chiri_${VERSION}_x64-setup.exe.sig|Chiri v${VERSION} Windows x64 EXE signature
+          Chiri_${VERSION}_arm64-setup.exe|Chiri v${VERSION} Windows ARM64 EXE Installer
+          Chiri_${VERSION}_arm64-setup.exe.sig|Chiri v${VERSION} Windows ARM64 EXE signature
+          Chiri_${VERSION}_x64_en-US.msi|Chiri v${VERSION} Windows x64 MSI Installer
+          Chiri_${VERSION}_x64_en-US.msi.sig|Chiri v${VERSION} Windows x64 MSI signature
+          Chiri_${VERSION}_arm64_en-US.msi|Chiri v${VERSION} Windows ARM64 MSI Installer
+          Chiri_${VERSION}_arm64_en-US.msi.sig|Chiri v${VERSION} Windows ARM64 MSI signature
+          Chiri_${VERSION}_aarch64.dmg|Chiri v${VERSION} macOS Apple Silicon
+          Chiri_${VERSION}_x64.dmg|Chiri v${VERSION} macOS Intel
+          Chiri_${VERSION}_amd64.deb|Chiri v${VERSION} Linux x86_64 Debian Package
+          Chiri_${VERSION}_amd64.deb.sig|Chiri v${VERSION} Linux x86_64 Debian Package signature
+          Chiri_${VERSION}_arm64.deb|Chiri v${VERSION} Linux ARM64 Debian Package
+          Chiri_${VERSION}_arm64.deb.sig|Chiri v${VERSION} Linux ARM64 Debian Package signature
+          Chiri-${VERSION}-1.x86_64.rpm|Chiri v${VERSION} Linux x86_64 RPM Package
+          Chiri-${VERSION}-1.x86_64.rpm.sig|Chiri v${VERSION} Linux x86_64 RPM Package signature
+          Chiri-${VERSION}-1.aarch64.rpm|Chiri v${VERSION} Linux ARM64 RPM Package
+          Chiri-${VERSION}-1.aarch64.rpm.sig|Chiri v${VERSION} Linux ARM64 RPM Package signature
+          Chiri_${VERSION}_aarch64.AppImage|Chiri v${VERSION} Linux ARM64 AppImage
+          Chiri_${VERSION}_aarch64.AppImage.sig|Chiri v${VERSION} Linux ARM64 AppImage signature
+          Chiri_${VERSION}_amd64.AppImage|Chiri v${VERSION} Linux x86_64 AppImage
+          Chiri_${VERSION}_amd64.AppImage.sig|Chiri v${VERSION} Linux x86_64 AppImage signature
+          EOF
+
+          echo "All release asset labels verified for v${VERSION}."
+
   publish-summary:
     name: Publish summary
     needs:
@@ -718,6 +795,7 @@ jobs:
       - publish-appimage
       - publish-windows
       - refresh-updater-metadata
+      - label-release-assets
     if: always() && needs.prepare-release.result == 'success'
     runs-on: ubuntu-latest
     permissions:
@@ -733,6 +811,7 @@ jobs:
           APPIMAGE_BUILD_RESULT: ${{ needs.publish-appimage.result }}
           WINDOWS_RESULT: ${{ needs.publish-windows.result }}
           UPDATER_RESULT: ${{ needs.refresh-updater-metadata.result }}
+          LABEL_RESULT: ${{ needs.label-release-assets.result }}
         run: |
           set -euo pipefail
 
@@ -766,6 +845,7 @@ jobs:
             echo "| AppImage result | $APPIMAGE_BUILD_RESULT |"
             echo "| Windows signing result | $WINDOWS_RESULT |"
             echo "| Updater metadata refresh | $UPDATER_RESULT |"
+            echo "| Release asset labels | $LABEL_RESULT |"
             echo "| Asset count | $ASSET_COUNT |"
             echo "| Updater platform count | $UPDATER_PLATFORM_COUNT |"
             echo "| Hash update status | Pending post-release |"
