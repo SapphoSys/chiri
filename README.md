@@ -185,20 +185,20 @@ Found a security issue? Please report it privately. See [<span aria-hidden="true
 
 [nix]: https://nixos.org
 
-[release-windows-msi-x64]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_x64_en-US.msi
-[release-windows-msi-arm]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_arm64_en-US.msi
-[release-windows-exe-x64]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_x64-setup.exe
-[release-windows-exe-arm]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_arm64-setup.exe
+[release-windows-msi-x64]: https://github.com/chiriapp/chiri/releases/download/app-v1.0.0/Chiri_1.0.0_x64_en-US.msi
+[release-windows-msi-arm]: https://github.com/chiriapp/chiri/releases/download/app-v1.0.0/Chiri_1.0.0_arm64_en-US.msi
+[release-windows-exe-x64]: https://github.com/chiriapp/chiri/releases/download/app-v1.0.0/Chiri_1.0.0_x64-setup.exe
+[release-windows-exe-arm]: https://github.com/chiriapp/chiri/releases/download/app-v1.0.0/Chiri_1.0.0_arm64-setup.exe
 
-[release-macos-dmg-applesilicon]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_aarch64.dmg
-[release-macos-dmg-intel]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_x64.dmg
+[release-macos-dmg-applesilicon]: https://github.com/chiriapp/chiri/releases/download/app-v1.0.0/Chiri_1.0.0_aarch64.dmg
+[release-macos-dmg-intel]: https://github.com/chiriapp/chiri/releases/download/app-v1.0.0/Chiri_1.0.0_x64.dmg
 
-[release-linux-appimage-x86_64]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_aarch64.AppImage
-[release-linux-appimage-arm]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_amd64.AppImage
-[release-linux-deb-x86_64]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_amd64.deb
-[release-linux-deb-arm]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri_0.9.2_arm64.deb
-[release-linux-rpm-x86_64]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri-0.9.2-1.x86_64.rpm
-[release-linux-rpm-arm]: https://github.com/chiriapp/chiri/releases/download/app-v0.9.2/Chiri-0.9.2-1.aarch64.rpm
+[release-linux-appimage-x86_64]: https://github.com/chiriapp/chiri/releases/download/app-v1.0.0/Chiri_1.0.0_aarch64.AppImage
+[release-linux-appimage-arm]: https://github.com/chiriapp/chiri/releases/download/app-v1.0.0/Chiri_1.0.0_amd64.AppImage
+[release-linux-deb-x86_64]: https://github.com/chiriapp/chiri/releases/download/app-v1.0.0/Chiri_1.0.0_amd64.deb
+[release-linux-deb-arm]: https://github.com/chiriapp/chiri/releases/download/app-v1.0.0/Chiri_1.0.0_arm64.deb
+[release-linux-rpm-x86_64]: https://github.com/chiriapp/chiri/releases/download/app-v1.0.0/Chiri-0.9.2-1.x86_64.rpm
+[release-linux-rpm-arm]: https://github.com/chiriapp/chiri/releases/download/app-v1.0.0/Chiri-0.9.2-1.aarch64.rpm
 
 [repo-license]: https://github.com/chiriapp/chiri/blob/master/LICENSE
 [repo-privacy]: https://github.com/chiriapp/chiri/blob/master/PRIVACY.md
