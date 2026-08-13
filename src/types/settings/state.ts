@@ -8,7 +8,7 @@ import type {
   TaskBadgeKey,
   TaskBadgeVisibility,
 } from '$types/settings/categories/editor';
-import type { TaskListDensity } from '$types/settings/categories/layout';
+import type { TaskListDensity, TaskTitleLines } from '$types/settings/categories/layout';
 import type { DefaultLaunchView, SidebarSectionKey } from '$types/settings/categories/navigation';
 import type { NetworkProxyMode } from '$types/settings/categories/network';
 import type { DateFormat, StartOfWeek, TimeFormat } from '$types/settings/categories/region';
@@ -89,6 +89,7 @@ export interface SettingsState {
   useAccentColorForCheckboxes: boolean;
   showCursorPointers: boolean;
   taskListDensity: TaskListDensity;
+  taskTitleLines: TaskTitleLines;
   defaultTagColor: string;
   defaultCalendarColor: string;
   quietHoursEnabled: boolean;
@@ -190,6 +191,7 @@ interface SettingsActions {
   setUseAccentColorForCheckboxes: (enabled: boolean) => void;
   setShowCursorPointers: (enabled: boolean) => void;
   setTaskListDensity: (density: TaskListDensity) => void;
+  setTaskTitleLines: (lines: TaskTitleLines) => void;
   setDefaultTagColor: (color: string) => void;
   setDefaultCalendarColor: (color: string) => void;
   setQuietHoursEnabled: (enabled: boolean) => void;

@@ -27,7 +27,7 @@ import type {
   TaskBadgeKey,
   TaskBadgeVisibility,
 } from '$types/settings/categories/editor';
-import type { TaskListDensity } from '$types/settings/categories/layout';
+import type { TaskListDensity, TaskTitleLines } from '$types/settings/categories/layout';
 import type { DefaultLaunchView, SidebarSectionKey } from '$types/settings/categories/navigation';
 import type { NetworkProxyMode } from '$types/settings/categories/network';
 import type { DateFormat, StartOfWeek, TimeFormat } from '$types/settings/categories/region';
@@ -400,6 +400,7 @@ export const settingsStore = {
     setState({ useAccentColorForCheckboxes }),
   setShowCursorPointers: (showCursorPointers: boolean) => setState({ showCursorPointers }),
   setTaskListDensity: (taskListDensity: TaskListDensity) => setState({ taskListDensity }),
+  setTaskTitleLines: (taskTitleLines: TaskTitleLines) => setState({ taskTitleLines }),
   setDefaultTagColor: (defaultTagColor: string) => setState({ defaultTagColor }),
   setDefaultCalendarColor: (defaultCalendarColor: string) => setState({ defaultCalendarColor }),
   setQuietHoursEnabled: (quietHoursEnabled: boolean) => setState({ quietHoursEnabled }),

@@ -3,12 +3,14 @@ import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BadgesSettings } from '$components/settings/BadgesSettings/BadgesSettings';
 import { EditorSettings } from '$components/settings/EditorSettings/EditorSettings';
+import { TaskListLayoutSettings } from '$components/settings/TaskListLayoutSettings/TaskListLayoutSettings';
 import { defaultState } from '$context/settingsDefaults';
 
 const mockSetEditorFieldVisibility = vi.fn();
 const mockSetEditorFieldOrder = vi.fn();
 const mockSetTaskBadgeVisibility = vi.fn();
 const mockSetTaskBadgeOrder = vi.fn();
+const mockSetTaskTitleLines = vi.fn();
 
 const mockStore = {
   editorFieldVisibility: { ...defaultState.editorFieldVisibility },
@@ -20,6 +22,9 @@ const mockStore = {
   setTaskBadgeVisibility: mockSetTaskBadgeVisibility,
   setTaskBadgeOrder: mockSetTaskBadgeOrder,
   taskListDensity: defaultState.taskListDensity,
+  setTaskListDensity: vi.fn(),
+  taskTitleLines: defaultState.taskTitleLines,
+  setTaskTitleLines: mockSetTaskTitleLines,
 };
 
 vi.mock('$context/settingsContext', () => ({
@@ -71,6 +76,7 @@ describe('task layout settings resets', () => {
     mockStore.editorFieldOrder = [...defaultState.editorFieldOrder];
     mockStore.taskBadgeVisibility = { ...defaultState.taskBadgeVisibility };
     mockStore.taskBadgeOrder = [...defaultState.taskBadgeOrder];
+    mockStore.taskTitleLines = defaultState.taskTitleLines;
     container = document.createElement('div');
     document.body.append(container);
     root = createRoot(container);
@@ -117,5 +123,17 @@ describe('task layout settings resets', () => {
 
     expect(mockSetTaskBadgeVisibility).toHaveBeenCalledWith(defaultState.taskBadgeVisibility);
     expect(mockSetTaskBadgeOrder).toHaveBeenCalledWith(defaultState.taskBadgeOrder);
+  });
+
+  it('updates the task title wrapping setting', async () => {
+    await act(async () => root.render(<TaskListLayoutSettings />));
+
+    const multipleLinesButton = Array.from(container.querySelectorAll('button')).find(
+      (button) => button.textContent === 'Multiple lines',
+    );
+    expect(multipleLinesButton).toBeDefined();
+
+    await act(async () => multipleLinesButton?.click());
+    expect(mockSetTaskTitleLines).toHaveBeenCalledWith('multiple');
   });
 });

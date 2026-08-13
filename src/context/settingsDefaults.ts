@@ -79,6 +79,7 @@ export const defaultState: SettingsState = {
   useAccentColorForCheckboxes: false,
   showCursorPointers: true,
   taskListDensity: 'comfortable',
+  taskTitleLines: 'one',
   defaultTagColor: 'accent',
   defaultCalendarColor: 'accent',
   quietHoursEnabled: false,

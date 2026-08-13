@@ -2,10 +2,11 @@ import ChevronRight from 'lucide-react/icons/chevron-right';
 import Clock from 'lucide-react/icons/clock';
 import Tag from 'lucide-react/icons/tag';
 import { TaskItemBadge } from '$components/taskItem/badges/TaskItemBadge';
-import type { TaskListDensity } from '$types/settings/categories/layout';
+import type { TaskListDensity, TaskTitleLines } from '$types/settings/categories/layout';
 
 interface TaskListLayoutSettingsDensityPreviewProps {
   density: TaskListDensity;
+  titleLines: TaskTitleLines;
 }
 
 const renderPreviewBadges = () => (
@@ -23,8 +24,11 @@ const renderPreviewBadges = () => (
 
 export const TaskListLayoutSettingsDensityPreview = ({
   density,
+  titleLines,
 }: TaskListLayoutSettingsDensityPreviewProps) => {
   const isCompact = density === 'compact';
+  const titleClassName =
+    titleLines === 'multiple' ? 'whitespace-normal wrap-break-word' : 'truncate';
 
   return (
     <div className="mt-4 rounded-lg bg-surface-50 p-3 dark:bg-surface-900/30" aria-hidden="true">
@@ -39,15 +43,19 @@ export const TaskListLayoutSettingsDensityPreview = ({
         <div className="min-w-0 flex-1">
           {isCompact ? (
             <>
-              <div className="truncate font-medium text-sm text-surface-800 leading-5 dark:text-surface-200">
-                Plan weekend errands
+              <div
+                className={`${titleClassName} font-medium text-sm text-surface-800 leading-5 dark:text-surface-200`}
+              >
+                Plan weekend errands and prepare the shopping list
               </div>
               <div className="mt-1 flex flex-wrap items-center gap-1">{renderPreviewBadges()}</div>
             </>
           ) : (
             <>
-              <div className="truncate font-medium text-sm text-surface-800 leading-5 dark:text-surface-200">
-                Plan weekend errands
+              <div
+                className={`${titleClassName} font-medium text-sm text-surface-800 leading-5 dark:text-surface-200`}
+              >
+                Plan weekend errands and prepare the shopping list
               </div>
               <div className="mt-1 truncate text-surface-500 text-xs dark:text-surface-400">
                 Groceries, pharmacy, and library pickup

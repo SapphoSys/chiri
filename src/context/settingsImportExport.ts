@@ -162,6 +162,7 @@ export const importSettings = (json: string, defaultState: SettingsState): Setti
       'defaultAllDayReminderHour',
       'allDayReminderNotificationsEnabled',
       'taskListDensity',
+      'taskTitleLines',
       'defaultTagColor',
       'defaultCalendarColor',
       'quietHoursEnabled',

@@ -28,6 +28,7 @@ import { refreshStaleCursorAfterLayoutAtEventPoint } from '$hooks/ui/useStaleCur
 import { filterCalDavDescription } from '$lib/ical/vtodo';
 import { toggleTaskCollapsed } from '$lib/store/tasks';
 import type { Account } from '$types/account';
+import type { TaskTitleLines } from '$types/settings/categories/layout';
 import type { Task } from '$types/task/model';
 import { getContrastTextColor } from '$utils/color';
 import { getSortableItemDisabled, getSortableItemId } from '$utils/sortable';
@@ -81,6 +82,9 @@ const getOpacityClass = (status: Task['status'], isUnstarted: boolean) => {
   if (isUnstarted) return 'opacity-85 dark:opacity-70';
   return '';
 };
+
+const getTaskTitleClass = (titleLines: TaskTitleLines) =>
+  titleLines === 'multiple' ? 'whitespace-normal wrap-break-word' : 'truncate';
 
 const getSelectionClass = (
   isSelected: boolean,
@@ -136,8 +140,13 @@ export const TaskItem = ({
   const setActiveTagMutation = useSetActiveTag();
   const setActiveCalendarMutation = useSetActiveCalendar();
   const setActiveAccountMutation = useSetActiveAccount();
-  const { taskListDensity, taskBadgeVisibility, taskBadgeOrder, useAccentColorForCheckboxes } =
-    useSettingsStore();
+  const {
+    taskListDensity,
+    taskTitleLines,
+    taskBadgeVisibility,
+    taskBadgeOrder,
+    useAccentColorForCheckboxes,
+  } = useSettingsStore();
   const resolvedAccentColor = useResolvedAccentColor();
   const { contextMenu, handleContextMenu, handleCloseContextMenu, setContextMenu } =
     useContextMenu();
@@ -247,6 +256,7 @@ export const TaskItem = ({
   const [showRepeatModal, setShowRepeatModal] = useState(false);
   const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const canEditTask = isTaskEditable(task, isOverlay);
+  const titleClassName = getTaskTitleClass(taskTitleLines);
 
   const handleCheckboxClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -401,7 +411,7 @@ export const TaskItem = ({
                 status={task.status}
                 isUnstarted={isUnstarted}
                 isSubtask={!!task.parentUid}
-                className="truncate font-medium text-sm leading-5"
+                className={`${titleClassName} font-medium text-sm leading-5`}
               />
               <TaskItemBadges {...badgesProps} compact={true} />
             </>
@@ -413,7 +423,7 @@ export const TaskItem = ({
                   status={task.status}
                   isUnstarted={isUnstarted}
                   isSubtask={!!task.parentUid}
-                  className="min-w-0 flex-1 truncate font-medium text-sm leading-5"
+                  className={`min-w-0 flex-1 ${titleClassName} font-medium text-sm leading-5`}
                 />
               </div>
 
