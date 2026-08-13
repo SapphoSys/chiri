@@ -1,6 +1,5 @@
 import { openUrl } from '@tauri-apps/plugin-opener';
 import Bug from 'lucide-react/icons/bug';
-import CircleDollarSign from 'lucide-react/icons/circle-dollar-sign';
 import Code from 'lucide-react/icons/code';
 import Globe from 'lucide-react/icons/globe';
 import HandHeart from 'lucide-react/icons/hand-heart';
@@ -80,6 +79,15 @@ export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
           )}
         </AboutSettingsSection>
 
+        <AboutSettingsSection title="Donate">
+          <AboutSettingsLinkRow
+            icon={<HandHeart className="h-5 w-5" />}
+            label="Liberapay"
+            description="liberapay.com/chloe"
+            onClick={link('https://liberapay.com/chloe')}
+          />
+        </AboutSettingsSection>
+
         <AboutSettingsSection title="Support">
           <AboutSettingsLinkRow
             icon={<Bug className="h-5 w-5" />}
@@ -100,36 +108,6 @@ export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
             label="Find us elsewhere"
             description="Follow or contact us elsewhere through our website"
             onClick={link(FIND_US_ELSEWHERE)}
-          />
-        </AboutSettingsSection>
-
-        <AboutSettingsSection title="Donate">
-          <AboutSettingsLinkRow
-            icon={<HeartHandshake className="h-5 w-5" />}
-            label="GitHub Sponsors"
-            description="github.com/sponsors/chiriapp"
-            onClick={link('https://github.com/sponsors/chiriapp')}
-          />
-
-          <AboutSettingsLinkRow
-            icon={<HandHeart className="h-5 w-5" />}
-            label="Liberapay"
-            description="liberapay.com/chloe"
-            onClick={link('https://liberapay.com/chloe')}
-          />
-
-          <AboutSettingsLinkRow
-            icon={<CircleDollarSign className="h-5 w-5" />}
-            label="Open Collective"
-            description="opencollective.com/chiri"
-            onClick={link('https://opencollective.com/chiri')}
-          />
-
-          <AboutSettingsLinkRow
-            icon={<Heart className="h-5 w-5" />}
-            label="Patreon"
-            description="patreon.com/c/chiriapp"
-            onClick={link('https://www.patreon.com/c/chiriapp')}
           />
         </AboutSettingsSection>
 
@@ -176,7 +154,7 @@ export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
 
           <div className="flex items-center gap-3 px-4 py-3">
             <span className="shrink-0 text-surface-500 dark:text-surface-400">
-              <HandHeart className="h-5 w-5 text-[#25CCFF]" />
+              <HeartHandshake className="h-5 w-5 text-[#25CCFF]" />
             </span>
             <p className="text-sm text-surface-800 dark:text-surface-200">
               Special thanks to the{' '}
