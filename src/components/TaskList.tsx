@@ -361,6 +361,17 @@ export const TaskList = () => {
           )}
         </div>
       )}
+
+      {!isRecentlyDeleted && !isSelectionMode && !isDraggingTask && (
+        <button
+          type="button"
+          onClick={handleQuickAdd}
+          className="mt-4 flex w-full items-center gap-3 rounded-lg border border-surface-200 p-3 text-surface-500 outline-hidden transition-colors hover:border-surface-300 hover:bg-surface-100 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:text-surface-400 dark:hover:border-surface-500 dark:hover:bg-surface-700 dark:hover:text-surface-300"
+        >
+          <Plus className="h-5 w-5" />
+          <span>Add a task...</span>
+        </button>
+      )}
     </div>
   );
 };
