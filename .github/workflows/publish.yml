@@ -114,7 +114,7 @@ jobs:
           CHANGELOG="${CHANGELOG}---"$'\n\n'"## 📥 Downloads"$'\n\n'
           CHANGELOG="${CHANGELOG}### Windows"$'\n'
           CHANGELOG="${CHANGELOG}- [x64 Installer (.msi)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_x64_en-US.msi)"$'\n'
-          CHANGELOG="${CHANGELOG}- [ARM64 Installer (.msi)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_arm64_en-US.msi)"$'\n\n'
+          CHANGELOG="${CHANGELOG}- [ARM64 Installer (.msi)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_arm64_en-US.msi)"$'\n'
           CHANGELOG="${CHANGELOG}- [x64 Portable Installer (.exe)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_x64-setup.exe)"$'\n'
           CHANGELOG="${CHANGELOG}- [ARM64 Portable Installer (.exe)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_arm64-setup.exe)"$'\n'
           CHANGELOG="${CHANGELOG}### macOS"$'\n'
