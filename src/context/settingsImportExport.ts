@@ -127,6 +127,7 @@ export const importSettings = (json: string, defaultState: SettingsState): Setti
       'defaultPercentComplete',
       'syncStatusProgress',
       'progressIncrement',
+      'completeInProcessTasks',
       'defaultTags',
       'defaultStartDate',
       'defaultStartTime',

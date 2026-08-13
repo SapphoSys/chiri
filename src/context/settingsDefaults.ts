@@ -38,6 +38,7 @@ export const defaultState: SettingsState = {
   defaultPercentComplete: 0,
   syncStatusProgress: true,
   progressIncrement: 5,
+  completeInProcessTasks: true,
   defaultTags: [],
   defaultStartDate: 'none',
   defaultStartTime: null,

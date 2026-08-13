@@ -78,6 +78,7 @@ describe('status and progress synchronization', () => {
         defaultPercentComplete: 42,
         syncStatusProgress: false,
         progressIncrement: 10,
+        completeInProcessTasks: true,
       }),
       defaultState,
     );
@@ -86,6 +87,7 @@ describe('status and progress synchronization', () => {
     expect(imported?.defaultStatus).toBe('completed');
     expect(imported?.defaultPercentComplete).toBe(42);
     expect(imported?.progressIncrement).toBe(10);
+    expect(imported?.completeInProcessTasks).toBe(true);
   });
 
   it('defaults the preference to enabled when importing older settings', async () => {
@@ -96,6 +98,7 @@ describe('status and progress synchronization', () => {
 
     expect(imported?.syncStatusProgress).toBe(true);
     expect(imported?.progressIncrement).toBe(5);
+    expect(imported?.completeInProcessTasks).toBe(true);
   });
 
   it('falls back to the default for an invalid progress increment', async () => {

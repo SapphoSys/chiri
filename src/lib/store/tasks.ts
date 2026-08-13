@@ -655,7 +655,10 @@ export const removeLocalTask = (id: string) => {
 };
 
 // task toggles
-export const toggleTaskComplete = (id: string, completeInProcess = false) => {
+export const toggleTaskComplete = (
+  id: string,
+  completeInProcess = settingsStore.getState().completeInProcessTasks,
+) => {
   const data = dataStore.load();
   const task = data.tasks.find((t) => t.id === id);
   if (!task) return;

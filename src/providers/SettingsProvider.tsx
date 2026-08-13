@@ -140,6 +140,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     (increment: ProgressIncrement) => settingsStore.setProgressIncrement(increment),
     [],
   );
+  const setCompleteInProcessTasks = useCallback(
+    (enabled: boolean) => settingsStore.setCompleteInProcessTasks(enabled),
+    [],
+  );
   const setDefaultTags = useCallback(
     (tagIds: string[]) => settingsStore.setDefaultTags(tagIds),
     [],
@@ -432,6 +436,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     setDefaultPercentComplete,
     setSyncStatusProgress,
     setProgressIncrement,
+    setCompleteInProcessTasks,
     setDefaultTags,
     setDefaultStartDate,
     setDefaultStartTime,

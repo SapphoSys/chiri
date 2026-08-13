@@ -5,8 +5,14 @@ import { useSettingsStore } from '$context/settingsContext';
 import { isProgressIncrement } from '$types/settings/categories/statusProgress';
 
 export const StatusProgressSettings = () => {
-  const { syncStatusProgress, setSyncStatusProgress, progressIncrement, setProgressIncrement } =
-    useSettingsStore();
+  const {
+    syncStatusProgress,
+    setSyncStatusProgress,
+    progressIncrement,
+    setProgressIncrement,
+    completeInProcessTasks,
+    setCompleteInProcessTasks,
+  } = useSettingsStore();
 
   return (
     <div className="space-y-4">
@@ -78,6 +84,31 @@ export const StatusProgressSettings = () => {
             <option value="5">5%</option>
             <option value="10">10%</option>
             <option value="25">25%</option>
+          </Select>
+        </label>
+      </div>
+
+      <div className="overflow-hidden rounded-lg border border-surface-300 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <label
+          htmlFor="complete-in-process-tasks"
+          className="flex items-center justify-between gap-4 p-4"
+        >
+          <div className="min-w-0">
+            <p className="text-sm text-surface-700 dark:text-surface-300">
+              When checking off an "In Process" task
+            </p>
+            <p className="text-surface-500 text-xs dark:text-surface-400">
+              Choose what the checkbox does
+            </p>
+          </div>
+          <Select
+            id="complete-in-process-tasks"
+            value={completeInProcessTasks ? 'complete' : 'needs-action'}
+            onChange={(event) => setCompleteInProcessTasks(event.target.value === 'complete')}
+            className="shrink-0 border border-surface-300 bg-surface-50 text-sm dark:border-surface-600 dark:bg-surface-700"
+          >
+            <option value="complete">Complete the task</option>
+            <option value="needs-action">Back to "Needs Action"</option>
           </Select>
         </label>
       </div>

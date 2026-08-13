@@ -7,9 +7,9 @@ import { getUIState, setSelectedTask } from '$lib/database/ui';
 import { toAppleEpoch } from '$lib/ical/vtodo';
 import { resolveTaskTags } from '$lib/task/creation';
 import { getRecentlyDeletedRetentionCutoff } from '$lib/task/deletion';
-import { buildStatusUpdates } from '$lib/task/status';
+import { buildStatusUpdates, getTaskStatusAfterCompletionToggle } from '$lib/task/status';
 import type { TaskCreationOptions } from '$types/task/creation';
-import type { Status, Task } from '$types/task/model';
+import type { Task } from '$types/task/model';
 import { generateUUID } from '$utils/misc';
 
 export const getAllTasks = async (conn: DatabasePlugin) => {
@@ -418,12 +418,10 @@ export const toggleTaskComplete = async (conn: DatabasePlugin, id: string) => {
   const task = await getTaskById(conn, id);
   if (!task) return;
 
-  const newStatus: Status =
-    task.status === 'completed'
-      ? 'needs-action'
-      : task.status === 'cancelled' || task.status === 'in-process'
-        ? 'needs-action'
-        : 'completed';
+  const newStatus = getTaskStatusAfterCompletionToggle(
+    task.status,
+    settingsStore.getState().completeInProcessTasks,
+  );
 
   await updateTask(
     conn,

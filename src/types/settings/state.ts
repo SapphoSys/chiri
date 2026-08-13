@@ -49,6 +49,7 @@ export interface SettingsState {
   defaultPercentComplete: number;
   syncStatusProgress: boolean;
   progressIncrement: ProgressIncrement;
+  completeInProcessTasks: boolean;
   defaultTags: string[];
   defaultStartDate: DefaultDateOffset;
   defaultStartTime: number | null;
@@ -151,6 +152,7 @@ interface SettingsActions {
   setDefaultPercentComplete: (pct: number) => void;
   setSyncStatusProgress: (enabled: boolean) => void;
   setProgressIncrement: (increment: ProgressIncrement) => void;
+  setCompleteInProcessTasks: (enabled: boolean) => void;
   setDefaultTags: (tagIds: string[]) => void;
   setDefaultStartDate: (offset: DefaultDateOffset) => void;
   setDefaultStartTime: (time: number | null) => void;

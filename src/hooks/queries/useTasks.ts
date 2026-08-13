@@ -272,25 +272,21 @@ export const usePermanentDeleteTask = () => {
 /**
  * hook to toggle task completion
  */
-export const useToggleTaskComplete = (options: { completeInProcess?: boolean } = {}) => {
+export const useToggleTaskComplete = () => {
   const queryClient = useQueryClient();
-  const { completeInProcess = false } = options;
 
   return useMutation({
     mutationFn: async (id: string) => {
       const task = getTaskById(id);
       if (!task) return task;
+      const { completeInProcessTasks, syncStatusProgress } = settingsStore.getState();
+      const completeInProcess = completeInProcessTasks;
       const newStatus = getTaskStatusAfterCompletionToggle(task.status, completeInProcess);
       toggleTaskComplete(id, completeInProcess);
       await db.logHistoryForTaskUpdate(
         task.uid,
         task,
-        buildStatusUpdates(
-          newStatus,
-          task,
-          new Date(),
-          settingsStore.getState().syncStatusProgress,
-        ),
+        buildStatusUpdates(newStatus, task, new Date(), syncStatusProgress),
       );
       return task;
     },
