@@ -53,6 +53,7 @@ export default defineConfig({
             'src/tests/components/RepeatModal.test.tsx',
             'src/tests/components/TaskEditorRepeat.test.tsx',
             'src/tests/components/TaskEditorCalendar.test.tsx',
+            'src/tests/components/TaskEditorDescription.test.tsx',
             'src/tests/components/TaskEditorSubtaskItem.test.tsx',
             'src/tests/components/TaskEditorSubtasks.test.tsx',
             'src/tests/components/TaskItemBadge.test.tsx',
