@@ -1,6 +1,5 @@
 import ArrowLeft from 'lucide-react/icons/arrow-left';
 import ArrowRight from 'lucide-react/icons/arrow-right';
-import CheckCircle from 'lucide-react/icons/check-circle';
 import type { ReactNode, SyntheticEvent } from 'react';
 import { ModalButton } from '$components/ModalButton';
 import type { AccountModalStep } from '$components/modals/AccountModal/AccountModal';
@@ -20,7 +19,6 @@ interface AccountModalFooterProps {
   isProcessing: boolean;
   isTesting: boolean;
   isAccountTestInProgress: boolean;
-  testSuccess: boolean;
   hasChanges: boolean;
   quickConnectLoginStep: 'input' | 'authenticating' | 'processing';
   quickConnectButtonState: ButtonState;
@@ -47,7 +45,6 @@ export const renderAccountModalFooter = ({
   isProcessing,
   isTesting,
   isAccountTestInProgress,
-  testSuccess,
   hasChanges,
   quickConnectLoginStep,
   quickConnectButtonState,
@@ -72,19 +69,13 @@ export const renderAccountModalFooter = ({
         isTesting ||
         isAccountTestInProgress ||
         isLoading ||
-        testSuccess ||
         !draft.serverUrl.trim() ||
         !draft.username.trim() ||
         (!draft.password.trim() && !account?.caldav?.password)
       }
       loading={isTesting || isAccountTestInProgress}
     >
-      {testSuccess && <CheckCircle className="h-4 w-4 text-semantic-success" />}
-      {testSuccess
-        ? 'Success'
-        : isTesting || isAccountTestInProgress
-          ? 'Testing...'
-          : 'Test connection'}
+      {isTesting || isAccountTestInProgress ? 'Testing...' : 'Test connection'}
     </ModalButton>
   );
 
