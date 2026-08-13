@@ -732,8 +732,10 @@ jobs:
             exit 1
           fi
 
-          API_PATH="repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets"
-          gh api "$API_PATH?per_page=100" > release-assets.json
+          RELEASE_ASSETS_API_PATH="repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets"
+          # listing is scoped by release ID. updating uses the asset ID route
+          ASSET_API_PATH="repos/${GITHUB_REPOSITORY}/releases/assets"
+          gh api "$RELEASE_ASSETS_API_PATH?per_page=100" > release-assets.json
 
           while IFS='|' read -r name label; do
             [ -n "$name" ] || continue
@@ -750,7 +752,7 @@ jobs:
             echo "Labeling $name as $label"
             updated_asset=$(gh api \
               --method PATCH \
-              "${API_PATH}/${asset_id}" \
+              "${ASSET_API_PATH}/${asset_id}" \
               -f "label=$label" \
             )
 
