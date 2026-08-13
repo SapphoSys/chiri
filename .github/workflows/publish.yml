@@ -360,6 +360,8 @@ jobs:
           # use existing release created by prepare-release job
           releaseId: ${{ needs.prepare-release.outputs.release_id }}
           tagName: app-v${{ needs.prepare-release.outputs.version }}
+          # Generate one complete latest.json after every platform finishes.
+          includeUpdaterJson: false
           args: ${{ matrix.args }}
 
       - name: Download release assets for attestation
@@ -638,6 +640,8 @@ jobs:
           tauriScript: cargo tauri
           releaseId: ${{ needs.prepare-release.outputs.release_id }}
           tagName: app-v${{ needs.prepare-release.outputs.version }}
+          # Generate one complete latest.json after every platform finishes.
+          includeUpdaterJson: false
           assetNamePattern: 'Chiri_[version]_[arch][ext]'
           args: --bundles appimage --config src-tauri/tauri.appimage.conf.json
 
@@ -676,7 +680,11 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Refresh latest.json Windows entries
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Generate complete updater metadata
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: app-v${{ needs.prepare-release.outputs.version }}
@@ -684,50 +692,53 @@ jobs:
         run: |
           set -euo pipefail
 
+          gh release view "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --json assets \
+            --jq '.assets[].name' > release-assets.txt
+
+          expected_assets=(
+            "Chiri_aarch64.app.tar.gz"
+            "Chiri_aarch64.app.tar.gz.sig"
+            "Chiri_x64.app.tar.gz"
+            "Chiri_x64.app.tar.gz.sig"
+            "Chiri_${VERSION}_amd64.AppImage"
+            "Chiri_${VERSION}_amd64.AppImage.sig"
+            "Chiri_${VERSION}_aarch64.AppImage"
+            "Chiri_${VERSION}_aarch64.AppImage.sig"
+            "Chiri_${VERSION}_amd64.deb"
+            "Chiri_${VERSION}_amd64.deb.sig"
+            "Chiri_${VERSION}_arm64.deb"
+            "Chiri_${VERSION}_arm64.deb.sig"
+            "Chiri-${VERSION}-1.x86_64.rpm"
+            "Chiri-${VERSION}-1.x86_64.rpm.sig"
+            "Chiri-${VERSION}-1.aarch64.rpm"
+            "Chiri-${VERSION}-1.aarch64.rpm.sig"
+            "Chiri_${VERSION}_x64_en-US.msi"
+            "Chiri_${VERSION}_x64_en-US.msi.sig"
+            "Chiri_${VERSION}_x64-setup.exe"
+            "Chiri_${VERSION}_x64-setup.exe.sig"
+            "Chiri_${VERSION}_arm64_en-US.msi"
+            "Chiri_${VERSION}_arm64_en-US.msi.sig"
+            "Chiri_${VERSION}_arm64-setup.exe"
+            "Chiri_${VERSION}_arm64-setup.exe.sig"
+          )
+
+          for asset in "${expected_assets[@]}"; do
+            if ! grep -qxF "$asset" release-assets.txt; then
+              echo "::error::Required updater asset is missing: $asset"
+              exit 1
+            fi
+          done
+
           mkdir -p release-assets
           gh release download "$TAG" \
             --repo "$GITHUB_REPOSITORY" \
-            --pattern latest.json \
-            --pattern "Chiri_${VERSION}_x64-setup.exe.sig" \
-            --pattern "Chiri_${VERSION}_x64_en-US.msi.sig" \
-            --pattern "Chiri_${VERSION}_arm64-setup.exe.sig" \
-            --pattern "Chiri_${VERSION}_arm64_en-US.msi.sig" \
+            --pattern '*.sig' \
             --dir release-assets \
             --clobber
 
-          BASE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}"
-
-          jq \
-            --arg base "$BASE_URL" \
-            --arg version "$VERSION" \
-            --rawfile win_x64_msi_sig "release-assets/Chiri_${VERSION}_x64_en-US.msi.sig" \
-            --rawfile win_x64_nsis_sig "release-assets/Chiri_${VERSION}_x64-setup.exe.sig" \
-            --rawfile win_arm64_msi_sig "release-assets/Chiri_${VERSION}_arm64_en-US.msi.sig" \
-            --rawfile win_arm64_nsis_sig "release-assets/Chiri_${VERSION}_arm64-setup.exe.sig" \
-            '
-            .platforms["windows-x86_64"] = {
-              signature: $win_x64_msi_sig,
-              url: ($base + "/Chiri_" + $version + "_x64_en-US.msi")
-            }
-            | .platforms["windows-x86_64-msi"] = .platforms["windows-x86_64"]
-            | .platforms["windows-x86_64-nsis"] = {
-              signature: $win_x64_nsis_sig,
-              url: ($base + "/Chiri_" + $version + "_x64-setup.exe")
-            }
-            | .platforms["windows-aarch64"] = {
-              signature: $win_arm64_msi_sig,
-              url: ($base + "/Chiri_" + $version + "_arm64_en-US.msi")
-            }
-            | .platforms["windows-aarch64-msi"] = .platforms["windows-aarch64"]
-            | .platforms["windows-aarch64-nsis"] = {
-              signature: $win_arm64_nsis_sig,
-              url: ($base + "/Chiri_" + $version + "_arm64-setup.exe")
-            }
-            ' release-assets/latest.json > release-assets/latest.updated.json
-
-          mv release-assets/latest.updated.json release-assets/latest.json
-          jq -e '.platforms["windows-x86_64"].signature | length > 0' release-assets/latest.json
-          jq -e '.platforms["windows-aarch64"].signature | length > 0' release-assets/latest.json
+          bash scripts/generate-updater-metadata.sh
 
           gh release upload "$TAG" release-assets/latest.json \
             --repo "$GITHUB_REPOSITORY" \
@@ -796,6 +807,10 @@ jobs:
           Chiri_${VERSION}_arm64_en-US.msi.sig|Chiri v${VERSION} Windows ARM64 MSI signature
           Chiri_${VERSION}_aarch64.dmg|Chiri v${VERSION} macOS Apple Silicon
           Chiri_${VERSION}_x64.dmg|Chiri v${VERSION} macOS Intel
+          Chiri_aarch64.app.tar.gz|Chiri v${VERSION} macOS Apple Silicon updater bundle
+          Chiri_aarch64.app.tar.gz.sig|Chiri v${VERSION} macOS Apple Silicon updater signature
+          Chiri_x64.app.tar.gz|Chiri v${VERSION} macOS Intel updater bundle
+          Chiri_x64.app.tar.gz.sig|Chiri v${VERSION} macOS Intel updater signature
           Chiri_${VERSION}_amd64.deb|Chiri v${VERSION} Linux x86_64 Debian Package
           Chiri_${VERSION}_amd64.deb.sig|Chiri v${VERSION} Linux x86_64 Debian Package signature
           Chiri_${VERSION}_arm64.deb|Chiri v${VERSION} Linux ARM64 Debian Package

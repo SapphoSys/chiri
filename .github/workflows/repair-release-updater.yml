@@ -1,0 +1,230 @@
+name: Repair release updater
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing release tag to repair, for example app-v1.0.0'
+        required: true
+        default: 'app-v1.0.0'
+        type: string
+      build_ref:
+        description: 'Branch or commit to build from'
+        required: true
+        default: 'release'
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  resolve-release:
+    name: Resolve release
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.release.outputs.release_id }}
+    steps:
+      - name: Resolve existing GitHub release
+        id: release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+
+          RELEASE_ID=$(gh api \
+            "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" \
+            --jq '.id')
+
+          if [ -z "$RELEASE_ID" ]; then
+            echo "::error::Release was not found: $TAG"
+            exit 1
+          fi
+
+          echo "release_id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
+          echo "Repairing release $TAG ($RELEASE_ID)"
+
+  rebuild-macos-updater:
+    name: ${{ matrix.label }}
+    needs: resolve-release
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-26'
+            label: 'macOS (Apple Silicon)'
+            target: 'aarch64-apple-darwin'
+          - platform: 'macos-26-intel'
+            label: 'macOS (Intel)'
+            target: 'x86_64-apple-darwin'
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ inputs.build_ref }}
+          persist-credentials: false
+
+      - name: Setup Tauri build
+        uses: ./.github/actions/setup-tauri-build
+        with:
+          platform: ${{ matrix.platform }}
+          rust-targets: ${{ matrix.target }}
+
+      - name: Show Apple toolchain
+        shell: bash
+        run: |
+          xcodebuild -version
+          xcrun --sdk macosx --show-sdk-version
+          xcrun --sdk macosx --show-sdk-path
+
+      - name: Load signing secrets from 1Password
+        uses: 1password/load-secrets-action@3a12b0ab99d9cd590a3e9b5a90ea017210ed9556 # v4
+        with:
+          export-env: true
+          version: 2.33.1
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: op://GitHub Actions/Tauri Secrets/signing-key
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: op://GitHub Actions/Tauri Secrets/signing-key-password
+          APPLE_SIGNING_IDENTITY: op://GitHub Actions/Apple Secrets/identity
+          APPLE_CERTIFICATE: op://GitHub Actions/Apple Secrets/certificate
+          APPLE_CERTIFICATE_PASSWORD: op://GitHub Actions/Apple Secrets/api-key
+          APPLE_API_ISSUER: op://GitHub Actions/Apple Secrets/api-issuer
+          APPLE_API_KEY: op://GitHub Actions/Apple Secrets/api-key
+          APPLE_API_KEY_CERTIFICATE: op://GitHub Actions/Apple Secrets/api-key-certificate
+
+      - name: Import Apple signing certificate
+        shell: bash
+        run: |
+          printf '%s' "$APPLE_CERTIFICATE" | base64 --decode > certificate.p12
+          KEYCHAIN_PASSWORD="$(openssl rand -base64 32)"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+          security set-keychain-settings -t 3600 -u build.keychain
+          security import certificate.p12 -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+
+          CERT_IDENTITY=$(security find-identity -v -p codesigning build.keychain | grep "Developer ID" | head -1 | awk -F'"' '{print $2}')
+          echo "Found signing identity: $CERT_IDENTITY"
+          echo "APPLE_SIGNING_IDENTITY=$CERT_IDENTITY" >> "$GITHUB_ENV"
+
+          rm certificate.p12
+
+      - name: Prepare Apple API key for signing
+        shell: bash
+        run: |
+          APPLE_KEY_FILE="$RUNNER_TEMP/apple_api_key.p8"
+          printf '%s' "$APPLE_API_KEY_CERTIFICATE" > "$APPLE_KEY_FILE"
+          chmod 600 "$APPLE_KEY_FILE"
+          echo "APPLE_API_KEY_PATH=$APPLE_KEY_FILE" >> "$GITHUB_ENV"
+
+      - uses: tauri-apps/tauri-action@84b9d35b5fc46c1e45415bdb6144030364f7ebc5 # v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ env.TAURI_SIGNING_PRIVATE_KEY || secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ env.TAURI_SIGNING_PRIVATE_KEY_PASSWORD || secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ env.APPLE_SIGNING_IDENTITY }}
+          APPLE_API_ISSUER: ${{ env.APPLE_API_ISSUER }}
+          APPLE_API_KEY: ${{ env.APPLE_API_KEY }}
+          APPLE_API_KEY_PATH: ${{ env.APPLE_API_KEY_PATH }}
+          MACOSX_DEPLOYMENT_TARGET: '12.0'
+          CARGO_TARGET_AARCH64_APPLE_DARWIN_RUSTFLAGS: '-C link-arg=-mmacosx-version-min=12.0'
+          CARGO_TARGET_X86_64_APPLE_DARWIN_RUSTFLAGS: '-C link-arg=-mmacosx-version-min=12.0'
+        with:
+          releaseId: ${{ needs.resolve-release.outputs.release_id }}
+          tagName: ${{ inputs.tag }}
+          includeUpdaterJson: false
+          args: --target ${{ matrix.target }}
+
+  regenerate-updater-metadata:
+    name: Regenerate updater metadata
+    needs:
+      - resolve-release
+      - rebuild-macos-updater
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ inputs.build_ref }}
+          persist-credentials: false
+
+      - name: Download updater signatures
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+          gh release download "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern '*.sig' \
+            --dir release-assets \
+            --clobber
+
+      - name: Generate and upload latest.json
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag }}
+          VERSION: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          VERSION="${VERSION#app-v}"
+          export VERSION
+
+          bash scripts/generate-updater-metadata.sh
+
+          gh release upload "$TAG" release-assets/latest.json \
+            --repo "$GITHUB_REPOSITORY" \
+            --clobber
+
+          gh release download "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern latest.json \
+            --dir verify-release-assets \
+            --clobber
+          jq -e --arg version "$VERSION" '
+            .version == $version and
+            (.platforms["darwin-aarch64"].signature | length > 0) and
+            (.platforms["darwin-x86_64"].signature | length > 0)
+          ' verify-release-assets/latest.json > /dev/null
+
+      - name: Label repaired release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ needs.resolve-release.outputs.release_id }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+
+          VERSION="${TAG#app-v}"
+          RELEASE_ASSETS_API_PATH="repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets"
+          ASSET_API_PATH="repos/${GITHUB_REPOSITORY}/releases/assets"
+          gh api "$RELEASE_ASSETS_API_PATH?per_page=100" > release-assets.json
+
+          while IFS='|' read -r name label; do
+            asset_id=$(jq -r --arg name "$name" \
+              'first(.[] | select(.name == $name) | .id) // empty' \
+              release-assets.json)
+
+            if [ -z "$asset_id" ]; then
+              echo "::error::Release asset not found: $name"
+              exit 1
+            fi
+
+            gh api \
+              --method PATCH \
+              "${ASSET_API_PATH}/${asset_id}" \
+              -f "label=$label" \
+              | jq -e --arg label "$label" '.label == $label' > /dev/null
+          done <<EOF
+          latest.json|Chiri v${VERSION} updater metadata
+          Chiri_aarch64.app.tar.gz|Chiri v${VERSION} macOS Apple Silicon updater bundle
+          Chiri_aarch64.app.tar.gz.sig|Chiri v${VERSION} macOS Apple Silicon updater signature
+          Chiri_x64.app.tar.gz|Chiri v${VERSION} macOS Intel updater bundle
+          Chiri_x64.app.tar.gz.sig|Chiri v${VERSION} macOS Intel updater signature
+          EOF
