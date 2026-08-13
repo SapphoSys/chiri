@@ -106,8 +106,8 @@ export const Tooltip = ({
 
     const rect = triggerRef.current.getBoundingClientRect();
     const tooltipRect = tooltipRef.current?.getBoundingClientRect();
-    const tooltipWidth = tooltipRect?.width || 150; // Use actual width or fallback
-    const tooltipHeight = tooltipRect?.height || 32; // Use actual height or fallback
+    const tooltipWidth = tooltipRect?.width || 150; // use actual width or fallback
+    const tooltipHeight = tooltipRect?.height || 32; // use actual height or fallback
     const offset = 8;
     const padding = 8;
     const arrowPadding = 8;

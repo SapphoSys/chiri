@@ -192,7 +192,7 @@ export const TaskEditorSubtaskItem = ({
 
   return (
     <div ref={setNodeRef} style={style}>
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: Subtask rows contain nested controls, so a button cannot represent the full editable row. */}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: subtask rows contain nested controls, so a button cannot represent the full editable row. */}
       <div
         {...(isDragEnabled ? listeners : {})}
         role={readOnly ? undefined : 'button'}

@@ -175,7 +175,6 @@ export const TimePickerModal = ({
       }
     >
       <div className="flex items-center justify-center gap-2">
-        {/* Hour control */}
         <div className="flex flex-col items-center gap-1">
           <button
             type="button"
@@ -210,12 +209,10 @@ export const TimePickerModal = ({
           </button>
         </div>
 
-        {/* Separator */}
         <span className="select-none font-bold text-2xl text-surface-400 dark:text-surface-500">
           :
         </span>
 
-        {/* Minute control */}
         <div className="flex flex-col items-center gap-1">
           <button
             type="button"

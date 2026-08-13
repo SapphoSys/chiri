@@ -15,7 +15,7 @@ Please include:
 - the version of Chiri and the operating system you're using,
 - any relevant logs, screenshots, or proof-of-concept material.
 
-You can expect an initial reply within a few days. As Chiri is currently maintained by a single person, response times depend on availability — please be patient.
+You can expect an initial reply within a few days. As Chiri is currently maintained by a single person, response times depend on availability. Please be patient.
 
 ## Supported versions
 

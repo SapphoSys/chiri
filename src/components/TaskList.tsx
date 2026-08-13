@@ -213,7 +213,7 @@ export const TaskList = () => {
   const modifierJoiner = getModifierJoiner();
   const newTaskShortcut = `${metaKey}${modifierJoiner}N`;
 
-  // Group order is derived from task properties; manual drag-reordering applies within each group.
+  // group order is derived from task properties; manual drag-reordering applies within each group.
   const isRecentlyDeleted = activeView === 'recently-deleted';
   const isFilterView = activeView === 'filter';
   const isDragEnabled = sortConfig.mode === 'manual' && !isRecentlyDeleted;

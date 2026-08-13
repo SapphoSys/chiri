@@ -37,7 +37,7 @@ integration('Stalwart OAuth CalDAV end-to-end', () => {
   beforeAll(async () => {
     serverUrl = normalizeServerUrl(getPredefinedServerUrl('stalwart') ?? url!);
 
-    // Discover OAuth endpoints
+    // discover OAuth endpoints
     const metadataRes = await fetch(`${serverUrl}/.well-known/oauth-authorization-server`);
     expect(metadataRes.status).toBe(200);
     const metadata = (await metadataRes.json()) as {
@@ -46,7 +46,7 @@ integration('Stalwart OAuth CalDAV end-to-end', () => {
       token_endpoint: string;
     };
 
-    // Register a public OAuth client dynamically
+    // register a public OAuth client dynamically
     const registrationRes = await fetch(metadata.registration_endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -61,10 +61,10 @@ integration('Stalwart OAuth CalDAV end-to-end', () => {
     const registration = (await registrationRes.json()) as { client_id: string };
     clientId = registration.client_id;
 
-    // Generate PKCE parameters
+    // generate PKCE parameters
     const { verifier, challenge } = await generatePKCE();
 
-    // Obtain an authorization code via Stalwart's programmatic login endpoint
+    // obtain an authorization code via Stalwart's programmatic login endpoint
     const codeRes = await fetch(`${serverUrl}/api/auth`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -83,7 +83,7 @@ integration('Stalwart OAuth CalDAV end-to-end', () => {
     expect(codeRes.status).toBe(200);
     const { client_code: code } = codeJson as { client_code: string };
 
-    // Exchange the code for access and refresh tokens
+    // exchange the code for access and refresh tokens
     const tokenBody = new URLSearchParams({
       grant_type: 'authorization_code',
       code,
@@ -106,7 +106,7 @@ integration('Stalwart OAuth CalDAV end-to-end', () => {
   }, 60_000);
 
   afterAll(async () => {
-    // No server-side cleanup needed; dynamic clients and codes are transient.
+    // no server-side cleanup needed. dynamic clients and codes are transient
   });
 
   it('connects via Bearer token and discovers calendars', async () => {

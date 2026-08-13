@@ -160,7 +160,7 @@ describe('toastManager', () => {
     expect(toastDismiss).toHaveBeenCalledTimes(1);
     expect(toastDismiss).toHaveBeenCalledWith(id);
 
-    // the key was forgotten — a second dismiss is a no-op
+    // the key was forgotten. a second dismiss is a no-op
     toastManager.dismiss('export-done');
     expect(toastDismiss).toHaveBeenCalledTimes(1);
   });

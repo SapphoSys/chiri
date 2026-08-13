@@ -38,8 +38,8 @@ export const normalizeNextcloudUrl = (url: string) => {
 
 /**
  * initiates Nextcloud Login Flow v2
- * @param serverUrl The Nextcloud server URL
- * @returns Promise that resolves with login credentials
+ * @param serverUrl the Nextcloud server URL
+ * @returns promise that resolves with login credentials
  */
 export const initiateNextcloudLogin = async (serverUrl: string) => {
   const normalizedUrl = normalizeNextcloudUrl(serverUrl);
@@ -54,7 +54,7 @@ export const initiateNextcloudLogin = async (serverUrl: string) => {
   }
 
   try {
-    // step 1: Initiate login flow
+    // step 1: initiate login flow
     const initResponse = await tauriFetch(`${normalizedUrl}/index.php/login/v2`, {
       method: 'POST',
       headers: {
@@ -71,16 +71,15 @@ export const initiateNextcloudLogin = async (serverUrl: string) => {
 
     log.debug('Login flow initiated', { loginUrl: flowData.login });
 
-    // step 2: Open browser for user authentication
+    // step 2: open browser for user authentication
     await openUrl(flowData.login);
 
     log.info('Opened browser for authentication');
 
-    // step 3: Create new abort controller for this polling operation
+    // step 3: create new abort controller for this polling operation
     const controller = new AbortController();
     activePollingController = controller;
 
-    // poll for credentials
     const credentials = await pollForCredentials(flowData.poll, controller.signal);
 
     // clear the controller on success
@@ -278,9 +277,9 @@ export const validateNextcloudServer = async (
 
 /**
  * deletes an app password on logout (optional cleanup)
- * @param serverUrl The Nextcloud server URL
- * @param username The username
- * @param appPassword The app password to delete
+ * @param serverUrl the Nextcloud server URL
+ * @param username the username
+ * @param appPassword the app password to delete
  */
 export const deleteAppPassword = async (
   serverUrl: string,

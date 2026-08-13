@@ -20,8 +20,8 @@ export const normalizeRusticalUrl = (url: string) => {
 
 /**
  * validates a RustiCal server by checking the /ping endpoint
- * @param serverUrl The RustiCal server URL
- * @returns Promise that resolves to true if it's a valid RustiCal server
+ * @param serverUrl the RustiCal server URL
+ * @returns promise that resolves to true if it's a valid RustiCal server
  */
 export const validateRusticalServer = async (
   serverUrl: string,

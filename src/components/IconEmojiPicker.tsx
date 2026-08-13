@@ -108,7 +108,7 @@ export const IconEmojiPicker = ({
                       type="button"
                       onClick={() => {
                         onIconChange(name);
-                        onEmojiChange(''); // Clear emoji when selecting icon
+                        onEmojiChange(''); // clear emoji when selecting icon
                         setIsOpen(false);
                       }}
                       className="flex h-8 w-full cursor-pointer items-center justify-center rounded-lg text-surface-600 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"

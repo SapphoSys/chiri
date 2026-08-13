@@ -34,9 +34,9 @@ export const STALWART_SCOPE = 'openid offline_access urn:ietf:params:oauth:scope
 export const STALWART_OAUTH_PATH = '/oauth/stalwart';
 
 export interface StalwartTokens extends OAuthTokens {
-  /** Account identifier returned by the OIDC id_token (preferred_username or email) */
+  /** account identifier returned by the OIDC id_token (preferred_username or email) */
   username: string;
-  /** Public client_id used to obtain the refresh token; must be reused on refresh */
+  /** public client_id used to obtain the refresh token; must be reused on refresh */
   clientId: string;
 }
 
@@ -178,7 +178,7 @@ export const discoverStalwartOAuthEndpoints = async (
 
 /**
  * validates that the provided URL is a Stalwart server by attempting to
- * discover its OIDC/OAuth endpoints.
+ * discover its OIDC/OAuth endpoints
  */
 export const validateStalwartServer = async (
   serverUrl: string,

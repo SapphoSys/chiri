@@ -98,12 +98,11 @@ export const BadgesSettingsPreview = () => {
           isCompact ? 'py-2' : 'py-3'
         }`}
       >
-        {/* Checkbox */}
+        {/* checkbox */}
         <div className="mt-0.5 shrink-0">
           <span className="flex h-5 w-5 rounded-sm border-2 border-surface-400 dark:border-surface-600" />
         </div>
 
-        {/* Content */}
         <div className="min-w-0 flex-1">
           {isCompact ? (
             <>
@@ -125,7 +124,6 @@ export const BadgesSettingsPreview = () => {
           )}
         </div>
 
-        {/* Chevron */}
         <ChevronRight className="h-5 w-5 shrink-0 text-surface-500 dark:text-surface-400" />
       </div>
     </div>

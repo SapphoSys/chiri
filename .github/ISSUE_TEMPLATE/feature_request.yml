@@ -35,4 +35,4 @@ body:
     id: context
     attributes:
       label: Additional context
-      description: Anything else that might be helpful — links, related issues, CalDAV specs, etc.
+      description: Anything else that might be helpful - links, related issues, CalDAV specs, etc.

@@ -145,7 +145,6 @@ export const MobileConfigExportModal = ({
           </div>
         )}
 
-        {/* Password option */}
         <div className="rounded-lg border border-surface-200 dark:border-surface-700">
           <label className="flex cursor-pointer items-start gap-3 p-3">
             <input

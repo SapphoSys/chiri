@@ -47,8 +47,8 @@ export const mergeEditorFieldVisibility = (
   return {
     ...defaultVisibility,
     ...stored,
-    // Before progress became its own field, this preference controlled both
-    // status and progress. Preserve that behavior for existing settings.
+    // before progress became its own field, this preference controlled both
+    // status and progress. preserve that behavior for existing settings
     progress: 'progress' in stored ? Boolean(stored.progress) : Boolean(stored.status),
   };
 };

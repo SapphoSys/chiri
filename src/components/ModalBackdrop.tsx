@@ -33,7 +33,7 @@ export const ModalBackdrop = ({
   animateFromDimmed = false,
   closeOnBackdropClick = false,
 }: ModalBackdropProps) => (
-  // biome-ignore lint/a11y/noStaticElementInteractions: Import modals need drag handlers on the backdrop to prevent browser file navigation
+  // biome-ignore lint/a11y/noStaticElementInteractions: import modals need drag handlers on the backdrop to prevent browser file navigation
   <div
     role="presentation"
     className={`modal-backdrop-layer pointer-events-none fixed inset-0 ${zIndex} flex items-center justify-center ${animate ? 'motion-safe:animate-fade-in' : animateFromDimmed ? 'motion-safe:animate-fade-in-from-dimmed' : ''} ${className}`}
@@ -45,7 +45,7 @@ export const ModalBackdrop = ({
       aria-hidden="true"
       className={`pointer-events-none absolute inset-0 ${backdropClassName}`}
     />
-    {/* Backdrop button - accessible interactive element */}
+    {/* backdrop button - accessible interactive element */}
     <button
       type="button"
       onClick={closeOnBackdropClick ? onClose : undefined}
@@ -58,7 +58,7 @@ export const ModalBackdrop = ({
       aria-hidden="true"
       className="modal-titlebar-drag-region pointer-events-auto absolute top-0 right-0 left-0 hidden h-13"
     />
-    {/* Modal content container */}
+    {/* modal content container */}
     <div className="pointer-events-auto contents">{children}</div>
   </div>
 );

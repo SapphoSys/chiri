@@ -224,7 +224,7 @@ const subscribe = (listener: () => void) => {
   // save and notify all subscribers (including the new one)
   if (pendingMigrationSave && isFirstSubscriber) {
     saveToStorage(state);
-    pendingMigrationSave = false; // Clear flag so we don't save again
+    pendingMigrationSave = false; // clear flag so we don't save again
     // notify all subscribers about the migrated state
     emitChange();
   }

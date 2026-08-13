@@ -25,7 +25,7 @@ export const shareMobileConfig = async (
       await navigator.share(shareData);
       return 'shared';
     } catch (error) {
-      // User cancelled the share sheet — rethrow so the caller can ignore it.
+      // user cancelled the share sheet. rethrow so the caller can ignore it
       if (error instanceof Error && error.name === 'AbortError') {
         throw error;
       }

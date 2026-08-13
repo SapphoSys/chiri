@@ -2,11 +2,11 @@
  * Fastmail OAuth 2.0 + PKCE authentication
  *
  * flow:
- *  1. Generate PKCE verifier + S256 challenge + random state
- *  2. Open browser to Fastmail's auth endpoint
+ *  1. generate PKCE verifier + S256 challenge + random state
+ *  2. open browser to Fastmail's auth endpoint
  *  3. Fastmail redirects to garden.chiri:/oauth/fastmail?code=...&state=...
- *  4. Exchange code + verifier for access + refresh tokens
- *  5. Derive username from CalDAV principal URL
+ *  4. exchange code + verifier for access + refresh tokens
+ *  5. derive username from CalDAV principal URL
  */
 
 import { invoke } from '@tauri-apps/api/core';
@@ -120,7 +120,6 @@ export const startFastmailOAuth = (): { promise: Promise<FastmailTokens>; cancel
 };
 
 // token exchange
-
 const exchangeCodeForTokens = async (code: string, verifier: string) => {
   const body = new URLSearchParams({
     grant_type: 'authorization_code',

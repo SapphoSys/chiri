@@ -28,8 +28,8 @@ const rgbToHex = ([r, g, b]: [number, number, number]) =>
   `#${[r, g, b].map((channel) => Math.round(channel).toString(16).padStart(2, '0')).join('')}`;
 
 /**
- * Derive a readable same-hue color for light-mode text, icons, borders, and
- * focus indicators without changing the selected accent used for fills.
+ * derive a readable same-hue color for light-mode text, icons, borders, and
+ * focus indicators without changing the selected accent used for fills
  */
 const getLightModeAccentInk = (color: AccentColor) => {
   const rgb = parseCssColor(color);

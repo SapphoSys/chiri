@@ -55,7 +55,7 @@ export const MacNotificationCard = ({
     try {
       const result = await requestPermission();
 
-      // A granted=false result whose status string contains "error" means macOS
+      // a granted=false result whose status string contains "error" means macOS
       // silently blocked the dialog due to a cached decision
       if (!result.granted && result.status.toLowerCase().includes('error')) {
         alert(

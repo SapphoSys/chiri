@@ -370,7 +370,7 @@ export const TaskItem = ({
 
   return (
     <>
-      {/* biome-ignore lint/a11y/useSemanticElements: Task item div contains complex drag-drop layout that button element can't support */}
+      {/* biome-ignore lint/a11y/useSemanticElements: task item div contains complex drag-drop layout that button element can't support */}
       <div
         ref={mergedRef}
         style={{ ...style, marginLeft: `${marginLeft}px`, paddingLeft: `${paddingLeft}px` }}

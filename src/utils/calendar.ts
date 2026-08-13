@@ -31,7 +31,7 @@ export const isWorkingDay = (date: Date, workingDays: WorkingDay[] = DEFAULT_WOR
 
 /**
  * get the next working day strictly after the given date.
- * if the given date is already a working day, it still returns the following working day.
+ * if the given date is already a working day, it still returns the following working day
  */
 export const getNextWorkingDay = (
   date: Date,

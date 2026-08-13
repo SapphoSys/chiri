@@ -95,7 +95,7 @@ export const TaskDefaultsSettingsRemindersSection = () => {
           </p>
           <div className="space-y-1.5">
             {defaultReminders.map((offset) => (
-              // biome-ignore lint/a11y/useSemanticElements: Using div with role=button to allow nested delete button without button nesting
+              // biome-ignore lint/a11y/useSemanticElements: using div with role=button to allow nested delete button without button nesting
               <div
                 key={offset}
                 role="button"

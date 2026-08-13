@@ -27,9 +27,9 @@ interface ModalWrapperProps {
   /** optional content rendered before the title, e.g. a back button */
   headerLeft?: ReactNode;
   children: ReactNode;
-  /** footer content - rendered in a flex container with gap-3. Use footerLeft for split layouts */
+  /** footer content - rendered in a flex container with gap-3. use footerLeft for split layouts */
   footer?: ReactNode;
-  /** left side of footer for split layouts (e.g., Clear button). When provided, footer is right-aligned */
+  /** left side of footer for split layouts (e.g., Clear button). when provided, footer is right-aligned */
   footerLeft?: ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   preventClose?: boolean;

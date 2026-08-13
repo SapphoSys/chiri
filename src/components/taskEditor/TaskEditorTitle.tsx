@@ -96,8 +96,8 @@ export const TaskEditorTitle = ({
         <Type className="h-4 w-4" />
         Title
       </label>
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: Wrapper div focuses child textarea for better UX */}
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Click focuses child textarea which is already keyboard accessible */}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: wrapper div focuses child textarea for better UX */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: click focuses child textarea which is already keyboard accessible */}
       <div
         onClick={(e) => {
           if (readOnly) return;

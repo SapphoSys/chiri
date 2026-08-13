@@ -185,7 +185,7 @@ export const AppShell = ({
               className="relative flex-1 overflow-hidden border-surface-300 bg-white lg:flex-none lg:border-l dark:border-surface-700 dark:bg-surface-800"
               style={{ width: taskEditorWidth }}
             >
-              {/* biome-ignore lint/a11y/noStaticElementInteractions: Resize handle requires mouse events for drag functionality */}
+              {/* biome-ignore lint/a11y/noStaticElementInteractions: resize handle requires mouse events for drag functionality */}
               <div
                 onMouseDown={onEditorResizeStart}
                 className="absolute top-0 left-0 z-10 h-full w-1 cursor-col-resize transition-colors hover:bg-primary-400 dark:hover:bg-primary-600"

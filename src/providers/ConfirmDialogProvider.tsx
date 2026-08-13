@@ -29,7 +29,7 @@ export const ConfirmDialogProvider = ({ children }: { children: ReactNode }) => 
       resolverRef.current = resolve;
       alternateResolverRef.current = null;
       setOptions({ ...defaultConfirmOptions, ...opts });
-      setDialogKey((k) => k + 1); // Force remount to reset state
+      setDialogKey((k) => k + 1); // force remount to reset state
       setIsOpen(true);
     });
   }, []);
@@ -39,7 +39,7 @@ export const ConfirmDialogProvider = ({ children }: { children: ReactNode }) => 
       alternateResolverRef.current = resolve;
       resolverRef.current = null;
       setOptions({ ...defaultConfirmOptions, ...opts });
-      setDialogKey((k) => k + 1); // Force remount to reset state
+      setDialogKey((k) => k + 1); // force remount to reset state
       setIsOpen(true);
     });
   }, []);

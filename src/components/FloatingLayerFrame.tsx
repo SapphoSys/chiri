@@ -115,7 +115,7 @@ export const FloatingLayerFrame = ({
   );
 
   const handleLayerClickCapture: MouseEventHandler<HTMLDivElement> = useCallback((event) => {
-    // menu items often close themselves from their own click handler. Wait for
+    // menu items often close themselves from their own click handler. wait for
     // that state update, then reset only if no pointer target remains under the
     // stationary mouse
     refreshStaleCursorAfterPointerMutation(event);
@@ -205,8 +205,8 @@ export const FloatingLayerFrame = ({
 
   return createPortal(
     <>
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: Floating layer backdrop for closing on outside click */}
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Floating layer backdrop for closing on outside click */}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: floating layer backdrop for closing on outside click */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: floating layer backdrop for closing on outside click */}
       <div
         className={backdropClassName}
         onClick={handlePointerClose}
@@ -216,8 +216,8 @@ export const FloatingLayerFrame = ({
         }}
       />
 
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: Floating layer container stops document-level click handlers */}
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Floating layer container stops document-level click handlers */}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: floating layer container stops document-level click handlers */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: floating layer container stops document-level click handlers */}
       <div
         ref={layerRef}
         {...dataAttributes}

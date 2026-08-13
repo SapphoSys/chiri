@@ -34,7 +34,7 @@ import {
   usernameFromPrincipalUrl,
 } from '$lib/auth/stalwart';
 
-// Provide atob/btoa for JWT decoding in the test environment
+// provide atob/btoa for JWT decoding in the test environment
 globalThis.atob = atob;
 globalThis.btoa = btoa;
 

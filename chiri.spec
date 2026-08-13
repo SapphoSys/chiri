@@ -8,9 +8,6 @@ Summary:        Sync and manage tasks across CalDAV servers
 
 License:        zlib
 URL:            https://github.com/chiriapp/chiri
-# Source0 is the git checkout itself, Source1 the vendored cargo crates,
-# Source2 the prebuilt frontend — all produced by scripts/make-srpm.sh,
-# which also syncs Version: above from src-tauri/tauri.conf.json.
 Source0:        chiri-%{version}.tar.gz
 Source1:        chiri-%{version}-vendor.tar.gz
 Source2:        chiri-%{version}-frontend.tar.gz
