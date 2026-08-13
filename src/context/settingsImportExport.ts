@@ -5,6 +5,7 @@ import { getPercentCompleteForStatus } from '$lib/task/status';
 import type { NotificationActionSettings } from '$types/notifications/settings';
 import type { EditorFieldKey, EditorFieldVisibility } from '$types/settings/categories/editor';
 import type { WorkingDay } from '$types/settings/categories/scheduling';
+import { isProgressIncrement } from '$types/settings/categories/statusProgress';
 import type { SettingsState } from '$types/settings/state';
 import type { KeyboardShortcut } from '$types/shortcuts';
 import { isReservedShortcut } from '$utils/keyboard';
@@ -125,6 +126,7 @@ export const importSettings = (json: string, defaultState: SettingsState): Setti
       'defaultStatus',
       'defaultPercentComplete',
       'syncStatusProgress',
+      'progressIncrement',
       'defaultTags',
       'defaultStartDate',
       'defaultStartTime',
@@ -187,6 +189,10 @@ export const importSettings = (json: string, defaultState: SettingsState): Setti
     const newState: Partial<SettingsState> = {};
     for (const key of simpleSettings) {
       newState[key] = data[key] ?? defaultState[key];
+    }
+
+    if (!isProgressIncrement(newState.progressIncrement)) {
+      newState.progressIncrement = defaultState.progressIncrement;
     }
 
     if (newState.syncStatusProgress) {

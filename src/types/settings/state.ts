@@ -14,6 +14,7 @@ import type { NetworkProxyMode } from '$types/settings/categories/network';
 import type { DateFormat, StartOfWeek, TimeFormat } from '$types/settings/categories/region';
 import type { SubtaskDeletionBehavior } from '$types/settings/categories/safety';
 import type { QuickTimePresets, WorkingDay } from '$types/settings/categories/scheduling';
+import type { ProgressIncrement } from '$types/settings/categories/statusProgress';
 import type { WindowDecorationStyle } from '$types/settings/categories/system';
 import type { KeyboardShortcut } from '$types/shortcuts';
 import type { Priority, Status } from '$types/task/model';
@@ -47,6 +48,7 @@ export interface SettingsState {
   defaultStatus: Status;
   defaultPercentComplete: number;
   syncStatusProgress: boolean;
+  progressIncrement: ProgressIncrement;
   defaultTags: string[];
   defaultStartDate: DefaultDateOffset;
   defaultStartTime: number | null;
@@ -147,6 +149,7 @@ interface SettingsActions {
   setDefaultStatus: (status: Status) => void;
   setDefaultPercentComplete: (pct: number) => void;
   setSyncStatusProgress: (enabled: boolean) => void;
+  setProgressIncrement: (increment: ProgressIncrement) => void;
   setDefaultTags: (tagIds: string[]) => void;
   setDefaultStartDate: (offset: DefaultDateOffset) => void;
   setDefaultStartTime: (time: number | null) => void;

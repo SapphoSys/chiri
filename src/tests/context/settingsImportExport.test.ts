@@ -77,6 +77,7 @@ describe('status and progress synchronization', () => {
         defaultStatus: 'completed',
         defaultPercentComplete: 42,
         syncStatusProgress: false,
+        progressIncrement: 10,
       }),
       defaultState,
     );
@@ -84,6 +85,7 @@ describe('status and progress synchronization', () => {
     expect(imported?.syncStatusProgress).toBe(false);
     expect(imported?.defaultStatus).toBe('completed');
     expect(imported?.defaultPercentComplete).toBe(42);
+    expect(imported?.progressIncrement).toBe(10);
   });
 
   it('defaults the preference to enabled when importing older settings', async () => {
@@ -93,6 +95,19 @@ describe('status and progress synchronization', () => {
     const imported = importSettings(JSON.stringify({ version: 1 }), defaultState);
 
     expect(imported?.syncStatusProgress).toBe(true);
+    expect(imported?.progressIncrement).toBe(5);
+  });
+
+  it('falls back to the default for an invalid progress increment', async () => {
+    const { importSettings } = await import('$context/settingsImportExport');
+    const { defaultState } = await import('$context/settingsDefaults');
+
+    const imported = importSettings(
+      JSON.stringify({ version: 1, progressIncrement: 7 }),
+      defaultState,
+    );
+
+    expect(imported?.progressIncrement).toBe(5);
   });
 });
 

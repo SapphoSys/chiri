@@ -49,6 +49,7 @@ export const TaskDefaultsSettingsStatusSection = () => {
     defaultPercentComplete,
     setDefaultPercentComplete,
     syncStatusProgress,
+    progressIncrement,
     useAccentColorForCheckboxes,
   } = useSettingsStore();
 
@@ -139,7 +140,7 @@ export const TaskDefaultsSettingsStatusSection = () => {
             type="range"
             min={0}
             max={100}
-            step={5}
+            step={progressIncrement}
             value={defaultPercentComplete}
             style={{ '--pct': `${defaultPercentComplete}%` } as React.CSSProperties}
             onChange={(e) => handlePercentChange(Number(e.target.value))}

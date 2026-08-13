@@ -1,5 +1,6 @@
 import Timer from 'lucide-react/icons/timer';
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
+import { useSettingsStore } from '$context/settingsContext';
 import { usePrefersReducedMotion } from '$hooks/ui/usePrefersReducedMotion';
 import type { Task } from '$types/task/model';
 
@@ -23,6 +24,7 @@ export const TaskEditorProgress = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
+  const { progressIncrement } = useSettingsStore();
   const percent = draftPercent ?? task.percentComplete ?? 0;
 
   useEffect(() => {
@@ -68,7 +70,7 @@ export const TaskEditorProgress = ({
           type="range"
           min={0}
           max={100}
-          step={5}
+          step={progressIncrement}
           value={percent}
           style={{ '--pct': `${percent}%` } as CSSProperties}
           onChange={(e) => setDraftPercent(Number(e.target.value))}

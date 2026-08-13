@@ -19,6 +19,7 @@ const baseMockStore = {
   defaultPercentComplete: 0,
   setDefaultPercentComplete: mockSetDefaultPercentComplete,
   syncStatusProgress: true,
+  progressIncrement: 5,
   defaultTags: [],
   setDefaultTags: vi.fn(),
   defaultCalendarId: null,
@@ -96,6 +97,17 @@ describe('TaskDefaultsSettings', () => {
     expect(slider?.getAttribute('value')).toBe('25');
     expect(slider?.getAttribute('min')).toBe('0');
     expect(slider?.getAttribute('max')).toBe('100');
+    expect(slider?.getAttribute('step')).toBe('5');
+  });
+
+  it('uses the configured progress increment', async () => {
+    mockStore.progressIncrement = 10;
+
+    await act(async () => {
+      root.render(<TaskDefaultsSettings />);
+    });
+
+    expect(container.querySelector('input[type="range"]')?.getAttribute('step')).toBe('10');
   });
 
   it('keeps the progress slider available for completed defaults', async () => {

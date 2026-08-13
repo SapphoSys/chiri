@@ -33,6 +33,10 @@ import type { NetworkProxyMode } from '$types/settings/categories/network';
 import type { DateFormat, StartOfWeek, TimeFormat } from '$types/settings/categories/region';
 import type { SubtaskDeletionBehavior } from '$types/settings/categories/safety';
 import type { QuickTimePresets, WorkingDay } from '$types/settings/categories/scheduling';
+import {
+  isProgressIncrement,
+  type ProgressIncrement,
+} from '$types/settings/categories/statusProgress';
 import type { WindowDecorationStyle } from '$types/settings/categories/system';
 import type { SettingsState, SettingsStore } from '$types/settings/state';
 import type { KeyboardShortcut } from '$types/shortcuts';
@@ -66,6 +70,9 @@ const loadFromStorage = (): { state: SettingsState; migrated: boolean } => {
       } = parsed.state ?? {};
       const loadedState = { ...defaultState, ...storedState };
       loadedState.networkProxyPort = normalizeProxyPort(loadedState.networkProxyPort);
+      if (!isProgressIncrement(loadedState.progressIncrement)) {
+        loadedState.progressIncrement = defaultState.progressIncrement;
+      }
       if (loadedState.syncStatusProgress) {
         loadedState.defaultPercentComplete =
           getPercentCompleteForStatus(
@@ -315,6 +322,7 @@ export const settingsStore = {
   setDefaultPercentComplete: (defaultPercentComplete: number) =>
     setState({ defaultPercentComplete }),
   setSyncStatusProgress: (syncStatusProgress: boolean) => setState({ syncStatusProgress }),
+  setProgressIncrement: (progressIncrement: ProgressIncrement) => setState({ progressIncrement }),
   setDefaultTags: (defaultTags: string[]) => setState({ defaultTags }),
   setDefaultStartDate: (defaultStartDate: DefaultDateOffset) => setState({ defaultStartDate }),
   setDefaultStartTime: (defaultStartTime: number | null) => setState({ defaultStartTime }),

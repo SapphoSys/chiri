@@ -16,6 +16,7 @@ import type { NetworkProxyMode } from '$types/settings/categories/network';
 import type { DateFormat, StartOfWeek, TimeFormat } from '$types/settings/categories/region';
 import type { SubtaskDeletionBehavior } from '$types/settings/categories/safety';
 import type { QuickTimePresets, WorkingDay } from '$types/settings/categories/scheduling';
+import type { ProgressIncrement } from '$types/settings/categories/statusProgress';
 import type { WindowDecorationStyle } from '$types/settings/categories/system';
 import type { SettingsStore } from '$types/settings/state';
 import type { KeyboardShortcut } from '$types/shortcuts';
@@ -133,6 +134,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   );
   const setSyncStatusProgress = useCallback(
     (enabled: boolean) => settingsStore.setSyncStatusProgress(enabled),
+    [],
+  );
+  const setProgressIncrement = useCallback(
+    (increment: ProgressIncrement) => settingsStore.setProgressIncrement(increment),
     [],
   );
   const setDefaultTags = useCallback(
@@ -422,6 +427,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     setDefaultStatus,
     setDefaultPercentComplete,
     setSyncStatusProgress,
+    setProgressIncrement,
     setDefaultTags,
     setDefaultStartDate,
     setDefaultStartTime,
