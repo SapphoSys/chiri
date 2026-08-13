@@ -32,6 +32,38 @@ echo "==> Assembling SRPM for chiri $VERSION"
 # keep the spec in sync with the ref being built
 sed -i "s/^Version:.*/Version:        $VERSION/" "$SPEC"
 
+# keep the RPM package changelog in sync with the version being built
+RPM_RELEASE=$(awk '$1 == "Release:" { release = $2; sub(/%.*/, "", release); print release; exit }' "$SPEC")
+RPM_RELEASE=${RPM_RELEASE:-1}
+
+if ! grep -Fq -- " - ${VERSION}-${RPM_RELEASE}" "$SPEC"; then
+  if ! grep -q '^%changelog$' "$SPEC"; then
+    echo "spec file is missing a %changelog section: $SPEC" >&2
+    exit 1
+  fi
+
+  CHANGELOG_DATE=$(date -u '+%a %b %-d %Y')
+  SPEC_TEMP=$(mktemp "${SPEC}.tmp.XXXXXX")
+  trap 'rm -f "$SPEC_TEMP"' EXIT
+
+  awk \
+    -v changelog_date="$CHANGELOG_DATE" \
+    -v version="$VERSION" \
+    -v rpm_release="$RPM_RELEASE" \
+    '/^%changelog$/ {
+       print
+       printf "* %s Sapphic Angels - %s-%s\n", changelog_date, version, rpm_release
+       printf "- Update to %s.\n", version
+       printf "- Upstream release notes: https://github.com/chiriapp/chiri/releases/tag/app-v%s\n", version
+       next
+     }
+     { print }' \
+    "$SPEC" > "$SPEC_TEMP"
+
+  mv "$SPEC_TEMP" "$SPEC"
+  trap - EXIT
+fi
+
 echo "==> [1/3] Archiving sources"
 git archive --format=tar.gz --prefix="chiri-$VERSION/" \
   -o "$OUTDIR/chiri-$VERSION.tar.gz" HEAD
