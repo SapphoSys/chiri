@@ -184,7 +184,7 @@ export const Header = ({
       type="button"
       onClick={handleNewTask}
       disabled={activeView === 'recently-deleted'}
-      className={`ml-2 flex items-center gap-2 rounded-lg border border-transparent bg-primary-500 px-4 py-1.5 font-medium text-primary-contrast text-sm transition-colors ${!isAnyModalOpen ? 'hover:bg-primary-600' : ''} shadow-xs outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50`}
+      className={`flex h-9 items-center gap-2 rounded-lg border border-transparent bg-primary-500 px-4 font-medium text-primary-contrast text-sm transition-colors ${!isAnyModalOpen ? 'hover:bg-primary-600' : ''} shadow-xs outline-hidden focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50`}
     >
       <Plus className="h-4 w-4" />
       New Task
@@ -267,11 +267,11 @@ export const Header = ({
             placeholder={`Search tasks... (${searchShortcut})`}
             value={searchQuery}
             onChange={(value) => setSearchQueryMutation.mutate(value)}
-            className="w-full rounded-lg border border-surface-300 bg-white py-2 pr-4 pl-9 text-sm text-surface-800 outline-hidden transition-colors placeholder:text-surface-400 hover:border-surface-400 focus:border-primary-ink focus:bg-white focus:hover:border-primary-ink dark:border-surface-700 dark:bg-surface-800/80 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:border-surface-600 dark:focus:hover:border-primary-ink"
+            className="h-9 w-full rounded-lg border border-surface-300 bg-white py-0 pr-4 pl-9 text-sm text-surface-800 outline-hidden transition-colors placeholder:text-surface-400 hover:border-surface-400 focus:border-primary-ink focus:bg-white focus:hover:border-primary-ink dark:border-surface-700 dark:bg-surface-800/80 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:border-surface-600 dark:focus:hover:border-primary-ink"
           />
         </div>
 
-        <div data-drag-region-pass-through className="flex shrink-0 items-center gap-1">
+        <div data-drag-region-pass-through className="flex shrink-0 items-center gap-2">
           {onSync && (
             <Tooltip
               content={getSyncTooltip(

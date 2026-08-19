@@ -53,7 +53,7 @@ export const HeaderViewMenu = ({
           ref={buttonRef}
           type="button"
           onClick={() => setIsOpen((current) => !current)}
-          className={`flex items-center gap-1.5 rounded-lg border border-transparent px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
+          className={`flex h-9 items-center gap-1.5 rounded-lg border border-transparent px-3 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset ${
             isOpen
               ? 'bg-surface-200 text-surface-700 dark:bg-surface-600 dark:text-surface-200'
               : `text-surface-600 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-100 dark:hover:bg-surface-700' : ''}`

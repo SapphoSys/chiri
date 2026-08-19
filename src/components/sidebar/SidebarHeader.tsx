@@ -30,7 +30,7 @@ export const SidebarHeader = ({
           <button
             type="button"
             onClick={onToggleCollapse}
-            className="app-sidebar-toggle rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-200"
+            className="app-sidebar-toggle flex h-9 w-9 items-center justify-center rounded-lg text-surface-500 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-200"
             aria-label="Expand sidebar"
           >
             <PanelLeftOpen className="h-5 w-5" />
@@ -51,7 +51,7 @@ export const SidebarHeader = ({
           <button
             type="button"
             onClick={onToggleCollapse}
-            className="app-sidebar-toggle shrink-0 rounded-lg p-1.5 text-surface-500 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-200"
+            className="app-sidebar-toggle flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-surface-500 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-ink focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-200"
             aria-label="Collapse sidebar"
           >
             <PanelLeftClose className="h-5 w-5" />
