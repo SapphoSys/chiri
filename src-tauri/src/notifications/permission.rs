@@ -13,10 +13,17 @@ pub struct NotificationPermissionResult {
     pub status: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct NotificationAlertStyleResult {
+    pub style: String,
+}
+
 // macOS FFI bridge (companion: macos/native/Notifications.m)
 #[cfg(target_os = "macos")]
 extern "C" {
     fn check_notification_permission_ffi(callback: extern "C" fn(*const std::os::raw::c_char));
+    fn check_notification_alert_style_ffi(callback: extern "C" fn(*const std::os::raw::c_char));
     fn request_notification_permission_ffi(
         callback: extern "C" fn(bool, *const std::os::raw::c_char),
     );
@@ -29,6 +36,9 @@ static PERMISSION_STATUS_RESULT: std::sync::Mutex<Option<String>> = std::sync::M
 #[cfg(target_os = "macos")]
 static PERMISSION_REQUEST_RESULT: std::sync::Mutex<Option<(bool, String)>> =
     std::sync::Mutex::new(None);
+
+#[cfg(target_os = "macos")]
+static ALERT_STYLE_RESULT: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 
 #[cfg(target_os = "macos")]
 fn set_status_result(value: Option<String>) -> Result<(), String> {
@@ -65,6 +75,23 @@ fn request_result() -> Result<Option<(bool, String)>, String> {
 }
 
 #[cfg(target_os = "macos")]
+fn set_alert_style_result(value: Option<String>) -> Result<(), String> {
+    let mut result = ALERT_STYLE_RESULT
+        .lock()
+        .map_err(|e| format!("Notification alert style lock poisoned: {e}"))?;
+    *result = value;
+    Ok(())
+}
+
+#[cfg(target_os = "macos")]
+fn alert_style_result() -> Result<Option<String>, String> {
+    ALERT_STYLE_RESULT
+        .lock()
+        .map(|result| result.clone())
+        .map_err(|e| format!("Notification alert style lock poisoned: {e}"))
+}
+
+#[cfg(target_os = "macos")]
 extern "C" fn check_permission_callback(status_ptr: *const std::os::raw::c_char) {
     if status_ptr.is_null() {
         if let Err(e) = set_status_result(Some("default".to_string())) {
@@ -97,6 +124,25 @@ extern "C" fn request_permission_callback(granted: bool, status_ptr: *const std:
         }
     };
     if let Err(e) = set_request_result(Some((granted, status))) {
+        log::warn!("[Notifications] {e}");
+    }
+}
+
+#[cfg(target_os = "macos")]
+extern "C" fn check_alert_style_callback(style_ptr: *const std::os::raw::c_char) {
+    let style = if style_ptr.is_null() {
+        "unknown".to_string()
+    } else {
+        unsafe {
+            let value = std::ffi::CStr::from_ptr(style_ptr)
+                .to_string_lossy()
+                .into_owned();
+            free_notification_string_ffi(style_ptr as *mut std::os::raw::c_char);
+            value
+        }
+    };
+
+    if let Err(e) = set_alert_style_result(Some(style)) {
         log::warn!("[Notifications] {e}");
     }
 }
@@ -167,5 +213,29 @@ pub async fn request_notification_permission() -> Result<NotificationPermissionR
     Ok(NotificationPermissionResult {
         granted: true,
         status: "granted".to_string(),
+    })
+}
+
+#[tauri::command]
+pub async fn check_notification_alert_style() -> Result<NotificationAlertStyleResult, String> {
+    #[cfg(target_os = "macos")]
+    {
+        use std::{thread, time::Duration};
+        set_alert_style_result(None)?;
+        unsafe { check_notification_alert_style_ffi(check_alert_style_callback) };
+        for _ in 0..50 {
+            thread::sleep(Duration::from_millis(10));
+            if let Some(style) = alert_style_result()? {
+                return Ok(NotificationAlertStyleResult { style });
+            }
+        }
+        Ok(NotificationAlertStyleResult {
+            style: "unknown".to_string(),
+        })
+    }
+
+    #[cfg(not(target_os = "macos"))]
+    Ok(NotificationAlertStyleResult {
+        style: "unknown".to_string(),
     })
 }

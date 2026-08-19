@@ -4,11 +4,16 @@ import { NotificationContext } from '$context/notificationContext';
 import { settingsStore } from '$context/settingsContext';
 import { loggers } from '$lib/logger';
 import {
+  checkNotificationAlertStyle,
   checkNotificationPermission,
+  getCachedNotificationAlertStyle,
   getCachedNotificationPermission,
   requestNotificationPermission,
 } from '$lib/notifications';
-import type { NotificationPermissionStatus } from '$types/notifications/permission';
+import type {
+  NotificationAlertStyle,
+  NotificationPermissionStatus,
+} from '$types/notifications/permission';
 import { isMacPlatform } from '$utils/platform';
 
 const log = loggers.notifications;
@@ -22,6 +27,10 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     // seed from the module-level cache so there's no flash of "unknown" state
     () => (isMacPlatform() ? getCachedNotificationPermission() : null),
   );
+  const [notificationAlertStyle, setNotificationAlertStyle] =
+    useState<NotificationAlertStyle | null>(() =>
+      isMacPlatform() ? getCachedNotificationAlertStyle() : null,
+    );
   const [isCheckingPermission, setIsCheckingPermission] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -46,24 +55,39 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [applyPermissionStatus]);
 
+  const syncAlertStyle = useCallback(async () => {
+    if (!isMacPlatform()) return;
+    try {
+      const { style } = await checkNotificationAlertStyle();
+      setNotificationAlertStyle(style);
+    } catch (error) {
+      log.error('Failed to sync macOS notification alert style:', error);
+    }
+  }, []);
+
   useEffect(() => {
     if (!isMacPlatform()) return;
 
     let didCancel = false;
     let unlistenNativeFocus: (() => void) | undefined;
 
-    syncPermission();
+    const syncNotificationSettings = () => {
+      syncPermission();
+      syncAlertStyle();
+    };
+
+    syncNotificationSettings();
 
     // near-instant sync: fires as soon as the user switches back from
     // system Settings (or any other app)
-    window.addEventListener('focus', syncPermission);
+    window.addEventListener('focus', syncNotificationSettings);
 
     const subscribeToNativeWindowFocus = async () => {
       const { getCurrentWindow } = await import('@tauri-apps/api/window');
       if (didCancel) return;
 
       const unlisten = await getCurrentWindow().onFocusChanged(({ payload: focused }) => {
-        if (focused) syncPermission();
+        if (focused) syncNotificationSettings();
       });
 
       if (didCancel) {
@@ -77,18 +101,18 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     subscribeToNativeWindowFocus().catch(() => {});
 
     // 5-minute fallback in case the window never lost focus
-    intervalRef.current = setInterval(syncPermission, SYNC_INTERVAL_MS);
+    intervalRef.current = setInterval(syncNotificationSettings, SYNC_INTERVAL_MS);
 
     return () => {
       didCancel = true;
-      window.removeEventListener('focus', syncPermission);
+      window.removeEventListener('focus', syncNotificationSettings);
       unlistenNativeFocus?.();
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
     };
-  }, [syncPermission]);
+  }, [syncAlertStyle, syncPermission]);
 
   const checkPermission = useCallback(async () => {
     await syncPermission();
@@ -99,15 +123,22 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     try {
       const result = await requestNotificationPermission();
       applyPermissionStatus(result.status);
+      if (result.status === 'granted') await syncAlertStyle();
       return result;
     } finally {
       setIsCheckingPermission(false);
     }
-  }, [applyPermissionStatus]);
+  }, [applyPermissionStatus, syncAlertStyle]);
 
   return (
     <NotificationContext.Provider
-      value={{ permissionStatus, isCheckingPermission, checkPermission, requestPermission }}
+      value={{
+        permissionStatus,
+        notificationAlertStyle,
+        isCheckingPermission,
+        checkPermission,
+        requestPermission,
+      }}
     >
       {children}
     </NotificationContext.Provider>

@@ -5,6 +5,8 @@ import type {
   SimpleNotificationOptions,
 } from '$types/notifications/events';
 import type {
+  NotificationAlertStyle,
+  NotificationAlertStyleResult,
   NotificationPermissionResult,
   NotificationPermissionStatus,
   NotificationPermissionStatusResult,
@@ -13,6 +15,7 @@ import type { NotificationActionSettings } from '$types/notifications/settings';
 
 // cache for permission status to avoid re-checking on every component mount
 let cachedPermissionStatus: NotificationPermissionStatus | null = null;
+let cachedNotificationAlertStyle: NotificationAlertStyle | null = null;
 
 /**
  * get the cached notification permission status without making an async call
@@ -42,6 +45,23 @@ export const requestNotificationPermission = async () => {
   const result = await invoke<NotificationPermissionResult>('request_notification_permission');
   cachedPermissionStatus = result.status;
   return result;
+};
+
+/**
+ * check the macOS notification presentation style selected for Chiri.
+ * on other platforms, the native command returns `unknown`
+ */
+export const checkNotificationAlertStyle = async () => {
+  const result = await invoke<NotificationAlertStyleResult>('check_notification_alert_style');
+  cachedNotificationAlertStyle = result.style;
+  return result;
+};
+
+/**
+ * get the cached macOS notification presentation style without making an async call
+ */
+export const getCachedNotificationAlertStyle = () => {
+  return cachedNotificationAlertStyle;
 };
 
 /**

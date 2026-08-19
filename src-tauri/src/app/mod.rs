@@ -103,6 +103,7 @@ pub fn run() {
             notifications::commands::set_notification_action_config,
             notifications::commands::send_notification_with_actions,
             notifications::commands::send_simple_notification,
+            notifications::permission::check_notification_alert_style,
             notifications::permission::check_notification_permission,
             notifications::permission::request_notification_permission,
             preferences::get_system_region_preferences,

@@ -43,6 +43,19 @@ static NSString *ChiriAuthorizationStatusName(UNAuthorizationStatus status) {
   }
 }
 
+static NSString *ChiriAlertStyleName(UNAlertStyle style) {
+  switch (style) {
+  case UNAlertStyleNone:
+    return @"none";
+  case UNAlertStyleBanner:
+    return @"banner";
+  case UNAlertStyleAlert:
+    return @"alert";
+  default:
+    return @"unknown";
+  }
+}
+
 static void ChiriSendPermissionGrantedNotification(void) {
   UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
   content.title = @"Notifications Enabled";
@@ -86,6 +99,27 @@ void check_notification_permission_ffi(ChiriPermissionStatusCallback callback) {
   }
 
   callback(ChiriCopyCString(@"default"));
+}
+
+void check_notification_alert_style_ffi(ChiriPermissionStatusCallback callback) {
+  if (callback == NULL) {
+    return;
+  }
+
+  if (!ChiriHasBundleIdentifier()) {
+    callback(ChiriCopyCString(@"unknown"));
+    return;
+  }
+
+  if (ChiriIsOperatingSystemAtLeast(10, 14)) {
+    [[UNUserNotificationCenter currentNotificationCenter]
+        getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
+          callback(ChiriCopyCString(ChiriAlertStyleName(settings.alertStyle)));
+        }];
+    return;
+  }
+
+  callback(ChiriCopyCString(@"unknown"));
 }
 
 void request_notification_permission_ffi(ChiriPermissionRequestCallback callback) {

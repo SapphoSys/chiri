@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import { setNotificationActionConfig } from '$lib/notifications';
+import { checkNotificationAlertStyle, setNotificationActionConfig } from '$lib/notifications';
 
-const invoke = vi.hoisted(() => vi.fn(() => Promise.resolve()));
+const invoke = vi.hoisted(() =>
+  vi.fn((..._args: unknown[]) => Promise.resolve<unknown>(undefined)),
+);
 
 vi.mock('@tauri-apps/api/core', () => ({ invoke }));
 
@@ -22,5 +24,14 @@ describe('setNotificationActionConfig', () => {
         actionOrder: ['complete', 'snooze'],
       },
     });
+  });
+});
+
+describe('checkNotificationAlertStyle', () => {
+  it('reads the current native macOS alert style', async () => {
+    invoke.mockResolvedValueOnce({ style: 'banner' });
+
+    await expect(checkNotificationAlertStyle()).resolves.toEqual({ style: 'banner' });
+    expect(invoke).toHaveBeenLastCalledWith('check_notification_alert_style');
   });
 });

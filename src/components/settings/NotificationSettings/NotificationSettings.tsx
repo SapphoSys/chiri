@@ -86,7 +86,9 @@ export const NotificationSettings = () => {
   const [activeDragKey, setActiveDragKey] = useState<NotificationActionKey | null>(null);
 
   const use24h = timeFormat === '24';
-  const { permissionStatus, isCheckingPermission, requestPermission } = useNotificationContext();
+  const { permissionStatus, notificationAlertStyle, isCheckingPermission, requestPermission } =
+    useNotificationContext();
+  const isMac = isMacPlatform();
 
   // on macOS the toggle is gated behind OS permission
   // must be granted or provisional before the user can enable/disable it in-app
@@ -133,7 +135,6 @@ export const NotificationSettings = () => {
   };
 
   const isLinux = isLinuxPlatform();
-  const isMac = isMacPlatform();
   const isWindows = isWindowsPlatform();
   const { isGNOME, isKDE } = usePlatform();
 
@@ -155,11 +156,12 @@ export const NotificationSettings = () => {
         Notifications
       </h3>
 
-      {isMacPlatform() && permissionStatus !== null && (
+      {isMac && permissionStatus !== null && (
         <MacNotificationCard
           permissionStatus={permissionStatus}
           isCheckingPermission={isCheckingPermission}
           requestPermission={requestPermission}
+          alertStyle={notificationAlertStyle}
         />
       )}
 
