@@ -755,30 +755,33 @@ jobs:
             --jq '.assets[].name' > release-assets.txt
 
           expected_assets=(
-            "Chiri_aarch64.app.tar.gz"
-            "signature-Chiri_aarch64.app.tar.gz.sig"
-            "Chiri_x64.app.tar.gz"
-            "signature-Chiri_x64.app.tar.gz.sig"
-            "Chiri_${VERSION}_amd64.AppImage"
-            "signature-Chiri_${VERSION}_amd64.AppImage.sig"
-            "Chiri_${VERSION}_aarch64.AppImage"
-            "signature-Chiri_${VERSION}_aarch64.AppImage.sig"
-            "Chiri_${VERSION}_amd64.deb"
-            "signature-Chiri_${VERSION}_amd64.deb.sig"
-            "Chiri_${VERSION}_arm64.deb"
-            "signature-Chiri_${VERSION}_arm64.deb.sig"
-            "Chiri-${VERSION}-1.x86_64.rpm"
-            "signature-Chiri-${VERSION}-1.x86_64.rpm.sig"
-            "Chiri-${VERSION}-1.aarch64.rpm"
-            "signature-Chiri-${VERSION}-1.aarch64.rpm.sig"
-            "Chiri_${VERSION}_x64_en-US.msi"
-            "signature-Chiri_${VERSION}_x64_en-US.msi.sig"
             "Chiri_${VERSION}_x64-setup.exe"
-            "signature-Chiri_${VERSION}_x64-setup.exe.sig"
-            "Chiri_${VERSION}_arm64_en-US.msi"
-            "signature-Chiri_${VERSION}_arm64_en-US.msi.sig"
             "Chiri_${VERSION}_arm64-setup.exe"
+            "Chiri_${VERSION}_x64_en-US.msi"
+            "Chiri_${VERSION}_arm64_en-US.msi"
+            "Chiri_${VERSION}_aarch64.dmg"
+            "Chiri_${VERSION}_x64.dmg"
+            "Chiri_${VERSION}_amd64.deb"
+            "Chiri_${VERSION}_arm64.deb"
+            "Chiri-${VERSION}-1.x86_64.rpm"
+            "Chiri-${VERSION}-1.aarch64.rpm"
+            "Chiri_${VERSION}_amd64.AppImage"
+            "Chiri_${VERSION}_aarch64.AppImage"
+            "Chiri_aarch64.app.tar.gz"
+            "Chiri_x64.app.tar.gz"
+            "signature-Chiri_${VERSION}_x64-setup.exe.sig"
             "signature-Chiri_${VERSION}_arm64-setup.exe.sig"
+            "signature-Chiri_${VERSION}_x64_en-US.msi.sig"
+            "signature-Chiri_${VERSION}_arm64_en-US.msi.sig"
+            "signature-Chiri_${VERSION}_amd64.deb.sig"
+            "signature-Chiri_${VERSION}_arm64.deb.sig"
+            "signature-Chiri-${VERSION}-1.x86_64.rpm.sig"
+            "signature-Chiri-${VERSION}-1.aarch64.rpm.sig"
+            "signature-Chiri_${VERSION}_amd64.AppImage.sig"
+            "signature-Chiri_${VERSION}_aarch64.AppImage.sig"
+            "signature-Chiri_aarch64.app.tar.gz.sig"
+            "signature-Chiri_x64.app.tar.gz.sig"
+
           )
 
           for asset in "${expected_assets[@]}"; do
@@ -853,33 +856,33 @@ jobs:
               exit 1
             fi
           done <<EOF
-          latest.json|Updater metadata for Chiri v${VERSION}
           Chiri_${VERSION}_x64-setup.exe|Chiri v${VERSION} Windows x64 EXE Installer
-          signature-Chiri_${VERSION}_x64-setup.exe.sig|Signature for Chiri v${VERSION} Windows x64 EXE Installer
           Chiri_${VERSION}_arm64-setup.exe|Chiri v${VERSION} Windows ARM64 EXE Installer
-          signature-Chiri_${VERSION}_arm64-setup.exe.sig|Signature for Chiri v${VERSION} Windows ARM64 EXE Installer
           Chiri_${VERSION}_x64_en-US.msi|Chiri v${VERSION} Windows x64 MSI Installer
-          signature-Chiri_${VERSION}_x64_en-US.msi.sig|Signature for Chiri v${VERSION} Windows x64 MSI Installer
           Chiri_${VERSION}_arm64_en-US.msi|Chiri v${VERSION} Windows ARM64 MSI Installer
-          signature-Chiri_${VERSION}_arm64_en-US.msi.sig|Signature for Chiri v${VERSION} Windows ARM64 MSI Installer
           Chiri_${VERSION}_aarch64.dmg|Chiri v${VERSION} macOS Apple Silicon
           Chiri_${VERSION}_x64.dmg|Chiri v${VERSION} macOS Intel
-          Chiri_aarch64.app.tar.gz|Chiri v${VERSION} macOS Apple Silicon updater bundle
-          signature-Chiri_aarch64.app.tar.gz.sig|Signature for Chiri v${VERSION} macOS Apple Silicon updater bundle
-          Chiri_x64.app.tar.gz|Chiri v${VERSION} macOS Intel updater bundle
-          signature-Chiri_x64.app.tar.gz.sig|Signature for Chiri v${VERSION} macOS Intel updater bundle
           Chiri_${VERSION}_amd64.deb|Chiri v${VERSION} Linux x86_64 Debian Package
-          signature-Chiri_${VERSION}_amd64.deb.sig|Signature for Chiri v${VERSION} Linux x86_64 Debian Package
           Chiri_${VERSION}_arm64.deb|Chiri v${VERSION} Linux ARM64 Debian Package
-          signature-Chiri_${VERSION}_arm64.deb.sig|Signature for Chiri v${VERSION} Linux ARM64 Debian Package
           Chiri-${VERSION}-1.x86_64.rpm|Chiri v${VERSION} Linux x86_64 RPM Package
-          signature-Chiri-${VERSION}-1.x86_64.rpm.sig|Signature for Chiri v${VERSION} Linux x86_64 RPM Package
           Chiri-${VERSION}-1.aarch64.rpm|Chiri v${VERSION} Linux ARM64 RPM Package
-          signature-Chiri-${VERSION}-1.aarch64.rpm.sig|Signature for Chiri v${VERSION} Linux ARM64 RPM Package
           Chiri_${VERSION}_aarch64.AppImage|Chiri v${VERSION} Linux ARM64 AppImage
-          signature-Chiri_${VERSION}_aarch64.AppImage.sig|Signature for Chiri v${VERSION} Linux ARM64 AppImage
           Chiri_${VERSION}_amd64.AppImage|Chiri v${VERSION} Linux x86_64 AppImage
+          Chiri_aarch64.app.tar.gz|Chiri v${VERSION} macOS Apple Silicon updater bundle
+          Chiri_x64.app.tar.gz|Chiri v${VERSION} macOS Intel updater bundle
+          latest.json|Updater metadata for Chiri v${VERSION}
+          signature-Chiri_${VERSION}_x64-setup.exe.sig|Signature for Chiri v${VERSION} Windows x64 EXE Installer
+          signature-Chiri_${VERSION}_arm64-setup.exe.sig|Signature for Chiri v${VERSION} Windows ARM64 EXE Installer
+          signature-Chiri_${VERSION}_x64_en-US.msi.sig|Signature for Chiri v${VERSION} Windows x64 MSI Installer
+          signature-Chiri_${VERSION}_arm64_en-US.msi.sig|Signature for Chiri v${VERSION} Windows ARM64 MSI Installer
+          signature-Chiri_${VERSION}_amd64.deb.sig|Signature for Chiri v${VERSION} Linux x86_64 Debian Package
+          signature-Chiri_${VERSION}_arm64.deb.sig|Signature for Chiri v${VERSION} Linux ARM64 Debian Package
+          signature-Chiri-${VERSION}-1.x86_64.rpm.sig|Signature for Chiri v${VERSION} Linux x86_64 RPM Package
+          signature-Chiri-${VERSION}-1.aarch64.rpm.sig|Signature for Chiri v${VERSION} Linux ARM64 RPM Package
+          signature-Chiri_${VERSION}_aarch64.AppImage.sig|Signature for Chiri v${VERSION} Linux ARM64 AppImage
           signature-Chiri_${VERSION}_amd64.AppImage.sig|Signature for Chiri v${VERSION} Linux x86_64 AppImage
+          signature-Chiri_aarch64.app.tar.gz.sig|Signature for Chiri v${VERSION} macOS Apple Silicon updater bundle
+          signature-Chiri_x64.app.tar.gz.sig|Signature for Chiri v${VERSION} macOS Intel updater bundle
           EOF
 
           echo "All release asset labels verified for v${VERSION}."
