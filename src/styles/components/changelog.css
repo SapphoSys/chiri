@@ -1,0 +1,83 @@
+/* github markdown alert blocks in release notes. pulldown-cmark adds the markdown-alert-* class when ENABLE_GFM is enabled for [!NOTE] et al */
+.changelog-prose blockquote.markdown-alert-note,
+.changelog-prose blockquote.markdown-alert-tip,
+.changelog-prose blockquote.markdown-alert-important,
+.changelog-prose blockquote.markdown-alert-warning,
+.changelog-prose blockquote.markdown-alert-caution {
+  margin-block: 1rem;
+  margin-inline: 0;
+  border-left: 0.25rem solid var(--changelog-alert-color);
+  border-radius: 0;
+  background-color: color-mix(in srgb, var(--changelog-alert-color) 8%, transparent);
+  padding: 0.75rem 1rem;
+  font-style: normal;
+}
+
+.changelog-prose blockquote.markdown-alert-note {
+  --changelog-alert-color: var(--semantic-info);
+}
+
+.changelog-prose blockquote.markdown-alert-tip {
+  --changelog-alert-color: var(--semantic-success);
+}
+
+.changelog-prose blockquote.markdown-alert-important {
+  --changelog-alert-color: var(--primary-ink);
+}
+
+.changelog-prose blockquote.markdown-alert-warning {
+  --changelog-alert-color: var(--semantic-warning);
+}
+
+.changelog-prose blockquote.markdown-alert-caution {
+  --changelog-alert-color: var(--semantic-error);
+}
+
+.changelog-prose blockquote.markdown-alert-note::before,
+.changelog-prose blockquote.markdown-alert-tip::before,
+.changelog-prose blockquote.markdown-alert-important::before,
+.changelog-prose blockquote.markdown-alert-warning::before,
+.changelog-prose blockquote.markdown-alert-caution::before {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--changelog-alert-color);
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.changelog-prose blockquote.markdown-alert-note::before {
+  content: "ⓘ\00a0\00a0Note";
+}
+
+.changelog-prose blockquote.markdown-alert-tip::before {
+  content: "✦\00a0\00a0Tip";
+}
+
+.changelog-prose blockquote.markdown-alert-important::before {
+  content: "❗\00a0\00a0Important";
+}
+
+.changelog-prose blockquote.markdown-alert-warning::before {
+  content: "⚠\00a0\00a0Warning";
+}
+
+.changelog-prose blockquote.markdown-alert-caution::before {
+  content: "⛔\00a0\00a0Caution";
+}
+
+.changelog-prose blockquote.markdown-alert-note > :first-child,
+.changelog-prose blockquote.markdown-alert-tip > :first-child,
+.changelog-prose blockquote.markdown-alert-important > :first-child,
+.changelog-prose blockquote.markdown-alert-warning > :first-child,
+.changelog-prose blockquote.markdown-alert-caution > :first-child {
+  margin-top: 0;
+}
+
+.changelog-prose blockquote.markdown-alert-note > :last-child,
+.changelog-prose blockquote.markdown-alert-tip > :last-child,
+.changelog-prose blockquote.markdown-alert-important > :last-child,
+.changelog-prose blockquote.markdown-alert-warning > :last-child,
+.changelog-prose blockquote.markdown-alert-caution > :last-child {
+  margin-bottom: 0;
+}
