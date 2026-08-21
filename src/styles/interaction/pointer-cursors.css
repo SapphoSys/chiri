@@ -10,9 +10,9 @@ html.chiri-reset-cursor .cursor-grab * {
   cursor: grab !important;
 }
 
-html.chiri-reset-cursor .cursor-pointer,
-html.chiri-reset-cursor .cursor-pointer * {
-  /* explicit pointer affordances should not flash to default during a cursor refresh */
+html.chiri-reset-cursor.chiri-pointer-cursors .cursor-pointer,
+html.chiri-reset-cursor.chiri-pointer-cursors .cursor-pointer * {
+  /* explicit pointer affordances should not flash to default when pointers are enabled */
   cursor: pointer !important;
 }
 
