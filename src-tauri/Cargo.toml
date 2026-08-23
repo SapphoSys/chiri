@@ -1,6 +1,6 @@
 [package]
 name = "Chiri"
-version = "1.0.0-test"
+version = "1.0.0"
 description = "Sync and manage tasks across CalDAV servers"
 authors = ["Sapphic Angels"]
 license = "zlib"
