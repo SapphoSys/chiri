@@ -33,12 +33,18 @@ rm "$generated_zsync_path"
 rm "$APPIMAGE_PATH"
 
 zsyncmake \
+  -u "$PUBLIC_APPIMAGE_NAME" \
   -o "$public_zsync_path" \
   -f "$PUBLIC_APPIMAGE_NAME" \
   "$public_appimage_path"
 
-if ! grep -Fqx "Filename: ${PUBLIC_APPIMAGE_NAME}" "$public_zsync_path"; then
+if ! grep -aFqx "Filename: ${PUBLIC_APPIMAGE_NAME}" "$public_zsync_path"; then
   echo "::error::zsyncmake produced metadata for the wrong AppImage: $public_zsync_path"
+  exit 1
+fi
+
+if ! grep -aFqx "URL: ${PUBLIC_APPIMAGE_NAME}" "$public_zsync_path"; then
+  echo "::error::zsyncmake produced a non-release-relative AppImage URL: $public_zsync_path"
   exit 1
 fi
 
