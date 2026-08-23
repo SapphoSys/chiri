@@ -146,8 +146,10 @@ jobs:
             "Chiri-${VERSION}-1.aarch64.rpm"
             "signature-Chiri-${VERSION}-1.aarch64.rpm.sig"
             "Chiri_${VERSION}_aarch64.AppImage"
+            "Chiri_${VERSION}_aarch64.AppImage.zsync"
             "signature-Chiri_${VERSION}_aarch64.AppImage.sig"
             "Chiri_${VERSION}_amd64.AppImage"
+            "Chiri_${VERSION}_amd64.AppImage.zsync"
             "signature-Chiri_${VERSION}_amd64.AppImage.sig"
           )
 

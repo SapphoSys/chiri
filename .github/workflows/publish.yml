@@ -604,8 +604,10 @@ jobs:
         include:
           - platform: 'ubuntu-24.04'
             label: 'AppImage (x86_64)'
+            arch: 'amd64'
           - platform: 'ubuntu-24.04-arm'
             label: 'AppImage (ARM64)'
+            arch: 'aarch64'
 
     runs-on: ${{ matrix.platform }}
     container: ghcr.io/pkgforge-dev/archlinux@sha256:f6fc7e14b0612a355d7ab50efb3cc40010ba28e4766860bd238d313b308f190b
@@ -633,6 +635,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_BUNDLER_NEW_APPIMAGE_FORMAT: 'true'
+          UPINFO: 'gh-releases-zsync|chiriapp|chiri|latest|Chiri_*_${{ matrix.arch }}.AppImage.zsync'
           TAURI_SIGNING_PRIVATE_KEY: ${{ env.TAURI_SIGNING_PRIVATE_KEY || secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ env.TAURI_SIGNING_PRIVATE_KEY_PASSWORD || secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
           VERSION: ${{ needs.prepare-release.outputs.version }}
@@ -650,6 +653,49 @@ jobs:
         run: |
           set -euo pipefail
           pacman -Syu --noconfirm --needed github-cli
+
+      - name: Upload AppImage zsync metadata
+        env:
+          APPIMAGE_ARCH: ${{ matrix.arch }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: app-v${{ needs.prepare-release.outputs.version }}
+          VERSION: ${{ needs.prepare-release.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          expected="garden.chiri.Chiri_${VERSION}_${APPIMAGE_ARCH}.AppImage.zsync"
+          mapfile -t zsync_paths < <(
+            find src-tauri/target \
+              -type f \
+              -path '*/release/bundle/appimage/*.AppImage.zsync' \
+              -name "$expected" \
+              -print
+          )
+
+          if [ "${#zsync_paths[@]}" -ne 1 ]; then
+            echo "::error::Expected exactly one AppImage zsync file named $expected"
+            printf '%s\n' "${zsync_paths[@]}"
+            exit 1
+          fi
+
+          appimage_path="${zsync_paths[0]%.zsync}"
+          expected_upinfo="gh-releases-zsync|chiriapp|chiri|latest|Chiri_*_${APPIMAGE_ARCH}.AppImage.zsync"
+          actual_upinfo="$("$appimage_path" --appimage-updateinformation)"
+          if [ "$actual_upinfo" != "$expected_upinfo" ]; then
+            echo "::error::Unexpected AppImage update information: $actual_upinfo"
+            exit 1
+          fi
+
+          public_appimage_name="Chiri_${VERSION}_${APPIMAGE_ARCH}.AppImage"
+          public_zsync_path=$(
+            APPIMAGE_PATH="$appimage_path" \
+            PUBLIC_APPIMAGE_NAME="$public_appimage_name" \
+            bash scripts/normalize-appimage-zsync.sh
+          )
+
+          gh release upload "$TAG" "$public_zsync_path" \
+            --repo "$GITHUB_REPOSITORY" \
+            --clobber
 
       - name: Download AppImage release assets for attestation
         env:
@@ -767,6 +813,8 @@ jobs:
             "Chiri-${VERSION}-1.aarch64.rpm"
             "Chiri_${VERSION}_amd64.AppImage"
             "Chiri_${VERSION}_aarch64.AppImage"
+            "Chiri_${VERSION}_amd64.AppImage.zsync"
+            "Chiri_${VERSION}_aarch64.AppImage.zsync"
             "Chiri_aarch64.app.tar.gz"
             "Chiri_x64.app.tar.gz"
             "signature-Chiri_${VERSION}_x64-setup.exe.sig"
@@ -868,6 +916,8 @@ jobs:
           Chiri-${VERSION}-1.aarch64.rpm|Chiri v${VERSION} Linux ARM64 RPM Package
           Chiri_${VERSION}_aarch64.AppImage|Chiri v${VERSION} Linux ARM64 AppImage
           Chiri_${VERSION}_amd64.AppImage|Chiri v${VERSION} Linux x86_64 AppImage
+          Chiri_${VERSION}_aarch64.AppImage.zsync|zsync metadata for Chiri v${VERSION} Linux ARM64 AppImage
+          Chiri_${VERSION}_amd64.AppImage.zsync|zsync metadata for Chiri v${VERSION} Linux x86_64 AppImage
           Chiri_aarch64.app.tar.gz|Chiri v${VERSION} macOS Apple Silicon updater bundle
           Chiri_x64.app.tar.gz|Chiri v${VERSION} macOS Intel updater bundle
           latest.json|Updater metadata for Chiri v${VERSION}
