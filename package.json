@@ -1,6 +1,6 @@
 {
   "name": "chiri",
-  "version": "1.0.0",
+  "version": "1.0.0-test",
   "author": "Sapphic Angels",
   "description": "Cross-platform CalDAV task management app",
   "type": "module",
