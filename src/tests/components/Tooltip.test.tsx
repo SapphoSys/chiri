@@ -188,19 +188,31 @@ describe('Tooltip', () => {
     const button = getButton(container);
     const wrapper = getTriggerWrapper(button);
     const tooltip = getDescribedTooltip(button);
+    vi.spyOn(wrapper, 'matches').mockImplementation((selector) => selector === ':hover');
 
     act(() => {
       mouseEnter(wrapper);
     });
     expect(tooltip.classList.contains('invisible')).toBe(false);
+    act(() => {
+      button.focus();
+    });
 
     act(() => {
       root.render(renderWithModal(true));
     });
     expect(tooltip.classList.contains('invisible')).toBe(true);
 
+    // WebKit2GTK can deliver this while the modal opens even though it retains :hover.
+    act(() => {
+      mouseLeave(wrapper);
+    });
+
     act(() => {
       root.render(renderWithModal(false));
+    });
+    act(() => {
+      button.focus();
     });
     expect(tooltip.classList.contains('invisible')).toBe(true);
 

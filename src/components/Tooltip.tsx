@@ -54,7 +54,11 @@ export const Tooltip = ({
   const animationFrameRef = useRef<number | null>(null);
   const isPointerInsideRef = useRef(false);
   const isFocusInsideRef = useRef(false);
+  const isInteractionSuppressedRef = useRef(false);
   const { isAnyModalOpen, isContextMenuOpen } = useModalState();
+  const isOverlayOpen = isAnyModalOpen || isContextMenuOpen;
+  const isOverlayOpenRef = useRef(isOverlayOpen);
+  isOverlayOpenRef.current = isOverlayOpen;
   const hasContent = Boolean(content);
   const isEnabled = hasContent && !disabled;
   const describedBy = isEnabled ? tooltipId : undefined;
@@ -86,12 +90,15 @@ export const Tooltip = ({
 
   const resetDismissalAndHideTooltip = useCallback(() => {
     setIsDismissed(false);
+    if (!isOverlayOpenRef.current) {
+      isInteractionSuppressedRef.current = false;
+    }
     hideTooltip();
   }, [hideTooltip]);
 
-  // hide and dismiss the tooltip when a modal or context menu opens. the trigger can remain
-  // hovered while the overlay is open, so just hiding it would make it reappear when the
-  // overlay closes without any new pointer interaction
+  // suppress tooltip reactivation until a new pointer/focus entry after an overlay closes.
+  // some webviews report a stale :hover state after the overlay is removed, and can also
+  // deliver blur/mouseleave events while the overlay is opening.
   useEffect(() => {
     if (disabled) {
       hideTooltip();
@@ -99,27 +106,10 @@ export const Tooltip = ({
     }
 
     if (!allowInModal && (isAnyModalOpen || isContextMenuOpen)) {
-      const isTriggerActive =
-        isVisible ||
-        isPointerInsideRef.current ||
-        isFocusInsideRef.current ||
-        (triggerRef.current?.matches(':hover') ?? false);
-
-      if (isTriggerActive) {
-        dismissTooltip();
-      } else {
-        hideTooltip();
-      }
+      isInteractionSuppressedRef.current = true;
+      hideTooltip();
     }
-  }, [
-    isAnyModalOpen,
-    isContextMenuOpen,
-    allowInModal,
-    disabled,
-    dismissTooltip,
-    hideTooltip,
-    isVisible,
-  ]);
+  }, [isAnyModalOpen, isContextMenuOpen, allowInModal, disabled, hideTooltip]);
 
   const updatePosition = useCallback(() => {
     if (!triggerRef.current) return;
@@ -199,7 +189,7 @@ export const Tooltip = ({
   }, [position]);
 
   const showTooltip = useCallback(() => {
-    if (!isEnabled || isDismissed) return;
+    if (!isEnabled || isDismissed || isInteractionSuppressedRef.current) return;
 
     // don't show tooltip when a modal or context menu is open (unless allowInModal is true)
     if (!allowInModal && (isAnyModalOpen || isContextMenuOpen)) return;
@@ -344,6 +334,9 @@ export const Tooltip = ({
 
   const handleMouseEnter = useCallback(() => {
     isPointerInsideRef.current = true;
+    if (!isOverlayOpenRef.current) {
+      isInteractionSuppressedRef.current = false;
+    }
     showTooltip();
   }, [showTooltip]);
 
@@ -354,6 +347,13 @@ export const Tooltip = ({
 
   const handleFocus = useCallback(() => {
     isFocusInsideRef.current = true;
+    if (
+      !isOverlayOpenRef.current &&
+      (!isInteractionSuppressedRef.current ||
+        (triggerRef.current?.matches(':focus-visible') ?? false))
+    ) {
+      isInteractionSuppressedRef.current = false;
+    }
     showTooltip();
   }, [showTooltip]);
 
