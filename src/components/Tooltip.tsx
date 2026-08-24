@@ -89,7 +89,9 @@ export const Tooltip = ({
     hideTooltip();
   }, [hideTooltip]);
 
-  // hide tooltip when a modal or context menu opens
+  // hide and dismiss the tooltip when a modal or context menu opens. the trigger can remain
+  // hovered while the overlay is open, so just hiding it would make it reappear when the
+  // overlay closes without any new pointer interaction
   useEffect(() => {
     if (disabled) {
       hideTooltip();
@@ -97,9 +99,27 @@ export const Tooltip = ({
     }
 
     if (!allowInModal && (isAnyModalOpen || isContextMenuOpen)) {
-      hideTooltip();
+      const isTriggerActive =
+        isVisible ||
+        isPointerInsideRef.current ||
+        isFocusInsideRef.current ||
+        (triggerRef.current?.matches(':hover') ?? false);
+
+      if (isTriggerActive) {
+        dismissTooltip();
+      } else {
+        hideTooltip();
+      }
     }
-  }, [isAnyModalOpen, isContextMenuOpen, allowInModal, disabled, hideTooltip]);
+  }, [
+    isAnyModalOpen,
+    isContextMenuOpen,
+    allowInModal,
+    disabled,
+    dismissTooltip,
+    hideTooltip,
+    isVisible,
+  ]);
 
   const updatePosition = useCallback(() => {
     if (!triggerRef.current) return;

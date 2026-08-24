@@ -2,7 +2,9 @@ import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Tooltip } from '$components/Tooltip';
+import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
 import { DismissableLayerProvider } from '$providers/DismissableLayerProvider';
+import { ModalStateProvider } from '$providers/ModalStateProvider';
 
 interface RenderTooltipProps {
   content: string;
@@ -56,6 +58,11 @@ const mouseEnter = (target: HTMLElement) => {
 
 const mouseLeave = (target: HTMLElement) => {
   target.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, relatedTarget: document.body }));
+};
+
+const ModalLayer = ({ enabled }: { enabled: boolean }) => {
+  useDismissableLayer({ enabled, type: 'modal' });
+  return null;
 };
 
 describe('Tooltip', () => {
@@ -159,6 +166,46 @@ describe('Tooltip', () => {
       mouseLeave(wrapper);
     });
     act(() => {
+      mouseEnter(wrapper);
+    });
+    expect(tooltip.classList.contains('invisible')).toBe(false);
+  });
+
+  it('does not reopen a hovered tooltip after a modal closes until hover leaves', () => {
+    const renderWithModal = (modalOpen: boolean) => (
+      <DismissableLayerProvider>
+        <ModalStateProvider>
+          {renderTooltip({ content: 'Add account' })}
+          <ModalLayer enabled={modalOpen} />
+        </ModalStateProvider>
+      </DismissableLayerProvider>
+    );
+
+    act(() => {
+      root.render(renderWithModal(false));
+    });
+
+    const button = getButton(container);
+    const wrapper = getTriggerWrapper(button);
+    const tooltip = getDescribedTooltip(button);
+
+    act(() => {
+      mouseEnter(wrapper);
+    });
+    expect(tooltip.classList.contains('invisible')).toBe(false);
+
+    act(() => {
+      root.render(renderWithModal(true));
+    });
+    expect(tooltip.classList.contains('invisible')).toBe(true);
+
+    act(() => {
+      root.render(renderWithModal(false));
+    });
+    expect(tooltip.classList.contains('invisible')).toBe(true);
+
+    act(() => {
+      mouseLeave(wrapper);
       mouseEnter(wrapper);
     });
     expect(tooltip.classList.contains('invisible')).toBe(false);
